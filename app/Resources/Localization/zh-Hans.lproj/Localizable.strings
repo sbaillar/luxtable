@@ -101,6 +101,7 @@
 "%@ paste mode" = "%@粘贴模式";
 "%@ photo" = "%@ 张照片";
 "%@ photos" = "%@ 张照片";
+"%@ puts a box on the photo to move and resize; the arrow next to it picks a ratio such as Square or 16:9. Return applies, Esc cancels." = "%@ 会在照片上放置一个可移动和调整大小的框；旁边的箭头可选取比例，如“正方形”或“16:9”。按 Return 应用，按 Esc 取消。";
 "%@ reverted: %@ restored" = "%@已还原：已恢复%@";
 "%@ saved by a newer Luxtable (left alone)" = "%@由较新版本的 Luxtable 存储（未改动）";
 "%@ selected" = "已选择 %@";
@@ -483,6 +484,7 @@
 "Adding to the Google Photos album…" = "正在添加到 Google Photos 相簿…";
 "Adds: %@" = "添加：%@";
 "Adjust" = "调整";
+"Adjust the photo" = "调整照片";
 "Adjusted" = "已调整";
 "Adjustments" = "调整";
 "Advanced" = "高级";
@@ -610,6 +612,7 @@
 "Auto adjust" = "自动调整";
 "Auto align" = "自动对齐";
 "Auto crop" = "自动裁剪";
+"Auto fixes light and color in one click, a look restyles the photo, and six sliders fine-tune it. Crop & Straighten is at the bottom. View ▸ Simple Mode (⌃⌘S) switches to every tool." = "“自动”一键修正光线和颜色，外观可改变照片风格，六个滑块用于微调。“裁剪和拉直”在最下方。“显示”▸“简单模式”（⌃⌘S）可切换到所有工具。";
 "Auto mask (follow edges)" = "自动蒙版（跟随边缘）";
 "Auto white balance and tone (⇧A)" = "自动白平衡和影调（⇧A）";
 "Auto white balance and tone applied" = "已应用自动白平衡和影调";
@@ -662,10 +665,13 @@
 "Brightness" = "亮度";
 "Brightness in stops (EV)." = "亮度，以档（EV）为单位。";
 "Bring back detail in bright areas such as sky (–), or brighten them (+)." = "恢复天空等明亮区域的细节（–），或将其提亮（+）。";
+"Bring in some photos to begin. Help ▸ Getting Started shows this tour again at any time." = "导入一些照片即可开始。“帮助”▸“入门”可随时再次显示此导览。";
 "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed." = "要将其星级、颜色标签、关键词、精选集和编辑导入 Luxtable 吗？Capture One 文件夹绝不会被更改。";
+"Bring photos in" = "导入照片";
 "Browse All Sessions in Library" = "在图库中浏览所有会话";
 "Browse Card" = "浏览存储卡";
 "Browse a Card…" = "浏览存储卡…";
+"Browse and cull" = "浏览和筛选";
 "Brush" = "画笔";
 "Brush (%lld)" = "画笔（%lld）";
 "Brush / erase mask on the selected layer" = "在所选图层上用画笔绘制 / 擦除蒙版";
@@ -820,6 +826,7 @@
 "Close results" = "关闭结果";
 "Close session" = "关闭会话";
 "Close session %@" = "关闭会话%@";
+"Close the tour (Esc). Help ▸ Getting Started shows it again." = "关闭导览（Esc）。“帮助”▸“入门”可再次显示。";
 "Close this list" = "关闭此列表";
 "Close voice commands" = "关闭语音命令";
 "Close “%@” (⌥⌘W). Nothing is deleted, and it stays in the Sessions list." = "关闭“%@”（⌥⌘W）。不会删除任何内容，它会保留在会话列表中。";
@@ -1147,6 +1154,7 @@
 "Export 1 Photo" = "导出 1 张照片";
 "Export Again" = "再次导出";
 "Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back up to the original size." = "以内接尺寸导出已拉直或已进行镜头校正的照片，而不是将其放大回原始尺寸。";
+"Export and share" = "导出和共享";
 "Export failed" = "导出失败";
 "Export recipes" = "导出方案";
 "Export steps from plug-ins appear here (Settings ▸ Plugins)." = "来自插件的导出步骤会显示在这里（“设置”▸“插件”）。";
@@ -1173,6 +1181,7 @@
 "File Name" = "文件名";
 "File changed" = "文件已更改";
 "File name" = "文件名";
+"File ▸ Export… (⌘E) saves the selected photos with your export recipes. Share… (⌥⌘E), next to Import, sends JPEGs with Messages, Mail or AirDrop." = "“文件”▸“导出…”（⌘E）使用你的导出方案存储所选照片。“导入”旁边的“共享…”（⌥⌘E）可通过“信息”、“邮件”或 AirDrop 发送 JPEG。";
 "Filename" = "文件名";
 "Files already in any session are not copied again" = "已在任何会话中的文件不会再次拷贝";
 "Fill" = "填充";
@@ -1246,6 +1255,7 @@
 "General" = "通用";
 "Get RAW Helper" = "获取 RAW 助手";
 "Get the Amazon Photos app" = "获取 Amazon Photos App";
+"Getting Started" = "入门";
 "GitHub answered HTTP %lld" = "GitHub 返回了 HTTP %lld";
 "Give the preset a name." = "请为预设命名。";
 "Give the smart folder a name." = "请为智能文件夹命名。";
@@ -1285,6 +1295,7 @@
 "Heard “%@”: nothing more was run" = "听到“%@”：未执行其他操作";
 "Heard “%@”: say “undo” to take it back" = "听到“%@”：说“undo”可撤回";
 "Height of the sharp band in the frame." = "画面中清晰带的高度。";
+"Help ▸ Getting Started shows this tour again at any time." = "“帮助”▸“入门”可随时再次显示此导览。";
 "Hid %@" = "已隐藏%@";
 "Hide %@" = "隐藏%@";
 "Hide %@'s faces" = "隐藏%@的面孔";
@@ -1378,6 +1389,7 @@
 "Import stopped after %lld of %@. The verified copies are kept; import again to continue." = "已导入 %lld 个（共 %@）后停止导入。已验证的副本会保留；再次导入即可继续。";
 "Import stopped after %lld of %lld files. Nothing was removed from the card." = "已导入 %lld 个文件（共 %lld 个）后停止导入。未从存储卡中移除任何内容。";
 "Import stopped while finishing. The copied files are in “%@”." = "导入在完成阶段停止。已拷贝的文件位于“%@”中。";
+"Import, at the left of the toolbar, copies a memory card and checks every file (⇧⌘I); an iPhone or iPad plugged in over USB is listed there too. File ▸ Import from Photos Library… brings in photos from Photos." = "工具栏左侧的“导入”会拷贝存储卡并校验每个文件（⇧⌘I）；通过 USB 连接的 iPhone 或 iPad 也会列在那里。“文件”▸“从照片图库导入…”可从“照片”导入照片。";
 "Imported" = "已导入";
 "Imported %@" = "已导入%@";
 "Importing… The Capture One folder is only read." = "正在导入… Capture One 文件夹只会被读取。";
@@ -1541,6 +1553,7 @@
 "Long edge 4096 px" = "长边 4096 px";
 "Look %@" = "外观%@";
 "Look Intensity" = "外观强度";
+"Look closely" = "仔细查看";
 "Looking for faces…" = "正在查找面孔…";
 "Looks" = "外观";
 "Loupe" = "放大镜";
@@ -2380,6 +2393,7 @@
 "Similar photos" = "相似照片";
 "Simple" = "简单";
 "Simple Mode" = "简单模式";
+"Simple editing" = "简单编辑";
 "Simple mode: a few easy controls (⌃⌘S for every tool)" = "简单模式：几个简单的控件（按 ⌃⌘S 显示所有工具）";
 "Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both." = "“简单”显示几个简单的控件；“完整”显示所有工具（⌃⌘S）。两者中的编辑相同。";
 "Size" = "大小";
@@ -2389,6 +2403,7 @@
 "Skin" = "皮肤";
 "Skin Tone" = "肤色";
 "Skip This Version" = "跳过此版本";
+"Skip Tour" = "跳过导览";
 "Skip duplicates" = "跳过重复项";
 "Skip for Now" = "暂时跳过";
 "Skip low-contrast detail (noise) below this level." = "跳过低于此级别的低对比度细节（噪点）。";
@@ -2415,6 +2430,7 @@
 "Sort direction" = "排序方向";
 "Sort order" = "排序顺序";
 "Space" = "空格";
+"Space zooms to 100%% where the pointer is; ⌘+ and ⌘− zoom in steps. %@ shows the photo as shot next to your edit." = "按空格键可在指针位置缩放到 100%%；⌘+ 和 ⌘− 逐级缩放。%@ 会将拍摄时的照片与你的编辑并排显示。";
 "Speech recognition is turned off for Luxtable" = "Luxtable 的语音识别已关闭";
 "Speech recognition stopped: %@" = "语音识别已停止：%@";
 "Spherical" = "球面";
@@ -2432,6 +2448,7 @@
 "Starts from the best frame and takes, from the others, faces that look better (open eyes first) and areas that are sharper. Nothing that moved is taken." = "从最佳的一帧开始，并从其他帧中选取看起来更好的面部（优先睁眼）和更清晰的区域。不会选取移动过的内容。";
 "State / Province" = "省/州";
 "Status" = "状态";
+"Step %lld of %lld" = "第 %lld 步，共 %lld 步";
 "Still loading the as-shot white balance for the last Apply…" = "仍在载入上次“应用”所需的原照白平衡…";
 "Still on “%@”: %lld changes couldn’t be saved (%@), so “%@” wasn’t opened." = "仍停留在“%1$@”：%2$lld 项更改无法存储（%3$@），因此未打开“%4$@”。";
 "Still on “%@”: 1 change couldn’t be saved (%@), so “%@” wasn’t opened." = "仍停留在“%@”：1 项更改无法存储（%@），因此未打开“%@”。";
@@ -2571,6 +2588,8 @@
 "The downloaded app’s signature doesn’t check out: %@" = "下载的 App 签名验证未通过：%@";
 "The downloaded search model is damaged (%@). Try again." = "下载的搜索模型已损坏（%@）。请重试。";
 "The downloaded sky model is damaged (%@). Try again." = "下载的天空模型已损坏（%@）。请重试。";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Press %@–%@ to rate, %@ to pick and %@ to reject." = "胶片显示窗格显示会话中的照片：点按一张，或用 ← 和 → 移动。按 %@–%@ 评星级，按 %@ 留用，按 %@ 排除。";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Rate, pick and reject from the Photo menu, which lists their keys." = "胶片显示窗格显示会话中的照片：点按一张，或用 ← 和 → 移动。可从“照片”菜单评星级、留用和排除，菜单中也列出了相应按键。";
 "The first time, a 53 MB face model is downloaded." = "首次使用时会下载一个 53 MB 的面部模型。";
 "The focused photo is hidden by the filter" = "聚焦的照片被过滤器隐藏";
 "The folder was moved: %@" = "文件夹已被移动：%@";
@@ -2613,6 +2632,7 @@
 "The test didn't finish: %@" = "测试未完成：%@";
 "The test renderer only shows exposure, saturation and white balance. %@ are saved and render in the full develop." = "测试渲染器仅显示曝光、饱和度和白平衡。%@已存储，并会在完整冲印中渲染。";
 "The test was cancelled." = "测试已取消。";
+"The tool tabs hold every adjustment, from white balance and exposure to layers. For a few easy controls instead, choose View ▸ Simple Mode (⌃⌘S)." = "工具标签页包含所有调整，从白平衡、曝光到图层。如只需几个简单的控制，请选取“显示”▸“简单模式”（⌃⌘S）。";
 "The update couldn’t be downloaded: %@" = "无法下载更新：%@";
 "The update didn’t work" = "更新未成功";
 "The values AI Optimize set have all been changed since (undone, pasted over or adjusted)." = "AI 优化设置的值此后都已被更改（已撤销、被粘贴覆盖或已调整）。";
@@ -2869,6 +2889,7 @@
 "Your pick" = "你的留用";
 "Your pics share is mounted" = "你的 pics 共享已装载";
 "You’re back where you left off." = "你已回到上次离开的位置。";
+"You’re ready" = "准备就绪";
 "You’re up to date" = "已是最新版本";
 "Zoom In" = "放大";
 "Zoom Out" = "缩小";

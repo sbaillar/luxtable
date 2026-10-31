@@ -27,6 +27,7 @@ struct CropToolButton: View {
             .accessibilityValue(model.settings.cropRatio.title)
         }
         .disabled(model.focusedPhoto.map { $0.isVideo } ?? true)
+        .tourAnchor(.crop)
         .popover(isPresented: $model.cropRatiosShown, arrowEdge: .bottom) {
             CropRatioList(model: model) { model.cropRatiosShown = false }
         }

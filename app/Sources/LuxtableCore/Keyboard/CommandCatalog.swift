@@ -59,6 +59,8 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
     case developForImmich, stopDevelopingForImmich
     /// View ▸ Simple Mode (⌃⌘S): a few easy controls instead of the tool tabs.
     case simpleMode
+    /// Help ▸ Getting Started: the tour of the main window, again.
+    case gettingStarted
 
     public var id: String { rawValue }
 
@@ -127,7 +129,7 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
         case .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, .deleteRejected, .matchWhiteBalance,
              .toggleAllToolsTab, .showAIChanges, .clearAIHighlights, .undoAllAIChanges, .upscale, .showHistory,
              .voiceHelp, .showSelectionInViewer, .filmstripBottom, .filmstripLeft, .filmstripRight,
-             .developForImmich, .stopDevelopingForImmich: nil
+             .developForImmich, .stopDevelopingForImmich, .gettingStarted: nil
         }
     }
 
@@ -218,6 +220,7 @@ public enum CommandCatalog {
         case .developForImmich: model.immich.developTitle
         case .stopDevelopingForImmich: model.immich.stopTitle
         case .simpleMode: SimpleModeText.menuTitle
+        case .gettingStarted: String(localized: "Getting Started")
         }
     }
 
@@ -290,7 +293,8 @@ public enum CommandCatalog {
         let hasPhoto = model.focusedID != nil
         switch c {
         case .openFolder, .importCard, .showLibrary, .cheatSheet, .fullScreen, .customizeTools, .voiceCommands, .showHistory, .voiceHelp,
-             .showSelectionInViewer, .filmstripBottom, .filmstripLeft, .filmstripRight, .simpleMode: return true
+             .showSelectionInViewer, .filmstripBottom, .filmstripLeft, .filmstripRight, .simpleMode,
+             .gettingStarted: return true
         // Shown as a checkmark; hiding it is off only when it is the last tab.
         case .toggleAllToolsTab: return !layout.workspace.contains(.allTools) || layout.workspace.canRemoveTab(.allTools)
         case .newSession: return model.canCreateSession && model.sheet == nil
@@ -399,6 +403,7 @@ public enum CommandCatalog {
         case .developForImmich: Task { await model.immich.developSelected() }
         case .stopDevelopingForImmich: Task { await model.immich.stopDeveloping() }
         case .simpleMode: model.setSimpleMode(!model.settings.simpleMode)
+        case .gettingStarted: model.tour.start()
         }
         return .none
     }

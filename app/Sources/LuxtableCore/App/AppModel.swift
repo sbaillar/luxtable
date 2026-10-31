@@ -82,6 +82,8 @@ public final class AppModel {
     @ObservationIgnored public var horizonDetector: any HorizonDetecting = VisionHorizonDetector()
     /// The ⌘K "Edit with words" bar.
     public let commandBar = CommandBarModel()
+    /// Help ▸ Getting Started: the coach-mark tour of the main window.
+    public let tour: TourModel
     /// Voice commands (on-device speech; `AppModel.live` wires the real engine).
     public let voice = VoiceController()
     /// lt-export (live) or unavailable (demo); set by `AppModel.make`.
@@ -383,6 +385,7 @@ public final class AppModel {
         self.archive = archive
         self.ai = ai
         self.settings = settings
+        tour = TourModel(settings: settings)
         filmstrip = settings.filmstripLayout(window: AppWindows.main)
         remote = RemoteLinkModel(defaults: settings.userDefaults)
         immich = ImmichModel(settings: ImmichSettings(defaults: settings.userDefaults))

@@ -83,6 +83,8 @@ extension AppModel {
     /// Route one key press through the user's bindings (the monitor's entry point).
     @discardableResult
     public func handleKey(_ key: KeyInput, focus: FocusedResponder, sheetOpen: Bool, isMainWindow: Bool) -> Bool {
+        // The Getting Started tour owns the keys while it is up (nothing under the dim reacts).
+        if tour.isActive, isMainWindow, focus != .text, !(sheetOpen || sheet != nil) { return tour.handle(key) }
         // AI Optimize owns Esc (close), ⏎ (Apply) and Tab (into the panel) while it is open,
         // before survey mode and the viewer tools.
         if let panel = optimizePanel, isMainWindow, focus != .text, !(sheetOpen || sheet != nil),

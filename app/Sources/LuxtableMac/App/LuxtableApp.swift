@@ -66,6 +66,7 @@ public struct LuxtableApp: App {
                         model.sheet = nil
                     }
                     await model.start()
+                    SampleLauncher.startTour(model, arguments: args)
                     if !AppModel.usesPrivateDefaults { updater.startAutomaticChecks() } // never in dev/snapshot runs
                     if let i = args.firstIndex(of: "--open"), i + 1 < args.count {
                         await model.openFolder(URL(fileURLWithPath: args[i + 1]))
@@ -402,6 +403,9 @@ struct AppCommands: Commands {
             voiceToggle
             item(.voiceHelp)
             item(.cheatSheet)
+        }
+        CommandGroup(after: .help) {
+            item(.gettingStarted)
         }
     }
 
