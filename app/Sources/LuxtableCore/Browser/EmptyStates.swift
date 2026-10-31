@@ -22,6 +22,8 @@ public enum EmptyState: Equatable, Sendable {
         case importCard, openFolder, clearFilters, showAllPhotos
         /// File ▸ New Session… (offered with no session open, when the store can make one).
         case newSession
+        /// Sample photos in a separate demo window (first run, when the app can open one).
+        case trySamples
 
         public var title: String {
             switch self {
@@ -30,6 +32,7 @@ public enum EmptyState: Equatable, Sendable {
             case .clearFilters: "Clear Filters"
             case .showAllPhotos: "Show All Photos"
             case .newSession: "New Session…"
+            case .trySamples: "Try with Sample Photos"
             }
         }
     }
@@ -102,11 +105,13 @@ extension AppModel {
     }
 
     /// The empty state's buttons: with no session open (after Close Session too), New
-    /// Session… comes first when the store can make one.
+    /// Session… comes first when the store can make one. The first run also offers the
+    /// sample photos, last.
     public var emptyStateActions: [EmptyState.Action] {
         let state = emptyState
         let noSession = state == .recents || state == .firstRun
-        return (noSession && canCreateSession ? [.newSession] : []) + state.actions
+        let samples = state == .firstRun && mode == .live && openSamples != nil
+        return (noSession && canCreateSession ? [.newSession] : []) + state.actions + (samples ? [.trySamples] : [])
     }
 
     /// An empty state's button. `.openFolder` shows the Open sheet when there are recents;
@@ -120,6 +125,7 @@ extension AppModel {
         case .clearFilters: clearFilters()
         case .showAllPhotos: selectSmartFolder(nil)
         case .newSession: beginNewSession()
+        case .trySamples: openSamples?()
         }
         return true
     }

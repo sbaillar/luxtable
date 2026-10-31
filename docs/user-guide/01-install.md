@@ -26,7 +26,7 @@ This builds `dist/Luxtable.app` and opens it. You can then copy it to your Appli
 
 ## Try it without your photos
 
-Demo mode opens sample sessions of synthetic photos and simulates imports and archiving. It never reads or changes your own files:
+On the first run, click **Try with Sample Photos** on the welcome screen. A second Luxtable window opens in demo mode: sample sessions of synthetic photos, with simulated imports and archiving. It has its own settings and never reads or changes your own files, so try anything there and quit it when you're done. From Terminal, the same demo mode is:
 
 ```sh
 dist/Luxtable.app/Contents/MacOS/Luxtable --demo
