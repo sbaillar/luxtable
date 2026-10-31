@@ -17,17 +17,20 @@ struct MainToolbar: ToolbarContent {
             SessionPicker(model: model)
         }
         ToolbarItem(placement: .navigation) {
-            Button {
-                model.sheet = .importCard(nil)
-            } label: {
-                Label(ToolbarHelp.importTitle(mode: model.mode, verifies: model.importer is any ImportVerifying),
-                      systemImage: "square.and.arrow.down")
+            HStack(spacing: 2) { // in and out: Import, then Share
+                Button {
+                    model.sheet = .importCard(nil)
+                } label: {
+                    Label(ToolbarHelp.importTitle(mode: model.mode, verifies: model.importer is any ImportVerifying),
+                          systemImage: "square.and.arrow.down")
+                }
+                .buttonStyle(ToolbarPillStyle(showsTitle: true,
+                                              isSecondary: model.mode == .live && !(model.importer is any ImportVerifying)))
+                .help(ToolbarHelp.importButton(mode: model.mode, verifies: model.importer is any ImportVerifying))
+                .accessibilityLabel(ToolbarControl.importCard.control(model).label)
+                .accessibilityHint(ToolbarControl.importCard.control(model).hint ?? "")
+                ShareToolbarButton(model: model, showsTitle: wide)
             }
-            .buttonStyle(ToolbarPillStyle(showsTitle: true,
-                                          isSecondary: model.mode == .live && !(model.importer is any ImportVerifying)))
-            .help(ToolbarHelp.importButton(mode: model.mode, verifies: model.importer is any ImportVerifying))
-            .accessibilityLabel(ToolbarControl.importCard.control(model).label)
-            .accessibilityHint(ToolbarControl.importCard.control(model).hint ?? "")
         }
         ToolbarItem(placement: .principal) {
             // The photo tools (Before/After, Compare, Crop, Straighten) float over the viewer

@@ -28,6 +28,8 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
     case showAll, showRating1, showRating2, showRating3, showRating4, showRating5
     /// File ▸ Export… (⌘E): the selected photos through the export recipes.
     case exportSelected
+    /// File ▸ Share… (⌥⌘E): the selection as JPEGs to the share picker (Messages, Mail, AirDrop…).
+    case share
     /// [cul9] H7: Photo ▸ finishing a cull, variants, and survey mode.
     case moveRejectedToTrash, movePickedToSelects, restoreSessionTrash, deleteRejected, newVariant, survey
     /// Edit ▸ match the selection to the focused photo (`MatchSet.swift`).
@@ -98,6 +100,8 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
         case .moveTabDown: Shortcut(key: "]", modifiers: [.command, .option])
         case .showAll: Shortcut(key: "0", modifiers: [.command])
         case .exportSelected: Shortcut(key: "e", modifiers: [.command])
+        // Export's ⌘E plus ⌥ (Lightroom Classic's Export is ⇧⌘E).
+        case .share: Shortcut(key: "e", modifiers: [.command, .option])
         case .showRating1, .showRating2, .showRating3, .showRating4, .showRating5:
             Shortcut(key: rawValue.last!, modifiers: [.command])
         case .newVariant: Shortcut(key: "d", modifiers: [.command])
@@ -183,6 +187,7 @@ public enum CommandCatalog {
         case .moveTabDown: "Move Tool Tab Right"
         case .showAll: "Show All Photos"
         case .exportSelected: model.selectedIDs.count > 1 ? "Export \(model.selectedIDs.count) Photos…" : "Export…"
+        case .share: model.selectedIDs.count > 1 ? "Share \(model.selectedIDs.count) Photos…" : "Share…"
         case .showRating1, .showRating2, .showRating3, .showRating4, .showRating5:
             "Show \(c.ratingFolder!) \(c.ratingFolder == 1 ? "Star" : "Stars") Only"
         case .moveRejectedToTrash: "Move Rejected to Trash"
@@ -249,6 +254,8 @@ public enum CommandCatalog {
                 ? "One new photo from the burst: the best frame, with open eyes and sharper areas from the others (⇧⌘B)"
                 : "Select two or more frames of a burst, or one photo of a burst"
         case .developForImmich: model.immich.developHelp
+        case .share:
+            "Send JPEGs of the selection with Messages, Mail, AirDrop and more (⌥⌘E). Size and quality: Settings ▸ Sharing"
         case .stopDevelopingForImmich:
             "Stop updating the selection's developed copies. The copies already made stay in Developed and in the archive"
         default: nil
@@ -300,6 +307,7 @@ public enum CommandCatalog {
         case .moveTabDown: return layout.canMove(ToolWorkspaceCommands.selectedTab(model: model, layout: layout), by: 1)
         case .showAll: return model.currentSession != nil
         case .exportSelected: return model.selectedIDs.contains { model.photo($0)?.url != nil }
+        case .share: return model.canShare
         case .showRating1, .showRating2, .showRating3, .showRating4, .showRating5:
             return model.smartFolders.ratingFolder(c.ratingFolder!) != nil
         case .moveRejectedToTrash: return model.cull.canMove && !model.cull.busy && !model.cull.rejectedIDs.isEmpty
@@ -359,6 +367,7 @@ public enum CommandCatalog {
         case .moveTabDown: layout.move(ToolWorkspaceCommands.selectedTab(model: model, layout: layout), by: 1)
         case .showAll: model.selectSmartFolder(nil)
         case .exportSelected: model.beginExport()
+        case .share: model.beginShare()
         case .showRating1, .showRating2, .showRating3, .showRating4, .showRating5:
             model.showRatingFolder(c.ratingFolder!)
         case .moveRejectedToTrash: Task { await model.cull.moveRejectedToTrash() }

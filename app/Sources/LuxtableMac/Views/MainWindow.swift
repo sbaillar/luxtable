@@ -107,6 +107,7 @@ struct MainWindow: View {
                     .transition(.opacity)
             }
         }
+        .overlay(alignment: .top) { if let s = model.share { ShareProgressHUD(share: s) } } // Share… rendering
         .overlay {
             if model.showCheatSheet {
                 CheatSheetOverlay(bindings: model.settings.keyBindings) { model.showCheatSheet = false }

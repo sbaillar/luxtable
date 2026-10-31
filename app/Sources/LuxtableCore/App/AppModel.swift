@@ -92,6 +92,12 @@ public final class AppModel {
     public let features = FeatureGates()
     /// The open Export sheet's model.
     public private(set) var exportModel: ExportModel?
+    /// The last Share… (rendering, the picker open, or done).
+    public internal(set) var share: ShareModel?
+    /// The system share picker (tests inject a double).
+    @ObservationIgnored public var sharePresenter: any SharePresenting = PlatformSharePicker()
+    /// Where Share… renders its JPEGs.
+    @ObservationIgnored public var shareFolders = ShareFolders()
     /// AI Optimize: measured, explained proposals (lt-pipeline); `nil` without files (demo).
     @ObservationIgnored public var optimizer: (any PhotoOptimizing)?
     /// Scene signals for AI Optimize (live: Vision, the sky model; tests inject them).
@@ -449,6 +455,8 @@ public final class AppModel {
         // Temps of exports interrupted by a quit or crash.
         let prefs = settings.userDefaults
         Task { await ExportPartials.sweepRemembered(defaults: prefs) }
+        let shareFolders = shareFolders // Share… folders left by an earlier run
+        Task.detached(priority: .utility) { shareFolders.sweep() }
         startCardWatcher()
         startMountWatcher()
         await checkPendingImports()

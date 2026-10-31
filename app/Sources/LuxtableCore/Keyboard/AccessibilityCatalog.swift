@@ -17,7 +17,7 @@ public struct AccessibleControl: Equatable, Sendable, Identifiable {
 /// audit test covers exactly what is on screen.
 public enum ToolbarControl: String, CaseIterable, Sendable {
     case session, newSession, closeSession, importCard, viewerMode, gridMode, beforeAfter, compare, showSelection
-    case undo, redo, copy, copyOptions, apply, auto, optimize, ask, aiCull, archive
+    case undo, redo, copy, copyOptions, apply, auto, optimize, ask, aiCull, archive, share
 
     @MainActor
     public func control(_ model: AppModel) -> AccessibleControl {
@@ -68,6 +68,9 @@ public enum ToolbarControl: String, CaseIterable, Sendable {
         case .archive:
             return .init(rawValue, ArchiveDisplay.accessibilityLabel(model.archiveStatus),
                          hint: ArchiveDisplay.explanation(model.archiveStatus.state))
+        case .share:
+            return .init(rawValue, CommandCatalog.title(.share, model: model).replacingOccurrences(of: "…", with: ""),
+                         hint: CommandCatalog.help(.share, model: model))
         }
     }
 }

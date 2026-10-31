@@ -299,6 +299,7 @@ struct AppCommands: Commands {
                 .disabled(!model.canRevertAppleLibrary)
             Divider()
             item(.exportSelected) // [exp6]
+            item(.share).help(CommandCatalog.help(.share, model: model) ?? "")
         }
         CommandMenu("Photo") {
             ForEach(Array(CommandCatalog.photoMenu.enumerated()), id: \.offset) { _, c in

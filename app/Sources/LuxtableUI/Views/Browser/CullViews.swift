@@ -94,11 +94,15 @@ private struct SurveyCell: View {
     }
 }
 
-/// The cull-finishing commands in the browser's context menu (grid and filmstrip).
+/// Share…, then the cull-finishing commands, in the browser's context menu (grid and filmstrip).
 struct CullContextMenu: View {
     let model: AppModel
 
     var body: some View {
+        Button(CommandCatalog.title(.share, model: model)) { CommandCatalog.perform(.share, model: model) }
+            .disabled(!CommandCatalog.isEnabled(.share, model: model))
+            .help(CommandCatalog.help(.share, model: model) ?? "")
+        Divider()
         ForEach(Array(CommandCatalog.cullContextMenu.enumerated()), id: \.offset) { _, c in
             if let c {
                 Button(CommandCatalog.title(c, model: model)) { CommandCatalog.perform(c, model: model) }
