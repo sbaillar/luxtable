@@ -22,7 +22,7 @@ crates/lt-lr        Lightroom Classic / Camera Raw import (catalog, XMP, presets
 crates/lt-apple     Aperture 3 / iPhoto library import (Library.apdb, AlbumData.xml; mapping; lt-lr's import engine)
 crates/lt-cache     thumbnail/preview cache + prioritized job scheduler
 crates/lt-import    card detection, verified copy, dedupe, journal/resume
-crates/lt-archive   rsync archive scheduler, Amazon Photos folder hand-off
+crates/lt-archive   archive scheduler: rsync to a folder or S3-compatible object storage
 crates/lt-export    export recipes and encoders
 crates/lt-gphotos   Google Photos export destination (OAuth/PKCE, uploads, albums) behind an HTTP seam
 crates/lt-immich    Immich: album sync behind an HTTP seam (fake server), path mapping, developed copies + XMP sidecar files

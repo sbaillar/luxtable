@@ -9,7 +9,6 @@ Open Settings with `⌘,`. Its panes are listed in a sidebar on the left; an int
 | **Shortcuts** | Rebind every single-key command; a key already in use moves to the new command |
 | **RAW** | Download or remove the RAW helper |
 | **Archive** | The destination (a folder or S3-compatible object storage), the interval and whether rejects are archived (while the Archive integration is on) |
-| **Amazon Photos** | The folder the Amazon Photos app backs up (while that integration is on) |
 | **Google Photos** | Sign in and out; your own Google client if the build has none (while that integration is on) |
 | **Immich** | The server, API key, path mapping, developed copies, XMP sidecars and album rules (while that integration is on) |
 | **AI** | How typed edits are interpreted, including the optional Jev service |

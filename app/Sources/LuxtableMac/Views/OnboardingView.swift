@@ -106,17 +106,6 @@ struct OnboardingView: View {
                         .task(id: onboarding.archiveTarget) { await onboarding.refreshArchiveStatus() }
                 }
             }
-        case .amazon:
-            VStack(alignment: .leading, spacing: DS.Space.m) {
-                Text("Amazon has no public Photos API. Luxtable mirrors your originals into a folder, and the official Amazon Photos app backs that folder up.")
-                    .foregroundStyle(DS.textSecondary)
-                folderRow(onboarding.amazonFolder?.path ?? String(localized: "Off"), symbol: "icloud.and.arrow.up") {
-                    onboarding.amazonFolder = pickFolder(message: String(localized: "Choose the folder the Amazon Photos app backs up"))
-                }
-                if onboarding.amazonFolder != nil {
-                    Button("Turn Off") { onboarding.amazonFolder = nil }.buttonStyle(.link)
-                }
-            }
         }
     }
 
@@ -209,7 +198,7 @@ struct SettingsView: View {
             }
             .help("At launch: the last session, or the Library of every session's photos (no session is opened until you need one)")
             LabeledContent("Sessions folder", value: settings.sessionsFolder.path)
-            LabeledContent("Archive, Amazon Photos, Immich, Google Photos", value: "Plugins tab")
+            LabeledContent("Archive, Immich, Google Photos", value: "Plugins tab")
             Toggle("Open the import sheet when a card is inserted", isOn: $settings.autoOpenImport)
             TextField("Artist", text: $settings.artist, prompt: Text("Your name"))
                 .help("Written into exported files (EXIF Artist)")

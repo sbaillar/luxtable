@@ -33,8 +33,6 @@ import Testing
         try? fm.removeItem(at: root)
         try fm.createDirectory(at: root, withIntermediateDirectories: true)
         let sessionsDir = root.appendingPathComponent("Sessions")
-        let amazonDir = root.appendingPathComponent("Amazon Photos Backup")
-        try fm.createDirectory(at: amazonDir, withIntermediateDirectories: true)
 
         // --- NAS: a volume at /Volumes/FJ2NAS; the archive folder doesn't exist yet.
         let nasImg = root.appendingPathComponent("FJ2NAS.dmg")
@@ -70,10 +68,9 @@ import Testing
         ob.sessionsFolder = sessionsDir
         ob.archiveTarget = archiveTarget.path
         await ob.refreshArchiveStatus()
-        ob.amazonFolder = amazonDir
         FJ.log("cd2 onboarding: status=\(ob.archiveStatus) canFinish=\(ob.canFinish)")
         try ob.finish()
-        FJ.log("cd2 onboarding: finish → targetExists=\(fm.fileExists(atPath: archiveTarget.path)) settings.archive='\(s0.archiveTarget)' enabled=\(s0.archiveEnabled) amazonBookmark=\(s0.amazonPhotosFolderBookmark != nil) archiveRejected=\(s0.archiveRejected)")
+        FJ.log("cd2 onboarding: finish → targetExists=\(fm.fileExists(atPath: archiveTarget.path)) settings.archive='\(s0.archiveTarget)' enabled=\(s0.archiveEnabled) archiveRejected=\(s0.archiveRejected)")
         // A second NAS target that is absent (not created by onboarding) → does the archive create it?
         try? fm.removeItem(at: archiveTarget)
         FJ.log("cd2: removed the target again to test the archive's own creation; exists=\(fm.fileExists(atPath: archiveTarget.path))")
@@ -223,24 +220,19 @@ import Testing
         } else { FJ.log("cd2 export: SKIPPED, folder outside scratch") }
         m.endExport()
 
-        // --- Archive + Amazon.
+        // --- Archive.
         await m.archive.syncNow()
         let w0 = Date()
         let settled = await waitUntil(timeout: .seconds(240)) {
             ArchiveDisplay.title(m.archiveStatus.state) == "Archive up to date"
-                && (m.archiveStatus.detail?.amazon.map { !$0.running && $0.lastRun != nil && $0.waiting == 0 } ?? true)
         }
         FJ.log(String(format: "cd2 archive: settled=%@ after %.1f s", settled ? "yes" : "NO", Date().timeIntervalSince(w0)))
         let st = m.archiveStatus
-        FJ.log("cd2 archive: '\(ArchiveDisplay.title(st.state))' / '\(ArchiveDisplay.long(st.state))' runs=\(st.detail?.runs.map(ArchiveDisplay.runLine) ?? []) amazon='\(st.detail?.amazon.map(ArchiveDisplay.amazonLine) ?? "nil")'")
+        FJ.log("cd2 archive: '\(ArchiveDisplay.title(st.state))' / '\(ArchiveDisplay.long(st.state))' runs=\(st.detail?.runs.map(ArchiveDisplay.runLine) ?? [])")
         let archived = FJ.files(under: archiveTarget)
         let aARW = archived.filter { $0.hasSuffix(".ARW") }
         let rejArchived = rejectNames.filter { n in aARW.contains { $0.hasSuffix("/" + n) } }
         FJ.log("cd2 archive fs: targetCreated=\(fm.fileExists(atPath: archiveTarget.path)) files=\(archived.count) ARW=\(aARW.count) (Capture \(aARW.filter { $0.contains("/Capture/") }.count), Selects \(aARW.filter { $0.contains("/Selects/") }.count), Trash \(aARW.filter { $0.contains("/Trash/") }.count)) mp4=\(archived.filter { $0.hasSuffix(".MP4") }.count) jpg=\(archived.filter { $0.lowercased().hasSuffix(".jpg") }.count) rejectsArchived=\(rejArchived.count)/\(rejectNames.count) cache=\(archived.filter { $0.contains("/cache") }.count)")
-        let amazon = FJ.files(under: amazonDir).filter { !$0.hasPrefix(".") }
-        let rejAmazon = rejectNames.filter { n in amazon.contains { $0.hasSuffix(n) } }
-        FJ.log("cd2 amazon fs: \(amazon.count) files ARW=\(amazon.filter { $0.hasSuffix(".ARW") }.count) rejectsMirrored=\(rejAmazon.count)/\(rejectNames.count) sample=\(amazon.prefix(2))")
-        FJ.log("cd2 archive settings: '\(ArchiveSettingsModel(settings: m.settings).amazonText)'")
 
         // --- Eject, then relaunch.
         await im.ejectNow()
@@ -299,11 +291,9 @@ extension FJ2CardDayTests {
         let nasImg = root.appendingPathComponent("FJ2NASB.dmg")
         _ = await sh(["/usr/bin/hdiutil", "create", "-quiet", "-size", "800m", "-fs", "APFS", "-volname", "FJ2NASB", nasImg.path])
         let target = "/Volumes/FJ2NASB/Luxtable"
-        let amazonDir = root.appendingPathComponent("Amazon")
-        try fm.createDirectory(at: amazonDir, withIntermediateDirectories: true)
         let sessions = root.appendingPathComponent("Sessions")
         let m = FJ.liveModel(prefs: "rejects-first", sessions: sessions) { s in
-            s.onboardingComplete = true; s.archiveTarget = target; s.archiveEnabled = true; s.chooseAmazonFolder(amazonDir); s.autoAdvance = false
+            s.onboardingComplete = true; s.archiveTarget = target; s.archiveEnabled = true; s.autoAdvance = false
         }
         await m.start()
         let cardDir = root.appendingPathComponent("CARD")
@@ -316,18 +306,16 @@ extension FJ2CardDayTests {
         for id in ids.prefix(3) { m.focus(id, extend: false); m.perform(.reject) }
         await m.saver.flush()
         try? await Task.sleep(for: .seconds(2))
-        FJ.log("rf: offline archive='\(ArchiveDisplay.title(m.archiveStatus.state))' amazon='\(m.archiveStatus.detail?.amazon.map(ArchiveDisplay.amazonLine) ?? "nil")'")
+        FJ.log("rf: offline archive='\(ArchiveDisplay.title(m.archiveStatus.state))'")
         // NAS comes back.
         guard let nas = await attachNAS(nasImg) else { return }
         defer { Task { _ = await nas.detach() } }
         await m.archive.syncNow()
         _ = await waitUntil(timeout: .seconds(120)) {
             ArchiveDisplay.title(m.archiveStatus.state) == "Archive up to date"
-                && (m.archiveStatus.detail?.amazon.map { !$0.running && $0.lastRun != nil } ?? true)
         }
         let arw = FJ.files(under: URL(fileURLWithPath: target)).filter { $0.hasSuffix(".ARW") }
-        let amz = FJ.files(under: amazonDir).filter { $0.hasSuffix(".ARW") }
-        FJ.log("rf: back online → '\(ArchiveDisplay.title(m.archiveStatus.state))' / '\(ArchiveDisplay.long(m.archiveStatus.state))' amazon='\(m.archiveStatus.detail?.amazon.map(ArchiveDisplay.amazonLine) ?? "nil")' sessionLines=\(m.archiveStatus.detail?.sessions.map { ArchiveDisplay.sessionLine($0) } ?? []) NAS ARW=\(arw.count)/8 Amazon ARW=\(amz.count)/8 (3 rejected, not trashed)")
+        FJ.log("rf: back online → '\(ArchiveDisplay.title(m.archiveStatus.state))' / '\(ArchiveDisplay.long(m.archiveStatus.state))' sessionLines=\(m.archiveStatus.detail?.sessions.map { ArchiveDisplay.sessionLine($0) } ?? []) NAS ARW=\(arw.count)/8 (3 rejected, not trashed)")
         await m.shutdownArchive()
         m.stop()
     }
@@ -346,10 +334,8 @@ extension FJ2CardDayTests {
         guard let nas = await attachNAS(nasImg) else { return }
         let target = nas.mount.appendingPathComponent("Luxtable").path
         let sessions = root.appendingPathComponent("Sessions")
-        let amazonDir = root.appendingPathComponent("Amazon")
-        try fm.createDirectory(at: amazonDir, withIntermediateDirectories: true)
         let m = FJ.liveModel(prefs: "nasfull", sessions: sessions) { s in
-            s.onboardingComplete = true; s.archiveTarget = target; s.archiveEnabled = true; s.chooseAmazonFolder(amazonDir)
+            s.onboardingComplete = true; s.archiveTarget = target; s.archiveEnabled = true
         }
         await m.start()
         let cardDir = root.appendingPathComponent("CARD")
@@ -361,7 +347,7 @@ extension FJ2CardDayTests {
         await m.archive.syncNow()
         _ = await waitUntil(timeout: .seconds(90)) { m.archiveStatus.detail?.runs.contains { $0.outcome != "succeeded" } ?? false }
         try? await Task.sleep(for: .seconds(5))
-        FJ.log("nasfull: '\(ArchiveDisplay.title(m.archiveStatus.state).prefix(160))' amazon='\(m.archiveStatus.detail?.amazon.map(ArchiveDisplay.amazonLine) ?? "nil")' amazonFiles=\(FJ.files(under: amazonDir).filter { $0.hasSuffix(".ARW") }.count) NAS ARW=\(FJ.files(under: URL(fileURLWithPath: target)).filter { $0.hasSuffix(".ARW") }.count)/10")
+        FJ.log("nasfull: '\(ArchiveDisplay.title(m.archiveStatus.state).prefix(160))' NAS ARW=\(FJ.files(under: URL(fileURLWithPath: target)).filter { $0.hasSuffix(".ARW") }.count)/10")
         let q = await m.quitDecision(timeout: .seconds(5))
         FJ.log("nasfull: quit decision with a failed archive = \(q)")
         await m.shutdownArchive()

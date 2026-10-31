@@ -17,8 +17,6 @@ import Testing
         let sessionsDir = root.appendingPathComponent("Sessions")
         let archiveDir = root.appendingPathComponent("NAS/Luxtable")
         try fm.createDirectory(at: archiveDir.deletingLastPathComponent(), withIntermediateDirectories: true)
-        let amazonDir = root.appendingPathComponent("Amazon Photos Backup")
-        try fm.createDirectory(at: amazonDir, withIntermediateDirectories: true)
 
         // --- The card: exFAT, 40 unique ARWs + MP4 + junk.
         guard let img = await TestCardImage.make(in: root, name: "A9CARD", sizeMB: 2600) else {
@@ -41,12 +39,11 @@ import Testing
         FJ.log(String(format: "card: filled in %.1f s", Date().timeIntervalSince(t0)))
         let cardBefore = await FJ.listing(card.mount)
 
-        // --- Launch (first-run settings done: sessions folder, archive, Amazon).
+        // --- Launch (first-run settings done: sessions folder, archive).
         let m = FJ.liveModel(prefs: "cardday", sessions: sessionsDir) { s in
             s.onboardingComplete = true
             s.archiveTarget = archiveDir.path
             s.archiveEnabled = true
-            s.chooseAmazonFolder(amazonDir)
         }
         await m.start()
         FJ.log("launch: sessions=\(m.sessionList.count) current=\(m.currentSession?.name ?? "nil") sheet=\(String(describing: m.sheet)) archive=\(ArchiveDisplay.title(m.archiveStatus.state))")
@@ -206,24 +203,20 @@ import Testing
         }
         m.endExport()
 
-        // --- Archive + Amazon.
+        // --- Archive.
         await m.archive.syncNow()
         let a0 = Date()
         _ = await waitUntil(timeout: .seconds(180)) {
-            (m.archiveStatus.detail?.runs.contains { $0.outcome == "succeeded" } ?? false)
-                && (m.archiveStatus.detail?.amazon.map { !$0.running } ?? true)
+            m.archiveStatus.detail?.runs.contains { $0.outcome == "succeeded" } ?? false
         }
         let st = m.archiveStatus
-        FJ.log(String(format: "archive: %.1f s state='%@' long='%@' runs=%@ amazon=%@", Date().timeIntervalSince(a0),
-                      ArchiveDisplay.title(st.state), ArchiveDisplay.long(st.state), (st.detail?.runs.map(ArchiveDisplay.runLine) ?? []).description,
-                      st.detail?.amazon.map(ArchiveDisplay.amazonLine) ?? "nil"))
+        FJ.log(String(format: "archive: %.1f s state='%@' long='%@' runs=%@", Date().timeIntervalSince(a0),
+                      ArchiveDisplay.title(st.state), ArchiveDisplay.long(st.state), (st.detail?.runs.map(ArchiveDisplay.runLine) ?? []).description))
         FJ.log("archive sessions: \(st.detail?.sessions.map { ArchiveDisplay.sessionLine($0) } ?? [])")
         let archived = FJ.files(under: archiveDir)
         let archivedARW = archived.filter { $0.hasSuffix(".ARW") }.count
         let archivedJPG = archived.filter { $0.lowercased().hasSuffix(".jpg") }.count
         FJ.log("archive fs: \(archived.count) files, ARW=\(archivedARW) jpg=\(archivedJPG) mp4=\(archived.filter { $0.hasSuffix(".MP4") }.count) json=\(archived.filter { $0.hasSuffix(".json") }.count) cache=\(archived.filter { $0.contains("cache") }.count) top=\(Set(archived.map { String($0.split(separator: "/").prefix(2).joined(separator: "/")) }).sorted().prefix(8))")
-        let amazon = FJ.files(under: amazonDir).filter { !$0.hasPrefix(".") }
-        FJ.log("amazon fs: \(amazon.count) files: ARW=\(amazon.filter { $0.hasSuffix(".ARW") }.count) mp4=\(amazon.filter { $0.hasSuffix(".MP4") }.count) rejectsMirrored=\(stills.filter { m.photo($0)?.pick == .rejected }.filter { id in amazon.contains { $0.hasSuffix(m.photo(id)!.filename) } }.count) sample=\(amazon.prefix(3))")
 
         // --- Eject flow.
         FJ.log("eject: gate=\(String(describing: im.ejectGate)) title='\(im.ejectGate?.buttonTitle ?? "nil")'")

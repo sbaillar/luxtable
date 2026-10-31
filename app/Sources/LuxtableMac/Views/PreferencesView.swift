@@ -5,7 +5,7 @@ import SwiftUI
 
 /// A Settings pane, in sidebar order.
 enum SettingsPane: String, CaseIterable, Identifiable {
-    case general, sharing, familiar, shortcuts, raw, archive, amazonPhotos, googlePhotos, immich, ai, voice, devices, plugins, updates
+    case general, sharing, familiar, shortcuts, raw, archive, googlePhotos, immich, ai, voice, devices, plugins, updates
 
     var id: Self { self }
 
@@ -17,7 +17,6 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         case .shortcuts: String(localized: "Shortcuts")
         case .raw: String(localized: "RAW")
         case .archive: String(localized: "Archive")
-        case .amazonPhotos: String(localized: "Amazon Photos")
         case .googlePhotos: String(localized: "Google Photos")
         case .immich: String(localized: "Immich")
         case .ai: String(localized: "AI")
@@ -36,7 +35,6 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         case .shortcuts: "keyboard"
         case .raw: "camera.aperture"
         case .archive: "externaldrive.badge.icloud"
-        case .amazonPhotos: "icloud.and.arrow.up"
         case .googlePhotos: "photo.on.rectangle.angled"
         case .immich: "photo.stack"
         case .ai: "sparkles"
@@ -53,7 +51,6 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         allCases.filter {
             switch $0 {
             case .archive: isOn(.archive)
-            case .amazonPhotos: isOn(.amazonPhotos)
             case .googlePhotos: googlePhotos && isOn(.googlePhotos)
             case .immich: immich && isOn(.immich)
             default: true
@@ -105,7 +102,6 @@ struct PreferencesView: View {
         case .shortcuts: ShortcutsSettingsView(settings: settings)
         case .raw: RawSettingsView(helper: RawlerHelper.shared)
         case .archive: ArchiveSettingsView(model: ArchiveSettingsModel(settings: settings))
-        case .amazonPhotos: AmazonPhotosSettingsView(model: ArchiveSettingsModel(settings: settings))
         case .googlePhotos:
             if let googlePhotos {
                 GooglePhotosSettingsView(settings: GooglePhotosSettings(defaults: settings.userDefaults), service: googlePhotos)

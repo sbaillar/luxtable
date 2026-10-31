@@ -10,12 +10,11 @@ Plug-ins add looks, styles, voice phrases, and export steps. Manage them in Sett
 
 ## Optional integrations
 
-Four integrations are built into Luxtable as bundled plug-ins, so it stays out of services you don't use. Turn each on or off in **Settings ▸ Plugins ▸ Integrations**; its own Settings pane appears while it is on.
+Three integrations are built into Luxtable as bundled plug-ins, so it stays out of services you don't use. Turn each on or off in **Settings ▸ Plugins ▸ Integrations**; its own Settings pane appears while it is on.
 
 | Integration | What it does | Where to set it up |
 |---|---|---|
 | **Archive** | Copies sessions to a folder or to S3-compatible object storage in the background; never deletes from the archive. Setup offers it. | Settings ▸ Archive |
-| **Amazon Photos** | Copies originals into the folder the Amazon Photos app backs up. | Settings ▸ Amazon Photos |
 | **Immich** | Developed copies, XMP sidecars and rule albums for an Immich server that indexes the archive (needs the archive, to a folder). | Settings ▸ Immich |
 | **Google Photos** | Uploads a recipe's exports into a Google Photos album. | Settings ▸ Google Photos, then the export sheet |
 
@@ -24,4 +23,4 @@ Four integrations are built into Luxtable as bundled plug-ins, so it stays out o
 - Its settings, sign-ins, keys and files are kept, and turning it back on picks up where it left off.
 - They can be turned off but not removed.
 
-See [Archive, Immich and Amazon Photos](11-archive.md#archive-immich-and-amazon-photos) and [Google Photos](10-export.md#google-photos) for how each works.
+See [Archive and Immich](11-archive.md#archive-and-immich) and [Google Photos](10-export.md#google-photos) for how each works.

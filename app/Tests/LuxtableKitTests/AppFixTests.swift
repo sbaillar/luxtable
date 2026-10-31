@@ -13,27 +13,24 @@ import Testing
 struct ArchiveApplyTests {
     struct Boom: Error {}
 
-    static let base = ArchiveSettingsSnapshot(enabled: true, target: "/old", intervalMinutes: 10, amazonFolder: nil)
+    static let base = ArchiveSettingsSnapshot(enabled: true, target: "/old", intervalMinutes: 10)
 
     @Test func aFailedConfigIsNotRecordedAsApplied() {
         var next = Self.base
         next.target = "/new"
-        let r = RustArchiveService.applyAll(from: Self.base, to: next, setConfig: { _ in throw Boom() }, setAmazon: { _ in })
+        let r = RustArchiveService.applyAll(from: Self.base, to: next, setConfig: { _ in throw Boom() })
         #expect(r.applied == Self.base, "still the old target, so the next tick tries again")
         #expect(r.error?.hasPrefix("Archive settings not applied") == true)
         #expect(ArchiveDisplay.title(.failed(r.error ?? "")) == "Archive settings not applied")
         #expect(ArchiveDisplay.title(.failed("disk full")) == "Last sync failed")
     }
 
-    @Test func eachPartIsRecordedOnItsOwn() {
+    @Test func anAppliedChangeIsRecordedAndNotSentAgain() {
         var next = Self.base
         next.target = "/new"
-        next.amazonFolder = URL(fileURLWithPath: "/amazon")
-        let r = RustArchiveService.applyAll(from: Self.base, to: next, setConfig: { _ in }, setAmazon: { _ in throw Boom() })
-        #expect(r.applied.target == "/new" && r.applied.amazonFolder == nil)
-        #expect(r.error?.contains("Amazon Photos folder") == true)
-        let ok = RustArchiveService.applyAll(from: r.applied, to: next, setConfig: { _ in Issue.record("already applied") },
-                                             setAmazon: { _ in })
+        let r = RustArchiveService.applyAll(from: Self.base, to: next, setConfig: { _ in })
+        #expect(r.applied == next && r.error == nil)
+        let ok = RustArchiveService.applyAll(from: r.applied, to: next, setConfig: { _ in Issue.record("already applied") })
         #expect(ok.applied == next && ok.error == nil)
     }
 

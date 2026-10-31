@@ -1,7 +1,7 @@
 import Foundation
 
 /// Where Luxtable keeps its own state (global index, fallback stores, presets,
-/// Amazon manifest, archive locks).
+/// archive locks).
 ///
 /// Normally `~/Library/Application Support/Luxtable`. `$LT_SUPPORT_ROOT`
 /// overrides it, and `--snapshot` runs use a scratch folder so dev and

@@ -42,7 +42,7 @@ pub const CONTRACTS: &[(Kind, u32, u32)] = &[
 /// The app's own optional integrations a bundled `native_feature` plug-in switches on
 /// and off (see docs/PLUGINS.md, "Native features"). The code is native; the plug-in is
 /// the switch and the catalogue entry.
-pub const NATIVE_FEATURES: &[&str] = &["archive", "amazon-photos", "immich", "google-photos"];
+pub const NATIVE_FEATURES: &[&str] = &["archive", "immich", "google-photos"];
 
 /// What a contribution adds.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

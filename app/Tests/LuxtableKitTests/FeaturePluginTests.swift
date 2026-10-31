@@ -105,11 +105,12 @@ extension PluginStoreSuites {
     struct FeaturePluginTests {
         @Test func featuresKnowTheirPlugins() {
             #expect(NativeFeature.allCases.map(\.pluginID)
-                == ["luxtable.archive", "luxtable.amazon-photos", "luxtable.immich", "luxtable.google-photos"])
+                == ["luxtable.archive", "luxtable.immich", "luxtable.google-photos"])
             for f in NativeFeature.allCases {
                 #expect(NativeFeature(pluginID: f.pluginID) == f && !f.title.isEmpty && f.id == f.rawValue)
             }
             #expect(NativeFeature(pluginID: "luxtable.looks") == nil && NativeFeature(pluginID: "com.example.immich") == nil)
+            #expect(NativeFeature(pluginID: "luxtable.amazon-photos") == nil, "removed: an old state.json entry is ignored")
         }
 
         @Test func gatesReportEachChangeAndHidePanels() async {
@@ -118,14 +119,14 @@ extension PluginStoreSuites {
             var heard: [String] = []
             gates.onChange = { f, on in heard.append("\(f.rawValue)=\(on)") }
             gates.update([.archive, .immich])
-            #expect(heard == ["amazon-photos=false", "google-photos=false"])
+            #expect(heard == ["google-photos=false"])
             gates.update([.archive, .immich])
-            #expect(heard.count == 2, "no change, no call")
-            #expect(gates.shows(.archive) && !gates.shows(.amazonPhotos) && gates.shows(.exposure))
-            await gates.set(.amazonPhotos, true)
+            #expect(heard.count == 1, "no change, no call")
+            #expect(gates.shows(.archive) && gates.shows(.exposure))
+            await gates.set(.googlePhotos, true)
             await gates.set(.archive, false)
-            #expect(gates.enabled == [.amazonPhotos, .immich])
-            #expect(!gates.shows(.archive) && gates.shows(.amazonPhotos))
+            #expect(gates.enabled == [.immich, .googlePhotos])
+            #expect(!gates.shows(.archive) && gates.shows(.export))
             #expect(gates.store == nil)
         }
 
@@ -146,20 +147,21 @@ extension PluginStoreSuites {
             let s = store(user)
             let settings = makeSettings()
             settings.archiveTarget = "/Volumes/NAS/Photos"
-            settings.amazonPhotosFolder = URL(fileURLWithPath: "/tmp/Amazon Photos")
+            // Left by a version with the Amazon Photos hand-off: ignored.
+            settings.userDefaults.set("/tmp/Amazon Photos", forKey: "amazonPhotosFolder")
             ImmichSettings(defaults: settings.userDefaults).serverURL = "https://immich.example.org"
             // Google: only the client built into the app; never signed in.
             let google = GooglePhotosSettings(defaults: settings.userDefaults, clientSecret: FPKey().item,
                                               refreshToken: FPKey().item, builtIn: GooglePhotosClient(id: "built-in"))
             let decided = AppModel.migrateFeatures(s, settings: settings, google: google)
-            #expect(decided.count == 4)
-            #expect(s.features == [.archive, .amazonPhotos, .immich])
+            #expect(decided.count == 3)
+            #expect(s.features == [.archive, .immich])
             // Once: a later launch asks nothing and changes nothing (the user's own choice is kept).
             await s.setEnabled(NativeFeature.archive.pluginID, false)
             settings.archiveTarget = "/Volumes/Other"
             #expect(AppModel.migrateFeatures(s, settings: settings, google: google).isEmpty)
-            #expect(s.features == [.amazonPhotos, .immich])
-            #expect(store(user).features == [.amazonPhotos, .immich], "remembered in state.json")
+            #expect(s.features == [.immich])
+            #expect(store(user).features == [.immich], "remembered in state.json")
         }
 
         @Test func aNewUserStartsWithEveryIntegrationOff() throws {
@@ -167,7 +169,7 @@ extension PluginStoreSuites {
             let settings = makeSettings()
             let google = GooglePhotosSettings(defaults: settings.userDefaults, clientSecret: FPKey().item,
                                               refreshToken: FPKey().item, builtIn: nil)
-            #expect(AppModel.migrateFeatures(s, settings: settings, google: google).count == 4)
+            #expect(AppModel.migrateFeatures(s, settings: settings, google: google).count == 3)
             #expect(s.features.isEmpty)
         }
 
@@ -183,8 +185,6 @@ extension PluginStoreSuites {
             #expect(!setUp(.archive), "blank isn't a target")
             settings.archiveTarget = "/Volumes/NAS/Photos"
             #expect(setUp(.archive))
-            settings.chooseAmazonFolder(URL(fileURLWithPath: "/tmp/A"))
-            #expect(setUp(.amazonPhotos))
             immich.serverURL = "https://immich.example.org"
             #expect(setUp(.immich))
             _ = token.item.write("refresh")
@@ -354,7 +354,7 @@ extension PluginStoreSuites {
             let settings = makeSettings()
             let gates = FeatureGates(enabled: allOff)
             let o = OnboardingModel(settings: settings, fileExists: { _ in true }, createDirectory: { _ in }, features: gates)
-            #expect(o.steps == [.welcome, .familiar, .sessions, .archive], "no Amazon step while it is off")
+            #expect(o.steps == [.welcome, .familiar, .sessions, .archive])
             #expect(!o.archiveEnabled, "offered, off until the user turns it on")
             o.step = .archive
             #expect(o.isLast && o.progress == 1)
@@ -370,15 +370,8 @@ extension PluginStoreSuites {
             #expect(o.chosenFeatures == [.archive])
             try? o.finish()
             #expect(await waitUntil { gates.isOn(.archive) })
-            #expect(!gates.isOn(.amazonPhotos))
+            #expect(gates.enabled == [.archive], "nothing else turned on")
 
-            // Amazon on (an existing user re-running Welcome): its step is back, and a folder turns nothing new on.
-            let both = FeatureGates(enabled: [.amazonPhotos])
-            let again = OnboardingModel(settings: makeSettings(), fileExists: { _ in true }, createDirectory: { _ in },
-                                        features: both)
-            #expect(again.steps.last == .amazon)
-            again.amazonFolder = URL(fileURLWithPath: "/tmp/Amazon")
-            #expect(again.chosenFeatures == [.amazonPhotos])
             // A share mounted: the target is suggested, never switched on.
             let suggested = OnboardingModel(settings: makeSettings(), fileExists: { $0 == "/Volumes/NAS" },
                                             createDirectory: { _ in }, isWritable: { _ in true }, features: gates)
@@ -389,10 +382,8 @@ extension PluginStoreSuites {
 
         @Test func theArchiveServiceHandsTheRegistryToRust() async throws {
             let s = store(try pluginsDir())
-            let snap = ArchiveSettingsSnapshot(enabled: false, target: "", intervalMinutes: 10, amazonFolder: nil)
+            let snap = ArchiveSettingsSnapshot(enabled: false, target: "", intervalMinutes: 10)
             let service = RustArchiveService(initial: snap, settings: { snap }, handles: { _ in nil },
-                                             manifest: FileManager.default.temporaryDirectory
-                                                 .appendingPathComponent("fp-\(UUID().uuidString)/m.json"),
                                              lockDir: nil, watchVolumes: false, plugins: s.host)
             #expect(service.manager != nil)
             // The manager now asks the registry; switching needs no relaunch.

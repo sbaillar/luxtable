@@ -24,7 +24,6 @@ fn config(target: &Path, lock_dir: &Path) -> ArchiveConfig {
         check_timeout_ms: 2000,
         rsync_path: None,
         archive_rejected: true,
-        amazon_rejected: false,
         // As the app does when the user confirms the target.
         target_volume: archive_volume_identity(target.to_string_lossy().into_owned()),
         object_store: None,
@@ -184,7 +183,6 @@ fn target_checks_report_available_missing_and_empty() {
     ))
     .unwrap();
     assert!(r.available);
-    assert!(amazon_photos_app_installed().is_ok());
 }
 
 /// A hung mount (the check never returns) costs the caller only the timeout,
@@ -593,121 +591,6 @@ fn session_close_archives_then_drops_and_config_keeps_pending() {
     assert!(m.shutdown(3000).unwrap());
 }
 
-// ------------------------------------------------------------------ amazon ---
-
-#[test]
-fn amazon_mirror_places_each_original_once() {
-    let t = tempfile::tempdir().unwrap();
-    let files = originals(t.path());
-    let h = internal_session(t.path(), "Trip", &files);
-    let m = manager(
-        ArchiveConfig {
-            enabled: false,
-            ..config(Path::new(""), t.path())
-        },
-        Arc::new(real_check),
-        Arc::new(SystemRunner),
-        PathBuf::from("/usr/bin/rsync"),
-    );
-    m.register_session(h.clone()).unwrap();
-    let folder = t.path().join("Amazon Photos");
-    fs::create_dir(&folder).unwrap();
-    let manifest = t.path().join("support/amazon-manifest.json");
-    fs::create_dir_all(manifest.parent().unwrap()).unwrap();
-    let run = || {
-        block_on(m.clone().mirror_to_amazon(
-            h.clone(),
-            folder.to_string_lossy().into_owned(),
-            manifest.to_string_lossy().into_owned(),
-            "Trip".into(),
-            CancelToken::new(),
-        ))
-        .unwrap()
-    };
-    let t0 = Instant::now();
-    let first = run();
-    eprintln!(
-        "ARC6 amazon mirror {} files: {:?}",
-        files.len(),
-        t0.elapsed()
-    );
-    assert_eq!(first.placed, files.len() as u64, "{first:?}");
-    assert_eq!(first.cloned, files.len() as u64, "same APFS volume: clones");
-    assert!(first.failed.is_empty() && first.error.is_none() && !first.running);
-    for f in &files {
-        assert_eq!(
-            fs::read(folder.join("Trip").join(f.file_name().unwrap())).unwrap(),
-            fs::read(f).unwrap()
-        );
-    }
-    let second = run();
-    assert_eq!(
-        (second.placed, second.already_mirrored),
-        (0, files.len() as u64)
-    );
-    assert_eq!(m.status().unwrap().amazon, second);
-    assert_eq!(
-        m.status().unwrap().sessions[0].amazon.as_ref(),
-        Some(&second)
-    );
-    // A folder that isn't there is an error in the status (never created).
-    let blocker = t.path().join("file");
-    fs::write(&blocker, b"x").unwrap();
-    let err = block_on(m.clone().mirror_to_amazon(
-        h,
-        blocker.join("sub").to_string_lossy().into_owned(),
-        manifest.to_string_lossy().into_owned(),
-        "Trip".into(),
-        CancelToken::new(),
-    ));
-    assert!(err.is_err());
-    let a = m.status().unwrap().amazon;
-    assert!(a.error.is_some() && !a.running && a.folder_missing, "{a:?}");
-    assert!(m.shutdown(3000).unwrap());
-}
-
-/// Unhashed originals (an in-place folder before its background hashing)
-/// wait for a later run instead of being handed over unverified.
-#[test]
-fn unhashed_originals_wait_for_a_later_mirror() {
-    let samples = lt_testdata::samples_with_ext("ARW");
-    if samples.len() < 2 {
-        return; // needs real RAWs to register in place
-    }
-    let t = tempfile::tempdir().unwrap();
-    let dir = t.path().join("folder");
-    fs::create_dir(&dir).unwrap();
-    for f in samples.iter().take(2) {
-        fs::copy(f, dir.join(f.file_name().unwrap())).unwrap();
-    }
-    let probe = Probe {
-        volume_ok: |_| Ok(()),
-        ..Probe::RAW
-    };
-    let h =
-        Arc::new(open_in_place(&dir, None, None, &probe, &|| false, &mut |_, _, _| {}).unwrap());
-    let m = manager(
-        ArchiveConfig {
-            enabled: false,
-            ..config(Path::new(""), t.path())
-        },
-        Arc::new(real_check),
-        Arc::new(SystemRunner),
-        PathBuf::from("/usr/bin/rsync"),
-    );
-    fs::create_dir(t.path().join("amz")).unwrap();
-    let r = block_on(m.clone().mirror_to_amazon(
-        h,
-        t.path().join("amz").to_string_lossy().into_owned(),
-        t.path().join("m.json").to_string_lossy().into_owned(),
-        "F".into(),
-        CancelToken::new(),
-    ))
-    .unwrap();
-    assert_eq!((r.placed, r.waiting), (0, 2), "{r:?}");
-    assert!(m.shutdown(3000).unwrap());
-}
-
 /// A session reopened (a new handle for the same folder) keeps one schedule.
 #[test]
 fn a_reopened_session_keeps_one_entry() {
@@ -744,8 +627,6 @@ fn fast() -> Timing {
         stall_probe: Duration::from_millis(300),
         stall_hard_progress: Duration::from_secs(1),
         stall_hard_quiet: Duration::from_secs(1),
-        amazon_interval: Duration::from_secs(3600),
-        amazon_shutdown_wait: Duration::from_millis(500),
     }
 }
 
@@ -1153,159 +1034,6 @@ fn a_settings_change_keeps_the_failure_state() {
     assert!(m.shutdown(3000).unwrap());
 }
 
-/// A-M1: two hand-offs at the same time (two imports back to back) into
-/// one manifest: none of the entries are lost (serialized). A-L5: each
-/// session keeps its own hand-off status.
-#[test]
-fn concurrent_amazon_hand_offs_keep_every_manifest_entry() {
-    let t = tempfile::tempdir().unwrap();
-    let mut many = vec![];
-    for i in 0..40u32 {
-        let p = t.path().join(format!("F{i:03}.JPG"));
-        fs::write(&p, format!("jpeg-{i}").repeat(2000)).unwrap();
-        many.push(p);
-    }
-    let a = internal_session(t.path(), "A", &many[..20]);
-    let b = internal_session(t.path(), "B", &many[20..]);
-    let m = manager(
-        ArchiveConfig {
-            enabled: false,
-            ..config(Path::new(""), t.path())
-        },
-        Arc::new(real_check),
-        Arc::new(SystemRunner),
-        PathBuf::from("/usr/bin/rsync"),
-    );
-    m.register_session(a.clone()).unwrap();
-    m.register_session(b.clone()).unwrap();
-    let folder = t.path().join("Amazon Photos");
-    fs::create_dir(&folder).unwrap();
-    let manifest = t.path().join("support/amazon-manifest.json");
-    let (f, mf) = (
-        folder.to_string_lossy().into_owned(),
-        manifest.to_string_lossy().into_owned(),
-    );
-    let (m1, m2) = (m.clone(), m.clone());
-    let (f1, mf1, f2, mf2) = (f.clone(), mf.clone(), f, mf);
-    let (ha, hb) = (a.clone(), b.clone());
-    let ja = std::thread::spawn(move || {
-        block_on(m1.mirror_to_amazon(ha, f1, mf1, "A".into(), CancelToken::new())).unwrap()
-    });
-    let jb = std::thread::spawn(move || {
-        block_on(m2.mirror_to_amazon(hb, f2, mf2, "B".into(), CancelToken::new())).unwrap()
-    });
-    let (ra, rb) = (ja.join().unwrap(), jb.join().unwrap());
-    assert_eq!((ra.placed, rb.placed), (20, 20));
-    let text = fs::read_to_string(&manifest).unwrap();
-    let json: serde_json::Value = serde_json::from_str(&text).unwrap();
-    let placed = json["entries"]
-        .as_object()
-        .unwrap()
-        .values()
-        .filter(|e| e["state"] == "placed")
-        .count();
-    assert_eq!(placed, 40, "{text}");
-    // Per-session status (A-L5): each registered session keeps its own.
-    let st = m.status().unwrap();
-    let by: std::collections::HashMap<String, AmazonStatus> = st
-        .sessions
-        .iter()
-        .map(|s| (s.name.clone(), s.amazon.clone().unwrap()))
-        .collect();
-    assert_eq!(by["A"].session.as_deref(), Some("A"));
-    assert_eq!(by["B"].session.as_deref(), Some("B"));
-    assert_eq!((by["A"].placed, by["B"].placed), (20, 20));
-    assert!(m.shutdown(3000).unwrap());
-}
-
-/// A-M2 + A-M3 + A-L5: the chosen Amazon folder is never created (missing is
-/// reported, per session); once it's there, the background hand-off catches
-/// up by itself (no import needed), and "Sync now" runs it again.
-#[test]
-fn amazon_hand_off_catches_up_and_never_recreates_the_folder() {
-    let t = tempfile::tempdir().unwrap();
-    let files = originals(t.path());
-    let h = internal_session(t.path(), "Trip", &files[..2]);
-    let m = manager_t(
-        ArchiveConfig {
-            enabled: false,
-            ..config(Path::new(""), t.path())
-        },
-        Arc::new(real_check),
-        Arc::new(SystemRunner),
-        PathBuf::from("/usr/bin/rsync"),
-        fast(),
-    );
-    assert!(m.register_session(h.clone()).unwrap());
-    let folder = t.path().join("Amazon Photos");
-    let manifest = t.path().join("support/m.json");
-    m.set_amazon(
-        Some(folder.to_string_lossy().into_owned()),
-        manifest.to_string_lossy().into_owned(),
-    )
-    .unwrap();
-    wait("missing folder reported", 20, || {
-        m.status().unwrap().sessions[0]
-            .amazon
-            .as_ref()
-            .is_some_and(|a| a.folder_missing && !a.running)
-    });
-    let a = m.status().unwrap().sessions[0].amazon.clone().unwrap();
-    assert!(a.error.unwrap().contains("folder missing"));
-    assert!(!folder.exists(), "never recreated");
-    // The folder is back (the user reconnected the disk): "Sync now" hands off.
-    fs::create_dir(&folder).unwrap();
-    m.sync_now().unwrap();
-    wait("handed over", 20, || {
-        m.status().unwrap().sessions[0]
-            .amazon
-            .as_ref()
-            .is_some_and(|a| a.placed == 2)
-    });
-    assert_eq!(fs::read_dir(folder.join("Trip")).unwrap().count(), 2);
-    let overall = m.status().unwrap().amazon;
-    assert_eq!(overall.session.as_deref(), Some("Trip"));
-    // A second pass: nothing new.
-    m.sync_now().unwrap();
-    wait("second pass", 20, || {
-        m.status().unwrap().sessions[0]
-            .amazon
-            .as_ref()
-            .is_some_and(|a| a.already_mirrored == 2 && !a.running)
-    });
-    m.set_amazon(None, String::new()).unwrap();
-    assert!(m.shutdown(3000).unwrap());
-    // A cancelled hand-off stops between files (the token is bridged).
-    let m = manager(
-        ArchiveConfig {
-            enabled: false,
-            ..config(Path::new(""), t.path())
-        },
-        Arc::new(real_check),
-        Arc::new(SystemRunner),
-        PathBuf::from("/usr/bin/rsync"),
-    );
-    let h2 = internal_session(t.path(), "Other", &files[2..]);
-    let r = m
-        .inner
-        .mirror_session(&entry_key(&h2), "Other", &h2, &folder, &manifest, &|| true)
-        .unwrap();
-    assert_eq!((r.placed, r.error.as_deref()), (0, Some("cancelled")));
-    let token = CancelToken::new();
-    token.cancel();
-    assert!(
-        block_on(m.clone().mirror_to_amazon(
-            h2,
-            folder.to_string_lossy().into_owned(),
-            manifest.to_string_lossy().into_owned(),
-            "Other".into(),
-            token,
-        ))
-        .is_err()
-    );
-    assert!(m.shutdown(3000).unwrap());
-}
-
 /// A-M4 + A-L4: an offline target is re-checked with backoff whatever is
 /// waiting (no 20 ms spin); a mount change wakes it at once; while idle
 /// the target is checked rarely.
@@ -1379,11 +1107,11 @@ fn a_busy_target_backs_off_and_is_recorded_once() {
 }
 
 /// Final journeys 2 N2: rejected photos (and the session `Trash/`) are archived by
-/// default (the archive is the backup) but not handed to Amazon Photos; each is a
-/// setting, and rejects Amazon already has aren't counted as excluded.
+/// default (the archive is the backup); leaving them out is a setting, and the status
+/// counts what was left out.
 #[test]
 #[allow(clippy::too_many_lines)]
-fn rejected_photos_are_archived_but_not_handed_to_amazon_by_default() {
+fn rejected_photos_are_archived_by_default() {
     use crate::session::{PickFlag, SessionFolder};
     let Some(rsync) = rsyncs().into_iter().next() else {
         return;
@@ -1447,26 +1175,7 @@ fn rejected_photos_are_archived_but_not_handed_to_amazon_by_default() {
     // N2: the status says so.
     let s = m.status().unwrap().sessions[0].clone();
     assert_eq!((s.originals, s.rejects_excluded), (3, 2), "{s:?}");
-    // Amazon: only the kept photo.
-    let folder = t.path().join("Amazon Photos");
-    fs::create_dir(&folder).unwrap();
-    let manifest = t.path().join("support/amazon-manifest.json");
-    fs::create_dir_all(manifest.parent().unwrap()).unwrap();
-    let mirror = || {
-        block_on(m.clone().mirror_to_amazon(
-            h.clone(),
-            folder.to_string_lossy().into_owned(),
-            manifest.to_string_lossy().into_owned(),
-            "Cull".into(),
-            CancelToken::new(),
-        ))
-        .unwrap()
-    };
-    let first = mirror();
-    assert_eq!((first.placed, first.rejects_excluded), (1, 2));
-    assert!(folder.join("Cull/keep.ARW").is_file());
-    assert!(!folder.join("Cull/rej[1].ARW").exists());
-    // The defaults: rejects are archived (the archive is the backup)…
+    // The defaults: rejects are archived (the archive is the backup).
     m.set_config(config(&target, &t.path().join("locks")))
         .unwrap();
     m.sync_now().unwrap();
@@ -1478,19 +1187,6 @@ fn rejected_photos_are_archived_but_not_handed_to_amazon_by_default() {
         m.status().unwrap().sessions[0].rejects_excluded == 0
     });
     assert_eq!(m.status().unwrap().sessions[0].originals, 3);
-    // …but not handed to Amazon unless that setting is on.
-    assert_eq!(mirror().placed, 0);
-    m.set_config(ArchiveConfig {
-        amazon_rejected: true,
-        ..config(&target, &t.path().join("locks"))
-    })
-    .unwrap();
-    let all = mirror();
-    assert_eq!((all.placed, all.rejects_excluded), (2, 0));
-    // Rejects the app already has aren't "excluded" (nothing is ever removed there).
-    m.set_config(config(&target, &t.path().join("locks")))
-        .unwrap();
-    assert_eq!(mirror().rejects_excluded, 0);
     assert!(m.shutdown(5000).unwrap());
 }
 

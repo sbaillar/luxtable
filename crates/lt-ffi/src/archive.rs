@@ -1,4 +1,4 @@
-//! Archive (`lt-archive`) and the Amazon Photos folder hand-off, for the app.
+//! Archive (`lt-archive`), for the app.
 //!
 //! - **Destinations.** [`ArchiveConfig::object_store`] picks one: `None` archives
 //!   with rsync into [`ArchiveConfig::target`], a folder (a mounted volume such as
@@ -40,13 +40,8 @@
 //!   an ejectable volume) is about offering an import; an APFS-formatted
 //!   card opened in place already holds its store, so it archives like any
 //!   local folder.
-//! - The Amazon Photos hand-off runs on its own worker, one mirror at a
-//!   time per process (the manifest also has a cross-process lock): after an
-//!   import, on "Sync now", when a session is first registered (launch
-//!   catch-up) and every 15 minutes, for imported sessions only. The chosen
-//!   folder is never created: a missing one is reported per session.
 //! - [`ArchiveManager::shutdown`] cancels a running rsync (the child is
-//!   killed) and the hand-off, and waits a bounded time.
+//!   killed) and waits a bounded time.
 
 use std::collections::{HashSet, VecDeque};
 use std::io;
@@ -60,10 +55,9 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use lt_archive::object::{Credentials, ObjectDestination, ObjectStoreConfig, Transport};
 use lt_archive::scheduler::TargetLock;
 use lt_archive::{
-    AmazonBackup, ArchiveError, ArchiveTarget, Clock, CommandOutput, CommandRunner, CommandSpec,
-    Destination, DestinationKind, FolderDestination, Original, RsyncProgress, RsyncRunner,
-    RunRecord, Scheduler, SchedulerConfig, SessionSource, Snapshotter, SystemClock, SystemRunner,
-    Trigger, VolumeId,
+    ArchiveError, ArchiveTarget, Clock, CommandOutput, CommandRunner, CommandSpec, Destination,
+    DestinationKind, FolderDestination, RsyncProgress, RsyncRunner, RunRecord, Scheduler,
+    SchedulerConfig, SessionSource, Snapshotter, SystemClock, SystemRunner, Trigger, VolumeId,
 };
 use serde::{Deserialize, Serialize};
 
@@ -266,13 +260,6 @@ pub async fn check_archive_target(
 #[allow(clippy::needless_pass_by_value)] // UniFFI hands exports owned values
 pub fn archive_volume_identity(path: String) -> Option<String> {
     VolumeId::of(Path::new(&path)).map(|v| v.to_token())
-}
-
-/// Is the official Amazon Photos app in `/Applications`? (The app also asks
-/// Launch Services by bundle id.)
-#[uniffi::export]
-pub fn amazon_photos_app_installed() -> Result<bool, DsError> {
-    guard(|| Ok(lt_archive::amazon_app_installed()))
 }
 
 // ---------------------------------------------------------- object storage ---
@@ -486,9 +473,6 @@ pub struct ArchiveConfig {
     /// default: the archive is the backup (final-journeys2 N2).
     #[uniffi(default = true)]
     pub archive_rejected: bool,
-    /// Hand rejected photos to Amazon Photos too. Off by default.
-    #[uniffi(default = false)]
-    pub amazon_rejected: bool,
     /// The volume the target was confirmed on ([`archive_volume_identity`]). Runs and
     /// checks require the target to be on it; without it, a missing target folder
     /// outside `/Volumes` is never created.
@@ -552,8 +536,6 @@ pub struct SessionArchiveStatus {
     pub eta_secs: Option<u64>,
     pub consecutive_failures: u32,
     pub retry_in_ms: Option<u64>,
-    /// This session's last Amazon Photos hand-off, if any.
-    pub amazon: Option<AmazonStatus>,
 }
 
 /// One archive attempt (most recent first in [`ArchiveOverview::runs`]).
@@ -577,32 +559,6 @@ pub struct ArchiveRun {
     pub problems: Vec<String>,
 }
 
-/// An Amazon Photos hand-off, as last run.
-#[derive(Debug, Clone, PartialEq, Eq, Default, uniffi::Record)]
-pub struct AmazonStatus {
-    pub folder: Option<String>,
-    pub running: bool,
-    pub last_run_ms: Option<i64>,
-    /// Placed by the last run (APFS clones + verified copies).
-    pub placed: u64,
-    pub cloned: u64,
-    pub already_mirrored: u64,
-    /// Not RAW/JPEG/HEIC (Amazon gets originals only).
-    pub skipped_unsupported: u64,
-    /// Not hashed yet or missing: handed over by a later run.
-    pub waiting: u64,
-    pub failed: Vec<String>,
-    pub error: Option<String>,
-    /// The chosen folder is gone (moved, deleted, disk unplugged). It is
-    /// never recreated; choose it again in Settings.
-    pub folder_missing: bool,
-    /// Which session this was (the overall status: the last one that ran).
-    pub session: Option<String>,
-    /// Rejected originals left out (rejects aren't handed over unless set).
-    #[uniffi(default = 0)]
-    pub rejects_excluded: u64,
-}
-
 /// Everything the archive badge and popover show.
 #[derive(Debug, Clone, PartialEq, uniffi::Record)]
 pub struct ArchiveOverview {
@@ -613,8 +569,6 @@ pub struct ArchiveOverview {
     pub rsync_error: Option<String>,
     pub sessions: Vec<SessionArchiveStatus>,
     pub runs: Vec<ArchiveRun>,
-    /// The last Amazon hand-off (any session); per session in `sessions`.
-    pub amazon: AmazonStatus,
 }
 
 // ---------------------------------------------------------- session identity ---
@@ -893,10 +847,6 @@ pub(crate) struct Timing {
     pub stall_hard_progress: Duration,
     /// …or after this when it doesn't (openrsync is silent while copying).
     pub stall_hard_quiet: Duration,
-    /// Amazon hand-off catch-up for every imported session.
-    pub amazon_interval: Duration,
-    /// How long [`ArchiveManager::shutdown`] waits for a hand-off to stop.
-    pub amazon_shutdown_wait: Duration,
 }
 
 impl Default for Timing {
@@ -908,8 +858,6 @@ impl Default for Timing {
             stall_probe: Duration::from_secs(90),
             stall_hard_progress: Duration::from_secs(180),
             stall_hard_quiet: Duration::from_secs(1800),
-            amazon_interval: Duration::from_secs(900),
-            amazon_shutdown_wait: Duration::from_millis(500),
         }
     }
 }
@@ -930,12 +878,6 @@ struct Entry {
     closed: bool,
     /// Its run was detached by the watchdog and hasn't returned yet.
     not_responding: Arc<AtomicBool>,
-    /// Imported session, or one an import went into (only those are
-    /// handed to Amazon Photos; a folder browsed in place is not).
-    imported: bool,
-    /// Wants an Amazon hand-off.
-    amazon_due: bool,
-    amazon: Option<AmazonStatus>,
     /// The session's store (where [`SavedState`] lives).
     store: PathBuf,
     /// The last result, as saved in the store (archivable sessions only).
@@ -990,19 +932,13 @@ struct TargetState {
 
 struct Inner {
     cfg: Mutex<ArchiveConfig>,
-    /// Settings ▸ Plugins: the archive, Amazon and Immich features may be turned off.
+    /// Settings ▸ Plugins: the archive and Immich features may be turned off.
     features: crate::features::FeatureGate,
     entries: Mutex<Vec<Entry>>,
     runs: Mutex<VecDeque<ArchiveRun>>,
     target: Mutex<TargetState>,
     rsync: Mutex<Option<Result<RsyncRunner, String>>>,
     active: Mutex<Option<Active>>,
-    amazon: Mutex<AmazonStatus>,
-    amazon_cfg: Mutex<Option<(PathBuf, PathBuf)>>,
-    /// One hand-off at a time in this process (the manifest lock covers others).
-    amazon_serial: Mutex<()>,
-    amazon_worker: Mutex<Option<Arc<AtomicBool>>>,
-    amazon_swept_at: Mutex<Option<Duration>>,
     /// Immich publishing (`crate::immich`): sidecars refreshed before each run;
     /// `None` while Immich isn't set up.
     immich: Mutex<Option<crate::immich::ArchivePublish>>,
@@ -1012,7 +948,7 @@ struct Inner {
     object_http: Mutex<Option<Arc<dyn Transport>>>,
     object_creds: Mutex<Option<Credentials>>,
     stop: AtomicBool,
-    /// Cancels the rsync and the hand-off in flight (quit).
+    /// Cancels the rsync in flight (quit).
     cancel: AtomicBool,
     recheck: AtomicBool,
     wake: (Mutex<bool>, Condvar),
@@ -1151,11 +1087,6 @@ impl ArchiveManager {
             }),
             rsync: Mutex::default(),
             active: Mutex::default(),
-            amazon: Mutex::default(),
-            amazon_cfg: Mutex::default(),
-            amazon_serial: Mutex::default(),
-            amazon_worker: Mutex::default(),
-            amazon_swept_at: Mutex::default(),
             immich: Mutex::default(),
             immich_archived: Mutex::default(),
             object_http: Mutex::default(),
@@ -1290,7 +1221,6 @@ impl Inner {
             .file_name()
             .map_or(name.clone(), |n| n.to_string_lossy().into_owned());
         let target = lock(&self.cfg).target_key();
-        let imported = handle.is_imported();
         let store = PathBuf::from(handle.root().unwrap_or_default());
         let scheduler = Arc::new(Scheduler::new(
             self.scheduler_config(),
@@ -1324,10 +1254,6 @@ impl Inner {
             archive_folder: Arc::default(),
             closed: false,
             not_responding: Arc::default(),
-            imported,
-            // Launch catch-up: a newly registered imported session gets a hand-off pass.
-            amazon_due: imported,
-            amazon: None,
             store,
             saved: Arc::new(Mutex::new(saved)),
         }
@@ -1427,7 +1353,7 @@ impl Inner {
     }
 
     /// Driver loop: watch the run in flight, check the target when needed,
-    /// start what is due, hand off to Amazon, sleep.
+    /// start what is due, sleep.
     fn drive(self: &Arc<Self>) {
         while !self.stop.load(Ordering::Relaxed) {
             let (enabled, root, timeout) = {
@@ -1445,9 +1371,6 @@ impl Inner {
                     self.start_due(&root);
                 }
                 self.drop_closed();
-            }
-            if self.features.allows(crate::features::AMAZON_PHOTOS) {
-                self.maybe_amazon();
             }
             self.sleep(self.wait_time(enabled));
         }
@@ -1525,7 +1448,7 @@ impl Inner {
     fn wait_time(&self, enabled: bool) -> Duration {
         let now = self.clock.monotonic();
         let mut wait = self.timing.idle_check;
-        if lock(&self.active).is_some() || lock(&self.amazon_worker).is_some() {
+        if lock(&self.active).is_some() {
             wait = wait.min(Duration::from_millis(500));
         }
         if enabled {
@@ -1544,9 +1467,6 @@ impl Inner {
             } else {
                 wait = wait.min((checked + t.offline_backoff).saturating_sub(now));
             }
-        }
-        if let Some(at) = *lock(&self.amazon_swept_at) {
-            wait = wait.min((at + self.timing.amazon_interval).saturating_sub(now));
         }
         wait.max(Duration::from_millis(50))
     }
@@ -1848,156 +1768,6 @@ impl Inner {
         });
     }
 
-    // ------------------------------------------------------------- amazon ---
-
-    /// Start a hand-off pass for the imported sessions that want one (after
-    /// an import, "Sync now", launch) or every `amazon_interval` for all.
-    fn maybe_amazon(self: &Arc<Self>) {
-        let Some((folder, manifest)) = lock(&self.amazon_cfg).clone() else {
-            return;
-        };
-        {
-            let mut w = lock(&self.amazon_worker);
-            if w.as_ref().is_some_and(|d| !d.load(Ordering::Acquire)) {
-                return; // one pass at a time
-            }
-            *w = None;
-        }
-        let now = self.clock.monotonic();
-        let sweep = lock(&self.amazon_swept_at)
-            .is_none_or(|at| now.saturating_sub(at) >= self.timing.amazon_interval);
-        let jobs: Vec<(PathBuf, String, Arc<SessionHandle>)> = {
-            let mut entries = lock(&self.entries);
-            entries
-                .iter_mut()
-                .filter(|e| e.imported && (e.amazon_due || sweep))
-                .map(|e| {
-                    e.amazon_due = false;
-                    (e.key.clone(), e.name.clone(), e.handle.clone())
-                })
-                .collect()
-        };
-        if sweep {
-            *lock(&self.amazon_swept_at) = Some(now);
-        }
-        if jobs.is_empty() || self.cancel.load(Ordering::Relaxed) {
-            return;
-        }
-        let done = Arc::new(AtomicBool::new(false));
-        *lock(&self.amazon_worker) = Some(done.clone());
-        let inner = self.clone();
-        let spawned = std::thread::Builder::new()
-            .name("lt-amazon".into())
-            .spawn(move || {
-                for (key, name, handle) in jobs {
-                    if inner.cancel.load(Ordering::Relaxed) {
-                        break;
-                    }
-                    let cancelled = || inner.cancel.load(Ordering::Relaxed);
-                    let _ =
-                        inner.mirror_session(&key, &name, &handle, &folder, &manifest, &cancelled);
-                }
-                done.store(true, Ordering::Release);
-                inner.poke();
-            });
-        if spawned.is_err() {
-            lock(&self.amazon_worker).take();
-        }
-    }
-
-    /// Hand one session's verified originals to the Amazon Photos folder,
-    /// serialized with every other hand-off in this process (A-M1). Records
-    /// the status overall and for the session (A-L5).
-    fn mirror_session(
-        &self,
-        key: &Path,
-        album: &str,
-        handle: &SessionHandle,
-        folder: &Path,
-        manifest: &Path,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<AmazonStatus, DsError> {
-        let running = AmazonStatus {
-            folder: Some(folder.to_string_lossy().into_owned()),
-            running: true,
-            session: Some(album.to_owned()),
-            ..AmazonStatus::default()
-        };
-        self.set_amazon_status(key, &running);
-        let _serial = lock(&self.amazon_serial);
-        let r = self.mirror(handle, folder, manifest, album, cancelled);
-        let status = match &r {
-            Ok(s) => s.clone(),
-            Err(e) => AmazonStatus {
-                folder: Some(folder.to_string_lossy().into_owned()),
-                running: false,
-                last_run_ms: Some(ms(self.clock.wall())),
-                error: Some(e.to_string()),
-                folder_missing: !folder.is_dir(),
-                session: Some(album.to_owned()),
-                ..AmazonStatus::default()
-            },
-        };
-        self.set_amazon_status(key, &status);
-        r
-    }
-
-    fn set_amazon_status(&self, key: &Path, s: &AmazonStatus) {
-        *lock(&self.amazon) = s.clone();
-        if let Some(e) = lock(&self.entries).iter_mut().find(|e| e.key == key) {
-            e.amazon = Some(s.clone());
-        }
-    }
-
-    fn mirror(
-        &self,
-        handle: &SessionHandle,
-        folder: &Path,
-        manifest: &Path,
-        album: &str,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<AmazonStatus, DsError> {
-        let include_rejected = lock(&self.cfg).amazon_rejected;
-        let (originals, waiting, rejected) = handle.backup_originals(include_rejected)?;
-        let originals: Vec<Original> = originals
-            .into_iter()
-            .map(|(path, hash)| Original { path, hash })
-            .collect();
-        let mut backup = AmazonBackup::open(folder, manifest).map_err(|e| DsError::Io {
-            message: e.to_string(),
-        })?;
-        let r = backup
-            .mirror_with(album, &originals, cancelled)
-            .map_err(|e| DsError::Io {
-                message: e.to_string(),
-            })?;
-        // "Excluded" counts only rejects the app doesn't have: one handed over before
-        // it was rejected stays there (the hand-off never removes anything).
-        let rejects_excluded = rejected
-            .iter()
-            .filter(|h| **h == lt_session::UNHASHED || backup.mirrored_path(h).is_none())
-            .count() as u64;
-        Ok(AmazonStatus {
-            folder: Some(folder.to_string_lossy().into_owned()),
-            running: false,
-            last_run_ms: Some(ms(self.clock.wall())),
-            placed: (r.cloned.len() + r.copied.len()) as u64,
-            cloned: r.cloned.len() as u64,
-            already_mirrored: r.already_mirrored as u64,
-            skipped_unsupported: r.skipped_unsupported.len() as u64,
-            waiting,
-            failed: r
-                .failed
-                .iter()
-                .map(|(p, e)| format!("{}: {e}", p.display()))
-                .collect(),
-            error: r.cancelled.then(|| "cancelled".into()),
-            folder_missing: false,
-            session: Some(album.to_owned()),
-            rejects_excluded,
-        })
-    }
-
     fn overview(&self) -> ArchiveOverview {
         let enabled = lock(&self.cfg).enabled;
         let (rsync, rsync_error) = match &*lock(&self.rsync) {
@@ -2044,7 +1814,6 @@ impl Inner {
                     eta_secs: p.as_ref().and_then(|p| p.eta).map(|d| d.as_secs()),
                     consecutive_failures: st.consecutive_failures,
                     retry_in_ms: st.retry_in.map(dur_ms),
-                    amazon: e.amazon.clone(),
                 }
             })
             .collect();
@@ -2055,7 +1824,6 @@ impl Inner {
             rsync_error,
             sessions,
             runs: lock(&self.runs).iter().cloned().collect(),
-            amazon: lock(&self.amazon).clone(),
         }
     }
 }
@@ -2116,26 +1884,6 @@ impl ArchiveManager {
         })
     }
 
-    /// Where the Amazon Photos hand-off goes (`None`: off) and where its
-    /// manifest lives (outside that folder). The folder is never created.
-    #[allow(clippy::needless_pass_by_value)] // UniFFI hands exports owned values
-    pub fn set_amazon(&self, folder: Option<String>, manifest: String) -> Result<(), DsError> {
-        guard(|| {
-            let next = folder
-                .filter(|f| !f.is_empty())
-                .map(|f| (PathBuf::from(f), PathBuf::from(&manifest)));
-            let mut cur = lock(&self.inner.amazon_cfg);
-            if *cur != next {
-                *cur = next;
-                drop(cur);
-                // A new folder: catch up every imported session.
-                *lock(&self.inner.amazon_swept_at) = None;
-                self.inner.poke();
-            }
-            Ok(())
-        })
-    }
-
     /// Object storage: the app's HTTP and the keys from the Keychain (`None`: not
     /// set; runs then say so). Used while [`ArchiveConfig::object_store`] is set.
     #[allow(clippy::needless_pass_by_value)] // UniFFI hands exports owned values
@@ -2189,16 +1937,12 @@ impl ArchiveManager {
         })
     }
 
-    /// An import into `session` finished: archive it now and hand its
-    /// originals to Amazon Photos (when a folder is set).
+    /// An import into `session` finished: archive it now.
     #[allow(clippy::needless_pass_by_value)] // UniFFI hands exports owned values
     pub fn after_import(&self, session: Arc<SessionHandle>, files: u64) -> Result<(), DsError> {
         guard(|| {
             self.with_entry(&session, |e| {
                 e.closed = false;
-                // Imported into: its originals are handed to Amazon from now on.
-                e.imported = true;
-                e.amazon_due = true;
                 if e.source.is_ok() {
                     e.scheduler.note_changes(files.max(1));
                     e.scheduler.request_now();
@@ -2228,11 +1972,10 @@ impl ArchiveManager {
     }
 
     /// "Sync now": check the target, archive every registered session
-    /// (ignoring debounce and backoff) and catch up the Amazon hand-off.
+    /// (ignoring debounce and backoff).
     pub fn sync_now(&self) -> Result<(), DsError> {
         guard(|| {
-            for e in lock(&self.inner.entries).iter_mut() {
-                e.amazon_due = e.imported;
+            for e in lock(&self.inner.entries).iter() {
                 if e.source.is_ok() {
                     e.scheduler.request_now();
                 }
@@ -2248,43 +1991,9 @@ impl ArchiveManager {
         guard(|| Ok(self.inner.overview()))
     }
 
-    /// Mirror `session`'s originals into the Amazon Photos folder now
-    /// (`<folder>/<album>/`; manifest kept outside it) and wait for it.
-    /// Files are placed once per content hash, ever. Serialized with the
-    /// background hand-off; `token` cancels it between files.
-    pub async fn mirror_to_amazon(
-        self: Arc<Self>,
-        session: Arc<SessionHandle>,
-        folder: String,
-        manifest: String,
-        album: String,
-        token: Arc<CancelToken>,
-    ) -> Result<AmazonStatus, DsError> {
-        if !self.inner.features.allows(crate::features::AMAZON_PHOTOS) {
-            return Err(DsError::invalid(
-                "Amazon Photos is turned off (Settings ▸ Plugins)",
-            ));
-        }
-        let inner = self.inner.clone();
-        crate::jobs::run_job_on_thread("lt-amazon", token, move |cancelled| {
-            let key = entry_key(&session);
-            let quit = || cancelled() || inner.cancel.load(Ordering::Relaxed);
-            inner.mirror_session(
-                &key,
-                &album,
-                &session,
-                Path::new(&folder),
-                Path::new(&manifest),
-                &quit,
-            )
-        })
-        .await
-    }
-
-    /// Stop: cancel a running rsync (the process is killed) and the Amazon
-    /// hand-off, then wait up to `timeout_ms` in total for the driver, the
-    /// run (a run stuck in a hung mount is left behind) and, briefly, the
-    /// hand-off. Returns whether everything stopped in time.
+    /// Stop: cancel a running rsync (the process is killed), then wait up to
+    /// `timeout_ms` in total for the driver and the run (a run stuck in a hung
+    /// mount is left behind). Returns whether everything stopped in time.
     pub fn shutdown(&self, timeout_ms: u32) -> Result<bool, DsError> {
         guard(|| {
             let deadline = Instant::now() + Duration::from_millis(u64::from(timeout_ms));
@@ -2323,11 +2032,6 @@ impl ArchiveManager {
             };
             if let Some(done) = run_done {
                 stopped &= wait_for(&done, deadline);
-            }
-            let amazon = lock(&self.inner.amazon_worker).clone();
-            if let Some(done) = amazon {
-                let until = deadline.min(Instant::now() + self.inner.timing.amazon_shutdown_wait);
-                stopped &= wait_for(&done, until);
             }
             Ok(stopped)
         })

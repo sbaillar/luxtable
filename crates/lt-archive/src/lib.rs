@@ -5,9 +5,6 @@
 //! - **S3-compatible object storage** ([`object::ObjectDestination`]): AWS S3,
 //!   Backblaze B2, Wasabi, Cloudflare R2, `MinIO`.
 //!
-//! Plus the Amazon Photos folder hand-off for originals ([`amazon`]), which doesn't
-//! depend on the destination.
-//!
 //! Invariants, whichever the destination: nothing is ever deleted from the archive
 //! (never `--delete`; no `DeleteObject`); a replaced file's previous version goes to
 //! `.lt-archive-trash/<timestamp>` first; nothing is written unless the destination
@@ -18,7 +15,6 @@
 use std::io;
 use std::path::{Path, PathBuf};
 
-pub mod amazon;
 pub mod archiver;
 pub mod dest;
 pub mod exclude;
@@ -27,7 +23,6 @@ pub mod rsync;
 pub mod scheduler;
 pub mod target;
 
-pub use amazon::{AmazonBackup, MirrorReport, Original, amazon_app_installed};
 pub use archiver::{ArchiveOutcome, Archiver, SNAPSHOT_REL, Snapshotter, TRASH_DIR, prune_trash};
 pub use dest::{Destination, DestinationKind, FolderDestination, SessionSource};
 pub use object::{ObjectDestination, ObjectStoreConfig};
@@ -64,17 +59,11 @@ pub enum ArchiveError {
     Storage(String),
     #[error("{}: {source}", path.display())]
     Io { path: PathBuf, source: io::Error },
-    #[error("amazon manifest: {0}")]
-    Manifest(String),
     /// The run finished, but these files (`"<path>: <reason>"`) are not in
     /// the archive (unreadable originals, a failed DB snapshot). Not a
     /// success: the scheduler keeps the changes pending and retries.
     #[error("{} not archived: {}", count_files(.problems.len()), .problems.join("; "))]
     Incomplete { problems: Vec<String> },
-    /// The Amazon Photos folder chosen in Settings is gone (moved, deleted,
-    /// or its disk is not connected). It is never recreated.
-    #[error("Amazon Photos folder missing: {}", .0.display())]
-    AmazonFolderMissing(PathBuf),
 }
 
 fn count_files(n: usize) -> String {

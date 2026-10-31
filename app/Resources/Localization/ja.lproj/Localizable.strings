@@ -192,7 +192,6 @@
 "%lld face moved too much to swap" = "動きが大きすぎて差し替えられなかった顔 %lld 個";
 "%lld faces improved" = "改善した顔 %lld 個";
 "%lld faces moved too much to swap" = "動きが大きすぎて差し替えられなかった顔 %lld 個";
-"%lld failed" = "%lld 件失敗";
 "%lld file waiting" = "%lld 個のファイルが待機中";
 "%lld files" = "%lld 個のファイル";
 "%lld files in other formats not imported" = "その他の形式のファイル %lld 個は読み込まれません";
@@ -224,7 +223,6 @@
 "%lld min ago" = "%lld 分前";
 "%lld more selected photos" = "ほか %lld 枚の選択した写真";
 "%lld more tabs" = "ほか %lld 個のタブ";
-"%lld new" = "%lld 件の新規";
 "%lld new photos" = "%lld 枚の新しい写真";
 "%lld not archived" = "%lld 件が未アーカイブ";
 "%lld not in Immich yet" = "%lld 件はまだ Immich にありません";
@@ -234,8 +232,6 @@
 "%lld of %lld files" = "%lld / %lld 個のファイル";
 "%lld of %lld originals couldn’t be copied" = "%2$lld 個中 %1$lld 個のオリジナルをコピーできませんでした";
 "%lld of %lld selected" = "%lld / %lld 件を選択";
-"%lld original handed to the app" = "%lld 個のオリジナルを App に引き渡しました";
-"%lld originals handed to the app" = "%lld 個のオリジナルを App に引き渡しました";
 "%lld parts of the card couldn’t be read" = "カードの %lld か所を読み取れませんでした";
 "%lld parts of the card unreadable" = "カードの %lld か所が読み取り不可";
 "%lld photo" = "%lld 枚の写真";
@@ -285,7 +281,6 @@
 "%lld videos not imported" = "%lld 本のビデオは読み込まれません";
 "%lld virtual copies were added as new variants" = "%lld 個の仮想コピーを新しいバリアントとして追加しました";
 "%lld virtual copies will be added as new variants" = "%lld 個の仮想コピーを新しいバリアントとして追加します";
-"%lld waiting for verification" = "%lld 件が検証待ち";
 "%lld warning" = "%lld 件の警告";
 "%lld warnings" = "%lld 件の警告";
 "%lld workspaces" = "%lld 個のワークスペース";
@@ -507,14 +502,6 @@
 "Already at the last photo" = "すでに最後の写真です";
 "Also 8 × 10" = "8 × 10 も同じ";
 "Also upload to Google Photos" = "Google Photos にもアップロード";
-"Amazon Photos" = "Amazon Photos";
-"Amazon Photos (optional)" = "Amazon Photos（オプション）";
-"Amazon Photos folder (%@)" = "Amazon Photos フォルダ（%@）";
-"Amazon Photos folder missing: %@. Choose it again in Settings › Archive." = "Amazon Photos フォルダが見つかりません：%@。“設定” › “アーカイブ”でもう一度選択してください。";
-"Amazon Photos is installed. Choose the folder it backs up." = "Amazon Photos がインストールされています。バックアップ対象のフォルダを選択してください。";
-"Amazon Photos: %@" = "Amazon Photos：%@";
-"Amazon Photos: after the next import" = "Amazon Photos：次回の読み込み後";
-"Amazon has no public Photos API. Luxtable mirrors your originals into a folder, and the official Amazon Photos app backs that folder up." = "Amazon には公開された Photos API がありません。Luxtable がオリジナルをフォルダにミラーリングし、公式の Amazon Photos アプリがそのフォルダをバックアップします。";
 "Amount" = "適用量";
 "An arrow key" = "矢印キー";
 "An empty session with Capture, Selects, Output and Trash folders. Import from a card or drag photos in next." = "Capture、Selects、Output、Trash フォルダのある空のセッションです。次にカードから読み込むか、写真をドラッグしてください。";
@@ -577,7 +564,7 @@
 "Archive settings not applied" = "アーカイブ設定は適用されていません";
 "Archive switched off" = "アーカイブはオフになっています";
 "Archive up to date" = "アーカイブは最新です";
-"Archive, Amazon Photos, Immich, Google Photos" = "アーカイブ、Amazon Photos、Immich、Google Photos";
+"Archive, Immich, Google Photos" = "アーカイブ、Immich、Google Photos";
 "Archive: %@" = "アーカイブ：%@";
 "Archived" = "アーカイブ済み";
 "Archived in the background" = "バックグラウンドでアーカイブ";
@@ -623,7 +610,6 @@
 "Back / close" = "戻る／閉じる";
 "Back to the original" = "オリジナルに戻す";
 "Back to the photo as shot, without any adjustments (⌘Z undoes it)" = "補正のない撮影時の写真に戻します（⌘Z で取り消せます）";
-"Backed-up folder" = "バックアップ対象のフォルダ";
 "Background" = "背景";
 "Backlit: let the light glow." = "逆光：光を輝かせましょう。";
 "Backup Copy" = "バックアップコピー";
@@ -747,7 +733,6 @@
 "Choose photos in the browser, then Photo ▸ Keep a Developed Copy for Immich: a JPEG with every edit goes to the session's Developed folder and is kept up to date." = "ブラウザで写真を選び、「写真」▸「Immich 用に現像済みのコピーを保持」を選択します。すべての編集を反映した JPEG がセッションの Developed フォルダに保存され、常に最新の状態に保たれます。";
 "Choose the archive folder" = "アーカイブフォルダを選択";
 "Choose the archive folder (on your NAS, an external disk or this Mac)" = "アーカイブフォルダを選択（NAS、外部ディスク、またはこの Mac 上）";
-"Choose the folder the Amazon Photos app backs up" = "Amazon Photos アプリがバックアップするフォルダを選択";
 "Choose the one folder this plug-in may use." = "このプラグインが使用できるフォルダを 1 つ選んでください。";
 "Choose the tabs in the strip and the tools in each. A tool can be in several tabs. Changes apply right away." = "ストリップ内のタブと、各タブのツールを選んでください。1 つのツールを複数のタブに入れられます。変更はすぐに適用されます。";
 "Choose two or more photos to merge." = "結合する写真を 2 枚以上選択してください。";
@@ -1211,7 +1196,6 @@
 "Folder" = "フォルダ";
 "Folder %@" = "フォルダ %@";
 "Folder inside the session’s Capture folder. Tokens: {date} {time} {camera} {text}" = "セッションの Capture フォルダ内のフォルダ。トークン：{date} {time} {camera} {text}";
-"Folder missing: %@. It was moved or deleted, or its disk isn't connected. Luxtable never recreates it: choose it again." = "フォルダが見つかりません：%@。移動または削除されたか、ディスクが接続されていません。Luxtable がフォルダを再作成することはないため、もう一度選択してください。";
 "Folder on the server" = "サーバ上のフォルダ";
 "Follow the layout (%@)" = "レイアウトに合わせる（%@）";
 "Font" = "フォント";
@@ -1240,7 +1224,6 @@
 "Gamut warning" = "色域外警告";
 "General" = "一般";
 "Get RAW Helper" = "RAW ヘルパーを入手";
-"Get the Amazon Photos app" = "Amazon Photos アプリを入手";
 "GitHub answered HTTP %lld" = "GitHub が HTTP %lld を返しました";
 "Give the preset a name." = "プリセットに名前を付けてください。";
 "Give the smart folder a name." = "スマートフォルダに名前を付けてください。";
@@ -1269,7 +1252,6 @@
 "Hair" = "髪";
 "Halation" = "ハレーション";
 "Half the height of the sharp band, of the long edge." = "シャープな帯の高さの半分（長辺に対する比率）。";
-"Handing originals to Amazon Photos…" = "オリジナルを Amazon Photos に引き渡し中…";
 "Hard (100 %) or soft brush edge." = "ブラシの境界を硬く（100 %）または柔らかく。";
 "Hardness" = "硬さ";
 "Headline" = "見出し";
@@ -1571,7 +1553,6 @@
 "Luxtable is already running or still closing" = "Luxtable はすでに起動中か、まだ終了処理中です";
 "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again." = "Luxtable には写真ライブラリを読み取る許可がありません。「システム設定」▸「プライバシーとセキュリティ」▸「写真」でオンにしてから、もう一度お試しください。";
 "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable の外観はそのままです。パネル、キー、いくつかの名前を手が慣れている場所に移動するだけです。「設定」›「使い慣れた操作」でいつでも変更できます。";
-"Luxtable mirrors your originals into a folder that the official Amazon Photos app backs up. No passwords, no private APIs." = "Luxtable はオリジナルを、公式の Amazon Photos アプリがバックアップするフォルダにミラーリングします。パスワードも非公開 API も使いません。";
 "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, about 34 MB) and keep it on this Mac. Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable." = "Luxtable は RealESRGAN_x2plus（BSD 3-Clause License、約 34 MB）をダウンロードし、この Mac に保存します。その学習データ（DIV2K、Flickr2K、OST）は非営利の研究目的でのみ利用が許諾されています。Luxtable の Apache-2.0 ライセンスはこれらの条件に優先しません。条件の遵守はユーザの責任となります。詳しくは“Luxtable” ▸ “Luxtable について”を参照してください。";
 "Luxtable's own phrase rules" = "Luxtable 独自のフレーズルール";
 "Luxtable, or nothing yet" = "Luxtable、またはまだなし";
@@ -1830,7 +1811,6 @@
 "Off" = "オフ";
 "Off: photos you changed in Luxtable since the last import keep your values" = "オフ：前回の読み込み後に Luxtable で変更した写真は、その値が保持されます";
 "Off: photos you rejected (and the session's Trash) stay out of the archive, and deleting them leaves no copy" = "オフ：除外した写真（およびセッションのゴミ箱）はアーカイブされず、削除するとコピーは残りません";
-"Off: photos you rejected aren't handed to Amazon Photos" = "オフ：除外した写真は Amazon Photos に渡されません";
 "Off: where the photo was taken stays private. Your name, copyright, caption and keywords go in either way" = "オフ: 撮影場所は非公開のままです。名前、著作権、キャプション、キーワードはどちらの場合も含まれます";
 "Offline" = "オフライン";
 "Older steps not shown" = "古いステップは表示されていません";
@@ -1884,8 +1864,6 @@
 "Original file missing (%@). Remove isn’t offered: “%@” isn’t the disk this session was recorded on (a clone or a restore?). Locate Folder… confirms it." = "オリジナルファイルが見つかりません（%1$@）。「%2$@」はこのセッションが記録されたディスクではないため（クローンまたは復元？）、削除は表示されません。「フォルダを探す…」で確認できます。";
 "Original file missing (%@): edits are saved but can’t be previewed or exported." = "オリジナルファイルが見つかりません（%@）。編集は保存されていますが、プレビューや書き出しはできません。";
 "Originals are copied; %@ is never changed." = "オリジナルをコピーします。%@ は変更されません。";
-"Originals are handed to Amazon Photos after each import." = "読み込みのたびに、オリジナルが Amazon Photos に引き渡されます。";
-"Originals are handed to the folder the Amazon Photos app backs up." = "オリジナルは Amazon Photos App がバックアップするフォルダに引き渡されます。";
 "Other Sources" = "その他のソース";
 "Other cameras" = "その他のカメラ";
 "Out %lld · %lld" = "出力 %lld · %lld";
@@ -1935,7 +1913,6 @@
 "Photos Library" = "写真ライブラリ";
 "Photos Library…" = "写真ライブラリ…";
 "Photos of this session, or of every session" = "このセッション、またはすべてのセッションの写真";
-"Photos only: videos are archived with the session but aren't handed to Amazon Photos." = "写真のみ：ビデオはセッションとともにアーカイブされますが、Amazon Photos には引き渡されません。";
 "Photos whose files were moved or deleted outside Luxtable" = "Luxtable の外部でファイルが移動または削除された写真";
 "Phrase, e.g. “keeper”" = "フレーズ（例：“keeper”）";
 "Phrases starting with “edit” are Edit with Words instructions." = "“edit” で始まるフレーズは「言葉で編集」の指示になります。";
@@ -1955,7 +1932,6 @@
 "Pick one of your recent sessions, or bring in new photos." = "最近のセッションを選ぶか、新しい写真を取り込んでください。";
 "Pick the correction profile by hand when the automatic match is wrong or missing" = "自動の一致が間違っているか見つからない場合は、補正プロファイルを手動で選択します";
 "Pick the focus on the photo" = "写真上でピント位置を選択";
-"Pick the folder watched by the Amazon Photos app" = "Amazon Photos アプリが監視するフォルダを選択";
 "Picked" = "採用";
 "Picked %@" = "%@を採用しました";
 "Pin for compare" = "比較用に固定";
@@ -2258,7 +2234,6 @@
 "Selection" = "選択範囲";
 "Selects exactly those photos (“the next 3” are three, not counting this one) and moves to the first; keys then act on them." = "それらの写真だけを選択して（“the next 3” はこの写真を含まない 3 枚）、最初の写真へ移動します。以降のキー操作はそれらに対して行われます。";
 "Send JPEGs of the selection with Messages, Mail, AirDrop and more (⌥⌘E). Size and quality: Settings ▸ Sharing" = "選択した写真の JPEG をメッセージ、メール、AirDrop などで送信します（⌥⌘E）。サイズと画質:「設定」▸「共有」";
-"Send rejected photos to Amazon Photos" = "除外した写真を Amazon Photos に送る";
 "Separation between darks and lights." = "暗部と明部の差。";
 "Server" = "サーバ";
 "Server address" = "サーバのアドレス";
@@ -2440,7 +2415,6 @@
 "Stop it and quit? Photos already exported stay; the rest aren't exported." = "停止して終了しますか？書き出し済みの写真は残りますが、残りの写真は書き出されません。";
 "Stop listening" = "聞き取りを停止";
 "Stop loading this development folder" = "この開発用フォルダの読み込みを停止";
-"Stop mirroring originals to Amazon Photos" = "Amazon Photos へのオリジナルのミラーリングを停止";
 "Stop picking the focus" = "ピント位置の選択を停止";
 "Stop preparing; nothing is shared" = "準備を停止します。何も共有されません";
 "Stop remove tool" = "除去ツールを停止";
@@ -2529,7 +2503,6 @@
 "The AI Denoise model in this build is damaged (its checksum doesn't match)." = "このビルドの AI ノイズ除去モデルは破損しています（チェックサムが一致しません）。";
 "The AI Upscale model in this build is damaged (its checksum doesn’t match)." = "このビルドの AI アップスケールモデルは破損しています（チェックサムが一致しません）。";
 "The API key couldn't be removed from your Keychain." = "API キーをキーチェーンから削除できませんでした。";
-"The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it." = "Amazon Photos App がインストールされていません。フォルダのアップロードは Amazon Photos App が行い、Luxtable はフォルダにファイルを入れるだけです。";
 "The Keychain refused the API key." = "キーチェーンが API キーを拒否しました。";
 "The Keychain refused the client secret." = "キーチェーンがクライアントシークレットを拒否しました。";
 "The Keychain refused the key." = "キーチェーンがキーを拒否しました。";
@@ -2684,7 +2657,6 @@
 "Turn %@ off (its settings are kept)" = "%@ をオフにする（設定は保持されます）";
 "Turn %@ on" = "%@ をオンにする";
 "Turn AI Denoise on for the selected photos and denoise them in the background" = "選択した写真の AI ノイズ除去をオンにし、バックグラウンドでノイズを除去します";
-"Turn Off" = "オフにする";
 "Turn Voice Commands Off" = "音声コマンドをオフにする";
 "Turn Voice Commands On" = "音声コマンドをオンにする";
 "Turn on at least one recipe." = "少なくとも 1 つのレシピをオンにしてください。";
@@ -2743,7 +2715,6 @@
 "Upscaling, %@" = "アップスケール中、%@";
 "Usage Terms" = "使用条件";
 "Use %@" = "%@ を使用";
-"Use Folder" = "フォルダを使用";
 "Use Jev for phrases the rules don't understand" = "ルールで理解できないフレーズに Jev を使用";
 "Use Proof Profile (%@)" = "校正プロファイルを使用（%@）";
 "Use a full path, like /Volumes/NAS/Photos." = "/Volumes/NAS/Photos のようなフルパスを使用してください。";

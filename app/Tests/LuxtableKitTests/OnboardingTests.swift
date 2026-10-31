@@ -12,9 +12,10 @@ import Testing
         o.back()
         #expect(o.step == .welcome)
         for _ in 0..<10 { o.next() }
-        #expect(o.isLast && o.step == .amazon && o.progress == 1)
+        #expect(o.isLast && o.step == .archive && o.progress == 1)
+        #expect(o.steps == [.welcome, .familiar, .sessions, .archive])
         o.back()
-        #expect(o.step == .archive)
+        #expect(o.step == .sessions)
         #expect(OnboardingModel.Step.allCases.allSatisfy { !$0.title.isEmpty })
     }
 
@@ -84,14 +85,13 @@ import Testing
         let o = OnboardingModel(settings: settings, fileExists: { _ in true }, createDirectory: { created.append($0) })
         o.sessionsFolder = URL(fileURLWithPath: "/tmp/Sessions")
         o.archiveTarget = "  /Volumes/nas/ds  "
-        o.amazonFolder = URL(fileURLWithPath: "/tmp/Amazon")
         #expect(!o.canFinish, "not checked yet")
         await o.refreshArchiveStatus()
         #expect(o.canFinish)
         try o.finish()
         #expect(created == [URL(fileURLWithPath: "/tmp/Sessions")])
         #expect(settings.onboardingComplete && settings.archiveTarget == "/Volumes/nas/ds")
-        #expect(settings.amazonPhotosFolder?.path == "/tmp/Amazon" && settings.sessionsFolder.path == "/tmp/Sessions")
+        #expect(settings.sessionsFolder.path == "/tmp/Sessions")
     }
 
     @Test func archiveCanBeDisabledAndErrorsPropagate() {

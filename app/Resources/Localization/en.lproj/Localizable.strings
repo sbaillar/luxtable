@@ -581,9 +581,6 @@
 "%lld faces moved too much to swap" = "%lld faces moved too much to swap";
 
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
-"%lld failed" = "%lld failed";
-
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
 "%lld file waiting" = "%lld file waiting";
 
 /* LuxtableCore/Import/ImportReport.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift */
@@ -676,9 +673,6 @@
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "%lld more tabs" = "%lld more tabs";
 
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
-"%lld new" = "%lld new";
-
 /* LuxtableCore/AI/Upscale/UpscaleService.swift */
 "%lld new photos" = "%lld new photos";
 
@@ -705,12 +699,6 @@
 
 /* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift */
 "%lld of %lld selected" = "%lld of %lld selected";
-
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
-"%lld original handed to the app" = "%lld original handed to the app";
-
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
-"%lld originals handed to the app" = "%lld originals handed to the app";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "%lld parts of the card couldn’t be read" = "%lld parts of the card couldn’t be read";
@@ -858,9 +846,6 @@
 
 /* LuxtableCore/Lightroom/LightroomImport.swift */
 "%lld virtual copies will be added as new variants" = "%lld virtual copies will be added as new variants";
-
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
-"%lld waiting for verification" = "%lld waiting for verification";
 
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
 "%lld warning" = "%lld warning";
@@ -1525,30 +1510,6 @@
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "Also upload to Google Photos" = "Also upload to Google Photos";
 
-/* LuxtableCore/Model/ToolTab.swift, LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift, LuxtableMac/Views/PreferencesView.swift */
-"Amazon Photos" = "Amazon Photos";
-
-/* LuxtableCore/Onboarding/OnboardingModel.swift */
-"Amazon Photos (optional)" = "Amazon Photos (optional)";
-
-/* LuxtableCore/Live/RustArchiveService.swift */
-"Amazon Photos folder (%@)" = "Amazon Photos folder (%@)";
-
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
-"Amazon Photos folder missing: %@. Choose it again in Settings › Archive." = "Amazon Photos folder missing: %@. Choose it again in Settings › Archive.";
-
-/* LuxtableCore/Tools/ArchiveSettingsModel.swift */
-"Amazon Photos is installed. Choose the folder it backs up." = "Amazon Photos is installed. Choose the folder it backs up.";
-
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
-"Amazon Photos: %@" = "Amazon Photos: %@";
-
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
-"Amazon Photos: after the next import" = "Amazon Photos: after the next import";
-
-/* LuxtableMac/Views/OnboardingView.swift */
-"Amazon has no public Photos API. Luxtable mirrors your originals into a folder, and the official Amazon Photos app backs that folder up." = "Amazon has no public Photos API. Luxtable mirrors your originals into a folder, and the official Amazon Photos app backs that folder up.";
-
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Amount" = "Amount";
 
@@ -1736,7 +1697,7 @@
 "Archive up to date" = "Archive up to date";
 
 /* LuxtableMac/Views/OnboardingView.swift */
-"Archive, Amazon Photos, Immich, Google Photos" = "Archive, Amazon Photos, Immich, Google Photos";
+"Archive, Immich, Google Photos" = "Archive, Immich, Google Photos";
 
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
 "Archive: %@" = "Archive: %@";
@@ -1872,9 +1833,6 @@
 
 /* LuxtableUI/Views/Presets/StylesPanel.swift */
 "Back to the photo as shot, without any adjustments (⌘Z undoes it)" = "Back to the photo as shot, without any adjustments (⌘Z undoes it)";
-
-/* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift */
-"Backed-up folder" = "Backed-up folder";
 
 /* LuxtableUI/Views/Tools/LayersPanel.swift */
 "Background" = "Background";
@@ -2245,9 +2203,6 @@
 /* LuxtableMac/Views/Archive/ArchiveSettingsView.swift */
 "Choose the archive folder (on your NAS, an external disk or this Mac)" = "Choose the archive folder (on your NAS, an external disk or this Mac)";
 
-/* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift, LuxtableMac/Views/OnboardingView.swift, LuxtableUI/Views/Tools/LibraryPanels.swift */
-"Choose the folder the Amazon Photos app backs up" = "Choose the folder the Amazon Photos app backs up";
-
 /* LuxtableMac/Views/Plugins/PluginsSettingsView.swift */
 "Choose the one folder this plug-in may use." = "Choose the one folder this plug-in may use.";
 
@@ -2269,7 +2224,7 @@
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Choose which adjustments Copy and Apply use" = "Choose which adjustments Copy and Apply use";
 
-/* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift, LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/Archive/ArchiveSettingsView.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift, LuxtableMac/Views/NewSessionSheet.swift, LuxtableMac/Views/OnboardingView.swift, LuxtableUI/Views/Tools/LibraryPanels.swift */
+/* LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/Archive/ArchiveSettingsView.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift, LuxtableMac/Views/NewSessionSheet.swift, LuxtableMac/Views/OnboardingView.swift */
 "Choose…" = "Choose…";
 
 /* LuxtableMac/Views/OnboardingView.swift */
@@ -3628,7 +3583,7 @@
 /* LuxtableUI/Views/ToolSidebar.swift */
 "Focus peaking" = "Focus peaking";
 
-/* LuxtableCore/Tools/ArchiveObjectStore.swift, LuxtableMac/Views/Archive/ArchiveSettingsView.swift, LuxtableUI/Views/Tools/LibraryPanels.swift */
+/* LuxtableCore/Tools/ArchiveObjectStore.swift, LuxtableMac/Views/Archive/ArchiveSettingsView.swift */
 "Folder" = "Folder";
 
 /* LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift */
@@ -3636,9 +3591,6 @@
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Folder inside the session’s Capture folder. Tokens: {date} {time} {camera} {text}" = "Folder inside the session’s Capture folder. Tokens: {date} {time} {camera} {text}";
-
-/* LuxtableCore/Tools/ArchiveSettingsModel.swift */
-"Folder missing: %@. It was moved or deleted, or its disk isn't connected. Luxtable never recreates it: choose it again." = "Folder missing: %@. It was moved or deleted, or its disk isn't connected. Luxtable never recreates it: choose it again.";
 
 /* LuxtableMac/Views/Immich/ImmichSettingsView.swift */
 "Folder on the server" = "Folder on the server";
@@ -3724,9 +3676,6 @@
 /* LuxtableCore/Viewer/ViewerProblem.swift */
 "Get RAW Helper" = "Get RAW Helper";
 
-/* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift */
-"Get the Amazon Photos app" = "Get the Amazon Photos app";
-
 /* LuxtableMac/Updates/UpdateTools.swift */
 "GitHub answered HTTP %lld" = "GitHub answered HTTP %lld";
 
@@ -3810,9 +3759,6 @@
 
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Half the height of the sharp band, of the long edge." = "Half the height of the sharp band, of the long edge.";
-
-/* LuxtableCore/Tools/ArchiveDisplay.swift */
-"Handing originals to Amazon Photos…" = "Handing originals to Amazon Photos…";
 
 /* LuxtableCore/Tools/LayerToolSpecs.swift */
 "Hard (100 %) or soft brush edge." = "Hard (100 %) or soft brush edge.";
@@ -4717,9 +4663,6 @@
 /* LuxtableMac/Views/OnboardingView.swift */
 "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar.";
 
-/* LuxtableUI/Views/Tools/LibraryPanels.swift */
-"Luxtable mirrors your originals into a folder that the official Amazon Photos app backs up. No passwords, no private APIs." = "Luxtable mirrors your originals into a folder that the official Amazon Photos app backs up. No passwords, no private APIs.";
-
 /* LuxtableCore/AI/Upscale/UpscaleModel.swift */
 "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, about 34 MB) and keep it on this Mac. Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable." = "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, about 34 MB) and keep it on this Mac. Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable.";
 
@@ -5485,7 +5428,7 @@
 /* LuxtableMac/Views/Archive/ArchiveSettingsView.swift */
 "Object storage secret access key" = "Object storage secret access key";
 
-/* LuxtableCore/AI/AIHighlights.swift, LuxtableCore/Merge/PhotoMerge.swift, LuxtableCore/Plugins/PluginStore.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/OnboardingView.swift, LuxtableUI/Views/Tools/LibraryPanels.swift */
+/* LuxtableCore/AI/AIHighlights.swift, LuxtableCore/Merge/PhotoMerge.swift, LuxtableCore/Plugins/PluginStore.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableMac/Views/Export/ExportSheet.swift */
 "Off" = "Off";
 
 /* LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
@@ -5493,9 +5436,6 @@
 
 /* LuxtableMac/Views/Archive/ArchiveSettingsView.swift */
 "Off: photos you rejected (and the session's Trash) stay out of the archive, and deleting them leaves no copy" = "Off: photos you rejected (and the session's Trash) stay out of the archive, and deleting them leaves no copy";
-
-/* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift */
-"Off: photos you rejected aren't handed to Amazon Photos" = "Off: photos you rejected aren't handed to Amazon Photos";
 
 /* LuxtableMac/Views/Export/ShareViews.swift */
 "Off: where the photo was taken stays private. Your name, copyright, caption and keywords go in either way" = "Off: where the photo was taken stays private. Your name, copyright, caption and keywords go in either way";
@@ -5656,12 +5596,6 @@
 /* LuxtableMac/Views/Import/ExternalImportSheet.swift */
 "Originals are copied; %@ is never changed." = "Originals are copied; %@ is never changed.";
 
-/* LuxtableCore/Tools/ArchiveSettingsModel.swift */
-"Originals are handed to Amazon Photos after each import." = "Originals are handed to Amazon Photos after each import.";
-
-/* LuxtableCore/Tools/ArchiveSettingsModel.swift */
-"Originals are handed to the folder the Amazon Photos app backs up." = "Originals are handed to the folder the Amazon Photos app backs up.";
-
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Other Sources" = "Other Sources";
 
@@ -5809,9 +5743,6 @@
 /* LuxtableUI/Views/Map/MapBrowser.swift */
 "Photos of this session, or of every session" = "Photos of this session, or of every session";
 
-/* LuxtableCore/Tools/ArchiveSettingsModel.swift */
-"Photos only: videos are archived with the session but aren't handed to Amazon Photos." = "Photos only: videos are archived with the session but aren't handed to Amazon Photos.";
-
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Photos whose files were moved or deleted outside Luxtable" = "Photos whose files were moved or deleted outside Luxtable";
 
@@ -5868,9 +5799,6 @@
 
 /* LuxtableUI/Views/Tools/EffectsPanel.swift */
 "Pick the focus on the photo" = "Pick the focus on the photo";
-
-/* LuxtableUI/Views/Tools/LibraryPanels.swift */
-"Pick the folder watched by the Amazon Photos app" = "Pick the folder watched by the Amazon Photos app";
 
 /* LuxtableCore/AI/Find/FindModel.swift, LuxtableCore/Immich/ImmichSettings.swift, LuxtableCore/SmartFolders/SmartFolder.swift, LuxtableMac/Views/Immich/ImmichSettingsView.swift, LuxtableUI/Views/Browser/BrowserViews.swift, LuxtableUI/Views/Browser/FilterBar.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
 "Picked" = "Picked";
@@ -6778,9 +6706,6 @@
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Send JPEGs of the selection with Messages, Mail, AirDrop and more (⌥⌘E). Size and quality: Settings ▸ Sharing" = "Send JPEGs of the selection with Messages, Mail, AirDrop and more (⌥⌘E). Size and quality: Settings ▸ Sharing";
 
-/* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift */
-"Send rejected photos to Amazon Photos" = "Send rejected photos to Amazon Photos";
-
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Separation between darks and lights." = "Separation between darks and lights.";
 
@@ -7324,9 +7249,6 @@
 /* LuxtableMac/Views/Plugins/PluginsSettingsView.swift */
 "Stop loading this development folder" = "Stop loading this development folder";
 
-/* LuxtableUI/Views/Tools/LibraryPanels.swift */
-"Stop mirroring originals to Amazon Photos" = "Stop mirroring originals to Amazon Photos";
-
 /* LuxtableUI/Views/Tools/EffectsPanel.swift */
 "Stop picking the focus" = "Stop picking the focus";
 
@@ -7590,9 +7512,6 @@
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "The API key couldn't be removed from your Keychain." = "The API key couldn't be removed from your Keychain.";
-
-/* LuxtableCore/Tools/ArchiveSettingsModel.swift */
-"The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it." = "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it.";
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "The Keychain refused the API key." = "The Keychain refused the API key.";
@@ -8056,9 +7975,6 @@
 /* LuxtableUI/Views/Tools/AIDenoiseSection.swift */
 "Turn AI Denoise on for the selected photos and denoise them in the background" = "Turn AI Denoise on for the selected photos and denoise them in the background";
 
-/* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift, LuxtableMac/Views/OnboardingView.swift, LuxtableUI/Views/Tools/LibraryPanels.swift */
-"Turn Off" = "Turn Off";
-
 /* LuxtableMac/Views/VoiceViews.swift */
 "Turn Voice Commands Off" = "Turn Voice Commands Off";
 
@@ -8232,9 +8148,6 @@
 
 /* LuxtableMac/Views/Archive/ArchiveSettingsView.swift */
 "Use %@" = "Use %@";
-
-/* LuxtableUI/Views/Tools/LibraryPanels.swift */
-"Use Folder" = "Use Folder";
 
 /* LuxtableMac/Views/CommandBar/AISettingsView.swift */
 "Use Jev for phrases the rules don't understand" = "Use Jev for phrases the rules don't understand";

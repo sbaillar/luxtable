@@ -119,7 +119,7 @@ Each contribution kind has a contract number. The host supports a range per kind
 | `voice_phrases` | data | Phrases for voice commands ("keeper" → Pick) | `phrases@1`, below |
 | `export_post_process` | code | A step on each exported image at its final size, before the watermark | See "Post-process contract" |
 | `export_destination` | code (WASM) | Where exports go: an online service through host-mediated HTTP and OAuth, or a local hand-off folder | Specified; see "Online destinations" |
-| `native_feature` | switch (bundled only) | Turns one of the app's own optional integrations on or off (Archive, Amazon Photos, Immich, Google Photos) | `feature@1`, see "Native features" |
+| `native_feature` | switch (bundled only) | Turns one of the app's own optional integrations on or off (Archive, Immich, Google Photos) | `feature@1`, see "Native features" |
 | `export_recipes` | data | Ready-made export recipes | Later |
 | `profiles` | data | ICC and DCP profiles | Later |
 | `keywords` | data | A keyword vocabulary | Later |
@@ -178,21 +178,20 @@ summary = "Keeps developed copies and XMP sidecars of your photos in the archive
 permissions = ["files.write:developed-copies"]   # shown, never asked for (built in)
 
 [[contributes.native_feature]]
-id = "immich"                       # one of: archive, amazon-photos, immich, google-photos
+id = "immich"                       # one of: archive, immich, google-photos
 contract = 1
 uses = ["Your Immich server (the address and API key you enter)"]   # what it reaches, in words
 ```
 
 - **Bundled only.** Only a package under a `luxtable.*` id may declare `native_feature`, and those load only from the app bundle with the hashes compiled in. A third-party manifest declaring it is refused when it is validated, so at `lt-plugin validate`, at install and at load; a `luxtable.*` id outside the bundle is refused as before, and a tampered bundled folder doesn't load (its feature stays off).
 - **No files, no params.** A native feature names no `file`, `module`, `entry` or `params`; `uses` (plain text, cleaned like a summary) is allowed only here. Its `permissions` describe the app's own code: listed, never asked for, and no "never used" warning. A feature id this Luxtable doesn't know is skipped with a warning (an error at author time).
-- **Off until turned on.** A bundled plug-in with a native feature is off until the user turns it on (other bundled plug-ins are on until turned off). The first launch with feature plug-ins decides each one once (`Host::seed_features`): **on when the user had already set the feature up** (Archive: a target; Amazon Photos: a folder; Immich: a server address; Google Photos: signed in, or their own OAuth client entered; the client built into the app doesn't count), otherwise off. The decision is written to `state.json`, so later launches never re-decide it and read no preferences or Keychain items for it (`undecided_features` is empty). Onboarding offers the archive (off until the user turns it on there) and shows the Amazon Photos step only while that integration is on; Finish turns on what was set up in it.
-- **What "off" means.** The feature's Settings tab, menu and context-menu items, toolbar and status-bar entries, badges, tool panels and Export-sheet section go away (the Export sheet keeps one quiet line saying where uploads are turned on), and nothing it would do runs: the app asks `PluginHost.native_features` after every change (`FeatureGates`), and Rust code that runs on its own asks the registry itself (`lt_ffi::features::FeatureGate`: the archive driver starts no rsync run, Amazon hand-off or Immich sidecar or album step while its feature is off). Work already going finishes rather than stopping half-way (an rsync run, a hand-off batch, a developed-copy render, an album sync, the current recipe's Google upload); nothing new starts. A recipe that uploads to Google Photos can't start while Google Photos is off ("turn it on in Settings ▸ Plugins, or turn the upload off"), like a recipe naming a disabled post-process step.
+- **Off until turned on.** A bundled plug-in with a native feature is off until the user turns it on (other bundled plug-ins are on until turned off). The first launch with feature plug-ins decides each one once (`Host::seed_features`): **on when the user had already set the feature up** (Archive: a target; Immich: a server address; Google Photos: signed in, or their own OAuth client entered; the client built into the app doesn't count), otherwise off. The decision is written to `state.json`, so later launches never re-decide it and read no preferences or Keychain items for it (`undecided_features` is empty). Onboarding offers the archive (off until the user turns it on there); Finish turns it on when it was set up there. A `state.json` from an older Luxtable that still records `luxtable.amazon-photos` (the Amazon Photos hand-off, since removed) loads as before; the entry is ignored.
+- **What "off" means.** The feature's Settings tab, menu and context-menu items, toolbar and status-bar entries, badges, tool panels and Export-sheet section go away (the Export sheet keeps one quiet line saying where uploads are turned on), and nothing it would do runs: the app asks `PluginHost.native_features` after every change (`FeatureGates`), and Rust code that runs on its own asks the registry itself (`lt_ffi::features::FeatureGate`: the archive driver starts no rsync run or Immich sidecar or album step while its feature is off). Work already going finishes rather than stopping half-way (an rsync run, a developed-copy render, an album sync, the current recipe's Google upload); nothing new starts. A recipe that uploads to Google Photos can't start while Google Photos is off ("turn it on in Settings ▸ Plugins, or turn the upload off"), like a recipe naming a disabled post-process step.
 - **Nothing is deleted.** Turning a feature off keeps its settings, credentials (Keychain) and data; turning it on restores it exactly, at once, without a relaunch. Changes pending while the archive was off are archived when it comes back.
 
 | Plug-in | Feature | Gated in Swift | Gated in Rust |
 |---|---|---|---|
 | `luxtable.archive` | `archive` | Settings ▸ Archive, the toolbar badge and popover, the Import & Archive panel, the quit and delete-rejected notes | the archive driver (no run starts, not even Sync Now) |
-| `luxtable.amazon-photos` | `amazon-photos` | Settings ▸ Amazon Photos, the Output panel, the popover's hand-off lines, the onboarding step | the hand-off pass and `mirror_to_amazon` |
 | `luxtable.immich` | `immich` | Settings ▸ Immich, Photo-menu and context-menu items, thumbnail badges, the status line, the album watch and renders | sidecars before archive runs, the album-sync queue |
 | `luxtable.google-photos` | `google-photos` | Settings ▸ Google Photos, the Export sheet's upload section, the album list, each recipe's upload | (uploads run only when the app asks) |
 
@@ -268,7 +267,7 @@ Later, with the contracts that need them: `now_ms`, `http_request` (destinations
 
 ### Online destinations (OAuth, Keychain, network) — specified in v1
 
-Destinations that upload to a service (Google Photos on `feat/gphotos`, Amazon Photos, SmugMug, a client gallery) run as **WASM**, so they work on iPad and their network access is enforced.
+Destinations that upload to a service (Google Photos on `feat/gphotos`, SmugMug, a client gallery) run as **WASM**, so they work on iPad and their network access is enforced.
 
 ```toml
 permissions = ["network:photoslibrary.googleapis.com", "network:oauth2.googleapis.com",
@@ -296,7 +295,7 @@ scopes = ["https://www.googleapis.com/auth/photoslibrary.appendonly"]
 - **Sign-in** is the host's (`ASWebAuthenticationSession`, PKCE S256, a random `state`); the plug-in never sees the code or a token.
 - **Keychain:** a generic-password item, service `app.luxtable.Luxtable.plugin`, account `<plugin id>/<account>`, `AfterFirstUnlockThisDeviceOnly`, not synced; deleted (and revoked) on sign-out or removal. Nothing secret goes in `state.json` or the logs.
 - **Requests** (`lt_plugin::destination::check_request`): HTTPS to a granted host, a known method, no host-only headers (`Authorization`, `Cookie`, `Host`…), a body only from a file the job handed over (streamed by the host), with timeouts, retries on 429/5xx and a 4 MB response cap.
-- **Local hand-off** (Amazon Photos' watched folder): `files.write:<label>` on the folder the user chooses, written through the host's atomic writes.
+- **Local hand-off** (a folder another app watches): `files.write:<label>` on the folder the user chooses, written through the host's atomic writes.
 - **Traits** live next to their consumer (`lt_export` owns `PostProcess`, and will own `Destination`); `lt-plugin` adapts modules to them, so there is no dependency cycle and wasmi never enters the export crate.
 
 ## Versioning rules
@@ -322,7 +321,6 @@ scopes = ["https://www.googleapis.com/auth/photoslibrary.appendonly"]
 | **Voice phrases** | `voice_phrases` packs | Easy: the loader exists; the built-in catalog stays the parser |
 | **Watermark** | `export_post_process` | Medium: it is the seam's native provider today; a WASM port needs a host text rasteriser and would be seconds per export in an interpreter, so it stays native |
 | **Google Photos destination** | `native_feature` today; `export_destination` (OAuth + network) later | **Optional in v1.1** (`luxtable.google-photos`, off by default). Its narrow uploader fits the destination contract; it moves to WASM once the host HTTP/OAuth imports ship |
-| **Amazon Photos hand-off** | `native_feature` today; `export_destination` (local folder) later | **Optional in v1.1** (`luxtable.amazon-photos`, off by default) |
 | **Immich** | `native_feature` | **Optional in v1.1** (`luxtable.immich`, off by default); it rides on the archive's runs, so its code stays native |
 | **rsync archive** | `native_feature` (a helper later) | **Optional in v1.1** (`luxtable.archive`, off until turned on); its volume-safety logic stays in the host |
 | **Capture One importer** | `import_source` (native built-in) | Hard: it writes deeply into sessions |
@@ -332,7 +330,7 @@ scopes = ["https://www.googleapis.com/auth/photoslibrary.appendonly"]
 **Reference plug-ins:**
 1. **`plugins/builtin/luxtable-looks.ltplugin`** — the 18 looks and 20 styles moved out of Swift, generated from the old tables. `PluginTests` checks every one **field for field** against those tables (kept as test data in `LegacyBuiltIns.swift`: id, name, summary, groups, relative, absolute fields, edit, category, order), applies each to a corrected photo against a recorded fixture, and checks Intensity 0 restores the photo exactly for every look. Look ids and UUIDs are unchanged, so sidecars and thumbnails keep working.
 2. **`plugins/film-border.ltplugin`** — a WASM export step written in WAT, the code template: a border around the photo (growing the canvas) or over its edge, any colour with alpha.
-3. **`plugins/builtin/luxtable-{archive,amazon-photos,immich,google-photos}.ltplugin`** — manifest-only `native_feature` switches for the optional integrations (v1.1).
+3. **`plugins/builtin/luxtable-{archive,immich,google-photos}.ltplugin`** — manifest-only `native_feature` switches for the optional integrations (v1.1).
 
 ## SDK and authoring
 
@@ -370,4 +368,4 @@ Not in v1, in rough order:
 - **M15 concurrency:** an immutable registry snapshot per export job (today a job resolves its steps at start and keeps them, but a removal mid-job isn't specified); `progress` setting only an atomic.
 - **L1** the FFI contract number is assigned at merge. **L2** `serde_json` `float_roundtrip` for packs (the field-for-field test passes today without it). **L4** a criterion bench for Film Border at 24 MP (RGBA8, RGB16) to set the fuel factor, with a budget in ARCHITECTURE. **L5** `clock` (`now_ms`) when a contract needs it. **L7** localised names and labels (`name.de = "…"`). **L8** `cargo fuzz` targets for the manifest, package (zip) and signature parsers, and a larger adversarial-module suite.
 - **Signer names:** fold confusable characters (Unicode UTS #39 skeletons) before the reserved-name check, so homoglyphs of "Luxtable" are refused too (zero-width, control and bidi characters already are). The key is the identity: every place a signer name is shown keeps its fingerprint beside it, in v1 and after.
-- Extension points after these: `commands` and `tool_panels`, `metadata_provider`/`event_hook`, running `export_destination` (Google Photos, then Amazon Photos), helpers, `ai_models`, `viewer_overlay`, `develop_filter`.
+- Extension points after these: `commands` and `tool_panels`, `metadata_provider`/`event_hook`, running `export_destination` (Google Photos first), helpers, `ai_models`, `viewer_overlay`, `develop_filter`.

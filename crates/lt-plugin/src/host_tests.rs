@@ -1406,25 +1406,24 @@ fn feature_plugins_start_off_and_switch_their_feature() {
 #[test]
 fn the_first_launch_turns_on_what_was_already_set_up() {
     let e = env();
-    for f in ["archive", "amazon-photos", "immich", "google-photos"] {
+    for f in ["archive", "immich", "google-photos"] {
         feature_plugin(&e.builtin, f);
     }
     data_plugin(&e.builtin, "looks", "luxtable.looks", "1.0.0");
     let mut h = e.host();
-    assert_eq!(h.undecided_features().len(), 4);
-    // An existing user: an archive target and an Immich server were set up; Amazon and
-    // Google weren't.
+    assert_eq!(h.undecided_features().len(), 3);
+    // An existing user: an archive target and an Immich server were set up; Google
+    // wasn't (a feature the app no longer has may still be reported: ignored).
     let configured = BTreeMap::from([
         ("archive".to_owned(), true),
         ("immich".to_owned(), true),
-        ("amazon-photos".to_owned(), false),
+        ("amazon-photos".to_owned(), true),
     ]);
     let mut decided = h.seed_features(&configured).unwrap();
     decided.sort();
     assert_eq!(
         decided,
         [
-            "luxtable.amazon-photos",
             "luxtable.archive",
             "luxtable.google-photos",
             "luxtable.immich"
@@ -1454,6 +1453,30 @@ fn the_first_launch_turns_on_what_was_already_set_up() {
             .0
             .plugins
             .contains_key("luxtable.looks")
+    );
+}
+
+#[test]
+fn a_removed_feature_plugin_left_in_the_state_is_ignored() {
+    // Amazon Photos was a bundled feature plug-in; a user who had it on keeps that
+    // record in state.json after the update. It loads, does nothing and stays put.
+    let e = env();
+    feature_plugin(&e.builtin, "archive");
+    fs::create_dir_all(&e.user).unwrap();
+    fs::write(
+        e.user.join(crate::state::STATE_FILE),
+        br#"{"format":1,"plugins":{
+            "luxtable.amazon-photos":{"enabled":true,"granted":["files.write:amazon-photos-folder"]},
+            "luxtable.archive":{"enabled":true}}}"#,
+    )
+    .unwrap();
+    let h = e.host();
+    assert_eq!(h.native_features(), BTreeSet::from(["archive".to_owned()]));
+    assert!(!h.feature_enabled("amazon-photos"));
+    assert_eq!(h.undecided_features().len(), 0);
+    assert!(
+        State::load(&e.user).0.plugins["luxtable.amazon-photos"].enabled,
+        "the old record is kept, not rewritten"
     );
 }
 

@@ -44,7 +44,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-use lt_core::{Adjustments, ColorTag, FileHash, PickState, Rating};
+use lt_core::{Adjustments, ColorTag, PickState, Rating};
 use lt_session::identity::{self, Hashes, Verdict};
 use lt_session::{
     AlbumId, AlbumKind, Filter, Found, ImageId, ImageInfo, ImageMetaLite, NewOriginal, Preset,
@@ -893,44 +893,11 @@ impl SessionHandle {
             .to_vec()
     }
 
-    /// An imported session (its originals are its own copies under
-    /// `Capture/`), as opposed to a folder opened in place. Only imported
-    /// sessions are handed to Amazon Photos.
-    pub(crate) fn is_imported(&self) -> bool {
-        self.in_place.is_none()
-    }
-
     /// Consistent copy of the session index at `dest` (SQLite backup API).
     pub(crate) fn snapshot_index(&self, dest: &Path) -> Result<(), String> {
         lock(&self.session)
             .snapshot_to(dest)
             .map_err(|e| e.to_string())
-    }
-
-    /// Originals with a verified whole-file hash (for the Amazon hand-off),
-    /// plus how many are not hashed yet or missing (handed over later).
-    /// Rejected photos are left out unless `include_rejected`;
-    /// the last list is their hashes (unhashed ones as `UNHASHED`).
-    pub(crate) fn backup_originals(
-        &self,
-        include_rejected: bool,
-    ) -> Result<(HashedOriginals, u64, Vec<FileHash>), DsError> {
-        let s = lock(&self.session);
-        let mut out = Vec::new();
-        let mut later = 0;
-        let mut excluded = Vec::new();
-        for img in s.images()? {
-            if !include_rejected && Self::is_rejected(&s, &img)? {
-                excluded.push(img.hash);
-                continue;
-            }
-            if img.missing || img.hash == UNHASHED {
-                later += 1;
-            } else {
-                out.push((s.original_path(img.rel_path.as_str()), img.hash));
-            }
-        }
-        Ok((out, later, excluded))
     }
 
     /// The originals an archive run copies (rejected ones only when
@@ -1005,9 +972,6 @@ impl SessionHandle {
         Ok(out)
     }
 }
-
-/// Originals and their verified whole-file hashes.
-pub(crate) type HashedOriginals = Vec<(PathBuf, FileHash)>;
 
 /// Open (or create) the in-place session for `folder` and register new files
 /// (with `auto_apply` applied to them; it is stored as the session's
@@ -2648,7 +2612,7 @@ mod tests {
     };
 
     /// Whole-file BLAKE3 (what the tests' sessions record).
-    fn hash_file(p: &Path) -> io::Result<FileHash> {
+    fn hash_file(p: &Path) -> io::Result<lt_core::FileHash> {
         identity::hash_original(p, None, &|| false).map(|h| h.file)
     }
     const CARD: Probe = Probe {

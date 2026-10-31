@@ -3,7 +3,7 @@ import LuxtableUI
 import SwiftUI
 
 /// Archive details from the toolbar badge: target, per-session status, recent
-/// runs, the Amazon Photos hand-off, and "Sync Now".
+/// runs, and "Sync Now".
 struct ArchivePopover: View {
     @Bindable var model: AppModel
 
@@ -51,10 +51,6 @@ struct ArchivePopover: View {
                         if s.problems.count > 5 {
                             Text("and \(s.problems.count - 5) more").font(DS.Font.caption).foregroundStyle(DS.textSecondary)
                         }
-                        if let a = s.amazon, model.features.isOn(.amazonPhotos) {
-                            Text(ArchiveDisplay.amazonLine(a)).font(DS.Font.caption)
-                                .foregroundStyle(a.error == nil ? DS.textSecondary : DS.reject)
-                        }
                     }
                     .accessibilityElement(children: .combine)
                 }
@@ -71,12 +67,6 @@ struct ArchivePopover: View {
                         if let raw = r.detail { ArchiveDetailsDisclosure(raw: raw) }
                     }
                 }
-            }
-            if let amazon = status.detail?.amazon, model.features.isOn(.amazonPhotos) {
-                Divider()
-                Label(ArchiveDisplay.amazonLine(amazon), systemImage: "icloud.and.arrow.up")
-                    .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
-                    .help(amazon.folder)
             }
             Text(ArchiveDisplay.explanation(state))
                 .font(DS.Font.caption).foregroundStyle(DS.textSecondary)

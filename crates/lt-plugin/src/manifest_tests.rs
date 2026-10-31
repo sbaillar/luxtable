@@ -181,7 +181,7 @@ fn permissions_parse_and_print() {
         "metadata_write",
         "clock",
         "files.read:inbox",
-        "files.write:amazon",
+        "files.write:outbox",
         "network:api.example.com",
         "network:*.example.com",
         "account:google",
@@ -247,15 +247,15 @@ fn an_online_destination_fits_the_contract() {
 
 #[test]
 fn a_local_destination_fits_the_contract() {
-    let amazon = r#"
-permissions = ["files.write:amazon-photos"]
+    let local = r#"
+permissions = ["files.write:watched-folder"]
 [[contributes.export_destination]]
-id = "amazon-photos"
-module = "amazon.wasm"
+id = "watched-folder"
+module = "folder.wasm"
 contract = 1
 formats = ["original", "jpeg"]
 "#;
-    let m = parse(&with(amazon)).unwrap();
+    let m = parse(&with(local)).unwrap();
     assert_eq!(m.contributions[0].accounts.len(), 0);
 }
 

@@ -39,14 +39,13 @@ import Testing
         ob.archiveTarget = root.appendingPathComponent("nas/Luxtable").path
         await ob.refreshArchiveStatus()
         ob.sessionsFolder = root.appendingPathComponent("My Sessions")
-        ob.amazonFolder = root.appendingPathComponent("Amazon")
         try ob.finish()
-        FJ.log("firstrun: after finish sessions=\(settings.sessionsFolder.path) exists=\(fm.fileExists(atPath: settings.sessionsFolder.path)) archive='\(settings.archiveTarget)' amazon=\(settings.amazonPhotosFolder?.path ?? "nil") amazonBookmark=\(settings.amazonPhotosFolderBookmark != nil) amazonExists=\(fm.fileExists(atPath: root.appendingPathComponent("Amazon").path))")
+        FJ.log("firstrun: after finish sessions=\(settings.sessionsFolder.path) exists=\(fm.fileExists(atPath: settings.sessionsFolder.path)) archive='\(settings.archiveTarget)'")
         await m.start()
         FJ.log("firstrun: empty state sessions=\(m.sessionList.count) current=\(m.currentSession?.name ?? "nil") archive='\(ArchiveDisplay.title(m.archiveStatus.state))'/'\(ArchiveDisplay.long(m.archiveStatus.state))' import menu='\(CommandCatalog.title(.importCard, model: m))' cardNote='\(ImportWording.cardPanelNote(verifies: true, live: true))'")
         let asm = ArchiveSettingsModel(settings: settings)
         try? await Task.sleep(for: .seconds(2))
-        FJ.log("firstrun: archive settings target='\(asm.targetText)' amazon='\(asm.amazonText)'")
+        FJ.log("firstrun: archive settings target='\(asm.targetText)'")
         await m.shutdownArchive()
         m.stop()
     }

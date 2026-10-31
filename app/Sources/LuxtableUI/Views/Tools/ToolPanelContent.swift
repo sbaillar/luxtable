@@ -43,7 +43,6 @@ struct ToolPanelContent: View {
         case .metadata: MetadataPanel(model: model)
         case .keywords: KeywordsPanel(model: model)
         case .export: ExportPanel(model: model)
-        case .amazonPhotos: AmazonPhotosPanel(settings: model.settings)
         case .people: PeoplePanel(model: model, people: model.people)
         case .history: HistoryPanel(model: model)
         }

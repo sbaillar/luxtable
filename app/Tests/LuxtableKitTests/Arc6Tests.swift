@@ -27,24 +27,21 @@ private final class HungCalls: @unchecked Sendable {
 
 private func overview(enabled: Bool = true, available: Bool = true, reason: String? = nil, timedOut: Bool = false,
                       sessions: [SessionArchiveStatus] = [], runs: [ArchiveRun] = [],
-                      amazon: AmazonStatus = AmazonStatus(folder: nil, running: false, lastRunMs: nil, placed: 0, cloned: 0,
-                                                          alreadyMirrored: 0, skippedUnsupported: 0, waiting: 0, failed: [],
-                                                          error: nil, folderMissing: false, session: nil),
                       rsync: String? = "/opt/homebrew/bin/rsync (rsync 3.5.1)") -> ArchiveOverview {
     ArchiveOverview(enabled: enabled,
                     target: TargetCheck(path: "/Volumes/pics/Luxtable", available: available, timedOut: timedOut,
                                         reason: reason, fsType: available ? "nfs" : nil),
-                    rsync: rsync, rsyncError: nil, sessions: sessions, runs: runs, amazon: amazon)
+                    rsync: rsync, rsyncError: nil, sessions: sessions, runs: runs)
 }
 
 func arcSession(_ name: String = "Trip", running: Bool = false, percent: UInt8? = nil, pending: UInt64 = 0,
                 lastSuccess: Int64? = nil, error: String? = nil, notArchivable: String? = nil,
-                problems: [String] = [], notResponding: Bool = false, amazon: AmazonStatus? = nil) -> SessionArchiveStatus {
+                problems: [String] = [], notResponding: Bool = false) -> SessionArchiveStatus {
     SessionArchiveStatus(name: name, source: "/x/\(name)", notArchivable: notArchivable, archiveFolder: nil,
                          lastSuccessMs: lastSuccess, lastError: error, problems: problems, pendingChanges: pending,
                          behindSinceMs: pending > 0 ? 1000 : nil, running: running, notResponding: notResponding,
                          percent: percent, bytesPerSec: percent.map { _ in 2_000_000 }, etaSecs: nil,
-                         consecutiveFailures: error == nil ? 0 : 2, retryInMs: error == nil ? nil : 60_000, amazon: amazon)
+                         consecutiveFailures: error == nil ? 0 : 2, retryInMs: error == nil ? nil : 60_000)
 }
 
 private func session(_ name: String = "Trip", running: Bool = false, percent: UInt8? = nil, pending: UInt64 = 0,
@@ -53,7 +50,7 @@ private func session(_ name: String = "Trip", running: Bool = false, percent: UI
                notArchivable: notArchivable)
 }
 
-private let on = ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/pics/Luxtable", intervalMinutes: 10, amazonFolder: nil)
+private let on = ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/pics/Luxtable", intervalMinutes: 10)
 
 /// Records the hooks the app calls.
 final class RecordingArchive: ArchiveService, @unchecked Sendable {
@@ -76,8 +73,7 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
         let s = { (o: ArchiveOverview) in RustArchiveService.status(o, settings: on).state }
         #expect(s(overview(enabled: false)) == .unavailable("Archive off"))
         #expect(RustArchiveService.status(overview(enabled: false),
-                                          settings: ArchiveSettingsSnapshot(enabled: true, target: "", intervalMinutes: 10,
-                                                                            amazonFolder: nil)).state
+                                          settings: ArchiveSettingsSnapshot(enabled: true, target: "", intervalMinutes: 10)).state
                 == .unavailable("Archive off: no target set"))
         #expect(s(overview(sessions: [session(running: true, percent: 42)])) == .syncing(fraction: 0.42))
         #expect(s(overview(sessions: [session(running: true)])) == .syncing(fraction: -1), "openrsync: no progress")
@@ -92,25 +88,16 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
         #expect(s(overview(sessions: [session(lastSuccess: 1_000)])) == .idle)
     }
 
-    @Test func detailCarriesSessionsRunsAndAmazon() {
+    @Test func detailCarriesSessionsAndRuns() {
         let run = ArchiveRun(session: "Trip", trigger: "on demand", outcome: "succeeded", message: nil,
                              startedMs: 1_790_000_000_000, durationMs: 1234, warnings: ["vanished"], problems: [])
-        let amazon = AmazonStatus(folder: "/A", running: false, lastRunMs: 1_790_000_000_000, placed: 8, cloned: 8,
-                                  alreadyMirrored: 2, skippedUnsupported: 1, waiting: 3, failed: ["x: boom"], error: nil,
-                                  folderMissing: false, session: "Trip")
         let st = RustArchiveService.status(overview(available: false, reason: "not mounted",
                                                     sessions: [session(lastSuccess: 1_000), session("B", lastSuccess: 5_000)],
-                                                    runs: [run], amazon: amazon), settings: on)
+                                                    runs: [run]), settings: on)
         let d = try! #require(st.detail)
         #expect(st.lastSuccess == Date(timeIntervalSince1970: 5), "the newest success")
         #expect(d.targetReason == "not mounted" && d.rsync?.contains("rsync 3.5.1") == true)
         #expect(d.runs.first?.duration == .milliseconds(1234) && d.runs.first?.warnings == ["vanished"])
-        #expect(d.amazon == ArchiveDetail.Amazon(folder: "/A", lastRun: Date(timeIntervalSince1970: 1_790_000_000), placed: 8,
-                                                 alreadyMirrored: 2, waiting: 3, failed: ["x: boom"]))
-        // No Amazon run yet but a folder is set: shown as pending.
-        let pendingAmazon = RustArchiveService.status(overview(), settings: ArchiveSettingsSnapshot(
-            enabled: true, target: "/t", intervalMinutes: 5, amazonFolder: URL(fileURLWithPath: "/B")))
-        #expect(pendingAmazon.detail?.amazon?.folder == "/B" && pendingAmazon.detail?.amazon?.lastRun == nil)
         // rsync missing is shown in its place.
         var o = overview(rsync: nil)
         o.rsyncError = "no rsync found"
@@ -138,16 +125,10 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
         #expect(ArchiveDisplay.runLine(slow) == "T · interval · failed in 42 s: exit 23")
         let off = ArchiveDetail.Run(session: "T", trigger: "changes", outcome: "cancelled", started: now, duration: .zero)
         #expect(ArchiveDisplay.runLine(off) == "T · changes · cancelled")
-        typealias A = ArchiveDetail.Amazon
-        #expect(ArchiveDisplay.amazonLine(A(folder: "/A", running: true)).contains("Handing"))
-        #expect(ArchiveDisplay.amazonLine(A(folder: "/A", error: "disk full")) == "Amazon Photos: disk full")
-        #expect(ArchiveDisplay.amazonLine(A(folder: "/A")) == "Amazon Photos: after the next import")
-        #expect(ArchiveDisplay.amazonLine(A(folder: "/A", lastRun: now, placed: 8, alreadyMirrored: 1, waiting: 2, failed: ["x"]))
-                == "Amazon Photos: 9 originals handed to the app (8 new), 2 waiting for verification, 1 failed")
         // Syncing without progress (openrsync).
         #expect(ArchiveDisplay.title(.syncing(fraction: -1)) == "Syncing…")
         #expect(ArchiveDisplay.short(.syncing(fraction: -1)) == "Syncing" && ArchiveDisplay.long(.syncing(fraction: -1)) == "Syncing")
-        #expect(ArchiveDisplay.offText(ArchiveSettingsSnapshot(enabled: false, target: "/t", intervalMinutes: 1, amazonFolder: nil))
+        #expect(ArchiveDisplay.offText(ArchiveSettingsSnapshot(enabled: false, target: "/t", intervalMinutes: 1))
                 == "Archive switched off")
     }
 
@@ -173,29 +154,25 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
 @MainActor @Suite struct Arc6SettingsModelTests {
     @Test func suggestsThePicsShareOnlyWhenMountedAndUnset() async {
         let s = makeSettings()
-        let m = ArchiveSettingsModel(settings: s, checker: { _ in .ready(fsType: "nfs") }, exists: { $0 == "/Volumes/NAS" },
-                                     appInstalled: { true })
+        let m = ArchiveSettingsModel(settings: s, checker: { _ in .ready(fsType: "nfs") }, exists: { $0 == "/Volumes/NAS" })
         await m.refresh()
-        #expect(m.suggestion == AppSettings.defaultArchiveTarget && m.targetState == .notSet && m.amazonAppInstalled == true)
+        #expect(m.suggestion == AppSettings.defaultArchiveTarget && m.targetState == .notSet)
         #expect(m.targetText.contains("nothing is archived"))
         s.archiveEnabled = false
         await m.useSuggestion()
         #expect(s.archiveTarget == AppSettings.defaultArchiveTarget && s.archiveEnabled && m.suggestion == nil)
         // The fake says only the share exists: ready, and the folder comes with the first sync.
         #expect(m.targetState == .ready(fsType: "nfs") && m.targetText == "Ready: the folder is created on the first sync (nfs).")
-        #expect(m.amazonText.contains("Choose the folder"))
-        s.amazonPhotosFolder = URL(fileURLWithPath: "/A")
-        #expect(m.amazonText.contains("after each import"))
         // Not mounted: no suggestion.
         let s2 = makeSettings()
-        let m2 = ArchiveSettingsModel(settings: s2, checker: { _ in .notSet }, exists: { _ in false }, appInstalled: { false })
+        let m2 = ArchiveSettingsModel(settings: s2, checker: { _ in .notSet }, exists: { _ in false })
         await m2.refresh()
-        #expect(m2.suggestion == nil && m2.amazonAppInstalled == false && m2.amazonText.contains("isn't installed"))
+        #expect(m2.suggestion == nil)
         await m2.useSuggestion()
         #expect(s2.archiveTarget.isEmpty)
     }
 
-    /// A hung share (stat never returns) and a hung app lookup cost only the timeout:
+    /// A hung share (stat never returns) costs only the timeout:
     /// the model answers while the calls are still stuck (not a wall-clock bound, which
     /// a loaded machine overshoots; a model that waited would take the full minute).
     @Test func hungVolumeLooksAreBounded() async {
@@ -203,8 +180,7 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
         let hung = HungCalls()
         defer { hung.release() }
         let m = ArchiveSettingsModel(settings: s, checker: { _ in .notResponding },
-                                     exists: { _ in hung.hang(); return true },
-                                     appInstalled: { hung.hang(); return true }, timeout: 0.2)
+                                     exists: { _ in hung.hang(); return true }, timeout: 0.2)
         let clock = ContinuousClock()
         let t0 = clock.now
         await m.refresh()
@@ -213,7 +189,7 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
         // A few 0.2 s timeouts: generous for a loaded machine, but a refresh that
         // ignored its timeout (and sat out the minute) still fails.
         #expect(took < .seconds(30) * TestTiming.scale, "\(took)")
-        #expect(m.suggestion == nil && m.amazonAppInstalled == false)
+        #expect(m.suggestion == nil)
         await m.setTarget("/Volumes/hung/Luxtable")
         #expect(hung.returned == 0)
         #expect(m.targetState == .notResponding && m.targetText.contains("isn't responding"))
@@ -234,7 +210,6 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
                 == .notResponding)
         #expect(ArchiveSettingsModel.state(TargetCheck(path: "/x", available: false, timedOut: false, reason: nil, fsType: nil))
                 == .unavailable("unavailable"))
-        _ = ArchiveSettingsModel.amazonAppFound() // Launch Services + /Applications, whichever answers
         #expect(ArchiveSettingsModel.intervalChoices.contains(s.archiveIntervalMinutes))
     }
 }
@@ -299,9 +274,8 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
         return cond()
     }
 
-    /// Open a folder of sample copies, archive it to a temp target after an
-    /// "import", and hand its originals to a temp Amazon folder.
-    @Test func afterImportArchivesAndMirrorsOnTheLivePath() async throws {
+    /// Open a folder of sample copies and archive it to a temp target after an "import".
+    @Test func afterImportArchivesOnTheLivePath() async throws {
         guard let dir = try sampleFolderCopy() else { return }
         let fm = FileManager.default
         let tmp = fm.temporaryDirectory.appendingPathComponent("lt-arc6-live-\(UUID())")
@@ -309,17 +283,14 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
             try? fm.removeItem(at: dir)
             try? fm.removeItem(at: tmp)
         }
-        let target = tmp.appendingPathComponent("archive"), amazon = tmp.appendingPathComponent("Amazon Photos")
+        let target = tmp.appendingPathComponent("archive")
         try fm.createDirectory(at: target, withIntermediateDirectories: true)
-        try fm.createDirectory(at: amazon, withIntermediateDirectories: true) // chosen by the user: it exists
         let store = RustSessionStore(recents: RecentFolders(defaults: UserDefaults(suiteName: testSuiteName())!),
                                      storeBase: tmp.appendingPathComponent("stores"))
         let info = try await store.add(folder: dir)
-        await store.waitForHashing(info.id) // Amazon gets verified originals only
-        let box = Box(ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60, amazonFolder: amazon))
+        let box = Box(ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60))
         let service = RustArchiveService(initial: box.snapshot, settings: { box.snapshot },
                                          handles: { await store.archiveHandle(for: $0) },
-                                         manifest: tmp.appendingPathComponent("support/manifest.json"),
                                          lockDir: tmp.appendingPathComponent("locks").path, tick: .milliseconds(50))
         let updates = service.statusUpdates()
         var seen: [ArchiveStatus.State] = []
@@ -329,11 +300,9 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
         let t0 = clock.now
         await service.afterImport(session: info, files: 8)
         #expect(await waitFor(60) { service.snapshot().detail?.runs.contains { $0.outcome == "succeeded" } == true })
-        // The hand-off runs in the background (serialized): wait for it too.
-        #expect(await waitFor(60) { (service.snapshot().detail?.amazon?.placed ?? 0) > 0 })
         let took = clock.now - t0
         let st = service.snapshot()
-        print("ARC6 live: archive + amazon of \(info.photoCount) photos: \(took); \(st.detail?.rsync ?? "?")")
+        print("ARC6 live: archive of \(info.photoCount) photos: \(took); \(st.detail?.rsync ?? "?")")
         #expect(st.state == .idle && st.lastSuccess != nil, "\(st.state)")
         // The session's own folder on the target (`<name> (<id>)`, A-H3).
         let folder = try #require(st.detail?.sessions.first?.archiveFolder)
@@ -343,12 +312,8 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
             #expect(fm.contentsEqual(atPath: dir.appendingPathComponent(f).path, andPath: dest.appendingPathComponent(f).path))
         }
         #expect(fm.fileExists(atPath: dest.appendingPathComponent(".lt/index-snapshot.db").path))
-        let a = try #require(st.detail?.amazon)
-        #expect(a.placed == info.photoCount && a.failed.isEmpty && a.error == nil, "\(a)")
-        let mirrored = try fm.contentsOfDirectory(atPath: amazon.appendingPathComponent(info.name).path)
-        #expect(mirrored.count == info.photoCount)
         // Settings changes are applied on the next tick: switched off → "Archive switched off".
-        box.snapshot = ArchiveSettingsSnapshot(enabled: false, target: target.path, intervalMinutes: 60, amazonFolder: nil)
+        box.snapshot = ArchiveSettingsSnapshot(enabled: false, target: target.path, intervalMinutes: 60)
         #expect(await waitFor(5) { service.status.state == .unavailable("Archive switched off") })
         // Changes and close go through; quitting stops the manager promptly.
         await service.noteChanges(2, in: info)
@@ -370,8 +335,7 @@ final class RecordingArchive: ArchiveService, @unchecked Sendable {
     @Test func offlineTargetNeverBlocks() async throws {
         let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("lt-arc6-off-\(UUID())")
         defer { try? FileManager.default.removeItem(at: tmp) }
-        let snap = ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/lt-no-such-share/Luxtable", intervalMinutes: 10,
-                                           amazonFolder: nil)
+        let snap = ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/lt-no-such-share/Luxtable", intervalMinutes: 10)
         let service = RustArchiveService(initial: snap, settings: { snap }, handles: { _ in nil },
                                          lockDir: tmp.path, tick: .milliseconds(50))
         let s = SessionInfo(name: "s", url: tmp, photoCount: 0, createdAt: Date())

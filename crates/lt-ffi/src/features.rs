@@ -4,7 +4,7 @@
 //! - The app asks [`PluginHost::native_features`] after each plug-in change and hides
 //!   or quiets a feature that is off (its settings, menus, badges, jobs).
 //! - Rust code that runs on its own asks through a [`FeatureGate`]: the archive driver
-//!   starts no rsync run, Amazon hand-off or Immich sidecar/album work while its
+//!   starts no rsync run or Immich sidecar/album work while its
 //!   feature is off (a run already going finishes; nothing is cut off half-written).
 //! - [`PluginHost::seed_features`] is the one-time migration: a feature the user had
 //!   already set up starts on.
@@ -21,8 +21,6 @@ use crate::plugins::PluginHost;
 
 /// rsync to the archive target (`luxtable.archive`).
 pub const ARCHIVE: &str = "archive";
-/// The Amazon Photos hand-off (`luxtable.amazon-photos`).
-pub const AMAZON_PHOTOS: &str = "amazon-photos";
 /// Immich developed copies, sidecars and albums (`luxtable.immich`).
 pub const IMMICH: &str = "immich";
 /// The Google Photos export destination (`luxtable.google-photos`).
@@ -52,8 +50,7 @@ impl FeatureGate {
 #[uniffi::export]
 #[allow(clippy::needless_pass_by_value)] // UniFFI hands exports owned values
 impl PluginHost {
-    /// The native features that are on (`archive`, `amazon-photos`, `immich`,
-    /// `google-photos`).
+    /// The native features that are on (`archive`, `immich`, `google-photos`).
     pub fn native_features(&self) -> Vec<String> {
         self.lock().native_features().into_iter().collect()
     }
@@ -78,7 +75,7 @@ impl PluginHost {
 
 #[uniffi::export]
 impl ArchiveManager {
-    /// Ask `host` before each archive run, Amazon hand-off and Immich step (the app's
+    /// Ask `host` before each archive run and Immich step (the app's
     /// one registry). `None`: ungated.
     pub fn set_plugin_host(&self, host: Option<Arc<PluginHost>>) -> Result<(), DsError> {
         guard(|| {

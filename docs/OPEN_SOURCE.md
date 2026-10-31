@@ -275,13 +275,12 @@ For contributions, use the **DCO** (a `Signed-off-by` line, checked in CI) rathe
   - Change the doc-comment and test paths to `/Volumes/Archive`.
   - Keep the behaviour: suggest, never default (L5 already does that).
 
-### S7. Amazon Photos and other trademarks in features
+### S7. Trademarks in features
 - **Evidence:**
-  - `crates/lt-archive/src/amazon.rs:1-4` and the README "Archive and backup" section: a folder hand-off to the official Amazon Photos app, which uses no private API. That is fine legally.
+  - (The Amazon Photos folder hand-off this item used to cover has been removed from the product.)
   - The README comparison table names Capture One and Lightroom Classic, and has a trademark and non-affiliation line (`README.md`, under "Score").
 - **Fix:**
   - Keep the nominative use; it is factual and disclaimed.
-  - Rename the UI to "Backup folder (for example Amazon Photos)" so the feature isn't tied to one vendor.
   - Never use the vendors' logos.
   - Keep the comparison table restrained: "based on public documentation" is already there.
 
