@@ -101,6 +101,7 @@
 "%@ paste mode" = "Modo de pegado de %@";
 "%@ photo" = "%@ foto";
 "%@ photos" = "%@ fotos";
+"%@ puts a box on the photo to move and resize; the arrow next to it picks a ratio such as Square or 16:9. Return applies, Esc cancels." = "%@ coloca en la foto un recuadro para mover y cambiar de tamaño; la flecha de al lado elige una proporción como Cuadrado o 16:9. Retorno aplica, Esc cancela.";
 "%@ reverted: %@ restored" = "%@ revertida: %@ restaurado";
 "%@ saved by a newer Luxtable (left alone)" = "%@ guardadas por una versión más reciente de Luxtable (sin tocar)";
 "%@ selected" = "%@ seleccionadas";
@@ -481,6 +482,7 @@
 "Adding to the Google Photos album…" = "Añadiendo al álbum de Google Photos…";
 "Adds: %@" = "Añade: %@";
 "Adjust" = "Ajustar";
+"Adjust the photo" = "Ajustar la foto";
 "Adjusted" = "Ajustada";
 "Adjustments" = "Ajustes";
 "Advanced" = "Avanzado";
@@ -608,6 +610,7 @@
 "Auto adjust" = "Ajuste automático";
 "Auto align" = "Alinear automáticamente";
 "Auto crop" = "Recortar automáticamente";
+"Auto fixes light and color in one click, a look restyles the photo, and six sliders fine-tune it. Crop & Straighten is at the bottom. View ▸ Simple Mode (⌃⌘S) switches to every tool." = "Automático corrige la luz y el color con un clic, un aspecto cambia el estilo de la foto y seis controles deslizantes la afinan. Recortar y enderezar está al final. Visualización ▸ Modo sencillo (⌃⌘S) cambia a todas las herramientas.";
 "Auto mask (follow edges)" = "Máscara automática (seguir bordes)";
 "Auto white balance and tone (⇧A)" = "Balance de blancos y tono automáticos (⇧A)";
 "Auto white balance and tone applied" = "Balance de blancos y tono automáticos aplicados";
@@ -659,10 +662,13 @@
 "Brightness" = "Brillo";
 "Brightness in stops (EV)." = "Brillo en pasos (EV).";
 "Bring back detail in bright areas such as sky (–), or brighten them (+)." = "Recupera el detalle de las zonas claras, como el cielo (–), o las aclara (+).";
+"Bring in some photos to begin. Help ▸ Getting Started shows this tour again at any time." = "Importa algunas fotos para empezar. Ayuda ▸ Primeros pasos vuelve a mostrar este recorrido cuando quieras.";
 "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed." = "¿Traer sus valoraciones, etiquetas de color, palabras clave, selecciones y ediciones a Luxtable? La carpeta de Capture One nunca se modifica.";
+"Bring photos in" = "Importar fotos";
 "Browse All Sessions in Library" = "Explorar todas las sesiones en la biblioteca";
 "Browse Card" = "Explorar tarjeta";
 "Browse a Card…" = "Explorar una tarjeta…";
+"Browse and cull" = "Revisar y seleccionar";
 "Brush" = "Pincel";
 "Brush (%lld)" = "Pincel (%lld)";
 "Brush / erase mask on the selected layer" = "Máscara de pincel/borrado en la capa seleccionada";
@@ -817,6 +823,7 @@
 "Close results" = "Cerrar resultados";
 "Close session" = "Cerrar sesión";
 "Close session %@" = "Cerrar la sesión %@";
+"Close the tour (Esc). Help ▸ Getting Started shows it again." = "Cerrar el recorrido (Esc). Ayuda ▸ Primeros pasos lo vuelve a mostrar.";
 "Close this list" = "Cerrar esta lista";
 "Close voice commands" = "Cerrar comandos de voz";
 "Close “%@” (⌥⌘W). Nothing is deleted, and it stays in the Sessions list." = "Cerrar “%@” (⌥⌘W). No se elimina nada y permanece en la lista de sesiones.";
@@ -1144,6 +1151,7 @@
 "Export 1 Photo" = "Exportar 1 foto";
 "Export Again" = "Exportar de nuevo";
 "Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back up to the original size." = "Exporta una foto enderezada o con corrección de objetivo a su tamaño inscrito en lugar de volver a escalarla al tamaño original.";
+"Export and share" = "Exportar y compartir";
 "Export failed" = "Error al exportar";
 "Export recipes" = "Recetas de exportación";
 "Export steps from plug-ins appear here (Settings ▸ Plugins)." = "Los pasos de exportación de los plugins aparecen aquí (Ajustes ▸ Plugins).";
@@ -1170,6 +1178,7 @@
 "File Name" = "Nombre de archivo";
 "File changed" = "Archivo cambiado";
 "File name" = "Nombre de archivo";
+"File ▸ Export… (⌘E) saves the selected photos with your export recipes. Share… (⌥⌘E), next to Import, sends JPEGs with Messages, Mail or AirDrop." = "Archivo ▸ Exportar… (⌘E) guarda las fotos seleccionadas con tus recetas de exportación. Compartir… (⌥⌘E), junto a Importar, envía JPEG con Mensajes, Mail o AirDrop.";
 "Filename" = "Nombre de archivo";
 "Files already in any session are not copied again" = "Los archivos que ya están en alguna sesión no se vuelven a copiar";
 "Fill" = "Relleno";
@@ -1241,6 +1250,7 @@
 "General" = "General";
 "Get RAW Helper" = "Obtener asistente RAW";
 "Get the Amazon Photos app" = "Obtener la app Amazon Photos";
+"Getting Started" = "Primeros pasos";
 "GitHub answered HTTP %lld" = "GitHub ha respondido HTTP %lld";
 "Give the preset a name." = "Ponle un nombre al ajuste preestablecido.";
 "Give the smart folder a name." = "Ponle un nombre a la carpeta inteligente.";
@@ -1280,6 +1290,7 @@
 "Heard “%@”: nothing more was run" = "Se ha oído “%@”: no se ha ejecutado nada más";
 "Heard “%@”: say “undo” to take it back" = "Se ha oído “%@”: di “undo” para deshacerlo";
 "Height of the sharp band in the frame." = "Altura de la banda nítida en el encuadre.";
+"Help ▸ Getting Started shows this tour again at any time." = "Ayuda ▸ Primeros pasos vuelve a mostrar este recorrido cuando quieras.";
 "Hid %@" = "Se ocultó %@";
 "Hide %@" = "Ocultar %@";
 "Hide %@'s faces" = "Ocultar las caras de %@";
@@ -1373,6 +1384,7 @@
 "Import stopped after %lld of %@. The verified copies are kept; import again to continue." = "La importación se detuvo tras %lld de %@. Las copias verificadas se conservan; vuelve a importar para continuar.";
 "Import stopped after %lld of %lld files. Nothing was removed from the card." = "La importación se detuvo tras %lld de %lld archivos. No se eliminó nada de la tarjeta.";
 "Import stopped while finishing. The copied files are in “%@”." = "La importación se detuvo mientras terminaba. Los archivos copiados están en “%@”.";
+"Import, at the left of the toolbar, copies a memory card and checks every file (⇧⌘I); an iPhone or iPad plugged in over USB is listed there too. File ▸ Import from Photos Library… brings in photos from Photos." = "Importar, a la izquierda de la barra de herramientas, copia una tarjeta de memoria y verifica cada archivo (⇧⌘I); un iPhone o iPad conectado por USB también aparece ahí. Archivo ▸ Importar desde la fototeca de Fotos… trae fotos de Fotos.";
 "Imported" = "Importados";
 "Imported %@" = "%@ importados";
 "Importing… The Capture One folder is only read." = "Importando… La carpeta de Capture One solo se lee.";
@@ -1536,6 +1548,7 @@
 "Long edge 4096 px" = "Lado largo 4096 px";
 "Look %@" = "Aspecto %@";
 "Look Intensity" = "Intensidad del aspecto";
+"Look closely" = "Mirar de cerca";
 "Looking for faces…" = "Buscando caras…";
 "Looks" = "Aspectos";
 "Loupe" = "Lupa";
@@ -2370,6 +2383,7 @@
 "Similar photos" = "Fotos similares";
 "Simple" = "Sencillo";
 "Simple Mode" = "Modo sencillo";
+"Simple editing" = "Edición sencilla";
 "Simple mode: a few easy controls (⌃⌘S for every tool)" = "Modo sencillo: unos pocos controles fáciles (⌃⌘S para todas las herramientas)";
 "Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both." = "Sencillo muestra unos pocos controles fáciles; Completo muestra todas las herramientas (⌃⌘S). Tus ediciones son las mismas en ambos.";
 "Size" = "Tamaño";
@@ -2379,6 +2393,7 @@
 "Skin" = "Piel";
 "Skin Tone" = "Tono de piel";
 "Skip This Version" = "Omitir esta versión";
+"Skip Tour" = "Omitir recorrido";
 "Skip duplicates" = "Omitir duplicados";
 "Skip for Now" = "Omitir por ahora";
 "Skip low-contrast detail (noise) below this level." = "Omite el detalle de bajo contraste (ruido) por debajo de este nivel.";
@@ -2405,6 +2420,7 @@
 "Sort direction" = "Sentido de la ordenación";
 "Sort order" = "Orden";
 "Space" = "Espacio";
+"Space zooms to 100%% where the pointer is; ⌘+ and ⌘− zoom in steps. %@ shows the photo as shot next to your edit." = "Espacio amplía al 100 %% donde está el puntero; ⌘+ y ⌘− amplían o reducen por pasos. %@ muestra la foto tal como se hizo junto a tu edición.";
 "Speech recognition is turned off for Luxtable" = "El reconocimiento de voz está desactivado para Luxtable";
 "Speech recognition stopped: %@" = "El reconocimiento de voz se ha detenido: %@";
 "Spherical" = "Esférica";
@@ -2422,6 +2438,7 @@
 "Starts from the best frame and takes, from the others, faces that look better (open eyes first) and areas that are sharper. Nothing that moved is taken." = "Parte del mejor fotograma y toma de los demás las caras que se ven mejor (primero los ojos abiertos) y las zonas más nítidas. No se toma nada que se haya movido.";
 "State / Province" = "Estado/Provincia";
 "Status" = "Estado";
+"Step %lld of %lld" = "Paso %lld de %lld";
 "Still loading the as-shot white balance for the last Apply…" = "Todavía cargando el balance de blancos de la toma para la última aplicación…";
 "Still on “%@”: %lld changes couldn’t be saved (%@), so “%@” wasn’t opened." = "Sigues en “%@”: no se pudieron guardar %lld cambios (%@), así que no se abrió “%@”.";
 "Still on “%@”: 1 change couldn’t be saved (%@), so “%@” wasn’t opened." = "Sigues en “%@”: no se pudo guardar 1 cambio (%@), así que no se abrió “%@”.";
@@ -2560,6 +2577,8 @@
 "The downloaded app’s signature doesn’t check out: %@" = "La firma de la app descargada no es válida: %@";
 "The downloaded search model is damaged (%@). Try again." = "El modelo de búsqueda descargado está dañado (%@). Vuelve a intentarlo.";
 "The downloaded sky model is damaged (%@). Try again." = "El modelo de cielo descargado está dañado (%@). Vuelve a intentarlo.";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Press %@–%@ to rate, %@ to pick and %@ to reject." = "La tira de imágenes muestra las fotos de la sesión: haz clic en una o muévete con ← y →. Pulsa %@–%@ para valorar, %@ para elegir y %@ para rechazar.";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Rate, pick and reject from the Photo menu, which lists their keys." = "La tira de imágenes muestra las fotos de la sesión: haz clic en una o muévete con ← y →. Valora, elige y rechaza desde el menú Foto, que indica sus teclas.";
 "The first time, a 53 MB face model is downloaded." = "La primera vez se descarga un modelo facial de 53 MB.";
 "The focused photo is hidden by the filter" = "El filtro oculta la foto activa";
 "The folder was moved: %@" = "Se movió la carpeta: %@";
@@ -2602,6 +2621,7 @@
 "The test didn't finish: %@" = "La prueba no terminó: %@";
 "The test renderer only shows exposure, saturation and white balance. %@ are saved and render in the full develop." = "El renderizador de prueba solo muestra la exposición, la saturación y el balance de blancos. %@ se guardan y se renderizan en el revelado completo.";
 "The test was cancelled." = "Se canceló la prueba.";
+"The tool tabs hold every adjustment, from white balance and exposure to layers. For a few easy controls instead, choose View ▸ Simple Mode (⌃⌘S)." = "Las pestañas de herramientas contienen todos los ajustes, desde el balance de blancos y la exposición hasta las capas. Para tener solo unos pocos controles sencillos, elige Visualización ▸ Modo sencillo (⌃⌘S).";
 "The update couldn’t be downloaded: %@" = "No se ha podido descargar la actualización: %@";
 "The update didn’t work" = "La actualización no ha funcionado";
 "The values AI Optimize set have all been changed since (undone, pasted over or adjusted)." = "Todos los valores que ajustó Optimizar con IA han cambiado desde entonces (deshechos, sobrescritos al pegar o ajustados).";
@@ -2855,6 +2875,7 @@
 "Your pick" = "Tu elección";
 "Your pics share is mounted" = "Tu recurso compartido pics está montado";
 "You’re back where you left off." = "Has vuelto a donde lo dejaste.";
+"You’re ready" = "Todo listo";
 "You’re up to date" = "Está actualizado";
 "Zoom In" = "Acercar";
 "Zoom Out" = "Alejar";

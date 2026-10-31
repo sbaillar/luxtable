@@ -44,6 +44,10 @@ The first time Luxtable opens, a short setup sheet walks you through a few steps
 4. **Archive (optional):** tick **Archive sessions automatically** and choose a folder (for example on a NAS) that sessions are copied to in the background. It stays off until you turn it on.
 5. **Amazon Photos (optional):** a folder the Amazon Photos app backs up. This step only appears while the Amazon Photos integration is on (see [Optional integrations](12-plugins.md#optional-integrations)).
 
+### Getting Started tour
+
+When the setup sheet closes, a short tour of the main window starts (the sample-photos window shows it once too). Each card dims the window, lights one part and says what it does: the filmstrip and the rating, pick and reject keys, the viewer's zoom and Before/After, the tool panel (or the Simple panel in Simple mode), Crop and its ratios, bringing photos in from a card, the Photos library or an iPhone, and Export and Share. Press `→` or Return for the next card, `←` to go back and Esc to skip. The last card has buttons to import a card, open a folder or try the sample photos. **Help ▸ Getting Started** shows the tour again at any time.
+
 ## Language
 
 Luxtable is available in English, German (Deutsch), French (Français), Spanish (Español), Japanese (日本語) and Simplified Chinese (简体中文). It follows the language order in **System Settings ▸ General ▸ Language & Region**. To use a different language for Luxtable only, add it under **Applications** in the same pane (click **+**, choose Luxtable and the language), then quit and reopen Luxtable. Photo names, keywords, folder names and anything you type stay as they are.

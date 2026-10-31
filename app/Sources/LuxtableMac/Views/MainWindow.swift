@@ -15,6 +15,7 @@ struct MainWindow: View {
         HStack(spacing: 0) {
             if !chromeHidden && side == .left {
                 ToolSidebar(model: model, side: side)
+                    .tourAnchor(.tools)
                     .zIndex(1) // tab name flags draw over the viewer
                 Divider()
             }
@@ -22,6 +23,7 @@ struct MainWindow: View {
                 switch model.browserMode {
                 case .grid:
                     BrowserGrid(model: model)
+                        .tourAnchor(.browser)
                         .overlay(alignment: .top) { ProblemBanner(model: model, sessionOnly: true) }
                         .overlay(alignment: .bottom) { ToastOverlay(toast: model.toast, solid: model.snapshotMode) { Task { await model.openToastSession() } } }
                 case .filmstrip:
@@ -39,12 +41,14 @@ struct MainWindow: View {
                                 Filmstrip(model: model, lines: lines, position: place, cell: cell)
                                     .frame(width: place.isVertical ? FilmstripSizing.extent(lines: lines, at: place, cell: cell) : nil,
                                            height: place.isVertical ? nil : FilmstripSizing.extent(lines: lines, at: place, cell: cell))
+                                    .tourAnchor(.browser)
                             }
                         }
                         let separator = FilmstripSeparator(model: model, lines: lines, available: available, cell: cell)
                         // The toast sits over the viewer's bottom edge, clear of the filmstrip's
                         // filter bar and the status bar.
                         let viewer = ViewerArea(model: model)
+                            .tourAnchor(.viewer)
                             .overlay(alignment: .top) { if !model.viewer.state.fullScreen { StageBar(model: model) } }
                             .overlay { if showStrip && lines > 0 { BurstStrip(model: model) } } // a burst's frames, above the strip
                             .overlay(alignment: .bottom) { ToastOverlay(toast: model.toast, solid: model.snapshotMode) { Task { await model.openToastSession() } } }
@@ -84,6 +88,7 @@ struct MainWindow: View {
             if !chromeHidden && side == .right {
                 Divider()
                 ToolSidebar(model: model, side: side)
+                    .tourAnchor(.tools)
                     .zIndex(1)
             }
         }
@@ -186,6 +191,9 @@ struct MainWindow: View {
         .animation(.snappy(duration: 0.2), value: model.voice.helpShown)
         .overlay(alignment: .top) { VoiceHUD(voice: model.voice) } // voice commands: what was heard
         .background(VoiceMonitor(voice: model.voice))
+        .overlayPreferenceValue(TourAnchorKey.self) { anchors in // Help ▸ Getting Started
+            if model.tour.isActive { TourOverlay(model: model, tour: model.tour, anchors: anchors) }
+        }
         .modifier(VoiceProblemAlert(voice: model.voice))
         .modifier(PhotoDropTarget(model: model))
         .modifier(ImportResumePrompt(model: model)) // [imp6]

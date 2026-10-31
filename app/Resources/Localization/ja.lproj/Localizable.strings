@@ -101,6 +101,7 @@
 "%@ paste mode" = "%@のペーストモード";
 "%@ photo" = "%@ 枚の写真";
 "%@ photos" = "%@ 枚の写真";
+"%@ puts a box on the photo to move and resize; the arrow next to it picks a ratio such as Square or 16:9. Return applies, Esc cancels." = "%@ で写真に枠が表示され、移動やサイズ変更ができます。横の矢印で「正方形」や「16:9」などの比率を選べます。Return で適用、Esc でキャンセルします。";
 "%@ reverted: %@ restored" = "%1$@ を元に戻しました：%2$@ を復元しました";
 "%@ saved by a newer Luxtable (left alone)" = "新しいバージョンの Luxtable で保存された %@（そのまま）";
 "%@ selected" = "%@ を選択中";
@@ -481,6 +482,7 @@
 "Adding to the Google Photos album…" = "Google Photos のアルバムに追加中…";
 "Adds: %@" = "追加内容：%@";
 "Adjust" = "調整";
+"Adjust the photo" = "写真を調整";
 "Adjusted" = "補正済み";
 "Adjustments" = "補正";
 "Advanced" = "詳細";
@@ -608,6 +610,7 @@
 "Auto adjust" = "自動補正";
 "Auto align" = "自動整列";
 "Auto crop" = "自動切り抜き";
+"Auto fixes light and color in one click, a look restyles the photo, and six sliders fine-tune it. Crop & Straighten is at the bottom. View ▸ Simple Mode (⌃⌘S) switches to every tool." = "「自動」はワンクリックで明るさと色を整え、ルックで写真の雰囲気を変え、6 つのスライダで微調整します。「切り抜きと角度補正」はいちばん下にあります。「表示」▸「シンプルモード」（⌃⌘S）ですべてのツールに切り替えられます。";
 "Auto mask (follow edges)" = "自動マスク（エッジに沿う）";
 "Auto white balance and tone (⇧A)" = "自動ホワイトバランスとトーン（⇧A）";
 "Auto white balance and tone applied" = "自動ホワイトバランスとトーンを適用しました";
@@ -659,10 +662,13 @@
 "Brightness" = "明るさ";
 "Brightness in stops (EV)." = "明るさ（段数、EV）。";
 "Bring back detail in bright areas such as sky (–), or brighten them (+)." = "空などの明るい部分のディテールを復元（–）、またはさらに明るく（+）します。";
+"Bring in some photos to begin. Help ▸ Getting Started shows this tour again at any time." = "写真を読み込んで始めましょう。「ヘルプ」▸「はじめに」でこのツアーをいつでも再表示できます。";
 "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed." = "レーティング、カラーラベル、キーワード、セレクト、編集を Luxtable に取り込みますか？ Capture One のフォルダが変更されることはありません。";
+"Bring photos in" = "写真を読み込む";
 "Browse All Sessions in Library" = "ライブラリですべてのセッションをブラウズ";
 "Browse Card" = "カードをブラウズ";
 "Browse a Card…" = "カードをブラウズ…";
+"Browse and cull" = "閲覧と選別";
 "Brush" = "ブラシ";
 "Brush (%lld)" = "ブラシ（%lld）";
 "Brush / erase mask on the selected layer" = "選択したレイヤーのマスクをブラシで描画／消去";
@@ -817,6 +823,7 @@
 "Close results" = "結果を閉じる";
 "Close session" = "セッションを閉じる";
 "Close session %@" = "セッション %@ を閉じる";
+"Close the tour (Esc). Help ▸ Getting Started shows it again." = "ツアーを閉じます（Esc）。「ヘルプ」▸「はじめに」で再表示できます。";
 "Close this list" = "このリストを閉じる";
 "Close voice commands" = "音声コマンドを閉じる";
 "Close “%@” (⌥⌘W). Nothing is deleted, and it stays in the Sessions list." = "「%@」を閉じます（⌥⌘W）。何も削除されず、“セッション”リストに残ります。";
@@ -1144,6 +1151,7 @@
 "Export 1 Photo" = "1 枚の写真を書き出す";
 "Export Again" = "もう一度書き出す";
 "Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back up to the original size." = "角度補正やレンズ補正を行った写真を、元のサイズに拡大し直さずに内接サイズで書き出します。";
+"Export and share" = "書き出しと共有";
 "Export failed" = "書き出しに失敗しました";
 "Export recipes" = "書き出しレシピ";
 "Export steps from plug-ins appear here (Settings ▸ Plugins)." = "プラグインの書き出しステップがここに表示されます（「設定」▸「プラグイン」）。";
@@ -1170,6 +1178,7 @@
 "File Name" = "ファイル名";
 "File changed" = "ファイルが変更されました";
 "File name" = "ファイル名";
+"File ▸ Export… (⌘E) saves the selected photos with your export recipes. Share… (⌥⌘E), next to Import, sends JPEGs with Messages, Mail or AirDrop." = "「ファイル」▸「書き出す…」（⌘E）は、選択した写真を書き出しレシピで保存します。「読み込む」の隣の「共有…」（⌥⌘E）は、JPEG をメッセージ、メール、AirDrop で送信します。";
 "Filename" = "ファイル名";
 "Files already in any session are not copied again" = "いずれかのセッションにすでにあるファイルは再コピーしません";
 "Fill" = "塗りつぶし";
@@ -1241,6 +1250,7 @@
 "General" = "一般";
 "Get RAW Helper" = "RAW ヘルパーを入手";
 "Get the Amazon Photos app" = "Amazon Photos アプリを入手";
+"Getting Started" = "はじめに";
 "GitHub answered HTTP %lld" = "GitHub が HTTP %lld を返しました";
 "Give the preset a name." = "プリセットに名前を付けてください。";
 "Give the smart folder a name." = "スマートフォルダに名前を付けてください。";
@@ -1280,6 +1290,7 @@
 "Heard “%@”: nothing more was run" = "「%@」と聞き取りました：これ以上は実行されませんでした";
 "Heard “%@”: say “undo” to take it back" = "「%@」と聞き取りました：元に戻すには “undo” と言ってください";
 "Height of the sharp band in the frame." = "フレーム内のシャープな帯の高さ。";
+"Help ▸ Getting Started shows this tour again at any time." = "「ヘルプ」▸「はじめに」でこのツアーをいつでも再表示できます。";
 "Hid %@" = "%@ を非表示にしました";
 "Hide %@" = "%@を非表示";
 "Hide %@'s faces" = "%@ の顔を非表示";
@@ -1373,6 +1384,7 @@
 "Import stopped after %lld of %@. The verified copies are kept; import again to continue." = "%2$@ 中 %1$lld 個で読み込みが停止しました。検証済みのコピーは保持されます。続けるにはもう一度読み込んでください。";
 "Import stopped after %lld of %lld files. Nothing was removed from the card." = "%2$lld 個中 %1$lld 個のファイルで読み込みが停止しました。カードからは何も削除されていません。";
 "Import stopped while finishing. The copied files are in “%@”." = "読み込みが完了処理中に停止しました。コピーされたファイルは「%@」にあります。";
+"Import, at the left of the toolbar, copies a memory card and checks every file (⇧⌘I); an iPhone or iPad plugged in over USB is listed there too. File ▸ Import from Photos Library… brings in photos from Photos." = "ツールバー左端の「読み込む」は、メモリカードをコピーしてすべてのファイルを検証します（⇧⌘I）。USB で接続した iPhone や iPad もそこに表示されます。「ファイル」▸「写真ライブラリから読み込む…」で“写真”から読み込めます。";
 "Imported" = "読み込み済み";
 "Imported %@" = "%@ を読み込みました";
 "Importing… The Capture One folder is only read." = "読み込み中… Capture One のフォルダは読み取られるだけです。";
@@ -1536,6 +1548,7 @@
 "Long edge 4096 px" = "長辺 4096 px";
 "Look %@" = "ルック %@";
 "Look Intensity" = "ルックの適用量";
+"Look closely" = "細部を確認";
 "Looking for faces…" = "顔を探しています…";
 "Looks" = "ルック";
 "Loupe" = "ルーペ";
@@ -2370,6 +2383,7 @@
 "Similar photos" = "類似の写真";
 "Simple" = "シンプル";
 "Simple Mode" = "シンプルモード";
+"Simple editing" = "シンプルな編集";
 "Simple mode: a few easy controls (⌃⌘S for every tool)" = "シンプルモード: いくつかの簡単なコントロール（⌃⌘S ですべてのツール）";
 "Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both." = "シンプルはいくつかの簡単なコントロールを、フルはすべてのツールを表示します（⌃⌘S）。編集内容はどちらでも同じです。";
 "Size" = "サイズ";
@@ -2379,6 +2393,7 @@
 "Skin" = "肌";
 "Skin Tone" = "肌の色";
 "Skip This Version" = "このバージョンをスキップ";
+"Skip Tour" = "ツアーをスキップ";
 "Skip duplicates" = "重複をスキップ";
 "Skip for Now" = "今はスキップ";
 "Skip low-contrast detail (noise) below this level." = "このレベル未満の低コントラストのディテール（ノイズ）をスキップします。";
@@ -2405,6 +2420,7 @@
 "Sort direction" = "並べ替えの方向";
 "Sort order" = "並べ替え順序";
 "Space" = "Space";
+"Space zooms to 100%% where the pointer is; ⌘+ and ⌘− zoom in steps. %@ shows the photo as shot next to your edit." = "Space でポインタの位置を 100%% に拡大し、⌘+ と ⌘− で段階的に拡大・縮小します。%@ は撮影時の写真と編集後を並べて表示します。";
 "Speech recognition is turned off for Luxtable" = "Luxtable の音声認識はオフになっています";
 "Speech recognition stopped: %@" = "音声認識が停止しました：%@";
 "Spherical" = "球面法";
@@ -2422,6 +2438,7 @@
 "Starts from the best frame and takes, from the others, faces that look better (open eyes first) and areas that are sharper. Nothing that moved is taken." = "最良のフレームを基に、ほかのフレームから写りの良い顔（目が開いているものを優先）とよりシャープな領域を取り込みます。動いたものは取り込みません。";
 "State / Province" = "都道府県";
 "Status" = "状況";
+"Step %lld of %lld" = "ステップ %lld/%lld";
 "Still loading the as-shot white balance for the last Apply…" = "前回の適用のため、撮影時のホワイトバランスを読み込み中…";
 "Still on “%@”: %lld changes couldn’t be saved (%@), so “%@” wasn’t opened." = "「%1$@」のままです：%2$lld 件の変更を保存できなかったため（%3$@）、「%4$@」は開かれませんでした。";
 "Still on “%@”: 1 change couldn’t be saved (%@), so “%@” wasn’t opened." = "「%1$@」のままです：1 件の変更を保存できなかったため（%2$@）、「%3$@」は開かれませんでした。";
@@ -2560,6 +2577,8 @@
 "The downloaded app’s signature doesn’t check out: %@" = "ダウンロードしたアプリの署名を確認できません：%@";
 "The downloaded search model is damaged (%@). Try again." = "ダウンロードした検索モデルは破損しています（%@）。もう一度試してください。";
 "The downloaded sky model is damaged (%@). Try again." = "ダウンロードした空モデルは破損しています（%@）。もう一度試してください。";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Press %@–%@ to rate, %@ to pick and %@ to reject." = "フィルムストリップにはセッションの写真が表示されます。クリックするか、← と → で移動します。%@–%@ でレーティング、%@ で採用、%@ で除外します。";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Rate, pick and reject from the Photo menu, which lists their keys." = "フィルムストリップにはセッションの写真が表示されます。クリックするか、← と → で移動します。レーティング、採用、除外は「写真」メニューから行えます。キーもそこに表示されます。";
 "The first time, a 53 MB face model is downloaded." = "初回は 53 MB の顔モデルがダウンロードされます。";
 "The focused photo is hidden by the filter" = "フォーカスされている写真はフィルタで非表示になっています";
 "The folder was moved: %@" = "フォルダが移動されました：%@";
@@ -2602,6 +2621,7 @@
 "The test didn't finish: %@" = "テストが完了しませんでした：%@";
 "The test renderer only shows exposure, saturation and white balance. %@ are saved and render in the full develop." = "テスト用レンダラーは露光量、彩度、ホワイトバランスのみを表示します。%@は保存され、完全な現像で描画されます。";
 "The test was cancelled." = "テストはキャンセルされました。";
+"The tool tabs hold every adjustment, from white balance and exposure to layers. For a few easy controls instead, choose View ▸ Simple Mode (⌃⌘S)." = "ツールタブには、ホワイトバランスや露光量からレイヤーまで、すべての調整があります。簡単なコントロールだけにするには、「表示」▸「シンプルモード」（⌃⌘S）を選択します。";
 "The update couldn’t be downloaded: %@" = "アップデートをダウンロードできませんでした：%@";
 "The update didn’t work" = "アップデートに失敗しました";
 "The values AI Optimize set have all been changed since (undone, pasted over or adjusted)." = "AI 最適化が設定した値は、その後すべて変更されています（取り消し、ペーストによる上書き、または調整）。";
@@ -2855,6 +2875,7 @@
 "Your pick" = "あなたの採用";
 "Your pics share is mounted" = "pics 共有がマウントされています";
 "You’re back where you left off." = "前回の続きから再開しました。";
+"You’re ready" = "準備完了";
 "You’re up to date" = "最新の状態です";
 "Zoom In" = "拡大";
 "Zoom Out" = "縮小";

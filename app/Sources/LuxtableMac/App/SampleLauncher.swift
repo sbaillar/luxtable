@@ -23,6 +23,13 @@ public enum SampleLauncher {
         mode == .demo && arguments.contains(flag)
     }
 
+    /// The sample window shows the Getting Started tour on its first launch (its scratch
+    /// preferences remember it was shown, as the user's own do).
+    @MainActor
+    public static func startTour(_ model: AppModel, arguments: [String]) {
+        if isSampleWindow(arguments: arguments, mode: model.mode) { model.tour.autoStart() }
+    }
+
     /// The launcher for this process: only when it runs from an app bundle in live mode (a
     /// test or `swift run` has no bundle for `open` to start).
     public static func live(bundle: URL = Bundle.main.bundleURL, mode: AppMode) -> (@MainActor () -> Void)? {

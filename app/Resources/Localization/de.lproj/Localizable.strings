@@ -101,6 +101,7 @@
 "%@ paste mode" = "Einfügemodus %@";
 "%@ photo" = "%@ Foto";
 "%@ photos" = "%@ Fotos";
+"%@ puts a box on the photo to move and resize; the arrow next to it picks a ratio such as Square or 16:9. Return applies, Esc cancels." = "%@ legt einen Rahmen auf das Foto, den du verschieben und in der Größe ändern kannst; mit dem Pfeil daneben wählst du ein Seitenverhältnis wie Quadrat oder 16:9. Der Zeilenschalter wendet an, Esc bricht ab.";
 "%@ reverted: %@ restored" = "%@ zurückgesetzt: %@ wiederhergestellt";
 "%@ saved by a newer Luxtable (left alone)" = "%@ von einer neueren Luxtable-Version gesichert (unverändert gelassen)";
 "%@ selected" = "%@ ausgewählt";
@@ -481,6 +482,7 @@
 "Adding to the Google Photos album…" = "Wird zum Google Photos-Album hinzugefügt…";
 "Adds: %@" = "Fügt hinzu: %@";
 "Adjust" = "Anpassen";
+"Adjust the photo" = "Foto anpassen";
 "Adjusted" = "Angepasst";
 "Adjustments" = "Anpassungen";
 "Advanced" = "Erweitert";
@@ -608,6 +610,7 @@
 "Auto adjust" = "Automatisch anpassen";
 "Auto align" = "Automatisch ausrichten";
 "Auto crop" = "Automatisch freistellen";
+"Auto fixes light and color in one click, a look restyles the photo, and six sliders fine-tune it. Crop & Straighten is at the bottom. View ▸ Simple Mode (⌃⌘S) switches to every tool." = "Automatisch korrigiert Licht und Farbe mit einem Klick, ein Look gibt dem Foto einen neuen Stil, und sechs Regler verfeinern es. Freistellen & Ausrichten findest du ganz unten. Darstellung ▸ Einfacher Modus (⌃⌘S) wechselt zu allen Werkzeugen.";
 "Auto mask (follow edges)" = "Automaske (Kanten folgen)";
 "Auto white balance and tone (⇧A)" = "Automatischer Weißabgleich und Tonwerte (⇧A)";
 "Auto white balance and tone applied" = "Automatischer Weißabgleich und Tonwerte angewendet";
@@ -659,10 +662,13 @@
 "Brightness" = "Helligkeit";
 "Brightness in stops (EV)." = "Helligkeit in Blendenstufen (EV).";
 "Bring back detail in bright areas such as sky (–), or brighten them (+)." = "Holt Details in hellen Bereichen wie dem Himmel zurück (–) oder hellt sie auf (+).";
+"Bring in some photos to begin. Help ▸ Getting Started shows this tour again at any time." = "Importiere ein paar Fotos, um loszulegen. Hilfe ▸ Erste Schritte zeigt diese Tour jederzeit wieder.";
 "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed." = "Bewertungen, Farbmarkierungen, Stichwörter, Selects und Bearbeitungen in Luxtable übernehmen? Der Capture One-Ordner wird nie geändert.";
+"Bring photos in" = "Fotos importieren";
 "Browse All Sessions in Library" = "Alle Sessions in der Bibliothek durchsuchen";
 "Browse Card" = "Karte durchsuchen";
 "Browse a Card…" = "Karte durchsuchen…";
+"Browse and cull" = "Durchsehen und aussortieren";
 "Brush" = "Pinsel";
 "Brush (%lld)" = "Pinsel (%lld)";
 "Brush / erase mask on the selected layer" = "Pinsel-/Radiermaske auf der ausgewählten Ebene";
@@ -817,6 +823,7 @@
 "Close results" = "Ergebnisse schließen";
 "Close session" = "Session schließen";
 "Close session %@" = "Session %@ schließen";
+"Close the tour (Esc). Help ▸ Getting Started shows it again." = "Tour schließen (Esc). Hilfe ▸ Erste Schritte zeigt sie wieder.";
 "Close this list" = "Diese Liste schließen";
 "Close voice commands" = "Sprachbefehle schließen";
 "Close “%@” (⌥⌘W). Nothing is deleted, and it stays in the Sessions list." = "„%@“ schließen (⌥⌘W). Nichts wird gelöscht, und die Session bleibt in der Liste „Sessions“.";
@@ -1144,6 +1151,7 @@
 "Export 1 Photo" = "1 Foto exportieren";
 "Export Again" = "Erneut exportieren";
 "Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back up to the original size." = "Ein ausgerichtetes oder objektivkorrigiertes Foto in seiner einbeschriebenen Größe exportieren, statt es wieder auf die Originalgröße hochzuskalieren.";
+"Export and share" = "Exportieren und teilen";
 "Export failed" = "Export fehlgeschlagen";
 "Export recipes" = "Exportrezepte";
 "Export steps from plug-ins appear here (Settings ▸ Plugins)." = "Exportschritte von Plug-ins erscheinen hier (Einstellungen ▸ Plug-ins).";
@@ -1170,6 +1178,7 @@
 "File Name" = "Dateiname";
 "File changed" = "Datei geändert";
 "File name" = "Dateiname";
+"File ▸ Export… (⌘E) saves the selected photos with your export recipes. Share… (⌥⌘E), next to Import, sends JPEGs with Messages, Mail or AirDrop." = "Ablage ▸ Exportieren… (⌘E) sichert die ausgewählten Fotos mit deinen Exportrezepten. Teilen… (⌥⌘E) neben „Importieren“ sendet JPEGs mit Nachrichten, Mail oder AirDrop.";
 "Filename" = "Dateiname";
 "Files already in any session are not copied again" = "Dateien, die bereits in einer Session sind, werden nicht erneut kopiert";
 "Fill" = "Füllen";
@@ -1241,6 +1250,7 @@
 "General" = "Allgemein";
 "Get RAW Helper" = "RAW-Helfer laden";
 "Get the Amazon Photos app" = "Amazon Photos-App laden";
+"Getting Started" = "Erste Schritte";
 "GitHub answered HTTP %lld" = "GitHub antwortete mit HTTP %lld";
 "Give the preset a name." = "Gib der Vorgabe einen Namen.";
 "Give the smart folder a name." = "Gib dem intelligenten Ordner einen Namen.";
@@ -1280,6 +1290,7 @@
 "Heard “%@”: nothing more was run" = "„%@“ gehört: nichts weiter ausgeführt";
 "Heard “%@”: say “undo” to take it back" = "„%@“ gehört: Sag „undo“, um es rückgängig zu machen";
 "Height of the sharp band in the frame." = "Höhe des scharfen Bands im Bild.";
+"Help ▸ Getting Started shows this tour again at any time." = "Hilfe ▸ Erste Schritte zeigt diese Tour jederzeit wieder.";
 "Hid %@" = "%@ ausgeblendet";
 "Hide %@" = "%@ ausblenden";
 "Hide %@'s faces" = "Gesichter von %@ ausblenden";
@@ -1373,6 +1384,7 @@
 "Import stopped after %lld of %@. The verified copies are kept; import again to continue." = "Import nach %lld von %@ gestoppt. Die verifizierten Kopien bleiben erhalten; importiere erneut, um fortzufahren.";
 "Import stopped after %lld of %lld files. Nothing was removed from the card." = "Import nach %lld von %lld Dateien gestoppt. Nichts wurde von der Karte entfernt.";
 "Import stopped while finishing. The copied files are in “%@”." = "Import beim Abschließen gestoppt. Die kopierten Dateien befinden sich in „%@“.";
+"Import, at the left of the toolbar, copies a memory card and checks every file (⇧⌘I); an iPhone or iPad plugged in over USB is listed there too. File ▸ Import from Photos Library… brings in photos from Photos." = "„Importieren“ links in der Symbolleiste kopiert eine Speicherkarte und prüft jede Datei (⇧⌘I); ein per USB angeschlossenes iPhone oder iPad erscheint dort ebenfalls. Ablage ▸ Aus Fotos-Mediathek importieren… holt Fotos aus der App „Fotos“.";
 "Imported" = "Importiert";
 "Imported %@" = "%@ importiert";
 "Importing… The Capture One folder is only read." = "Importieren… Der Capture One-Ordner wird nur gelesen.";
@@ -1536,6 +1548,7 @@
 "Long edge 4096 px" = "Lange Kante 4096 px";
 "Look %@" = "Look %@";
 "Look Intensity" = "Look-Intensität";
+"Look closely" = "Genau hinsehen";
 "Looking for faces…" = "Gesichter werden gesucht…";
 "Looks" = "Looks";
 "Loupe" = "Lupe";
@@ -2370,6 +2383,7 @@
 "Similar photos" = "Ähnliche Fotos";
 "Simple" = "Einfach";
 "Simple Mode" = "Einfacher Modus";
+"Simple editing" = "Einfach bearbeiten";
 "Simple mode: a few easy controls (⌃⌘S for every tool)" = "Einfacher Modus: ein paar einfache Regler (⌃⌘S für alle Werkzeuge)";
 "Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both." = "„Einfach“ zeigt ein paar einfache Regler, „Vollständig“ alle Werkzeuge (⌃⌘S). Deine Bearbeitungen sind in beiden gleich.";
 "Size" = "Größe";
@@ -2379,6 +2393,7 @@
 "Skin" = "Haut";
 "Skin Tone" = "Hautton";
 "Skip This Version" = "Diese Version überspringen";
+"Skip Tour" = "Tour überspringen";
 "Skip duplicates" = "Duplikate überspringen";
 "Skip for Now" = "Vorerst überspringen";
 "Skip low-contrast detail (noise) below this level." = "Kontrastarme Details (Rauschen) unterhalb dieses Werts auslassen.";
@@ -2405,6 +2420,7 @@
 "Sort direction" = "Sortierrichtung";
 "Sort order" = "Sortierreihenfolge";
 "Space" = "Leertaste";
+"Space zooms to 100%% where the pointer is; ⌘+ and ⌘− zoom in steps. %@ shows the photo as shot next to your edit." = "Die Leertaste zoomt an der Zeigerposition auf 100 %%; ⌘+ und ⌘− zoomen schrittweise. %@ zeigt das Foto wie aufgenommen neben deiner Bearbeitung.";
 "Speech recognition is turned off for Luxtable" = "Spracherkennung ist für Luxtable deaktiviert";
 "Speech recognition stopped: %@" = "Spracherkennung beendet: %@";
 "Spherical" = "Sphärisch";
@@ -2422,6 +2438,7 @@
 "Starts from the best frame and takes, from the others, faces that look better (open eyes first) and areas that are sharper. Nothing that moved is taken." = "Beginnt mit dem besten Bild und übernimmt aus den anderen Gesichter, die besser aussehen (zuerst offene Augen), und schärfere Bereiche. Nichts, was sich bewegt hat, wird übernommen.";
 "State / Province" = "Bundesland/Kanton";
 "Status" = "Status";
+"Step %lld of %lld" = "Schritt %lld von %lld";
 "Still loading the as-shot white balance for the last Apply…" = "Weißabgleich der Aufnahme für das letzte Anwenden wird noch geladen…";
 "Still on “%@”: %lld changes couldn’t be saved (%@), so “%@” wasn’t opened." = "Noch bei „%@“: %lld Änderungen konnten nicht gesichert werden (%@), daher wurde „%@“ nicht geöffnet.";
 "Still on “%@”: 1 change couldn’t be saved (%@), so “%@” wasn’t opened." = "Noch bei „%@“: 1 Änderung konnte nicht gesichert werden (%@), daher wurde „%@“ nicht geöffnet.";
@@ -2560,6 +2577,8 @@
 "The downloaded app’s signature doesn’t check out: %@" = "Die Signatur der geladenen App ist ungültig: %@";
 "The downloaded search model is damaged (%@). Try again." = "Das geladene Suchmodell ist beschädigt (%@). Versuche es erneut.";
 "The downloaded sky model is damaged (%@). Try again." = "Das geladene Himmelmodell ist beschädigt (%@). Versuche es erneut.";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Press %@–%@ to rate, %@ to pick and %@ to reject." = "Der Filmstreifen zeigt die Fotos der Session: Klicke eins an oder wechsle mit ← und →. Drücke %@–%@ zum Bewerten, %@ zum Auswählen und %@ zum Ablehnen.";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Rate, pick and reject from the Photo menu, which lists their keys." = "Der Filmstreifen zeigt die Fotos der Session: Klicke eins an oder wechsle mit ← und →. Bewerten, Auswählen und Ablehnen findest du im Menü „Foto“, das auch ihre Tasten zeigt.";
 "The first time, a 53 MB face model is downloaded." = "Beim ersten Mal wird ein 53 MB großes Gesichtsmodell geladen.";
 "The focused photo is hidden by the filter" = "Das fokussierte Foto ist durch den Filter ausgeblendet";
 "The folder was moved: %@" = "Der Ordner wurde bewegt: %@";
@@ -2602,6 +2621,7 @@
 "The test didn't finish: %@" = "Der Test wurde nicht abgeschlossen: %@";
 "The test renderer only shows exposure, saturation and white balance. %@ are saved and render in the full develop." = "Der Test-Renderer zeigt nur Belichtung, Sättigung und Weißabgleich. %@ werden gesichert und in der vollen Entwicklung gerendert.";
 "The test was cancelled." = "Der Test wurde abgebrochen.";
+"The tool tabs hold every adjustment, from white balance and exposure to layers. For a few easy controls instead, choose View ▸ Simple Mode (⌃⌘S)." = "Die Werkzeug-Tabs enthalten jede Anpassung, vom Weißabgleich über die Belichtung bis zu den Ebenen. Für ein paar einfache Regler wähle stattdessen Darstellung ▸ Einfacher Modus (⌃⌘S).";
 "The update couldn’t be downloaded: %@" = "Das Update konnte nicht geladen werden: %@";
 "The update didn’t work" = "Das Update hat nicht funktioniert";
 "The values AI Optimize set have all been changed since (undone, pasted over or adjusted)." = "Die von KI-Optimierung gesetzten Werte wurden seitdem alle geändert (widerrufen, überschrieben oder angepasst).";
@@ -2855,6 +2875,7 @@
 "Your pick" = "Deine Auswahl";
 "Your pics share is mounted" = "Deine pics-Freigabe ist aktiviert";
 "You’re back where you left off." = "Du bist wieder da, wo du aufgehört hast.";
+"You’re ready" = "Du bist startklar";
 "You’re up to date" = "Du bist auf dem neuesten Stand";
 "Zoom In" = "Einzoomen";
 "Zoom Out" = "Auszoomen";

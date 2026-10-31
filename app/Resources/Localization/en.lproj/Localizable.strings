@@ -307,6 +307,9 @@
 /* LuxtableCore/Browser/FilterBarLogic.swift, LuxtableCore/Keyboard/AccessibilityCatalog.swift, LuxtableCore/Library/LibraryModel.swift, LuxtableCore/Tools/PanelChrome.swift, LuxtableMac/Views/MainWindow.swift */
 "%@ photos" = "%@ photos";
 
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"%@ puts a box on the photo to move and resize; the arrow next to it picks a ratio such as Square or 16:9. Return applies, Esc cancels." = "%@ puts a box on the photo to move and resize; the arrow next to it picks a ratio such as Square or 16:9. Return applies, Esc cancels.";
+
 /* LuxtableCore/Lightroom/LightroomImport.swift */
 "%@ reverted: %@ restored" = "%@ reverted: %@ restored";
 
@@ -1447,6 +1450,9 @@
 /* LuxtableCore/Tools/SimpleMode.swift */
 "Adjust" = "Adjust";
 
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Adjust the photo" = "Adjust the photo";
+
 /* LuxtableUI/Views/Browser/BrowserViews.swift, LuxtableUI/Views/ToolSidebar.swift */
 "Adjusted" = "Adjusted";
 
@@ -1828,6 +1834,9 @@
 /* LuxtableMac/Views/Merge/MergeSheet.swift */
 "Auto crop" = "Auto crop";
 
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Auto fixes light and color in one click, a look restyles the photo, and six sliders fine-tune it. Crop & Straighten is at the bottom. View ▸ Simple Mode (⌃⌘S) switches to every tool." = "Auto fixes light and color in one click, a look restyles the photo, and six sliders fine-tune it. Crop & Straighten is at the bottom. View ▸ Simple Mode (⌃⌘S) switches to every tool.";
+
 /* LuxtableUI/Views/Tools/LayersPanel.swift */
 "Auto mask (follow edges)" = "Auto mask (follow edges)";
 
@@ -1858,7 +1867,7 @@
 /* LuxtableUI/Views/Viewer/PickerLoupeView.swift */
 "B %lld" = "B %lld";
 
-/* LuxtableMac/Views/OnboardingView.swift */
+/* LuxtableMac/Views/OnboardingView.swift, LuxtableMac/Views/TourOverlay.swift */
 "Back" = "Back";
 
 /* LuxtableCore/Voice/VoiceCommandParser.swift */
@@ -1906,7 +1915,7 @@
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Before and after" = "Before and after";
 
-/* LuxtableUI/Views/Viewer/StageBar.swift */
+/* LuxtableCore/Onboarding/GettingStartedTour.swift, LuxtableUI/Views/Viewer/StageBar.swift */
 "Before/After" = "Before/After";
 
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
@@ -1981,8 +1990,14 @@
 /* LuxtableCore/Tools/SimpleMode.swift */
 "Bring back detail in bright areas such as sky (–), or brighten them (+)." = "Bring back detail in bright areas such as sky (–), or brighten them (+).";
 
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Bring in some photos to begin. Help ▸ Getting Started shows this tour again at any time." = "Bring in some photos to begin. Help ▸ Getting Started shows this tour again at any time.";
+
 /* LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift */
 "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed." = "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed.";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Bring photos in" = "Bring photos in";
 
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Browse All Sessions in Library" = "Browse All Sessions in Library";
@@ -1992,6 +2007,9 @@
 
 /* LuxtableUI/Views/Tools/LibraryPanels.swift */
 "Browse a Card…" = "Browse a Card…";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Browse and cull" = "Browse and cull";
 
 /* LuxtableCore/Viewer/CanvasInteraction.swift, LuxtableUI/Views/Tools/LayersPanel.swift */
 "Brush" = "Brush";
@@ -2455,6 +2473,9 @@
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Close session %@" = "Close session %@";
 
+/* LuxtableMac/Views/TourOverlay.swift */
+"Close the tour (Esc). Help ▸ Getting Started shows it again." = "Close the tour (Esc). Help ▸ Getting Started shows it again.";
+
 /* LuxtableCore/Voice/VoiceCatalog.swift */
 "Close this list" = "Close this list";
 
@@ -2587,7 +2608,7 @@
 /* LuxtableCore/AI/AIHighlights.swift */
 "Contains settings changed by AI (click to list them)" = "Contains settings changed by AI (click to list them)";
 
-/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/OnboardingView.swift, LuxtableMac/Views/UpdateViews.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/OnboardingView.swift, LuxtableMac/Views/TourOverlay.swift, LuxtableMac/Views/UpdateViews.swift */
 "Continue" = "Continue";
 
 /* LuxtableMac/Views/Import/ExternalImportSheet.swift */
@@ -2848,7 +2869,7 @@
 /* LuxtableCore/Model/IPTCMetadata.swift */
 "Credit Line" = "Credit Line";
 
-/* LuxtableCore/AI/AIHighlights.swift, LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Viewer/CanvasInteraction.swift, LuxtableCore/Viewer/ViewerModel+Canvas.swift, LuxtableUI/Views/Tools/DetailPanels.swift */
+/* LuxtableCore/AI/AIHighlights.swift, LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Onboarding/GettingStartedTour.swift, LuxtableCore/Viewer/CanvasInteraction.swift, LuxtableCore/Viewer/ViewerModel+Canvas.swift, LuxtableUI/Views/Tools/DetailPanels.swift */
 "Crop" = "Crop";
 
 /* LuxtableCore/Viewer/CropRatios.swift, LuxtableCore/Viewer/CropTools.swift */
@@ -3088,7 +3109,7 @@
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Distortion" = "Distortion";
 
-/* LuxtableCore/GooglePhotos/GooglePhotosSignIn.swift, LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift, LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift, LuxtableUI/Views/Optimize/OptimizePanelView.swift, LuxtableUI/Views/Tools/ColorPanels.swift, LuxtableUI/Views/Tools/EffectsPanel.swift, LuxtableUI/Views/Tools/ToolCustomizeView.swift */
+/* LuxtableCore/GooglePhotos/GooglePhotosSignIn.swift, LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift, LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift, LuxtableMac/Views/TourOverlay.swift, LuxtableUI/Views/Optimize/OptimizePanelView.swift, LuxtableUI/Views/Tools/ColorPanels.swift, LuxtableUI/Views/Tools/EffectsPanel.swift, LuxtableUI/Views/Tools/ToolCustomizeView.swift */
 "Done" = "Done";
 
 /* LuxtableMac/App/LuxtableApp.swift, LuxtableMac/Views/UpdateViews.swift, LuxtableUI/Views/Tools/EffectsPanel.swift */
@@ -3436,6 +3457,9 @@
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back up to the original size." = "Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back up to the original size.";
 
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Export and share" = "Export and share";
+
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "Export failed" = "Export failed";
 
@@ -3513,6 +3537,9 @@
 
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "File name" = "File name";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"File ▸ Export… (⌘E) saves the selected photos with your export recipes. Share… (⌥⌘E), next to Import, sends JPEGs with Messages, Mail or AirDrop." = "File ▸ Export… (⌘E) saves the selected photos with your export recipes. Share… (⌥⌘E), next to Import, sends JPEGs with Messages, Mail or AirDrop.";
 
 /* LuxtableUI/Views/Browser/FilterBar.swift */
 "Filename" = "Filename";
@@ -3727,6 +3754,9 @@
 /* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift */
 "Get the Amazon Photos app" = "Get the Amazon Photos app";
 
+/* LuxtableCore/Keyboard/CommandCatalog.swift */
+"Getting Started" = "Getting Started";
+
 /* LuxtableMac/Updates/UpdateTools.swift */
 "GitHub answered HTTP %lld" = "GitHub answered HTTP %lld";
 
@@ -3843,6 +3873,9 @@
 
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Height of the sharp band in the frame." = "Height of the sharp band in the frame.";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Help ▸ Getting Started shows this tour again at any time." = "Help ▸ Getting Started shows this tour again at any time.";
 
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Hid %@" = "Hid %@";
@@ -4122,6 +4155,9 @@
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Import stopped while finishing. The copied files are in “%@”." = "Import stopped while finishing. The copied files are in “%@”.";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Import, at the left of the toolbar, copies a memory card and checks every file (⇧⌘I); an iPhone or iPad plugged in over USB is listed there too. File ▸ Import from Photos Library… brings in photos from Photos." = "Import, at the left of the toolbar, copies a memory card and checks every file (⇧⌘I); an iPhone or iPad plugged in over USB is listed there too. File ▸ Import from Photos Library… brings in photos from Photos.";
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Imported" = "Imported";
@@ -4611,6 +4647,9 @@
 
 /* LuxtableCore/Presets/Looks.swift */
 "Look Intensity" = "Look Intensity";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Look closely" = "Look closely";
 
 /* LuxtableCore/Merge/PhotoMerge.swift */
 "Looking for faces…" = "Looking for faces…";
@@ -7114,6 +7153,9 @@
 /* LuxtableCore/Tools/SimpleMode.swift */
 "Simple Mode" = "Simple Mode";
 
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Simple editing" = "Simple editing";
+
 /* LuxtableCore/Tools/SimpleMode.swift */
 "Simple mode: a few easy controls (⌃⌘S for every tool)" = "Simple mode: a few easy controls (⌃⌘S for every tool)";
 
@@ -7140,6 +7182,9 @@
 
 /* LuxtableMac/Views/UpdateViews.swift */
 "Skip This Version" = "Skip This Version";
+
+/* LuxtableMac/Views/TourOverlay.swift */
+"Skip Tour" = "Skip Tour";
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Skip duplicates" = "Skip duplicates";
@@ -7219,6 +7264,9 @@
 /* LuxtableCore/Keyboard/KeyBindings.swift, LuxtableCore/Keyboard/KeyboardRouter.swift */
 "Space" = "Space";
 
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Space zooms to 100%% where the pointer is; ⌘+ and ⌘− zoom in steps. %@ shows the photo as shot next to your edit." = "Space zooms to 100%% where the pointer is; ⌘+ and ⌘− zoom in steps. %@ shows the photo as shot next to your edit.";
+
 /* LuxtableCore/Voice/VoiceController.swift */
 "Speech recognition is turned off for Luxtable" = "Speech recognition is turned off for Luxtable";
 
@@ -7269,6 +7317,9 @@
 
 /* LuxtableMac/Views/GooglePhotos/GooglePhotosSettingsView.swift, LuxtableMac/Views/RawSettingsView.swift */
 "Status" = "Status";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"Step %lld of %lld" = "Step %lld of %lld";
 
 /* LuxtableCore/App/AppModel+Edits.swift */
 "Still loading the as-shot white balance for the last Apply…" = "Still loading the as-shot white balance for the last Apply…";
@@ -7684,6 +7735,12 @@
 /* LuxtableCore/AI/Segmentation/SkySegmentation.swift */
 "The downloaded sky model is damaged (%@). Try again." = "The downloaded sky model is damaged (%@). Try again.";
 
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Press %@–%@ to rate, %@ to pick and %@ to reject." = "The filmstrip shows the session’s photos: click one, or move with ← and →. Press %@–%@ to rate, %@ to pick and %@ to reject.";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Rate, pick and reject from the Photo menu, which lists their keys." = "The filmstrip shows the session’s photos: click one, or move with ← and →. Rate, pick and reject from the Photo menu, which lists their keys.";
+
 /* LuxtableCore/Tools/PeopleMaskActions.swift */
 "The first time, a 53 MB face model is downloaded." = "The first time, a 53 MB face model is downloaded.";
 
@@ -7809,6 +7866,9 @@
 
 /* LuxtableCore/Tools/ArchiveSettingsModel.swift */
 "The test was cancelled." = "The test was cancelled.";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"The tool tabs hold every adjustment, from white balance and exposure to layers. For a few easy controls instead, choose View ▸ Simple Mode (⌃⌘S)." = "The tool tabs hold every adjustment, from white balance and exposure to layers. For a few easy controls instead, choose View ▸ Simple Mode (⌃⌘S).";
 
 /* LuxtableMac/Updates/Updater.swift */
 "The update couldn’t be downloaded: %@" = "The update couldn’t be downloaded: %@";
@@ -8568,6 +8628,9 @@
 
 /* LuxtableMac/Views/UpdateViews.swift */
 "You’re back where you left off." = "You’re back where you left off.";
+
+/* LuxtableCore/Onboarding/GettingStartedTour.swift */
+"You’re ready" = "You’re ready";
 
 /* LuxtableMac/Updates/Updater.swift */
 "You’re up to date" = "You’re up to date";

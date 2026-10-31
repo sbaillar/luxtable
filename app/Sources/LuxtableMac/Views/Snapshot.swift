@@ -55,6 +55,7 @@ enum WindowSnapshot {
         multiView(model) // [multiview] `--select n`, `--filmstrip-rows r`, `--filmstrip-position left|right`, `--filmstrip-cell h`
         customTools(model) // `--tools-custom`: a custom tab and the All Tools tab in the strip
         burstStrip(model) // `--burst-strip`: stacking on, the biggest burst's strip open above the filmstrip
+        tour(model) // `--tour <step> [--simple]`: the Getting Started tour on that card
         // A running import keeps moving: capture it soon after it's part-way. [imp6]
         try? await Task.sleep(for: .seconds(CommandLine.arguments.contains("--import-card") ? 0.6 : 2.5))
         SnapshotWatchdog.step("capture")
@@ -90,6 +91,16 @@ enum WindowSnapshot {
         ToolWorkspaceCommands.revealAIChanges(model: model, layout: .shared)
         model.aiChangesShown = true
         print("snapshot: AI changes \(model.focusedAIChangeRows.map { "\($0.setting) \($0.detail)" })")
+    }
+
+    /// `--tour <step>` (browse, viewer, tools, crop, bringIn, export, ready): the Getting Started
+    /// tour on that card; `--simple`: in Simple mode (no crop card there: it stops on the last one).
+    private static func tour(_ model: AppModel) {
+        guard let step = argument("--tour").flatMap(TourModel.Step.init(rawValue:)) else { return }
+        if CommandLine.arguments.contains("--simple") { model.settings.simpleMode = true }
+        model.tour.start()
+        while model.tour.step != step, !model.tour.isLast { model.tour.next() }
+        print("snapshot: tour \(model.tour.step?.rawValue ?? "none") \(model.tour.progress)")
     }
 
     /// `--burst-strip`: bursts stacked, the biggest one's strip open above the filmstrip.

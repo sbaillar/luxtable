@@ -101,6 +101,7 @@
 "%@ paste mode" = "Mode de collage %@";
 "%@ photo" = "%@ photo";
 "%@ photos" = "%@ photos";
+"%@ puts a box on the photo to move and resize; the arrow next to it picks a ratio such as Square or 16:9. Return applies, Esc cancels." = "%@ place sur la photo un cadre à déplacer et à redimensionner ; la flèche à côté choisit un format comme Carré ou 16:9. Retour applique, Échap annule.";
 "%@ reverted: %@ restored" = "%@ annulée : %@ restaurées";
 "%@ saved by a newer Luxtable (left alone)" = "%@ enregistrées par une version plus récente de Luxtable (laissées telles quelles)";
 "%@ selected" = "%@ sélectionnée(s)";
@@ -481,6 +482,7 @@
 "Adding to the Google Photos album…" = "Ajout à l’album Google Photos…";
 "Adds: %@" = "Ajoute : %@";
 "Adjust" = "Réglages";
+"Adjust the photo" = "Régler la photo";
 "Adjusted" = "Modifiée";
 "Adjustments" = "Réglages";
 "Advanced" = "Avancé";
@@ -608,6 +610,7 @@
 "Auto adjust" = "Réglage automatique";
 "Auto align" = "Alignement automatique";
 "Auto crop" = "Recadrage automatique";
+"Auto fixes light and color in one click, a look restyles the photo, and six sliders fine-tune it. Crop & Straighten is at the bottom. View ▸ Simple Mode (⌃⌘S) switches to every tool." = "Auto corrige la lumière et les couleurs en un clic, un look change le style de la photo et six curseurs l’affinent. Recadrer et redresser se trouve en bas. Présentation ▸ Mode simple (⌃⌘S) affiche tous les outils.";
 "Auto mask (follow edges)" = "Masque auto (suit les contours)";
 "Auto white balance and tone (⇧A)" = "Balance des blancs et tons automatiques (⇧A)";
 "Auto white balance and tone applied" = "Balance des blancs et tons automatiques appliqués";
@@ -659,10 +662,13 @@
 "Brightness" = "Luminosité";
 "Brightness in stops (EV)." = "Luminosité en IL (EV).";
 "Bring back detail in bright areas such as sky (–), or brighten them (+)." = "Récupère les détails des zones claires comme le ciel (–), ou les éclaircit (+).";
+"Bring in some photos to begin. Help ▸ Getting Started shows this tour again at any time." = "Importez quelques photos pour commencer. Aide ▸ Premiers pas affiche à nouveau cette visite à tout moment.";
 "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed." = "Importer ses notes, étiquettes de couleur, mots-clés, sélections et modifications dans Luxtable ? Le dossier Capture One n’est jamais modifié.";
+"Bring photos in" = "Importer des photos";
 "Browse All Sessions in Library" = "Parcourir toutes les sessions dans la bibliothèque";
 "Browse Card" = "Parcourir la carte";
 "Browse a Card…" = "Parcourir une carte…";
+"Browse and cull" = "Parcourir et trier";
 "Brush" = "Pinceau";
 "Brush (%lld)" = "Pinceau (%lld)";
 "Brush / erase mask on the selected layer" = "Masque au pinceau / effacement sur le calque sélectionné";
@@ -817,6 +823,7 @@
 "Close results" = "Fermer les résultats";
 "Close session" = "Fermer la session";
 "Close session %@" = "Fermer la session %@";
+"Close the tour (Esc). Help ▸ Getting Started shows it again." = "Fermer la visite (Échap). Aide ▸ Premiers pas l’affiche à nouveau.";
 "Close this list" = "Fermer cette liste";
 "Close voice commands" = "Fermer les commandes vocales";
 "Close “%@” (⌥⌘W). Nothing is deleted, and it stays in the Sessions list." = "Fermer « %@ » (⌥⌘W). Rien n’est supprimé, et elle reste dans la liste des sessions.";
@@ -1144,6 +1151,7 @@
 "Export 1 Photo" = "Exporter 1 photo";
 "Export Again" = "Exporter à nouveau";
 "Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back up to the original size." = "Exporter une photo redressée ou corrigée de l’objectif à sa taille inscrite au lieu de la remettre à l’échelle de la taille d’origine.";
+"Export and share" = "Exporter et partager";
 "Export failed" = "Échec de l’exportation";
 "Export recipes" = "Recettes d’exportation";
 "Export steps from plug-ins appear here (Settings ▸ Plugins)." = "Les étapes d’exportation des modules apparaissent ici (Réglages ▸ Modules).";
@@ -1170,6 +1178,7 @@
 "File Name" = "Nom de fichier";
 "File changed" = "Fichier modifié";
 "File name" = "Nom de fichier";
+"File ▸ Export… (⌘E) saves the selected photos with your export recipes. Share… (⌥⌘E), next to Import, sends JPEGs with Messages, Mail or AirDrop." = "Fichier ▸ Exporter… (⌘E) enregistre les photos sélectionnées avec vos recettes d’exportation. Partager… (⌥⌘E), à côté d’Importer, envoie des JPEG avec Messages, Mail ou AirDrop.";
 "Filename" = "Nom de fichier";
 "Files already in any session are not copied again" = "Les fichiers déjà présents dans une session ne sont pas recopiés";
 "Fill" = "Remplissage";
@@ -1241,6 +1250,7 @@
 "General" = "Général";
 "Get RAW Helper" = "Obtenir l’assistant RAW";
 "Get the Amazon Photos app" = "Obtenir l’app Amazon Photos";
+"Getting Started" = "Premiers pas";
 "GitHub answered HTTP %lld" = "GitHub a répondu HTTP %lld";
 "Give the preset a name." = "Donnez un nom au préréglage.";
 "Give the smart folder a name." = "Donnez un nom au dossier intelligent.";
@@ -1280,6 +1290,7 @@
 "Heard “%@”: nothing more was run" = "« %@ » entendu : rien de plus n’a été exécuté";
 "Heard “%@”: say “undo” to take it back" = "« %@ » entendu : dites « undo » pour l’annuler";
 "Height of the sharp band in the frame." = "Hauteur de la bande nette dans le cadre.";
+"Help ▸ Getting Started shows this tour again at any time." = "Aide ▸ Premiers pas affiche à nouveau cette visite à tout moment.";
 "Hid %@" = "%@ masquée(s)";
 "Hide %@" = "Masquer %@";
 "Hide %@'s faces" = "Masquer les visages de %@";
@@ -1373,6 +1384,7 @@
 "Import stopped after %lld of %@. The verified copies are kept; import again to continue." = "Importation arrêtée après %lld sur %@. Les copies vérifiées sont conservées ; importez à nouveau pour continuer.";
 "Import stopped after %lld of %lld files. Nothing was removed from the card." = "Importation arrêtée après %lld fichiers sur %lld. Rien n’a été supprimé de la carte.";
 "Import stopped while finishing. The copied files are in “%@”." = "Importation arrêtée pendant la finalisation. Les fichiers copiés se trouvent dans « %@ ».";
+"Import, at the left of the toolbar, copies a memory card and checks every file (⇧⌘I); an iPhone or iPad plugged in over USB is listed there too. File ▸ Import from Photos Library… brings in photos from Photos." = "Importer, à gauche de la barre d’outils, copie une carte mémoire et vérifie chaque fichier (⇧⌘I) ; un iPhone ou un iPad branché en USB y apparaît aussi. Fichier ▸ Importer depuis la photothèque Photos… importe des photos depuis Photos.";
 "Imported" = "Importés";
 "Imported %@" = "%@ importés";
 "Importing… The Capture One folder is only read." = "Importation… Le dossier Capture One est uniquement lu.";
@@ -1536,6 +1548,7 @@
 "Long edge 4096 px" = "Grand côté 4096 px";
 "Look %@" = "Look %@";
 "Look Intensity" = "Intensité du look";
+"Look closely" = "Regarder de près";
 "Looking for faces…" = "Recherche des visages…";
 "Looks" = "Looks";
 "Loupe" = "Loupe";
@@ -2370,6 +2383,7 @@
 "Similar photos" = "Photos similaires";
 "Simple" = "Simple";
 "Simple Mode" = "Mode simple";
+"Simple editing" = "Retouche simple";
 "Simple mode: a few easy controls (⌃⌘S for every tool)" = "Mode simple : quelques réglages faciles (⌃⌘S pour tous les outils)";
 "Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both." = "Simple affiche quelques réglages faciles ; Complet affiche tous les outils (⌃⌘S). Vos modifications sont les mêmes dans les deux.";
 "Size" = "Taille";
@@ -2379,6 +2393,7 @@
 "Skin" = "Peau";
 "Skin Tone" = "Ton chair";
 "Skip This Version" = "Ignorer cette version";
+"Skip Tour" = "Ignorer la visite";
 "Skip duplicates" = "Ignorer les doublons";
 "Skip for Now" = "Ignorer pour l’instant";
 "Skip low-contrast detail (noise) below this level." = "Ignore les détails peu contrastés (bruit) sous ce seuil.";
@@ -2405,6 +2420,7 @@
 "Sort direction" = "Ordre de tri";
 "Sort order" = "Ordre de tri";
 "Space" = "Espace";
+"Space zooms to 100%% where the pointer is; ⌘+ and ⌘− zoom in steps. %@ shows the photo as shot next to your edit." = "Espace zoome à 100 %% à l’endroit du pointeur ; ⌘+ et ⌘− zooment par paliers. %@ montre la photo telle que prise à côté de votre retouche.";
 "Speech recognition is turned off for Luxtable" = "La reconnaissance vocale est désactivée pour Luxtable";
 "Speech recognition stopped: %@" = "Reconnaissance vocale arrêtée : %@";
 "Spherical" = "Sphérique";
@@ -2422,6 +2438,7 @@
 "Starts from the best frame and takes, from the others, faces that look better (open eyes first) and areas that are sharper. Nothing that moved is taken." = "Part de la meilleure image et prend dans les autres les visages plus réussis (yeux ouverts d’abord) et les zones plus nettes. Rien de ce qui a bougé n’est repris.";
 "State / Province" = "État / Province";
 "Status" = "État";
+"Step %lld of %lld" = "Étape %lld sur %lld";
 "Still loading the as-shot white balance for the last Apply…" = "Chargement en cours de la balance des blancs de prise de vue pour la dernière application…";
 "Still on “%@”: %lld changes couldn’t be saved (%@), so “%@” wasn’t opened." = "Toujours sur « %@ » : %lld modifications n’ont pas pu être enregistrées (%@), donc « %@ » n’a pas été ouverte.";
 "Still on “%@”: 1 change couldn’t be saved (%@), so “%@” wasn’t opened." = "Toujours sur « %@ » : 1 modification n’a pas pu être enregistrée (%@), donc « %@ » n’a pas été ouverte.";
@@ -2560,6 +2577,8 @@
 "The downloaded app’s signature doesn’t check out: %@" = "La signature de l’app téléchargée n’est pas valide : %@";
 "The downloaded search model is damaged (%@). Try again." = "Le modèle de recherche téléchargé est endommagé (%@). Réessayez.";
 "The downloaded sky model is damaged (%@). Try again." = "Le modèle de ciel téléchargé est endommagé (%@). Réessayez.";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Press %@–%@ to rate, %@ to pick and %@ to reject." = "La pellicule affiche les photos de la session : cliquez sur l’une d’elles ou naviguez avec ← et →. Appuyez sur %@–%@ pour noter, %@ pour retenir et %@ pour rejeter.";
+"The filmstrip shows the session’s photos: click one, or move with ← and →. Rate, pick and reject from the Photo menu, which lists their keys." = "La pellicule affiche les photos de la session : cliquez sur l’une d’elles ou naviguez avec ← et →. Notez, retenez et rejetez depuis le menu Photo, qui indique leurs touches.";
 "The first time, a 53 MB face model is downloaded." = "La première fois, un modèle de visage de 53 MB est téléchargé.";
 "The focused photo is hidden by the filter" = "La photo active est masquée par le filtre";
 "The folder was moved: %@" = "Le dossier a été déplacé : %@";
@@ -2602,6 +2621,7 @@
 "The test didn't finish: %@" = "Le test ne s’est pas terminé : %@";
 "The test renderer only shows exposure, saturation and white balance. %@ are saved and render in the full develop." = "Le moteur de rendu de test n’affiche que l’exposition, la saturation et la balance des blancs. %@ sont enregistrés et rendus dans le développement complet.";
 "The test was cancelled." = "Le test a été annulé.";
+"The tool tabs hold every adjustment, from white balance and exposure to layers. For a few easy controls instead, choose View ▸ Simple Mode (⌃⌘S)." = "Les onglets d’outils contiennent tous les réglages, de la balance des blancs et l’exposition jusqu’aux calques. Pour quelques réglages simples à la place, choisissez Présentation ▸ Mode simple (⌃⌘S).";
 "The update couldn’t be downloaded: %@" = "La mise à jour n’a pas pu être téléchargée : %@";
 "The update didn’t work" = "La mise à jour a échoué";
 "The values AI Optimize set have all been changed since (undone, pasted over or adjusted)." = "Les valeurs réglées par l’optimisation IA ont toutes été modifiées depuis (annulées, remplacées par un collage ou ajustées).";
@@ -2855,6 +2875,7 @@
 "Your pick" = "Votre choix";
 "Your pics share is mounted" = "Votre partage pics est monté";
 "You’re back where you left off." = "Vous reprenez là où vous vous étiez arrêté.";
+"You’re ready" = "Tout est prêt";
 "You’re up to date" = "Vous êtes à jour";
 "Zoom In" = "Zoom avant";
 "Zoom Out" = "Zoom arrière";

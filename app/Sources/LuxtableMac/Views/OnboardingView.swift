@@ -38,7 +38,7 @@ struct OnboardingView: View {
                 Spacer()
                 Button("Skip for Now") {
                     model.settings.onboardingComplete = true
-                    model.sheet = nil
+                    model.endOnboarding()
                 }
                 .help("Use the defaults; change them later in Settings (⌘,)")
                 Button(onboarding.isLast ? "Start Using Luxtable" : "Continue") {
@@ -187,7 +187,7 @@ struct OnboardingView: View {
         do {
             try onboarding.finish()
             Task { await onboarding.recordTargetVolume() } // N3
-            model.sheet = nil
+            model.endOnboarding() // and the Getting Started tour, once
         } catch {
             self.error = error.localizedDescription
         }
