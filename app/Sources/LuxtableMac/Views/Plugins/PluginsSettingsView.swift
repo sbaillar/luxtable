@@ -5,9 +5,9 @@ import LuxtableUI
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Settings ▸ Plugins: the app's optional integrations (Archive, Amazon Photos, Immich,
-/// Google Photos: built in, turned on or off here), then what is installed, what each one
-/// waits for, Install…, Remove.
+/// Settings ▸ Plugins: the app's optional integrations (Archive, Immich, Google Photos:
+/// built in, turned on or off here), then what is installed, what each one waits for,
+/// Install…, Remove.
 struct PluginsSettingsView: View {
     @Bindable var store: PluginStore
     /// A package chosen or dropped, staged and waiting for the user to confirm.

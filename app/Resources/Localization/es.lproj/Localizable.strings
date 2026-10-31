@@ -194,7 +194,6 @@
 "%lld faces" = "%lld caras";
 "%lld faces improved" = "%lld caras mejoradas";
 "%lld faces moved too much to swap" = "%lld caras se movieron demasiado para intercambiarlas";
-"%lld failed" = "%lld con errores";
 "%lld file waiting" = "%lld archivo en espera";
 "%lld files" = "%lld archivos";
 "%lld files in other formats not imported" = "%lld archivos en otros formatos no se importan";
@@ -226,7 +225,6 @@
 "%lld min ago" = "hace %lld min";
 "%lld more selected photos" = "%lld fotos seleccionadas más";
 "%lld more tabs" = "%lld pestañas más";
-"%lld new" = "%lld nuevos";
 "%lld new photos" = "%lld fotos nuevas";
 "%lld not archived" = "%lld sin archivar";
 "%lld not in Immich yet" = "%lld aún no están en Immich";
@@ -236,8 +234,6 @@
 "%lld of %lld files" = "%lld de %lld archivos";
 "%lld of %lld originals couldn’t be copied" = "No se pudieron copiar %lld de %lld originales";
 "%lld of %lld selected" = "%lld de %lld seleccionados";
-"%lld original handed to the app" = "%lld original entregado a la app";
-"%lld originals handed to the app" = "%lld originales entregados a la app";
 "%lld parts of the card couldn’t be read" = "No se pudieron leer %lld partes de la tarjeta";
 "%lld parts of the card unreadable" = "%lld partes de la tarjeta ilegibles";
 "%lld photo" = "%lld foto";
@@ -288,7 +284,6 @@
 "%lld videos not imported" = "%lld vídeos no se importan";
 "%lld virtual copies were added as new variants" = "%lld copias virtuales se añadieron como variantes nuevas";
 "%lld virtual copies will be added as new variants" = "%lld copias virtuales se añadirán como variantes nuevas";
-"%lld waiting for verification" = "%lld esperando verificación";
 "%lld warning" = "%lld aviso";
 "%lld warnings" = "%lld avisos";
 "%lld workspaces" = "%lld espacios de trabajo";
@@ -511,14 +506,6 @@
 "Already at the last photo" = "Ya estás en la última foto";
 "Also 8 × 10" = "También 8 × 10";
 "Also upload to Google Photos" = "Subir también a Google Photos";
-"Amazon Photos" = "Amazon Photos";
-"Amazon Photos (optional)" = "Amazon Photos (opcional)";
-"Amazon Photos folder (%@)" = "Carpeta de Amazon Photos (%@)";
-"Amazon Photos folder missing: %@. Choose it again in Settings › Archive." = "Falta la carpeta de Amazon Photos: %@. Vuelve a elegirla en Ajustes › Archivo.";
-"Amazon Photos is installed. Choose the folder it backs up." = "Amazon Photos está instalado. Elige la carpeta de la que hace copia de seguridad.";
-"Amazon Photos: %@" = "Amazon Photos: %@";
-"Amazon Photos: after the next import" = "Amazon Photos: tras la próxima importación";
-"Amazon has no public Photos API. Luxtable mirrors your originals into a folder, and the official Amazon Photos app backs that folder up." = "Amazon no tiene una API pública de Photos. Luxtable replica tus originales en una carpeta, y la app oficial Amazon Photos hace copia de seguridad de esa carpeta.";
 "Amount" = "Cantidad";
 "An arrow key" = "Una tecla de flecha";
 "An empty session with Capture, Selects, Output and Trash folders. Import from a card or drag photos in next." = "Una sesión vacía con las carpetas Capture, Selects, Output y Trash. Después, importa desde una tarjeta o arrastra fotos.";
@@ -581,7 +568,7 @@
 "Archive settings not applied" = "Ajustes del archivo no aplicados";
 "Archive switched off" = "Archivo desactivado";
 "Archive up to date" = "Archivo al día";
-"Archive, Amazon Photos, Immich, Google Photos" = "Archivo, Amazon Photos, Immich, Google Photos";
+"Archive, Immich, Google Photos" = "Archivo, Immich, Google Photos";
 "Archive: %@" = "Archivo: %@";
 "Archived" = "Archivado";
 "Archived in the background" = "Archivado en segundo plano";
@@ -628,7 +615,6 @@
 "Back / close" = "Atrás/cerrar";
 "Back to the original" = "Volver al original";
 "Back to the photo as shot, without any adjustments (⌘Z undoes it)" = "Volver a la foto tal como se tomó, sin ningún ajuste (⌘Z lo deshace)";
-"Backed-up folder" = "Carpeta con copia de seguridad";
 "Background" = "Fondo";
 "Backlit: let the light glow." = "A contraluz: deja que la luz brille.";
 "Backup Copy" = "Copia de seguridad";
@@ -756,7 +742,6 @@
 "Choose photos in the browser, then Photo ▸ Keep a Developed Copy for Immich: a JPEG with every edit goes to the session's Developed folder and is kept up to date." = "Elige fotos en el explorador y luego Foto ▸ Conservar una copia revelada para Immich: un JPEG con todas las ediciones va a la carpeta Developed de la sesión y se mantiene actualizado.";
 "Choose the archive folder" = "Elige la carpeta de archivo";
 "Choose the archive folder (on your NAS, an external disk or this Mac)" = "Elige la carpeta de archivo (en tu NAS, un disco externo o este Mac)";
-"Choose the folder the Amazon Photos app backs up" = "Elige la carpeta de la que hace copia de seguridad la app Amazon Photos";
 "Choose the one folder this plug-in may use." = "Elige la única carpeta que puede usar este plugin.";
 "Choose the tabs in the strip and the tools in each. A tool can be in several tabs. Changes apply right away." = "Elige las pestañas de la barra y las herramientas de cada una. Una herramienta puede estar en varias pestañas. Los cambios se aplican de inmediato.";
 "Choose two or more photos to merge." = "Elige dos o más fotos para combinar.";
@@ -1223,7 +1208,6 @@
 "Folder" = "Carpeta";
 "Folder %@" = "Carpeta %@";
 "Folder inside the session’s Capture folder. Tokens: {date} {time} {camera} {text}" = "Carpeta dentro de la carpeta Capture de la sesión. Tokens: {date} {time} {camera} {text}";
-"Folder missing: %@. It was moved or deleted, or its disk isn't connected. Luxtable never recreates it: choose it again." = "Falta la carpeta: %@. Se movió o eliminó, o su disco no está conectado. Luxtable nunca la vuelve a crear: vuelve a elegirla.";
 "Folder on the server" = "Carpeta en el servidor";
 "Follow the layout (%@)" = "Seguir la disposición (%@)";
 "Font" = "Tipo de letra";
@@ -1254,7 +1238,6 @@
 "Gamut warning" = "Aviso de gama";
 "General" = "General";
 "Get RAW Helper" = "Obtener asistente RAW";
-"Get the Amazon Photos app" = "Obtener la app Amazon Photos";
 "Getting Started" = "Primeros pasos";
 "GitHub answered HTTP %lld" = "GitHub ha respondido HTTP %lld";
 "Give the preset a name." = "Ponle un nombre al ajuste preestablecido.";
@@ -1284,7 +1267,6 @@
 "Hair" = "Pelo";
 "Halation" = "Halación";
 "Half the height of the sharp band, of the long edge." = "La mitad de la altura de la banda nítida, respecto al lado largo.";
-"Handing originals to Amazon Photos…" = "Entregando originales a Amazon Photos…";
 "Hard (100 %) or soft brush edge." = "Borde del pincel duro (100 %) o suave.";
 "Hardness" = "Dureza";
 "Headline" = "Titular";
@@ -1590,7 +1572,6 @@
 "Luxtable is already running or still closing" = "Luxtable ya se está ejecutando o aún se está cerrando";
 "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again." = "Luxtable no tiene permiso para leer tu fototeca de Fotos. Actívalo en Ajustes del Sistema ▸ Privacidad y seguridad ▸ Fotos y vuelve a intentarlo.";
 "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable mantiene su propio aspecto. Esto solo mueve paneles, teclas y algunos nombres a donde tus manos los esperan. Cámbialo cuando quieras en Ajustes › Familiar.";
-"Luxtable mirrors your originals into a folder that the official Amazon Photos app backs up. No passwords, no private APIs." = "Luxtable replica tus originales en una carpeta de la que hace copia de seguridad la app oficial Amazon Photos. Sin contraseñas ni API privadas.";
 "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, about 34 MB) and keep it on this Mac. Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable." = "Luxtable descargará RealESRGAN_x2plus (licencia BSD de 3 cláusulas, unos 34 MB) y lo guardará en este Mac. Sus datos de entrenamiento (DIV2K, Flickr2K, OST) tienen licencia solo para investigación no comercial. La licencia Apache-2.0 de Luxtable no anula esas condiciones; cumplirlas es responsabilidad tuya. Encontrarás los detalles en Luxtable ▸ Acerca de Luxtable.";
 "Luxtable's own phrase rules" = "Reglas de frases propias de Luxtable";
 "Luxtable, or nothing yet" = "Luxtable, o nada todavía";
@@ -1850,7 +1831,6 @@
 "Off" = "Desactivado";
 "Off: photos you changed in Luxtable since the last import keep your values" = "Desactivado: las fotos que hayas cambiado en Luxtable desde la última importación conservan tus valores";
 "Off: photos you rejected (and the session's Trash) stay out of the archive, and deleting them leaves no copy" = "Desactivado: las fotos rechazadas (y la papelera de la sesión) quedan fuera del archivo, y al eliminarlas no queda ninguna copia";
-"Off: photos you rejected aren't handed to Amazon Photos" = "Desactivado: las fotos rechazadas no se entregan a Amazon Photos";
 "Off: where the photo was taken stays private. Your name, copyright, caption and keywords go in either way" = "Desactivado: el lugar donde se tomó la foto se mantiene privado. Tu nombre, el copyright, el pie de foto y las palabras clave se incluyen igualmente";
 "Offline" = "Sin conexión";
 "Older steps not shown" = "No se muestran los pasos anteriores";
@@ -1904,8 +1884,6 @@
 "Original file missing (%@). Remove isn’t offered: “%@” isn’t the disk this session was recorded on (a clone or a restore?). Locate Folder… confirms it." = "Falta el archivo original (%@). No se ofrece Eliminar: “%@” no es el disco en el que se registró esta sesión (¿un clon o una restauración?). Localizar carpeta… lo confirma.";
 "Original file missing (%@): edits are saved but can’t be previewed or exported." = "Falta el archivo original (%@): las ediciones se guardan, pero no se pueden previsualizar ni exportar.";
 "Originals are copied; %@ is never changed." = "Se copian los originales; %@ nunca se modifica.";
-"Originals are handed to Amazon Photos after each import." = "Los originales se entregan a Amazon Photos tras cada importación.";
-"Originals are handed to the folder the Amazon Photos app backs up." = "Los originales se entregan a la carpeta de la que hace copia de seguridad la app Amazon Photos.";
 "Other Sources" = "Otras fuentes";
 "Other cameras" = "Otras cámaras";
 "Out %lld · %lld" = "Salida %lld · %lld";
@@ -1955,7 +1933,6 @@
 "Photos Library" = "Fototeca de Fotos";
 "Photos Library…" = "Fototeca de Fotos…";
 "Photos of this session, or of every session" = "Fotos de esta sesión o de todas las sesiones";
-"Photos only: videos are archived with the session but aren't handed to Amazon Photos." = "Solo fotos: los vídeos se archivan con la sesión, pero no se entregan a Amazon Photos.";
 "Photos whose files were moved or deleted outside Luxtable" = "Fotos cuyos archivos se movieron o eliminaron fuera de Luxtable";
 "Phrase, e.g. “keeper”" = "Frase, p. ej., “keeper”";
 "Phrases starting with “edit” are Edit with Words instructions." = "Las frases que empiezan por “edit” son instrucciones de Editar con palabras.";
@@ -1975,7 +1952,6 @@
 "Pick one of your recent sessions, or bring in new photos." = "Elige una de tus sesiones recientes o trae fotos nuevas.";
 "Pick the correction profile by hand when the automatic match is wrong or missing" = "Elegir el perfil de corrección manualmente cuando la detección automática es incorrecta o no existe";
 "Pick the focus on the photo" = "Elegir el foco en la foto";
-"Pick the folder watched by the Amazon Photos app" = "Elige la carpeta que vigila la app Amazon Photos";
 "Picked" = "Elegida";
 "Picked %@" = "%@ elegida";
 "Pin for compare" = "Fijar para comparar";
@@ -2280,7 +2256,6 @@
 "Selection" = "Selección";
 "Selects exactly those photos (“the next 3” are three, not counting this one) and moves to the first; keys then act on them." = "Selecciona exactamente esas fotos (“the next 3” son tres, sin contar esta) y va a la primera; las teclas actúan entonces sobre ellas.";
 "Send JPEGs of the selection with Messages, Mail, AirDrop and more (⌥⌘E). Size and quality: Settings ▸ Sharing" = "Enviar JPEG de la selección con Mensajes, Mail, AirDrop y más (⌥⌘E). Tamaño y calidad: Ajustes ▸ Compartir";
-"Send rejected photos to Amazon Photos" = "Enviar las fotos rechazadas a Amazon Photos";
 "Separation between darks and lights." = "Separación entre oscuros y claros.";
 "Server" = "Servidor";
 "Server address" = "Dirección del servidor";
@@ -2467,7 +2442,6 @@
 "Stop it and quit? Photos already exported stay; the rest aren't exported." = "¿Detenerla y salir? Las fotos ya exportadas se conservan; el resto no se exporta.";
 "Stop listening" = "Dejar de escuchar";
 "Stop loading this development folder" = "Dejar de cargar esta carpeta de desarrollo";
-"Stop mirroring originals to Amazon Photos" = "Dejar de replicar los originales en Amazon Photos";
 "Stop picking the focus" = "Dejar de elegir el foco";
 "Stop preparing; nothing is shared" = "Detener la preparación; no se comparte nada";
 "Stop remove tool" = "Detener la herramienta Eliminar";
@@ -2556,7 +2530,6 @@
 "The AI Denoise model in this build is damaged (its checksum doesn't match)." = "El modelo de eliminación de ruido con IA de esta versión está dañado (su suma de comprobación no coincide).";
 "The AI Upscale model in this build is damaged (its checksum doesn’t match)." = "El modelo de ampliación con IA de esta versión está dañado (su suma de comprobación no coincide).";
 "The API key couldn't be removed from your Keychain." = "No se pudo eliminar la clave de API de tu llavero.";
-"The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it." = "La app Amazon Photos no está instalada. Ella sube la carpeta; Luxtable solo la llena.";
 "The Best Shot" = "La mejor toma";
 "The Keychain refused the API key." = "El llavero rechazó la clave de API.";
 "The Keychain refused the client secret." = "El llavero rechazó el secreto de cliente.";
@@ -2715,7 +2688,6 @@
 "Turn %@ off (its settings are kept)" = "Desactivar %@ (se conservan sus ajustes)";
 "Turn %@ on" = "Activar %@";
 "Turn AI Denoise on for the selected photos and denoise them in the background" = "Activar Eliminar ruido con IA para las fotos seleccionadas y eliminar su ruido en segundo plano";
-"Turn Off" = "Desactivar";
 "Turn Voice Commands Off" = "Desactivar comandos de voz";
 "Turn Voice Commands On" = "Activar comandos de voz";
 "Turn on at least one recipe." = "Activa al menos una receta.";
@@ -2774,7 +2746,6 @@
 "Upscaling, %@" = "Ampliando, %@";
 "Usage Terms" = "Condiciones de uso";
 "Use %@" = "Usar %@";
-"Use Folder" = "Usar carpeta";
 "Use Jev for phrases the rules don't understand" = "Usar Jev para las frases que las reglas no entienden";
 "Use Proof Profile (%@)" = "Usar perfil de prueba (%@)";
 "Use a full path, like /Volumes/NAS/Photos." = "Usa una ruta completa, como /Volumes/NAS/Photos.";

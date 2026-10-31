@@ -24,7 +24,7 @@ Map tiles may be turned off: choose **Show Map**, or turn them on in Settings �
 
 The archive drive or NAS isn't mounted, or the object storage service didn't answer. Syncs wait until it is back, and nothing in the archive is ever deleted. For object storage, **Test Connection** in Settings ▸ Archive says what is wrong; an `http://` endpoint outside your local network is refused (use `https://`).
 
-## The Archive, Immich, Amazon Photos or Google Photos settings are missing
+## The Archive, Immich or Google Photos settings are missing
 
 That integration is off. Turn it on in Settings ▸ Plugins ▸ Integrations; its settings were kept.
 

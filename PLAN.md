@@ -17,7 +17,7 @@ Status: **plan only. No code yet.** Decision points are tagged **D#** and collec
 - Layers with masks (brush, gradients, luminance/color range, and later AI subject/sky).
 - Copy/apply of selected adjustment groups to one image or a selection (all of a session, album or filter by selecting all).
 - A background **rsync to an archive** while you work.
-- Optional **Amazon Photos sync** (see D3; this one needs a careful decision).
+- ~~Optional **Amazon Photos sync** (see D3; this one needs a careful decision).~~ (dropped: not necessary; the Amazon Photos hand-off was removed)
 - A native-feeling, good-looking Mac GUI. The core is Rust for speed.
 
 **Non-goals for v1**: tethered capture, printing, a book/web module, a plugin SDK, Windows/Linux, and importing other apps' catalogs. XMP interop is in scope; catalog migration is not.
@@ -61,7 +61,7 @@ Status: **plan only. No code yet.** Decision points are tagged **D#** and collec
 │   lt-jobs      prioritized work scheduler (tokio + rayon)                 │
 │   lt-export    recipes → JPEG/HEIC/TIFF (16-bit)/DNG passthrough          │
 │   lt-archive   rsync scheduler/runner                                     │
-│   lt-cloud     Amazon Photos adapter (D3)                                 │
+│   lt-cloud     Amazon Photos adapter (D3, dropped)                        │
 └───────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -168,7 +168,7 @@ Copy and apply adjustments:
 
 ---
 
-## 9. Archive (rsync) and Amazon Photos
+## 9. Archive (rsync) and Amazon Photos (dropped)
 
 ### 9a. rsync archive
 - **Target:** a mounted folder the user chooses, typically a NAS share (for example `/Volumes/Archive/Luxtable/`). If the NAS already backs that share up to a second machine, the archive gets **3 copies with no new infrastructure**. rsync runs on the Mac against the mounted share, never on the NAS, so no SSH keys are needed.
@@ -178,7 +178,9 @@ Copy and apply adjustments:
 - **Binary:** macOS now ships **openrsync** (protocol 29). The app will bundle or require **Homebrew rsync 3.x** for `--info=progress2`, reliable `--partial`, and better perf (D7).
 - **Offline target** (volume unmounted, NAS down): changes queue, a menu-bar badge shows "archive behind by N files", and the sync retries with backoff. Editing is never blocked. A notification after 24 h behind is optional.
 
-### 9b. Amazon Photos (D3, **needs your call**)
+### 9b. ~~Amazon Photos (D3, **needs your call**)~~ (dropped)
+**Dropped: not necessary.** Option A was built as a folder hand-off and later removed from the product; the archive covers backup. The analysis below is kept as history.
+
 Amazon has **no public Photos API**. The Amazon Drive developer API was closed off years ago, and Drive itself shut down at the end of 2023. "Impersonating Amazon Photos" therefore means one of these:
 
 | Option | How | Risk |
@@ -198,12 +200,12 @@ What to upload is a separate choice (**D8**). Prime's unlimited full-resolution 
 | **D0** | Name | Luxtable / something else | Luxtable (working name) |
 | **D1** | GUI stack | (a) **SwiftUI/AppKit shell + Rust core via UniFFI**; (b) pure Rust with **GPUI** (Zed's framework: fast and pretty, but young, thin docs, weak on native controls/accessibility); (c) egui/iced (fast to build, won't feel like a Mac app) | **(a)**. "Nice GUI" plus macOS-only favors native. All hot paths are still Rust. |
 | **D2** | RAW decoder | (a) **rawler** (pure Rust, from dnglab; good CR3/NEF/ARW/RAF/DNG coverage); (b) LibRaw via FFI (widest coverage, C++); (c) Apple CIRAWFilter (great support, but not our pipeline or look) | **rawler primary + LibRaw fallback**. **Depends on your camera(s): see Q1.** |
-| **D3** | Amazon Photos | A folder hand-off / B private API / C UI automation | **A**. B is rejected. |
+| **D3** | ~~Amazon Photos~~ | A folder hand-off / B private API / C UI automation | ~~**A**. B is rejected.~~ **Dropped:** the hand-off was removed (not necessary). |
 | **D4** | Source of truth for edits | **Sidecars + rebuildable index** / database only | **Sidecars**. This is the main anti-corruption and NAS-friendly design choice. |
 | **D5** | Color science ("look") | (a) matrices from rawler/Adobe coefficients (neutral, flat); (b) **load Adobe DCP profiles** (from the free Adobe DNG Converter); (c) build our own film-like base curve per camera | **(a) plus a tuned base tone curve for v1, DCP support in phase 2.** Note: other vendors' proprietary per-camera profiles are not used or copied. |
 | **D6** | Card handling after import | Never touch / offer "delete from card after verify" | **Never touch**. Format in camera. |
 | **D7** | rsync binary | Bundle rsync 3.x (GPLv3, ok as a separate executable) / require Homebrew / use system openrsync | **Require Homebrew rsync, fall back to openrsync** with a warning. |
-| **D8** | What goes to Amazon | Originals / exported selects / both | **Decided: backup only → originals (RAW).** |
+| **D8** | ~~What goes to Amazon~~ | Originals / exported selects / both | ~~**Decided: backup only → originals (RAW).**~~ **Dropped** with D3. |
 | **D9** | Distribution | Personal (ad-hoc signed; note the TCC quirks with ad-hoc bundles) / Developer ID + notarized | **Developer ID if you have one**; **no App Sandbox** (it complicates removable volumes, network shares, and spawning rsync). |
 | **D10** | Min macOS | 15 / 26 / 27 | **26**. It's personal, and newer Vision/SwiftUI APIs matter. |
 | **D11** | Repo | A private Git host with CI (macOS runner needed for app builds; Linux runner can test the Rust core) / a public GitHub repository | Private first; public on GitHub under Apache-2.0 (docs/OPEN_SOURCE.md). |
@@ -250,7 +252,7 @@ Nothing leaves the Mac except optional Jev calls (text only, never pixels).
 
 **Phase 2.** Layers and masks (including Vision AI masks), advanced color editor and skin tone, keystone, lens profiles, DCP profiles, compare mode, focus mask, styles.
 
-**Phase 3.** Global cross-session index and search, Amazon Photos (per D3), healing/clone, XMP export, and anything the MVP showed was missing.
+**Phase 3.** Global cross-session index and search, ~~Amazon Photos (per D3)~~ (dropped), healing/clone, XMP export, and anything the MVP showed was missing.
 
 **Testing approach.** The Rust core is unit-tested, with golden-image tests for the pipeline (per-pixel ΔE tolerance), property tests on sidecar round-trips, and an import test that simulates a pulled card mid-copy. The perf targets in §6 run as benchmarks (criterion) in CI.
 
@@ -260,6 +262,6 @@ Nothing leaves the Mac except optional Jev calls (text only, never pixels).
 
 - **Color quality is the long pole.** Getting a "pleasing default look" per camera takes iteration, and D5 is where that happens.
 - **Demosaic/NR quality vs. speed on GPU**: a proven algorithm set (RCD, AMaZE-lite, non-local means / wavelet NR) keeps this manageable, but it is real work.
-- **Amazon option B** could break or flag the account. That's why it isn't the default.
+- ~~**Amazon option B** could break or flag the account. That's why it isn't the default.~~ (Moot: the Amazon Photos hand-off was dropped.)
 - **Scope creep**: a full professional RAW suite is decades of work. The phases above cut toward *your* workflow (cull → WB/crop/color → copy/apply → archive).
 - **Legal**: functional similarity is fine. Don't copy other products' names, icons, or proprietary profiles.

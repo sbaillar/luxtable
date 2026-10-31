@@ -98,7 +98,7 @@ public struct ToolTab: RawRepresentable, Hashable, Identifiable, Codable, Sendab
         case "details": [.sharpening, .noise, .clarity, .spots, .effects]
         case "layers": [.layers]
         case "metadata": [.metadata, .keywords]
-        case "output": [.export, .amazonPhotos]
+        case "output": [.export]
         case "allTools": Self.homeTabs.flatMap(\.panels)
         default: []
         }
@@ -122,7 +122,7 @@ public enum ToolPanelID: String, CaseIterable, Identifiable, Sendable {
     case lensCorrection, vignette, effects, crop
     case sharpening, noise, clarity, layers
     case presence, spots
-    case metadata, keywords, export, amazonPhotos
+    case metadata, keywords, export
     /// [find] People: faces, names, "Who is this?".
     case people
     /// [history] The focused photo's edit steps (jump back, hover to preview).
@@ -159,7 +159,6 @@ public enum ToolPanelID: String, CaseIterable, Identifiable, Sendable {
         case .metadata: String(localized: "Metadata")
         case .keywords: String(localized: "Keywords")
         case .export: String(localized: "Export")
-        case .amazonPhotos: String(localized: "Amazon Photos")
         case .people: String(localized: "People")
         case .history: String(localized: "History")
         }

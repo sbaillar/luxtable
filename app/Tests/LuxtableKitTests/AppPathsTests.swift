@@ -38,7 +38,6 @@ import Testing
     @MainActor @Test func everyStateFileLivesUnderTheSupportFolder() {
         let base = AppPaths.support.path
         #expect(RustImportService.defaultGlobalIndex.path.hasPrefix(base))
-        #expect(RustArchiveService.defaultManifest.path.hasPrefix(base))
         #expect(RustArchiveService.defaultLockDir.hasPrefix(base))
         #expect(RustSessionStore.defaultStoreBase.path.hasPrefix(base))
         #expect(PresetStore.defaultURL?.path.hasPrefix(base) == true)

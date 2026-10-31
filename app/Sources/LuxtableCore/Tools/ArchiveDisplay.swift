@@ -149,22 +149,6 @@ public enum ArchiveDisplay {
         return s
     }
 
-    /// Amazon Photos hand-off line.
-    public static func amazonLine(_ a: ArchiveDetail.Amazon) -> String {
-        if a.running { return String(localized: "Handing originals to Amazon Photos…") }
-        if a.folderMissing { return String(localized: "Amazon Photos folder missing: \(a.folder). Choose it again in Settings › Archive.") }
-        if let e = a.error { return String(localized: "Amazon Photos: \(e)") }
-        guard a.lastRun != nil else { return String(localized: "Amazon Photos: after the next import") }
-        // L2: the cumulative total, not "0 handed over, 40 already there" after the first pass.
-        let total = a.placed + a.alreadyMirrored
-        var parts = [(total == 1 ? String(localized: "\(total) original handed to the app") : String(localized: "\(total) originals handed to the app"))
-            + (a.placed > 0 ? " (" + String(localized: "\(a.placed) new") + ")" : "")]
-        if a.rejectsExcluded > 0 { parts.append(a.rejectsExcluded == 1 ? String(localized: "\(a.rejectsExcluded) reject excluded") : String(localized: "\(a.rejectsExcluded) rejects excluded")) }
-        if a.waiting > 0 { parts.append(String(localized: "\(a.waiting) waiting for verification")) }
-        if !a.failed.isEmpty { parts.append(String(localized: "\(a.failed.count) failed")) }
-        return String(localized: "Amazon Photos: \(parts.joined(separator: ", "))")
-    }
-
     /// Whether a run line shows as a problem (red) in the popover.
     public static func isProblem(_ r: ArchiveDetail.Run) -> Bool {
         r.outcome != "succeeded" && r.outcome != "cancelled" && r.outcome != "busy"

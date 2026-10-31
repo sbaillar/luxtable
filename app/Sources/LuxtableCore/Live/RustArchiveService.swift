@@ -3,7 +3,7 @@ import Foundation
 
 /// Live archiving through lt-archive (`ArchiveManager` in the FFI): rsync to a
 /// folder, or uploads to S3-compatible object storage (through `URLSessionArchiveHTTP`,
-/// with the keys from the Keychain), in the background; plus the Amazon Photos hand-off.
+/// with the keys from the Keychain), in the background.
 ///
 /// Nothing here blocks: the Rust driver thread decides what runs, each run
 /// has its own worker thread with a watchdog (a stale NFS mount can't hang
@@ -15,15 +15,11 @@ import Foundation
 public final class RustArchiveService: ArchiveService, @unchecked Sendable {
     public typealias SettingsProvider = @Sendable () async -> ArchiveSettingsSnapshot
     public typealias HandleLookup = @Sendable (SessionInfo) async -> SessionHandle?
-    /// Follows a moved Amazon Photos folder (bookmark) when the hand-off reports it missing.
-    public typealias FolderFollower = @Sendable () async -> Void
 
     let manager: ArchiveManager?
     private let startError: String?
     private let settings: SettingsProvider
     private let handles: HandleLookup
-    private let followAmazonFolder: FolderFollower?
-    private let manifest: URL
     private let lockDir: String?
     private let tick: Duration
     private let debounceSeconds: UInt64
@@ -34,7 +30,6 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
     private var loop: Task<Void, Never>?
     private var current: ArchiveStatus
     private var observers: [NSObjectProtocol] = []
-    private var lastFollow: Date?
     /// Why the last settings change was not (fully) applied; shown as a failed status until a retry works.
     private var configError: String?
     /// Object storage: the app's HTTP and the Keychain keys (the last ones handed to the manager).
@@ -44,16 +39,14 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
 
     /// `initial` configures the manager right away (the app passes its settings).
     public init(initial: ArchiveSettingsSnapshot, settings: @escaping SettingsProvider, handles: @escaping HandleLookup,
-                manifest: URL = RustArchiveService.defaultManifest, lockDir: String? = nil,
+                lockDir: String? = nil,
                 tick: Duration = .seconds(1), debounceSeconds: UInt64 = 60, rsyncPath: String? = nil,
-                followAmazonFolder: FolderFollower? = nil, watchVolumes: Bool = true, plugins: PluginHost? = nil,
+                watchVolumes: Bool = true, plugins: PluginHost? = nil,
                 http: any ArchiveHttp = URLSessionArchiveHTTP(), objectKeys: ArchiveObjectKeys = .shared) {
         self.http = http
         self.objectKeys = objectKeys
         self.settings = settings
         self.handles = handles
-        self.followAmazonFolder = followAmazonFolder
-        self.manifest = manifest
         self.lockDir = lockDir
         self.tick = tick
         self.debounceSeconds = debounceSeconds
@@ -69,16 +62,10 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
         }
         current = ArchiveStatus(state: .unavailable(initial.isActive ? String(localized: "Checking the archive…") : ArchiveDisplay.offText(initial)),
                                 target: initial.target, lastSuccess: nil)
-        // Settings ▸ Plugins: no run, hand-off or Immich step while its feature is off.
-        // (Set before the hand-off folder and before any session is registered, so
-        // nothing is due before it.)
+        // Settings ▸ Plugins: no run or Immich step while its feature is off.
+        // (Set before any session is registered, so nothing is due before it.)
         if let plugins, let manager { Self.attempt("plug-in gate") { try manager.setPluginHost(host: plugins) } }
-        let initialAmazon = Self.applyAll(from: initial, to: initial, forceAmazon: true, setConfig: { _ in },
-                                          setAmazon: { try self.setAmazon($0) })
-        configError = initialAmazon.error
         applyKeys(objectStorage: initial.objectStore != nil)
-        // A hand-off folder that failed to apply is retried by the first refresh.
-        if initialAmazon.error != nil { applied.amazonFolder = nil }
         if watchVolumes, let manager {
             let center = PlatformWorkspace.notificationCenter
             observers = [PlatformWorkspace.didMount, PlatformWorkspace.didUnmount].map { name in
@@ -95,9 +82,6 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
         for o in observers { PlatformWorkspace.notificationCenter.removeObserver(o) }
     }
 
-    /// Where the Amazon hand-off manifest lives (outside the watched folder).
-    public static var defaultManifest: URL { AppPaths.support.appendingPathComponent("amazon-manifest.json") }
-
     /// Single-flight lock files per target (`<AppPaths.support>/locks`).
     public static var defaultLockDir: String { AppPaths.support.appendingPathComponent("locks").path }
 
@@ -105,7 +89,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
     static func config(_ s: ArchiveSettingsSnapshot, lockDir: String?, debounce: UInt64, rsyncPath: String? = nil) -> ArchiveConfig {
         ArchiveConfig(enabled: s.isActive, target: s.target, intervalSecs: UInt64(max(1, s.intervalMinutes)) * 60,
                       debounceSecs: debounce, lockDir: lockDir, checkTimeoutMs: 2000, rsyncPath: rsyncPath,
-                      archiveRejected: s.archiveRejected, amazonRejected: s.amazonRejected, targetVolume: s.targetVolume,
+                      archiveRejected: s.archiveRejected, targetVolume: s.targetVolume,
                       objectStore: s.objectStore)
     }
 
@@ -125,12 +109,6 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
         }
     }
 
-    /// The hand-off destination (the manager never creates the folder).
-    private func setAmazon(_ s: ArchiveSettingsSnapshot) throws {
-        try FileManager.default.createDirectory(at: manifest.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try manager?.setAmazon(folder: s.amazonFolder?.path, manifest: manifest.path)
-    }
-
     /// Runs `body`, logging (not hiding) a failure of a fire-and-forget manager call.
     @discardableResult
     static func attempt(_ what: String, _ body: () throws -> Void) -> Bool {
@@ -147,13 +125,12 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
 
     /// Applies the parts of `new` that differ from `old`. A part that throws is not recorded as
     /// applied (so the next tick retries it) and is reported in `error`.
-    static func applyAll(from old: ArchiveSettingsSnapshot, to new: ArchiveSettingsSnapshot, forceAmazon: Bool = false,
-                         setConfig: (ArchiveSettingsSnapshot) throws -> Void,
-                         setAmazon: (ArchiveSettingsSnapshot) throws -> Void) -> (applied: ArchiveSettingsSnapshot, error: String?) {
+    static func applyAll(from old: ArchiveSettingsSnapshot, to new: ArchiveSettingsSnapshot,
+                         setConfig: (ArchiveSettingsSnapshot) throws -> Void) -> (applied: ArchiveSettingsSnapshot, error: String?) {
         var applied = old
         var failures: [String] = []
         let archiveChanged = old.enabled != new.enabled || old.target != new.target || old.intervalMinutes != new.intervalMinutes
-            || old.archiveRejected != new.archiveRejected || old.amazonRejected != new.amazonRejected
+            || old.archiveRejected != new.archiveRejected
             || old.targetVolume != new.targetVolume || old.objectStore != new.objectStore
         if archiveChanged {
             do {
@@ -162,19 +139,10 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
                 applied.target = new.target
                 applied.intervalMinutes = new.intervalMinutes
                 applied.archiveRejected = new.archiveRejected
-                applied.amazonRejected = new.amazonRejected
                 applied.targetVolume = new.targetVolume
                 applied.objectStore = new.objectStore
             } catch {
                 failures.append(String(localized: "archive target (\(String(describing: error)))"))
-            }
-        }
-        if forceAmazon || old.amazonFolder != new.amazonFolder {
-            do {
-                try setAmazon(new)
-                applied.amazonFolder = new.amazonFolder
-            } catch {
-                failures.append(String(localized: "Amazon Photos folder (\(String(describing: error)))"))
             }
         }
         let error = failures.isEmpty ? nil : settingsErrorPrefix + ": " + failures.joined(separator: "; ")
@@ -220,7 +188,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
         if old != s {
             let result = Self.applyAll(from: old, to: s, setConfig: { new in
                 try manager?.setConfig(config: Self.config(new, lockDir: lockDir, debounce: debounceSeconds, rsyncPath: rsyncPath))
-            }, setAmazon: { try setAmazon($0) })
+            })
             let changed = lock.withLock { () -> Bool in
                 let changed = configError != result.error
                 applied = result.applied
@@ -230,23 +198,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
             // Once per distinct failure, not on every retry tick.
             if changed, let e = result.error { AppLog.archive.error("\(e, privacy: .private(mask: .hash))") }
         }
-        let snap = snapshot()
-        publish(snap)
-        await followMissingAmazonFolder(snap)
-    }
-
-    /// When the hand-off says the folder is missing, try the bookmark (at most
-    /// every 30 s): a folder moved in Finder is followed, never recreated.
-    private func followMissingAmazonFolder(_ s: ArchiveStatus) async {
-        guard let followAmazonFolder,
-              s.detail?.amazon?.folderMissing == true || s.detail?.sessions.contains(where: { $0.amazon?.folderMissing == true }) == true
-        else { return }
-        let due = lock.withLock { () -> Bool in
-            if let last = lastFollow, Date().timeIntervalSince(last) < 30 { return false }
-            lastFollow = Date()
-            return true
-        }
-        if due { await followAmazonFolder() }
+        publish(snapshot())
     }
 
     /// The current status from the manager (never touches the file system).
@@ -286,30 +238,11 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
         Self.attempt("note changes") { _ = try manager.noteChanges(session: h, n: UInt64(n)) }
     }
 
-    /// Import hook: archive the session now; the manager also hands its
-    /// originals to the Amazon Photos folder (when one is set) in the
-    /// background, serialized with every other hand-off.
+    /// Import hook: archive the session now.
     public func afterImport(session: SessionInfo, files: Int) async {
         guard let manager, let h = await handles(session) else { return }
         Self.attempt("archive after import") { _ = try manager.afterImport(session: h, files: UInt64(max(0, files))) }
         publish(snapshot())
-    }
-
-    /// Mirror a session's originals into `folder/<album>/` now and wait
-    /// (each content once, ever; serialized with the background hand-off).
-    /// Whether the mirror ran; a failure is logged.
-    @discardableResult
-    public func mirrorToAmazon(_ handle: SessionHandle, folder: URL, album: String, token: CancelToken? = nil) async -> Bool {
-        guard let manager, let token = token ?? (try? CancelToken()) else { return false }
-        do {
-            try FileManager.default.createDirectory(at: manifest.deletingLastPathComponent(), withIntermediateDirectories: true)
-            _ = try await manager.mirrorToAmazon(session: handle, folder: folder.path, manifest: manifest.path,
-                                                 album: album, token: token)
-            return true
-        } catch {
-            AppLog.archive.error("Amazon Photos hand-off failed: \(String(describing: error), privacy: .private(mask: .hash))")
-            return false
-        }
     }
 
     public func shutdown() async { await stop() }
@@ -355,14 +288,6 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
 
     static func date(_ ms: Int64?) -> Date? { ms.map { Date(timeIntervalSince1970: Double($0) / 1000) } }
 
-    static func amazon(_ a: AmazonStatus) -> ArchiveDetail.Amazon? {
-        a.folder.map { f in
-            ArchiveDetail.Amazon(folder: f, running: a.running, lastRun: date(a.lastRunMs), placed: Int(a.placed),
-                                 alreadyMirrored: Int(a.alreadyMirrored), waiting: Int(a.waiting), failed: a.failed,
-                                 error: a.error, folderMissing: a.folderMissing, rejectsExcluded: Int(a.rejectsExcluded))
-        }
-    }
-
     /// Badge state and popover detail from the manager's overview.
     public static func status(_ o: ArchiveOverview, settings s: ArchiveSettingsSnapshot) -> ArchiveStatus {
         let sessions = o.sessions.map { x in
@@ -372,7 +297,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
                                   fraction: x.percent.map { Double($0) / 100 }, bytesPerSecond: x.bytesPerSec,
                                   retryIn: x.retryInMs.map { .milliseconds(Int64($0)) },
                                   problems: x.problems, notResponding: x.notResponding, archiveFolder: x.archiveFolder,
-                                  amazon: x.amazon.flatMap(amazon), errorDetail: x.lastErrorDetail,
+                                  errorDetail: x.lastErrorDetail,
                                   originals: Int(x.originals), rejectsExcluded: Int(x.rejectsExcluded))
         }
         let runs = o.runs.map { r in
@@ -380,10 +305,9 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
                               started: date(r.startedMs) ?? .distantPast, duration: .milliseconds(Int64(r.durationMs)),
                               warnings: r.warnings, problems: r.problems, detail: r.detail)
         }
-        let overallAmazon = amazon(o.amazon) ?? s.amazonFolder.map { ArchiveDetail.Amazon(folder: $0.path) }
         let detail = ArchiveDetail(targetReason: o.target.available ? nil : o.target.reason,
                                    rsync: o.rsync ?? o.rsyncError.map { "rsync: \($0)" },
-                                   sessions: sessions, runs: runs, amazon: overallAmazon)
+                                   sessions: sessions, runs: runs)
         let archivable = sessions.filter { $0.notArchivable == nil }
         let pending = archivable.reduce(0) { $0 + $1.pending }
         let problems = archivable.reduce(0) { $0 + $1.problems.count }

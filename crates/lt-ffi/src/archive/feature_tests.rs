@@ -1,4 +1,4 @@
-//! Settings ▸ Plugins gates the archive driver: no rsync run, Amazon hand-off or Immich
+//! Settings ▸ Plugins gates the archive driver: no rsync run or Immich
 //! step starts while its feature is off; a run already going finishes cleanly; turning
 //! the feature back on picks up what was waiting.
 
@@ -64,8 +64,6 @@ fn fast() -> Timing {
         stall_probe: Duration::from_secs(30),
         stall_hard_progress: Duration::from_secs(60),
         stall_hard_quiet: Duration::from_secs(60),
-        amazon_interval: Duration::from_millis(300),
-        amazon_shutdown_wait: Duration::from_millis(500),
     }
 }
 
@@ -111,7 +109,6 @@ fn manager(t: &Path, enabled: bool, runner: Arc<dyn CommandRunner>) -> Arc<Archi
         check_timeout_ms: 2000,
         rsync_path: None,
         archive_rejected: true,
-        amazon_rejected: false,
         target_volume: archive_volume_identity(target.to_string_lossy().into_owned()),
         object_store: None,
     };
@@ -170,51 +167,6 @@ fn the_archive_waits_while_turned_off_and_a_run_in_flight_finishes() {
     m.sync_now().unwrap();
     wait("the catch-up run", 60, || runs(&m).len() >= 2);
     assert_eq!(runs(&m)[0].outcome, "succeeded");
-    assert!(m.shutdown(3000).unwrap());
-}
-
-#[test]
-fn the_amazon_hand_off_waits_while_turned_off() {
-    if rsync().is_none() {
-        return;
-    }
-    let t = tempfile::tempdir().unwrap();
-    let plugins = PluginHost::unshared(Some(builtin()), t.path().join("Plugins"));
-    let m = manager(t.path(), false, Arc::new(SystemRunner));
-    m.set_plugin_host(Some(plugins.clone())).unwrap();
-    let h = session(t.path(), "Trip");
-    assert!(m.register_session(h.clone()).unwrap());
-    let folder = t.path().join("Amazon Photos");
-    fs::create_dir(&folder).unwrap();
-    let manifest = t.path().join("support/m.json");
-    m.set_amazon(
-        Some(folder.to_string_lossy().into_owned()),
-        manifest.to_string_lossy().into_owned(),
-    )
-    .unwrap();
-    m.sync_now().unwrap();
-    stays(1.5, || !folder.join("Trip").exists());
-    // An explicit mirror is refused too, and says where to turn it on.
-    let e = block_on(m.clone().mirror_to_amazon(
-        h.clone(),
-        folder.to_string_lossy().into_owned(),
-        manifest.to_string_lossy().into_owned(),
-        "Trip".into(),
-        CancelToken::new(),
-    ))
-    .unwrap_err();
-    assert!(e.to_string().contains("Settings ▸ Plugins"), "{e}");
-    // The folder setting was kept: turning it on hands off at once.
-    plugins
-        .set_enabled("luxtable.amazon-photos".into(), true)
-        .unwrap();
-    m.sync_now().unwrap();
-    wait("handed over", 20, || {
-        folder
-            .join("Trip")
-            .read_dir()
-            .is_ok_and(|mut d| d.next().is_some())
-    });
     assert!(m.shutdown(3000).unwrap());
 }
 

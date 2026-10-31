@@ -272,15 +272,11 @@ enum WindowSnapshot {
             model.settings.archiveTarget = args[i + 1]
             model.settings.archiveEnabled = true
         }
-        // `--amazon-folder <dir>`: also hand the originals to a (temp) Amazon Photos folder.
-        if let i = args.firstIndex(of: "--amazon-folder"), i + 1 < args.count {
-            model.settings.amazonPhotosFolder = URL(fileURLWithPath: args[i + 1])
-        }
         try? await Task.sleep(for: .seconds(1.2)) // the new settings reach the service
         _ = await waitFor(seconds: 30) { model.openProgress == nil } // originals verified (hashed)
         if let s = model.currentSession {
             await model.archive.sessionOpened(s)
-            await model.archive.afterImport(session: s, files: model.photos.count) // archive now (+ Amazon)
+            await model.archive.afterImport(session: s, files: model.photos.count) // archive now
         }
         let end = Date().addingTimeInterval(90)
         var nudged = Date()

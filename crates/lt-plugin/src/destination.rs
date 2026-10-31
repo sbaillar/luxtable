@@ -1,13 +1,13 @@
 //! The `export_destination` contract (version 1). Specified in v1, run by no plug-in
 //! yet: the types say what a destination gets and returns, and the host-side checks
 //! (which requests may leave the Mac, where tokens live) are implemented and tested so
-//! a native destination (Google Photos, Amazon Photos) can adopt the shape today.
+//! a native destination (Google Photos) can adopt the shape today.
 //!
 //! - **Online** (Google Photos): `account:<name>` + `network:<host>`. The host signs in
 //!   (OAuth 2.0 + PKCE), keeps the tokens in the Keychain under
 //!   [`keychain_item`], and attaches them to the destination's requests itself. The
 //!   destination builds [`HttpRequest`]s; [`check_request`] decides which may go.
-//! - **Local** (Amazon Photos' watched folder): `files.write:<label>`. The destination
+//! - **Local** (a watched folder another app picks up): `files.write:<label>`. The destination
 //!   asks the host to copy an exported file into the granted folder; the host writes it
 //!   atomically and never replaces a file.
 

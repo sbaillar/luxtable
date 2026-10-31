@@ -5,4 +5,4 @@ flowchart LR
     Session --> Cull["Cull<br/>rate, label, pick"]
     Cull --> Develop["Develop<br/>GPU pipeline"]
     Develop --> Export["Export<br/>files, Google Photos"]
-    Session --> Archive["Archive<br/>rsync, Amazon Photos"]
+    Session --> Archive["Archive<br/>rsync or S3"]

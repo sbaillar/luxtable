@@ -8,16 +8,13 @@ import Testing
 
 // final-journeys2 N1, N2, L4: the archive status never claims more than is true.
 
-private let on = ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/pics/Luxtable", intervalMinutes: 10, amazonFolder: nil)
+private let on = ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/pics/Luxtable", intervalMinutes: 10)
 
 private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
     ArchiveOverview(enabled: true,
                     target: TargetCheck(path: "/Volumes/pics/Luxtable", available: true, timedOut: false, reason: nil,
                                         fsType: "nfs"),
-                    rsync: nil, rsyncError: nil, sessions: sessions, runs: [],
-                    amazon: AmazonStatus(folder: nil, running: false, lastRunMs: nil, placed: 0, cloned: 0, alreadyMirrored: 0,
-                                         skippedUnsupported: 0, waiting: 0, failed: [], error: nil, folderMissing: false,
-                                         session: nil))
+                    rsync: nil, rsyncError: nil, sessions: sessions, runs: [])
 }
 
 @Suite struct ArchiveHonestyMappingTests {
@@ -59,7 +56,7 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
         #expect(r.detail == "rsync failed (exit Some(23))" && !ArchiveDisplay.runLine(r).contains("rsync"))
     }
 
-    /// N2: honest counts in the session line and the Amazon line.
+    /// N2: honest counts in the session line.
     @Test func countsSayWhatWasLeftOut() {
         let now = Date(timeIntervalSince1970: 10_000)
         typealias S = ArchiveDetail.Session
@@ -75,12 +72,6 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
         x.rejectsExcluded = 3
         let mapped = try! #require(RustArchiveService.status(overview([x]), settings: on).detail?.sessions.first)
         #expect(mapped.originals == 8 && mapped.rejectsExcluded == 3)
-        let a = ArchiveDetail.Amazon(folder: "/A", lastRun: now, placed: 5, rejectsExcluded: 3)
-        #expect(ArchiveDisplay.amazonLine(a) == "Amazon Photos: 5 originals handed to the app (5 new), 3 rejects excluded")
-        let amazon = AmazonStatus(folder: "/A", running: false, lastRunMs: 1, placed: 5, cloned: 5, alreadyMirrored: 0,
-                                  skippedUnsupported: 0, waiting: 0, failed: [], error: nil, folderMissing: false,
-                                  session: "Trip", rejectsExcluded: 3)
-        #expect(RustArchiveService.amazon(amazon)?.rejectsExcluded == 3)
     }
 }
 
@@ -94,7 +85,7 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
 
     /// N2: the badge tooltip and popover title say when rejects are left out.
     @Test func excludedRejectsShowWithTheBadge() {
-        let excluding = ArchiveSettingsSnapshot(enabled: true, target: "/t", intervalMinutes: 10, amazonFolder: nil,
+        let excluding = ArchiveSettingsSnapshot(enabled: true, target: "/t", intervalMinutes: 10,
                                                 archiveRejected: false)
         let sessions = [ArchiveDetail.Session(name: "a", source: "/a", lastSuccess: Date(), originals: 8, rejectsExcluded: 3),
                         ArchiveDetail.Session(name: "b", source: "/b", lastSuccess: Date(), originals: 2, rejectsExcluded: 1)]
@@ -104,7 +95,7 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
         let before = ArchiveStatus(state: .idle, target: "/t", lastSuccess: nil)
         #expect(ArchiveDisplay.exclusionNote(before, settings: excluding) == "Rejected photos excluded", "no run counted yet")
         #expect(ArchiveDisplay.exclusionNote(st, settings: on) == nil, "rejects archived: nothing to say")
-        let off = ArchiveSettingsSnapshot(enabled: false, target: "/t", intervalMinutes: 10, amazonFolder: nil, archiveRejected: false)
+        let off = ArchiveSettingsSnapshot(enabled: false, target: "/t", intervalMinutes: 10, archiveRejected: false)
         #expect(ArchiveDisplay.exclusionNote(st, settings: off) == nil)
         #expect(ArchiveDisplay.badgeHelp(st, settings: on) == ArchiveDisplay.explanation(.idle))
     }
@@ -122,37 +113,31 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
 }
 
 @MainActor @Suite struct ArchiveHonestySettingsTests {
-    /// N2: the archive includes rejects by default (it's the backup), Amazon doesn't;
-    /// an explicit "off" from before the split is kept, and carries over to Amazon.
+    /// N2: the archive includes rejects by default (it's the backup); an explicit
+    /// choice is kept.
     @Test func rejectDefaultsAndMigration() {
         let fresh = AppSettings(defaults: UserDefaults(suiteName: testSuiteName())!)
-        #expect(fresh.archiveRejected && !fresh.amazonRejected)
-        #expect(fresh.archiveSnapshot.archiveRejected && !fresh.archiveSnapshot.amazonRejected)
+        #expect(fresh.archiveRejected)
+        #expect(fresh.archiveSnapshot.archiveRejected)
         #expect(RustArchiveService.config(fresh.archiveSnapshot, lockDir: nil, debounce: 60).archiveRejected)
 
         let offSuite = testSuiteName(), offDefaults = UserDefaults(suiteName: offSuite)!
         offDefaults.set(false, forKey: "archiveRejectedPhotos")
         let off = AppSettings(defaults: offDefaults)
-        #expect(!off.archiveRejected && !off.amazonRejected, "the user's explicit choice is kept")
+        #expect(!off.archiveRejected, "the user's explicit choice is kept")
 
-        let onDefaults = UserDefaults(suiteName: testSuiteName())!
-        onDefaults.set(true, forKey: "archiveRejectedPhotos")
-        let both = AppSettings(defaults: onDefaults)
-        #expect(both.archiveRejected && both.amazonRejected, "the old toggle covered Amazon too")
-
-        fresh.amazonRejected = true
         fresh.archiveRejected = false
         let again = AppSettings(defaults: fresh.userDefaults)
-        #expect(again.amazonRejected && !again.archiveRejected)
+        #expect(!again.archiveRejected)
         let c = RustArchiveService.config(again.archiveSnapshot, lockDir: nil, debounce: 60)
-        #expect(!c.archiveRejected && c.amazonRejected)
+        #expect(!c.archiveRejected)
     }
 
     /// N2 / A2: Delete Rejected… says when the Trash will hold the only copy.
     @Test func deleteRejectedSaysWhenTheArchiveHasNoCopy() {
-        let off = ArchiveSettingsSnapshot(enabled: false, target: "/t", intervalMinutes: 10, amazonFolder: nil)
+        let off = ArchiveSettingsSnapshot(enabled: false, target: "/t", intervalMinutes: 10)
         #expect(CullFinisher.archiveNote(settings: off, state: .idle)?.contains("only copy") == true)
-        let excluded = ArchiveSettingsSnapshot(enabled: true, target: "/t", intervalMinutes: 10, amazonFolder: nil,
+        let excluded = ArchiveSettingsSnapshot(enabled: true, target: "/t", intervalMinutes: 10,
                                                archiveRejected: false)
         #expect(CullFinisher.archiveNote(settings: excluded, state: .idle)?.contains("aren't archived") == true)
         #expect(CullFinisher.archiveNote(settings: on, state: .failed("x"))?.contains("isn't up to date") == true)
@@ -185,7 +170,6 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
         let s = makeSettings()
         let current = Arc7Counter()
         let m = ArchiveSettingsModel(settings: s, checker: { _ in .ready(fsType: "nfs") }, exists: { _ in true },
-                                     appInstalled: { true },
                                      volumeIdentity: { "vol-\($0)-\(current.value)" }, timeout: 1)
         await m.setTarget("/Volumes/pics/Luxtable")
         #expect(s.archiveTargetVolume == "vol-/Volumes/pics/Luxtable-0")
@@ -197,8 +181,7 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
         await m.setTarget("")
         #expect(s.archiveTargetVolume == nil)
         // A hung lookup records nothing, within the timeout.
-        let hung = ArchiveSettingsModel(settings: s, checker: { _ in .notSet }, exists: { _ in true }, appInstalled: { true },
-                                        volumeIdentity: { _ in Thread.sleep(forTimeInterval: 5); return "late" }, timeout: 0.2)
+        let hung = ArchiveSettingsModel(settings: s, checker: { _ in .notSet }, exists: { _ in true }, volumeIdentity: { _ in Thread.sleep(forTimeInterval: 5); return "late" }, timeout: 0.2)
         await hung.setTarget("/Volumes/other/Luxtable")
         #expect(s.archiveTargetVolume == nil)
         // Onboarding Finish records it too.
@@ -209,27 +192,6 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
         await o.recordTargetVolume()
         #expect(s.archiveTargetVolume == "onboarded")
         #expect(ArchiveVolume.identity("/") != nil, "the boot volume has an identity (lt-ffi archive_volume_identity)")
-    }
-
-    /// L4: the Amazon line never waits on the target check, and says nothing
-    /// misleading before the lookup answers.
-    @Test func amazonAppLookupDoesNotWaitForTheTargetCheck() async {
-        let s = AppSettings(defaults: UserDefaults(suiteName: testSuiteName())!)
-        s.archiveTarget = "/Volumes/pics/Luxtable"
-        // The target check hangs until released (deterministic: no wall-clock race).
-        let released = Mutex(false)
-        let m = ArchiveSettingsModel(settings: s, checker: { _ in
-            for _ in 0..<6000 where !released.withLock({ $0 }) { try? await Task.sleep(for: .milliseconds(5)) }
-            return .ready(fsType: "nfs")
-        }, exists: { _ in false }, appInstalled: { true })
-        #expect(!m.amazonText.contains("Checking"), "a neutral line until the lookup answers")
-        let refresh = Task { await m.refresh() }
-        #expect(await waitUntil(timeout: .seconds(30)) { m.amazonAppInstalled == true }, "shown while the target check hangs")
-        #expect(m.targetState != .ready(fsType: "nfs"), "the target check is still running")
-        released.withLock { $0 = true }
-        await refresh.value
-        #expect(ArchiveSettingsModel.lastAppLookup.value != nil, "later windows start from the last answer")
-        #expect(ArchiveSettingsModel(settings: s).amazonAppInstalled != nil)
     }
 }
 
@@ -263,10 +225,9 @@ private func overview(_ sessions: [SessionArchiveStatus]) -> ArchiveOverview {
         let store = RustSessionStore(recents: RecentFolders(defaults: UserDefaults(suiteName: testSuiteName())!),
                                      storeBase: tmp.appendingPathComponent("stores"))
         let info = try await store.add(folder: dir)
-        let settings = ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60, amazonFolder: nil)
+        let settings = ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60)
         func launch() -> RustArchiveService {
             RustArchiveService(initial: settings, settings: { settings }, handles: { await store.archiveHandle(for: $0) },
-                               manifest: tmp.appendingPathComponent("support/manifest.json"),
                                lockDir: tmp.appendingPathComponent("locks").path, tick: .milliseconds(50),
                                rsyncPath: rsync.path, watchVolumes: false)
         }

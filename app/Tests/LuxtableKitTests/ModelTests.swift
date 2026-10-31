@@ -222,7 +222,6 @@ import Testing
         s.onboardingComplete = true
         s.sessionsFolder = URL(fileURLWithPath: "/tmp/ds")
         s.archiveTarget = "/Volumes/x"
-        s.amazonPhotosFolder = URL(fileURLWithPath: "/tmp/amz")
         s.appearance = .light
         s.autoOpenImport = false
         s.copyGroups = [.exposure, .crop]
@@ -232,12 +231,32 @@ import Testing
 
         let r = AppSettings(defaults: d)
         #expect(r.onboardingComplete && r.sessionsFolder.path == "/tmp/ds" && r.archiveTarget == "/Volumes/x")
-        #expect(r.amazonPhotosFolder?.path == "/tmp/amz" && r.appearance == .light && !r.autoOpenImport)
+        #expect(r.appearance == .light && !r.autoOpenImport)
         #expect(r.copyGroups == [.exposure, .crop] && r.copyRelativeGroups == [.exposure])
         #expect(r.sessionNameTemplate == "{text}" && r.renameTemplate == "{seq}")
         r.copyGroups = []
         #expect(AppSettings(defaults: d).copyGroups.isEmpty, "nothing ticked is a choice too")
         d.removePersistentDomain(forName: suite)
+    }
+
+    /// Settings saved by a version with the Amazon Photos hand-off still load: its keys
+    /// are ignored, left in place (never deleted), and change nothing else.
+    @Test func removedAmazonPhotosSettingsAreIgnored() {
+        let suite = "lt.test.amazon.\(UUID().uuidString)"
+        let d = UserDefaults(suiteName: suite)!
+        defer { d.removePersistentDomain(forName: suite) }
+        d.set("/tmp/Amazon Photos", forKey: "amazonPhotosFolder")
+        d.set(Data([1, 2, 3]), forKey: "amazonPhotosFolderBookmark")
+        d.set(true, forKey: "amazonRejectedPhotos")
+        d.set("/Volumes/x", forKey: "archiveTarget")
+        d.set(false, forKey: "archiveRejectedPhotos")
+        let s = AppSettings(defaults: d)
+        #expect(s.archiveTarget == "/Volumes/x" && !s.archiveRejected)
+        #expect(s.archiveSnapshot == ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/x", intervalMinutes: 10,
+                                                             archiveRejected: false))
+        s.archiveTarget = "/Volumes/y"
+        #expect(d.string(forKey: "amazonPhotosFolder") == "/tmp/Amazon Photos", "never removed")
+        #expect(d.data(forKey: "amazonPhotosFolderBookmark") == Data([1, 2, 3]) && d.bool(forKey: "amazonRejectedPhotos"))
     }
 }
 

@@ -189,7 +189,7 @@ public final class ImportModel {
             if !(importer is any ImportVerifying), let preset = autoApply() {
                 ImportAutoApply.apply(preset, in: model, prior: me.value?.priorPhotoIDs ?? [], session: session.id)
             }
-            // [arc6] archive the session and mirror to Amazon after an import.
+            // [arc6] archive the session after an import.
             let files = me.value?.lastReport?.filesCopied ?? me.value?.progress?.filesDone ?? 0
             Task { await archive.afterImport(session: session, files: files) }
         }

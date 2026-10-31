@@ -58,25 +58,21 @@ private func tempDir(_ tag: String) throws -> URL {
         #expect(o.archiveStatus == .notMounted("nas") && o.canFinish, "an unmounted share queues")
     }
 
-    /// Real file system: Finish creates the chosen folder under a writable parent, keeps a
-    /// bookmark for the Amazon folder (M7), and stores the expanded path.
-    @Test func finishCreatesTheTargetAndBookmarksTheAmazonFolder() async throws {
+    /// Real file system: Finish creates the chosen folder under a writable parent and
+    /// stores the expanded path.
+    @Test func finishCreatesTheTarget() async throws {
         let root = try tempDir("onb")
         defer { try? fm.removeItem(at: root) }
-        let amazon = root.appendingPathComponent("Amazon", isDirectory: true)
-        try fm.createDirectory(at: amazon, withIntermediateDirectories: true)
         let settings = makeSettings()
         let o = OnboardingModel(settings: settings)
         o.sessionsFolder = root.appendingPathComponent("Sessions")
         o.archiveTarget = " " + root.appendingPathComponent("Archive").path + " "
-        o.amazonFolder = amazon
         await o.refreshArchiveStatus()
         #expect(o.archiveStatus == .creatable && o.canFinish)
         try o.finish()
         var dir: ObjCBool = false
         #expect(fm.fileExists(atPath: root.appendingPathComponent("Archive").path, isDirectory: &dir) && dir.boolValue)
         #expect(settings.archiveTarget == root.appendingPathComponent("Archive").path)
-        #expect(settings.amazonPhotosFolder == amazon && settings.amazonPhotosFolderBookmark != nil, "M7: bookmark kept")
         #expect(settings.onboardingComplete)
     }
 
@@ -99,13 +95,6 @@ private func tempDir(_ tag: String) throws -> URL {
 
 // MARK: - C1 / L1 / L2 / L4: Archive settings and status
 
-final class Ux9Order: @unchecked Sendable {
-    private let lock = NSLock()
-    private var list: [String] = []
-    func note(_ e: String) { lock.withLock { list.append(e) } }
-    var events: [String] { lock.withLock { list } }
-}
-
 final class Ux9Counter: @unchecked Sendable {
     private let lock = NSLock()
     private var n = 0
@@ -124,8 +113,7 @@ final class Ux9Counter: @unchecked Sendable {
         let made = Ux9Counter()
         let m = ArchiveSettingsModel(settings: s, checker: { p in made.paths.contains(p) ? .ready(fsType: "nfs")
                                          : .unavailable("No such file or directory (os error 2)") },
-                                     exists: { $0 == "/Volumes/NAS" }, appInstalled: { true },
-                                     creatable: { p in !made.paths.contains(p) && p.hasPrefix("/Volumes/NAS/") },
+                                     exists: { $0 == "/Volumes/NAS" }, creatable: { p in !made.paths.contains(p) && p.hasPrefix("/Volumes/NAS/") },
                                      makeFolder: { made.record($0) }, timeout: 1)
         await m.refresh()
         #expect(m.suggestion == AppSettings.defaultArchiveTarget)
@@ -146,18 +134,16 @@ final class Ux9Counter: @unchecked Sendable {
         let s = makeSettings()
         s.archiveTarget = "/Volumes/pics/Luxtable"
         let today = ArchiveSettingsModel(settings: s, checker: { _ in .unavailable("No such file or directory (os error 2)") },
-                                         exists: { $0 == "/Volumes/pics" }, appInstalled: { true },
-                                         creatable: { _ in true }, timeout: 1)
+                                         exists: { $0 == "/Volumes/pics" }, creatable: { _ in true }, timeout: 1)
         await today.checkTarget()
         #expect(today.canCreateTarget && today.targetExists == false && today.targetText.contains("doesn't exist yet"))
         let upcoming = ArchiveSettingsModel(settings: s, checker: { _ in .ready(fsType: "nfs") },
-                                            exists: { $0 == "/Volumes/pics" }, appInstalled: { true },
-                                            creatable: { _ in true }, timeout: 1)
+                                            exists: { $0 == "/Volumes/pics" }, creatable: { _ in true }, timeout: 1)
         await upcoming.checkTarget()
         #expect(!upcoming.canCreateTarget)
         #expect(upcoming.targetText == "Ready: the folder is created on the first sync (nfs).")
         let there = ArchiveSettingsModel(settings: s, checker: { _ in .ready(fsType: "nfs") }, exists: { _ in true },
-                                         appInstalled: { true }, creatable: { _ in false }, timeout: 1)
+                                         creatable: { _ in false }, timeout: 1)
         await there.checkTarget()
         #expect(there.targetText == "Ready (nfs)")
     }
@@ -166,41 +152,11 @@ final class Ux9Counter: @unchecked Sendable {
         let s = makeSettings()
         s.archiveTarget = "/Volumes/pics/X"
         let m = ArchiveSettingsModel(settings: s, checker: { _ in .unavailable("missing") }, exists: { _ in true },
-                                     appInstalled: { true }, creatable: { _ in true },
+                                     creatable: { _ in true },
                                      makeFolder: { _ in throw MockError.invalid("read-only volume") }, timeout: 1)
         await m.checkTarget()
         await m.createTarget()
         #expect(m.createError != nil)
-    }
-
-    /// L4: the Amazon app lookup no longer waits behind a slow target check: it starts
-    /// before the check has finished (ordering, not wall-clock, so load can't flake it).
-    @Test func amazonDetectionRunsAlongsideTheTargetCheck() async {
-        let s = makeSettings()
-        s.archiveTarget = "/Volumes/pics/Luxtable"
-        let order = Ux9Order()
-        let m = ArchiveSettingsModel(settings: s, checker: { _ in
-                                         // Finishes only once the lookup has started (no wall-clock race).
-                                         for _ in 0..<2000 where !order.events.contains("app lookup started") {
-                                             try? await Task.sleep(for: .milliseconds(5))
-                                         }
-                                         order.note("check finished")
-                                         return .ready(fsType: "apfs")
-                                     }, exists: { _ in true },
-                                     appInstalled: { order.note("app lookup started"); return true },
-                                     creatable: { _ in false }, timeout: 5)
-        await m.refresh()
-        #expect(m.amazonAppInstalled == true)
-        #expect(order.events.first == "app lookup started", "\(order.events)")
-        #expect(!ArchiveSettingsModel.amazonVideosNote.isEmpty)
-    }
-
-    @Test func amazonLineIsCumulative() {
-        // L2: after the first pass the line used to read "0 handed over, 40 already there".
-        let a = ArchiveDetail.Amazon(folder: "/A", lastRun: Date(), placed: 0, alreadyMirrored: 40)
-        #expect(ArchiveDisplay.amazonLine(a) == "Amazon Photos: 40 originals handed to the app")
-        let one = ArchiveDetail.Amazon(folder: "/A", lastRun: Date(), placed: 1, alreadyMirrored: 0)
-        #expect(ArchiveDisplay.amazonLine(one) == "Amazon Photos: 1 original handed to the app (1 new)")
     }
 }
 

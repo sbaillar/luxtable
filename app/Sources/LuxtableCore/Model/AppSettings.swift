@@ -65,16 +65,6 @@ public final class AppSettings {
             defaults.set(o.pathStyle, forKey: Keys.objectPathStyle)
         }
     }
-    /// Rejected photos are handed to Amazon Photos too (off by default).
-    public var amazonRejected: Bool { didSet { defaults.set(amazonRejected, forKey: Keys.amazonRejected) } }
-    /// Folder watched by the Amazon Photos app (PLAN D3 option A); `nil` = off.
-    /// Set it with `chooseAmazonFolder(_:)`, which keeps a bookmark (A-M2).
-    public var amazonPhotosFolder: URL? { didSet { defaults.set(amazonPhotosFolder?.path, forKey: Keys.amazon) } }
-    /// Bookmark of `amazonPhotosFolder`, so a folder moved or renamed in
-    /// Finder is followed instead of being recreated at the old path.
-    public var amazonPhotosFolderBookmark: Data? {
-        didSet { defaults.set(amazonPhotosFolderBookmark, forKey: Keys.amazonBookmark) }
-    }
     public var appearance: AppearancePreference { didSet { defaults.set(appearance.rawValue, forKey: Keys.appearance) } }
     /// [library] Settings › General › Open in: the last session or the Library.
     public var startView: StartView { didSet { defaults.set(startView.rawValue, forKey: Keys.startView) } }
@@ -203,13 +193,12 @@ public final class AppSettings {
         static let onboarding = "onboardingComplete"
         static let sessions = "sessionsFolder"
         static let archive = "archiveTarget"
-        static let amazon = "amazonPhotosFolder"
-        static let amazonBookmark = "amazonPhotosFolderBookmark"
+        // The removed Amazon Photos hand-off left "amazonPhotosFolder",
+        // "amazonPhotosFolderBookmark" and "amazonRejectedPhotos" behind: never read,
+        // never deleted (the folder they name is the user's).
         static let archiveEnabled = "archiveEnabled"
         static let archiveInterval = "archiveIntervalMinutes"
-        /// Before N2 this one key covered the archive and Amazon Photos.
         static let archiveRejected = "archiveRejectedPhotos"
-        static let amazonRejected = "amazonRejectedPhotos"
         static let archiveTargetVolume = "archiveTargetVolume"
         static let archiveDestination = "archiveDestination"
         static let objectEndpoint = "archiveObjectEndpoint"
@@ -264,11 +253,8 @@ public final class AppSettings {
         archiveTarget = defaults.string(forKey: Keys.archive) ?? ""
         archiveEnabled = defaults.object(forKey: Keys.archiveEnabled) as? Bool ?? true
         archiveIntervalMinutes = max(1, defaults.object(forKey: Keys.archiveInterval) as? Int ?? 10)
-        // N2: never set → on. Only a value the user set keeps the archive's
-        // rejects out; that same choice carries over to Amazon Photos.
-        let legacyRejected = defaults.object(forKey: Keys.archiveRejected) as? Bool
-        archiveRejected = legacyRejected ?? true
-        amazonRejected = defaults.object(forKey: Keys.amazonRejected) as? Bool ?? legacyRejected ?? false
+        // N2: never set → on. Only a value the user set keeps the archive's rejects out.
+        archiveRejected = defaults.object(forKey: Keys.archiveRejected) as? Bool ?? true
         archiveTargetVolume = defaults.string(forKey: Keys.archiveTargetVolume)
         archiveDestination = defaults.string(forKey: Keys.archiveDestination).flatMap(ArchiveDestinationKind.init) ?? .folder
         archiveObjectStore = ObjectStoreSettings(endpoint: defaults.string(forKey: Keys.objectEndpoint) ?? "",
@@ -276,8 +262,6 @@ public final class AppSettings {
                                                  bucket: defaults.string(forKey: Keys.objectBucket) ?? "",
                                                  prefix: defaults.string(forKey: Keys.objectPrefix) ?? "luxtable/",
                                                  pathStyle: defaults.bool(forKey: Keys.objectPathStyle))
-        amazonPhotosFolder = defaults.string(forKey: Keys.amazon).map { URL(fileURLWithPath: $0) }
-        amazonPhotosFolderBookmark = defaults.data(forKey: Keys.amazonBookmark)
         appearance = defaults.string(forKey: Keys.appearance).flatMap(AppearancePreference.init) ?? .dark
         autoOpenImport = defaults.object(forKey: Keys.autoImport) as? Bool ?? true
         startView = defaults.string(forKey: Keys.startView).flatMap(StartView.init(rawValue:)) ?? .session
@@ -330,69 +314,26 @@ public final class AppSettings {
     }
 }
 
-// MARK: - Amazon Photos folder (A-M2)
-
-extension AppSettings {
-    /// Choose (or with `nil`, turn off) the Amazon Photos folder, keeping a
-    /// bookmark so a later move in Finder is followed.
-    public func chooseAmazonFolder(_ url: URL?) {
-        amazonPhotosFolder = url
-        amazonPhotosFolderBookmark = url.flatMap { try? $0.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil) }
-    }
-
-    /// Where a bookmarked folder is now, and a fresh bookmark when the old one
-    /// is stale. `nil` when it can't be resolved, or when the folder went to
-    /// the Trash (a deleted folder is missing, never followed). File-system
-    /// work: call it off the main thread.
-    nonisolated static func followBookmark(_ data: Data) -> (url: URL, fresh: Data?)? {
-        var stale = false
-        guard let url = try? URL(resolvingBookmarkData: data, options: [.withoutUI, .withoutMounting],
-                                 relativeTo: nil, bookmarkDataIsStale: &stale),
-              !url.pathComponents.contains(".Trash") else { return nil }
-        let fresh = stale ? try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil) : nil
-        return (url, fresh)
-    }
-
-    /// If the Amazon Photos folder was moved or renamed, follow it (bounded,
-    /// off the main thread). Returns whether the folder changed.
-    @discardableResult
-    public func followMovedAmazonFolder(timeout: Double = 2) async -> Bool {
-        guard let data = amazonPhotosFolderBookmark, let current = amazonPhotosFolder else { return false }
-        guard let found = await blockingWithTimeout(timeout, { AppSettings.followBookmark(data) }) ?? nil else { return false }
-        if let fresh = found.fresh { amazonPhotosFolderBookmark = fresh }
-        guard found.url.standardizedFileURL.path != current.standardizedFileURL.path else { return false }
-        amazonPhotosFolder = found.url
-        amazonPhotosFolderBookmark = (try? found.url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil))
-            ?? amazonPhotosFolderBookmark
-        return true
-    }
-}
-
 /// The archive settings the background service needs, read on the main actor.
 public struct ArchiveSettingsSnapshot: Sendable, Equatable {
     public var enabled: Bool
     public var target: String
     public var intervalMinutes: Int
-    public var amazonFolder: URL?
-    /// N2: rejected photos are archived (on by default: the archive is the backup)…
+    /// N2: rejected photos are archived (on by default: the archive is the backup).
     public var archiveRejected: Bool
-    /// …and handed to Amazon Photos (off by default).
-    public var amazonRejected: Bool
     /// N3: the confirmed target's volume identity (see `AppSettings.archiveTargetVolume`).
     public var targetVolume: String?
     /// Object storage instead of the folder `target` (nil: the folder).
     public var objectStore: ObjectStoreSettings?
 
-    public init(enabled: Bool, target: String, intervalMinutes: Int, amazonFolder: URL?, archiveRejected: Bool = true,
-                amazonRejected: Bool = false, targetVolume: String? = nil, objectStore: ObjectStoreSettings? = nil) {
+    public init(enabled: Bool, target: String, intervalMinutes: Int, archiveRejected: Bool = true,
+                targetVolume: String? = nil, objectStore: ObjectStoreSettings? = nil) {
         self.objectStore = objectStore
         self.targetVolume = targetVolume
         self.enabled = enabled
         self.target = target
         self.intervalMinutes = intervalMinutes
-        self.amazonFolder = amazonFolder
         self.archiveRejected = archiveRejected
-        self.amazonRejected = amazonRejected
     }
 
     /// Archiving runs only when switched on and a target (a folder, or a bucket) is set.
@@ -407,8 +348,7 @@ public struct ArchiveSettingsSnapshot: Sendable, Equatable {
 extension AppSettings {
     public var archiveSnapshot: ArchiveSettingsSnapshot {
         ArchiveSettingsSnapshot(enabled: archiveEnabled, target: archiveTarget.trimmingCharacters(in: .whitespaces),
-                                intervalMinutes: archiveIntervalMinutes, amazonFolder: amazonPhotosFolder,
-                                archiveRejected: archiveRejected, amazonRejected: amazonRejected,
+                                intervalMinutes: archiveIntervalMinutes, archiveRejected: archiveRejected,
                                 targetVolume: archiveTargetVolume,
                                 objectStore: archiveDestination == .object ? archiveObjectStore : nil)
     }

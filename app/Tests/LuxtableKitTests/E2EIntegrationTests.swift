@@ -9,7 +9,7 @@ import Testing
 
 /// Integration A end to end on the live path (real FFI, real disk image, real
 /// rsync): an exFAT "card" with DCIM + sample ARWs + an MP4 → import into a new
-/// session → rate → archive with each installed rsync → Amazon hand-off →
+/// session → rate → archive with each installed rsync →
 /// export JPEG + HEIC. The card image is byte-identical to a control
 /// attach/detach afterwards.
 @MainActor @Suite(.serialized) struct E2EIntegrationTests {
@@ -78,7 +78,7 @@ import Testing
         return names.filter { osVolumeMetadata.contains($0) }.sorted()
     }
 
-    @Test func cardToSessionToArchiveAmazonAndExport() async throws {
+    @Test func cardToSessionToArchiveAndExport() async throws {
         guard let env = try await Imp6LiveImportTests.env() else { return } // no samples / no disk images: skip
         let box = CardBox(env.card)
         do {
@@ -140,20 +140,15 @@ import Testing
         let reopened = RustSessionStore(recents: env.recents, storeBase: env.root.appendingPathComponent("stores"))
         photos = try await reopened.photos(in: session)
         #expect(photos.first { $0.id == first.id }?.rating == 5)
-        await env.store.waitForHashing(session.id) // Amazon takes verified originals only
 
-        // 3. Archive with each installed rsync (+ Amazon hand-off on the first run).
+        // 3. Archive with each installed rsync.
         #expect(!Self.rsyncs.isEmpty)
-        let amazon = env.root.appendingPathComponent("Amazon Photos")
-        try fm.createDirectory(at: amazon, withIntermediateDirectories: true) // chosen by the user: never created (A-M2)
         var archiveTimes: [String] = []
         for (i, rsync) in Self.rsyncs.enumerated() {
             let target = env.root.appendingPathComponent("archive-\(i)")
             try fm.createDirectory(at: target, withIntermediateDirectories: true)
-            let snap = ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60,
-                                               amazonFolder: i == 0 ? amazon : nil)
+            let snap = ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60)
             let service = RustArchiveService(initial: snap, settings: { snap }, handles: { await env.store.archiveHandle(for: $0) },
-                                             manifest: env.root.appendingPathComponent("support-\(i)/manifest.json"),
                                              lockDir: env.root.appendingPathComponent("locks-\(i)").path,
                                              tick: .milliseconds(50), rsyncPath: rsync)
             await service.sessionOpened(session)
@@ -171,29 +166,6 @@ import Testing
                 let src = try #require(p.url)
                 let rel = String(src.standardizedFileURL.path.dropFirst(session.url.standardizedFileURL.path.count + 1))
                 #expect(fm.contentsEqual(atPath: src.path, andPath: dest.appendingPathComponent(rel).path), "\(rsync): \(rel)")
-            }
-            if i == 0 {
-                // The hand-off runs in the background (registration and the import
-                // each ask for a pass; a later pass finds them already there, A-M3).
-                // Keep the finished pass that satisfied the wait: a catch-up pass may start
-                // right after it and reset the per-pass counts.
-                var finished: ArchiveDetail.Amazon?
-                #expect(await waitUntil(timeout: .seconds(30)) {
-                    guard let a = service.snapshot().detail?.amazon, !a.running, a.placed + a.alreadyMirrored >= 3
-                    else { return false }
-                    finished = a
-                    return true
-                })
-                let a = try #require(finished)
-                #expect(a.failed.isEmpty && a.error == nil, "\(a)")
-                let mirrored = (fm.enumerator(atPath: amazon.path)?.allObjects as? [String] ?? [])
-                    .filter { !$0.hasPrefix(".") && !$0.contains("/.") }
-                    .filter { var d: ObjCBool = false; return fm.fileExists(atPath: amazon.appendingPathComponent($0).path, isDirectory: &d) && !d.boolValue }
-                // Every imported still is handed over exactly once (videos aren't). The status
-                // counts are per pass: a catch-up pass that ran after the first one reports the
-                // same files as "already there", so only a lower bound holds for their sum.
-                let stills = photos.filter { !$0.isVideo }.count
-                #expect(mirrored.count == stills && a.placed + a.alreadyMirrored >= stills, "\(mirrored) \(a)")
             }
             await service.shutdown()
         }

@@ -13,7 +13,7 @@ How to import, cull, develop, export and archive your RAW photos with Luxtable f
 9. [Copy and apply](08-copy-apply.md#copy-and-apply)
 10. [HDR and panorama](09-hdr-panorama.md#hdr-and-panorama): HDR, panorama and Best Shot
 11. [Exporting](10-export.md#exporting): recipes and Google Photos
-12. [Archive, Immich and Amazon Photos](11-archive.md#archive-immich-and-amazon-photos): folder or object storage archive, Immich albums
+12. [Archive and Immich](11-archive.md#archive-and-immich): folder or object storage archive, Immich albums
 13. [Plug-ins](12-plugins.md#plug-ins): plug-ins and the optional integrations
 14. [The Mac ↔ iPad link](13-ipad-link.md#the-mac--ipad-link)
 15. [Coming from other apps](14-migrate.md#coming-from-other-apps): Capture One, Lightroom Classic, Aperture and iPhoto

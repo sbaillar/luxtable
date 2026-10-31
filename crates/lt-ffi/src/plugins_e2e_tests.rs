@@ -122,7 +122,7 @@ fn the_plugin_system_end_to_end() {
         v.contains("Film Border 1.1.0") && v.contains("bytes changed"),
         "{v}"
     );
-    for f in ["archive", "amazon-photos", "immich", "google-photos"] {
+    for f in ["archive", "immich", "google-photos"] {
         let v = cli(&[
             "validate",
             &p(&repo().join(format!("plugins/builtin/luxtable-{f}.ltplugin"))),

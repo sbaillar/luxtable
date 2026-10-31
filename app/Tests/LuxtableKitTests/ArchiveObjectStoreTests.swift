@@ -165,8 +165,7 @@ private func store(bucket: String = "photos", prefix: String = "luxtable/", endp
                            ObjectConnectionTest(testKey: "luxtable/.lt-archive-test/connection-test.txt",
                                                 location: "s3://photos/luxtable/")
                        }) -> ArchiveSettingsModel {
-        ArchiveSettingsModel(settings: s, checker: { _ in .notSet }, exists: { _ in false }, appInstalled: { false },
-                             objectKeys: k, objectTester: tester)
+        ArchiveSettingsModel(settings: s, checker: { _ in .notSet }, exists: { _ in false }, objectKeys: k, objectTester: tester)
     }
 
     @Test func savingObjectStorageValidatesAndKeepsTheSecretOutOfPreferences() {
@@ -255,7 +254,7 @@ private func store(bucket: String = "photos", prefix: String = "luxtable/", endp
         let (k, _, _) = keys()
         s.archiveTarget = "/Volumes/NAS/Photos"
         let vol = ArchiveSettingsModel(settings: s, checker: { _ in .ready(fsType: "apfs") }, exists: { _ in true },
-                                       appInstalled: { false }, objectKeys: k)
+                                       objectKeys: k)
         #expect(vol.folderKindText == nil, "not checked yet")
         await vol.checkTarget()
         #expect(vol.folderKindText?.hasPrefix("Mounted volume") == true)
@@ -263,7 +262,7 @@ private func store(bucket: String = "photos", prefix: String = "luxtable/", endp
         await vol.checkTarget()
         #expect(vol.folderKindText == "Local folder on this Mac.")
         let share = ArchiveSettingsModel(settings: s, checker: { _ in .ready(fsType: "smbfs") }, exists: { _ in true },
-                                         appInstalled: { false }, objectKeys: k)
+                                         objectKeys: k)
         await share.checkTarget()
         #expect(share.folderKindText?.hasPrefix("Mounted volume") == true)
     }
@@ -282,13 +281,13 @@ private func store(bucket: String = "photos", prefix: String = "luxtable/", endp
         try FileManager.default.createDirectory(at: tmp, withIntermediateDirectories: true)
         // A bucket on its own prefix (the archive lock is per destination).
         let object = store(prefix: "swift-\(UUID().uuidString)/")
-        let snap = ArchiveSettingsSnapshot(enabled: true, target: "", intervalMinutes: 10, amazonFolder: nil,
+        let snap = ArchiveSettingsSnapshot(enabled: true, target: "", intervalMinutes: 10,
                                            objectStore: object)
         #expect(RustArchiveService.config(snap, lockDir: nil, debounce: 60).objectStore == object)
         let (k, _, _) = keys()
         let http = CannedHTTP()
         let service = RustArchiveService(initial: snap, settings: { snap }, handles: { _ in nil },
-                                         manifest: tmp.appendingPathComponent("manifest.json"), lockDir: tmp.path,
+                                         lockDir: tmp.path,
                                          tick: .milliseconds(50), watchVolumes: false, http: http, objectKeys: k)
         // No keys: the archive says so (and sends nothing).
         let deadline = ContinuousClock.now + TestTiming.bound(.seconds(10))
@@ -315,7 +314,7 @@ private func store(bucket: String = "photos", prefix: String = "luxtable/", endp
         // A settings change of the object store alone is applied.
         var moved = snap
         moved.objectStore = store(bucket: "other")
-        let r = RustArchiveService.applyAll(from: snap, to: moved, setConfig: { _ in }, setAmazon: { _ in })
+        let r = RustArchiveService.applyAll(from: snap, to: moved, setConfig: { _ in })
         #expect(r.applied.objectStore == moved.objectStore && r.error == nil)
     }
 

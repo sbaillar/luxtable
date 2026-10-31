@@ -18,11 +18,6 @@ public enum PlatformWorkspace {
     /// Show `urls` selected in the Finder.
     public static func reveal(_ urls: [URL]) { NSWorkspace.shared.activateFileViewerSelecting(urls) }
 
-    /// Whether Launch Services knows an app with this bundle identifier.
-    public static func hasApplication(bundleID: String) -> Bool {
-        NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) != nil
-    }
-
     /// Unmount and eject a volume (blocks while the disk flushes).
     public static func unmountAndEject(_ volume: URL) throws { try NSWorkspace.shared.unmountAndEjectDevice(at: volume) }
 
@@ -45,7 +40,6 @@ public enum PlatformWorkspace {
     public static var didUnmount: Notification.Name { Notification.Name("LuxtableVolumeDidUnmount") }
     public static var volumeURLKey: String { "LuxtableVolumeURL" }
     public static func reveal(_ urls: [URL]) {}
-    public static func hasApplication(bundleID: String) -> Bool { false }
     public static func unmountAndEject(_ volume: URL) throws { throw CocoaError(.featureUnsupported) }
     public static func mountedVolumes(includeHidden: Bool) -> [URL] { [] }
     public static var homeDirectory: URL { URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true) }

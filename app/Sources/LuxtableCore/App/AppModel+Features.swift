@@ -22,8 +22,8 @@ extension AppModel {
 
     /// A feature was turned on or off: start or stop its work at once (no relaunch).
     /// Turning one off never deletes its settings, credentials or data.
-    /// - Archive and Amazon Photos: the Rust driver asks the registry before each run
-    ///   or hand-off (`ArchiveManager.set_plugin_host`); here only the UI follows.
+    /// - Archive: the Rust driver asks the registry before each run
+    ///   (`ArchiveManager.set_plugin_host`); here only the UI follows.
     /// - Immich: the album watch, the sidecars and the developed copies stop or resume.
     /// - Google Photos: the Export sheet asks before each upload.
     func featureChanged(_ feature: NativeFeature, _ on: Bool) {
@@ -32,7 +32,7 @@ extension AppModel {
             if !on { archivePopoverShown = false }
         case .immich:
             immich.featureChanged(on)
-        case .amazonPhotos, .googlePhotos:
+        case .googlePhotos:
             break
         }
     }

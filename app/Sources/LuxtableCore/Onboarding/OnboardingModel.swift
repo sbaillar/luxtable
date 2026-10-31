@@ -1,16 +1,16 @@
 import Foundation
 import Observation
 
-/// First-run setup: where sessions live, where the archive goes, optional
-/// Amazon Photos folder. Nothing is written until `finish()`.
+/// First-run setup: where sessions live and where the archive goes. Nothing is
+/// written until `finish()`.
 ///
 /// With `features` (the app's Settings ▸ Plugins), the archive is offered but starts
-/// off when its integration is off, the Amazon Photos step appears only while that
-/// integration is on, and Finish turns on the integrations the user set up here.
+/// off when its integration is off, and Finish turns on the integrations the user set
+/// up here.
 @MainActor @Observable
 public final class OnboardingModel {
     public enum Step: Int, CaseIterable, Sendable {
-        case welcome, familiar, sessions, archive, amazon
+        case welcome, familiar, sessions, archive
 
         public var title: String {
             switch self {
@@ -18,7 +18,6 @@ public final class OnboardingModel {
             case .familiar: String(localized: "What did you use before?")
             case .sessions: String(localized: "Where should sessions live?")
             case .archive: String(localized: "Archive")
-            case .amazon: String(localized: "Amazon Photos (optional)")
             }
         }
     }
@@ -45,7 +44,6 @@ public final class OnboardingModel {
     public var sessionsFolder: URL
     public var archiveTarget: String
     public var archiveEnabled = true
-    public var amazonFolder: URL?
     /// The familiar layout (and its keys and names) to start with.
     public var familiar: LayoutPreset
     /// "Nothing, I'm new to photo editing": Luxtable's layout, starting in Simple mode.
@@ -87,7 +85,6 @@ public final class OnboardingModel {
         // Offered, on when the archive integration is (an empty target asks the user to
         // choose one or turn it off); off for a new user, who turns it on here or later.
         archiveEnabled = features?.isOn(.archive) ?? true
-        amazonFolder = settings.amazonPhotosFolder
         familiar = settings.layoutPreset
         newToEditing = settings.simpleMode
     }
@@ -104,10 +101,8 @@ public final class OnboardingModel {
         newToEditing = true
     }
 
-    /// The steps shown: Amazon Photos only while its integration is on.
-    public var steps: [Step] {
-        Step.allCases.filter { $0 != .amazon || features?.isOn(.amazonPhotos) ?? true }
-    }
+    /// The steps shown.
+    public var steps: [Step] { Step.allCases }
 
     private var index: Int { steps.firstIndex(of: step) ?? 0 }
     public var isFirst: Bool { step == steps.first }
@@ -122,12 +117,10 @@ public final class OnboardingModel {
         if index > 0 { step = steps[index - 1] }
     }
 
-    /// The integrations Finish turns on: the archive when it is on here with a target,
-    /// Amazon Photos when a folder was chosen.
+    /// The integrations Finish turns on: the archive when it is on here with a target.
     public var chosenFeatures: [NativeFeature] {
         var on: [NativeFeature] = []
         if archiveEnabled, !Self.normalized(archiveTarget).isEmpty { on.append(.archive) }
-        if amazonFolder != nil, steps.contains(.amazon) { on.append(.amazonPhotos) }
         return on
     }
 
@@ -208,7 +201,6 @@ public final class OnboardingModel {
         }
         settings.sessionsFolder = sessionsFolder
         settings.archiveTarget = target
-        settings.chooseAmazonFolder(amazonFolder) // M7: keeps a bookmark so a moved folder is followed
         if familiar != settings.layoutPreset || KeyPreset(layout: familiar) != settings.keyPreset {
             settings.layoutPreset = familiar
             settings.namePreset = nil

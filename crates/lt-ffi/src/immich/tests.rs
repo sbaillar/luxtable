@@ -440,7 +440,6 @@ fn manager(target: &Path) -> Arc<ArchiveManager> {
         check_timeout_ms: 2000,
         rsync_path: None,
         archive_rejected: true,
-        amazon_rejected: false,
         target_volume: None,
         object_store: None,
     })

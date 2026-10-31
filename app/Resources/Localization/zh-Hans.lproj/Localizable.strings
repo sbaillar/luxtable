@@ -194,7 +194,6 @@
 "%lld faces" = "%lld 张面孔";
 "%lld faces improved" = "改善了 %lld 张面孔";
 "%lld faces moved too much to swap" = "%lld 张面孔移动过多，无法替换";
-"%lld failed" = "%lld 个失败";
 "%lld file waiting" = "%lld 个文件等待中";
 "%lld files" = "%lld 个文件";
 "%lld files in other formats not imported" = "%lld 个其他格式的文件不会导入";
@@ -226,7 +225,6 @@
 "%lld min ago" = "%lld 分钟前";
 "%lld more selected photos" = "另外 %lld 张所选照片";
 "%lld more tabs" = "另外 %lld 个标签页";
-"%lld new" = "%lld 个新项目";
 "%lld new photos" = "%lld 张新照片";
 "%lld not archived" = "%lld 个未归档";
 "%lld not in Immich yet" = "%lld 个尚未在 Immich 中";
@@ -236,8 +234,6 @@
 "%lld of %lld files" = "%lld/%lld 个文件";
 "%lld of %lld originals couldn’t be copied" = "%2$lld 张原片中有 %1$lld 张无法拷贝";
 "%lld of %lld selected" = "已选择 %lld/%lld 个";
-"%lld original handed to the app" = "已将 %lld 张原片交给该应用";
-"%lld originals handed to the app" = "已将 %lld 张原片交给该应用";
 "%lld parts of the card couldn’t be read" = "存储卡有 %lld 个部分无法读取";
 "%lld parts of the card unreadable" = "存储卡有 %lld 个部分不可读";
 "%lld photo" = "%lld 张照片";
@@ -288,7 +284,6 @@
 "%lld videos not imported" = "%lld 个视频不会导入";
 "%lld virtual copies were added as new variants" = "%lld 个虚拟副本已添加为新变体";
 "%lld virtual copies will be added as new variants" = "%lld 个虚拟副本将添加为新变体";
-"%lld waiting for verification" = "%lld 个等待验证";
 "%lld warning" = "%lld 个警告";
 "%lld warnings" = "%lld 个警告";
 "%lld workspaces" = "%lld 个工作区";
@@ -511,14 +506,6 @@
 "Already at the last photo" = "已经是最后一张照片";
 "Also 8 × 10" = "同时 8 × 10";
 "Also upload to Google Photos" = "同时上传到 Google Photos";
-"Amazon Photos" = "Amazon Photos";
-"Amazon Photos (optional)" = "Amazon Photos（可选）";
-"Amazon Photos folder (%@)" = "Amazon Photos 文件夹（%@）";
-"Amazon Photos folder missing: %@. Choose it again in Settings › Archive." = "Amazon Photos 文件夹缺失：%@。请在“设置 › 归档”中重新选择。";
-"Amazon Photos is installed. Choose the folder it backs up." = "已安装 Amazon Photos。请选择它所备份的文件夹。";
-"Amazon Photos: %@" = "Amazon Photos：%@";
-"Amazon Photos: after the next import" = "Amazon Photos：下次导入后";
-"Amazon has no public Photos API. Luxtable mirrors your originals into a folder, and the official Amazon Photos app backs that folder up." = "Amazon 没有公开的照片 API。Luxtable 会将你的原片镜像到一个文件夹，再由官方 Amazon Photos App 备份该文件夹。";
 "Amount" = "数量";
 "An arrow key" = "方向键";
 "An empty session with Capture, Selects, Output and Trash folders. Import from a card or drag photos in next." = "一个包含 Capture、Selects、Output 和 Trash 文件夹的空会话。接下来可从存储卡导入或拖入照片。";
@@ -581,7 +568,7 @@
 "Archive settings not applied" = "归档设置未应用";
 "Archive switched off" = "归档已关闭";
 "Archive up to date" = "归档已是最新";
-"Archive, Amazon Photos, Immich, Google Photos" = "归档、Amazon Photos、Immich、Google Photos";
+"Archive, Immich, Google Photos" = "归档、Immich、Google Photos";
 "Archive: %@" = "归档：%@";
 "Archived" = "已归档";
 "Archived in the background" = "在后台归档";
@@ -628,7 +615,6 @@
 "Back / close" = "返回 / 关闭";
 "Back to the original" = "恢复原片";
 "Back to the photo as shot, without any adjustments (⌘Z undoes it)" = "恢复到拍摄时的照片，不含任何调整（⌘Z 可撤销）";
-"Backed-up folder" = "已备份的文件夹";
 "Background" = "背景";
 "Backlit: let the light glow." = "逆光：让光线发光。";
 "Backup Copy" = "备份拷贝";
@@ -756,7 +742,6 @@
 "Choose photos in the browser, then Photo ▸ Keep a Developed Copy for Immich: a JPEG with every edit goes to the session's Developed folder and is kept up to date." = "在浏览器中选择照片，然后选取“照片”▸“为 Immich 保留冲印拷贝”：包含所有编辑的 JPEG 会存入会话的 Developed 文件夹，并保持最新。";
 "Choose the archive folder" = "选取归档文件夹";
 "Choose the archive folder (on your NAS, an external disk or this Mac)" = "选取归档文件夹（位于你的 NAS、外置磁盘或此 Mac 上）";
-"Choose the folder the Amazon Photos app backs up" = "选取 Amazon Photos App 备份的文件夹";
 "Choose the one folder this plug-in may use." = "选取此插件可以使用的唯一文件夹。";
 "Choose the tabs in the strip and the tools in each. A tool can be in several tabs. Changes apply right away." = "选取工具条中的标签页以及每个标签页中的工具。一个工具可以位于多个标签页中。更改会立即生效。";
 "Choose two or more photos to merge." = "请选择两张或更多照片进行合并。";
@@ -1223,7 +1208,6 @@
 "Folder" = "文件夹";
 "Folder %@" = "文件夹 %@";
 "Folder inside the session’s Capture folder. Tokens: {date} {time} {camera} {text}" = "会话 Capture 文件夹中的文件夹。标记：{date} {time} {camera} {text}";
-"Folder missing: %@. It was moved or deleted, or its disk isn't connected. Luxtable never recreates it: choose it again." = "文件夹缺失：%@。它已被移动或删除，或其所在磁盘未连接。Luxtable 绝不会重新创建它：请重新选择。";
 "Folder on the server" = "服务器上的文件夹";
 "Follow the layout (%@)" = "跟随布局（%@）";
 "Font" = "字体";
@@ -1254,7 +1238,6 @@
 "Gamut warning" = "色域警告";
 "General" = "通用";
 "Get RAW Helper" = "获取 RAW 助手";
-"Get the Amazon Photos app" = "获取 Amazon Photos App";
 "Getting Started" = "入门";
 "GitHub answered HTTP %lld" = "GitHub 返回了 HTTP %lld";
 "Give the preset a name." = "请为预设命名。";
@@ -1284,7 +1267,6 @@
 "Hair" = "头发";
 "Halation" = "光晕溢出";
 "Half the height of the sharp band, of the long edge." = "清晰带高度的一半，以长边为基准。";
-"Handing originals to Amazon Photos…" = "正在将原片交给 Amazon Photos…";
 "Hard (100 %) or soft brush edge." = "硬（100 %）或柔和的画笔边缘。";
 "Hardness" = "硬度";
 "Headline" = "标题行";
@@ -1590,7 +1572,6 @@
 "Luxtable is already running or still closing" = "Luxtable 已在运行或仍在关闭";
 "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again." = "Luxtable 无权读取你的照片图库。请在“系统设置”▸“隐私与安全性”▸“照片”中开启，然后重试。";
 "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable 保持自己的外观。这只会将面板、按键和一些名称移到你习惯的位置。随时可在“设置”›“熟悉”中更改。";
-"Luxtable mirrors your originals into a folder that the official Amazon Photos app backs up. No passwords, no private APIs." = "Luxtable 会将你的原片镜像到由官方 Amazon Photos App 备份的文件夹。无需密码，不使用私有 API。";
 "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, about 34 MB) and keep it on this Mac. Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable." = "Luxtable 将下载 RealESRGAN_x2plus（BSD 3-Clause 许可证，约 34 MB）并保存在此 Mac 上。其训练数据（DIV2K、Flickr2K、OST）仅授权用于非商业研究。Luxtable 的 Apache-2.0 许可证不会覆盖这些条款；是否遵守这些条款由你自行负责。详细信息请参阅“Luxtable ▸ 关于 Luxtable”。";
 "Luxtable's own phrase rules" = "Luxtable 自有的短语规则";
 "Luxtable, or nothing yet" = "Luxtable，或暂无";
@@ -1850,7 +1831,6 @@
 "Off" = "关";
 "Off: photos you changed in Luxtable since the last import keep your values" = "关闭：自上次导入后你在 Luxtable 中更改过的照片会保留你的值";
 "Off: photos you rejected (and the session's Trash) stay out of the archive, and deleting them leaves no copy" = "关闭：你排除的照片（以及会话的废纸篓）不会进入归档，删除它们后不会留下拷贝";
-"Off: photos you rejected aren't handed to Amazon Photos" = "关闭：你排除的照片不会交给 Amazon Photos";
 "Off: where the photo was taken stays private. Your name, copyright, caption and keywords go in either way" = "关闭：照片的拍摄地点保持私密。你的姓名、版权、说明和关键词无论如何都会包含在内";
 "Offline" = "离线";
 "Older steps not shown" = "未显示较早的步骤";
@@ -1904,8 +1884,6 @@
 "Original file missing (%@). Remove isn’t offered: “%@” isn’t the disk this session was recorded on (a clone or a restore?). Locate Folder… confirms it." = "原始文件缺失（%1$@）。不提供“移除”：“%2$@”不是录制此会话时所用的磁盘（克隆或恢复的？）。“定位文件夹…”可进行确认。";
 "Original file missing (%@): edits are saved but can’t be previewed or exported." = "原始文件缺失（%@）：编辑已存储，但无法预览或导出。";
 "Originals are copied; %@ is never changed." = "将拷贝原片；%@ 不会被更改。";
-"Originals are handed to Amazon Photos after each import." = "每次导入后，原片会交给 Amazon Photos。";
-"Originals are handed to the folder the Amazon Photos app backs up." = "原片会交给 Amazon Photos 应用所备份的文件夹。";
 "Other Sources" = "其他来源";
 "Other cameras" = "其他相机";
 "Out %lld · %lld" = "输出 %lld · %lld";
@@ -1955,7 +1933,6 @@
 "Photos Library" = "照片图库";
 "Photos Library…" = "照片图库…";
 "Photos of this session, or of every session" = "此会话的照片，或所有会话的照片";
-"Photos only: videos are archived with the session but aren't handed to Amazon Photos." = "仅限照片：视频会随会话一起归档，但不会交给 Amazon Photos。";
 "Photos whose files were moved or deleted outside Luxtable" = "文件已在 Luxtable 之外被移动或删除的照片";
 "Phrase, e.g. “keeper”" = "短语，例如“keeper”";
 "Phrases starting with “edit” are Edit with Words instructions." = "以“edit”开头的短语是“用文字编辑”指令。";
@@ -1975,7 +1952,6 @@
 "Pick one of your recent sessions, or bring in new photos." = "选择一个最近的会话，或导入新照片。";
 "Pick the correction profile by hand when the automatic match is wrong or missing" = "当自动匹配错误或缺失时，手动选取校正配置文件";
 "Pick the focus on the photo" = "在照片上选取焦点";
-"Pick the folder watched by the Amazon Photos app" = "选取 Amazon Photos App 监视的文件夹";
 "Picked" = "已留用";
 "Picked %@" = "已留用“%@”";
 "Pin for compare" = "固定以比较";
@@ -2280,7 +2256,6 @@
 "Selection" = "所选项";
 "Selects exactly those photos (“the next 3” are three, not counting this one) and moves to the first; keys then act on them." = "精确选择这些照片（“the next 3”是三张，不包括当前这张）并移到第一张；之后按键将作用于它们。";
 "Send JPEGs of the selection with Messages, Mail, AirDrop and more (⌥⌘E). Size and quality: Settings ▸ Sharing" = "通过“信息”、“邮件”、AirDrop 等发送所选照片的 JPEG（⌥⌘E）。尺寸和质量：“设置”▸“共享”";
-"Send rejected photos to Amazon Photos" = "将排除的照片发送到 Amazon Photos";
 "Separation between darks and lights." = "暗部与亮部之间的分离程度。";
 "Server" = "服务器";
 "Server address" = "服务器地址";
@@ -2467,7 +2442,6 @@
 "Stop it and quit? Photos already exported stay; the rest aren't exported." = "要停止并退出吗？已导出的照片会保留；其余照片不会被导出。";
 "Stop listening" = "停止聆听";
 "Stop loading this development folder" = "停止载入此开发文件夹";
-"Stop mirroring originals to Amazon Photos" = "停止将原片镜像到 Amazon Photos";
 "Stop picking the focus" = "停止选取焦点";
 "Stop preparing; nothing is shared" = "停止准备；不会共享任何内容";
 "Stop remove tool" = "停止移除工具";
@@ -2556,7 +2530,6 @@
 "The AI Denoise model in this build is damaged (its checksum doesn't match)." = "此版本中的 AI 去噪模型已损坏（校验和不匹配）。";
 "The AI Upscale model in this build is damaged (its checksum doesn’t match)." = "此版本中的 AI 放大模型已损坏（校验和不匹配）。";
 "The API key couldn't be removed from your Keychain." = "无法从你的钥匙串中移除 API 密钥。";
-"The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it." = "未安装 Amazon Photos 应用。由它上传该文件夹；Luxtable 只负责填充。";
 "The Best Shot" = "最佳照片";
 "The Keychain refused the API key." = "钥匙串拒绝了 API 密钥。";
 "The Keychain refused the client secret." = "钥匙串拒绝了客户端密钥。";
@@ -2715,7 +2688,6 @@
 "Turn %@ off (its settings are kept)" = "关闭%@（其设置会保留）";
 "Turn %@ on" = "打开%@";
 "Turn AI Denoise on for the selected photos and denoise them in the background" = "为所选照片打开 AI 去噪，并在后台为其去噪";
-"Turn Off" = "关闭";
 "Turn Voice Commands Off" = "关闭语音命令";
 "Turn Voice Commands On" = "打开语音命令";
 "Turn on at least one recipe." = "请至少开启一个方案。";
@@ -2774,7 +2746,6 @@
 "Upscaling, %@" = "正在放大，%@";
 "Usage Terms" = "使用条款";
 "Use %@" = "使用 %@";
-"Use Folder" = "使用文件夹";
 "Use Jev for phrases the rules don't understand" = "对规则无法理解的短语使用 Jev";
 "Use Proof Profile (%@)" = "使用打样描述文件（%@）";
 "Use a full path, like /Volumes/NAS/Photos." = "请使用完整路径，例如 /Volumes/NAS/Photos。";

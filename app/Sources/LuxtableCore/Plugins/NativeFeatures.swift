@@ -7,7 +7,6 @@ import Observation
 /// panels and background work go away; its settings and credentials are kept.
 public enum NativeFeature: String, CaseIterable, Sendable, Identifiable {
     case archive
-    case amazonPhotos = "amazon-photos"
     case immich
     case googlePhotos = "google-photos"
 
@@ -19,7 +18,6 @@ public enum NativeFeature: String, CaseIterable, Sendable, Identifiable {
     public var title: String {
         switch self {
         case .archive: String(localized: "Archive")
-        case .amazonPhotos: "Amazon Photos"
         case .immich: "Immich"
         case .googlePhotos: "Google Photos"
         }
@@ -34,14 +32,12 @@ public enum NativeFeature: String, CaseIterable, Sendable, Identifiable {
 
     /// The one-time migration: whether the user had already set this feature up before
     /// features became plug-ins (then it starts on, so nothing they rely on stops).
-    /// Archive: a target. Amazon Photos: a folder. Immich: a server. Google Photos:
-    /// signed in, or their own OAuth client entered (the client built into the app
-    /// doesn't count).
+    /// Archive: a target. Immich: a server. Google Photos: signed in, or their own
+    /// OAuth client entered (the client built into the app doesn't count).
     @MainActor
     public func wasSetUp(settings: AppSettings, immich: ImmichSettings, google: GooglePhotosSettings) -> Bool {
         switch self {
         case .archive: !settings.archiveTarget.trimmingCharacters(in: .whitespaces).isEmpty
-        case .amazonPhotos: settings.amazonPhotosFolder != nil
         case .immich: !immich.serverURL.isEmpty
         case .googlePhotos: !google.clientIDOverride.isEmpty || google.refreshToken != nil
         }
@@ -99,7 +95,6 @@ public final class FeatureGates {
     public func shows(_ panel: ToolPanelID) -> Bool {
         switch panel {
         case .archive: isOn(.archive)
-        case .amazonPhotos: isOn(.amazonPhotos)
         default: true
         }
     }

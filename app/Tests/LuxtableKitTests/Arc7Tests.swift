@@ -5,20 +5,16 @@ import Testing
 @testable import LuxtableMac
 @testable import LuxtableUI
 
-/// Integration A review fixes for the archive and Amazon hand-off (A-H1…A-L5).
+/// Integration A review fixes for the archive (A-H1…A-L5).
 
-private let onSnap = ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/pics/Luxtable", intervalMinutes: 10,
-                                             amazonFolder: nil)
+private let onSnap = ArchiveSettingsSnapshot(enabled: true, target: "/Volumes/pics/Luxtable", intervalMinutes: 10)
 
-private func overview7(available: Bool = true, sessions: [SessionArchiveStatus] = [], runs: [ArchiveRun] = [],
-                       amazon: AmazonStatus = AmazonStatus(folder: nil, running: false, lastRunMs: nil, placed: 0, cloned: 0,
-                                                           alreadyMirrored: 0, skippedUnsupported: 0, waiting: 0,
-                                                           failed: [], error: nil, folderMissing: false, session: nil))
+private func overview7(available: Bool = true, sessions: [SessionArchiveStatus] = [], runs: [ArchiveRun] = [])
     -> ArchiveOverview {
     ArchiveOverview(enabled: true,
                     target: TargetCheck(path: "/Volumes/pics/Luxtable", available: available, timedOut: false,
                                         reason: available ? nil : "not mounted", fsType: nil),
-                    rsync: nil, rsyncError: nil, sessions: sessions, runs: runs, amazon: amazon)
+                    rsync: nil, rsyncError: nil, sessions: sessions, runs: runs)
 }
 
 @Suite struct Arc7MappingTests {
@@ -40,16 +36,13 @@ private func overview7(available: Bool = true, sessions: [SessionArchiveStatus] 
         #expect(s(overview7(available: false, sessions: [arcSession(notResponding: true)])) == .offline)
         #expect(s(overview7(sessions: [arcSession(running: true, notResponding: true),
                                        arcSession("B", running: true, percent: 10)])) == .syncing(fraction: 0.1))
-        // The detail keeps per-file problems and per-session Amazon status.
-        let amz = AmazonStatus(folder: "/A", running: false, lastRunMs: 1_000, placed: 2, cloned: 2, alreadyMirrored: 0,
-                               skippedUnsupported: 0, waiting: 0, failed: [], error: "Amazon Photos folder missing: /A",
-                               folderMissing: true, session: "Trip")
+        // The detail keeps per-file problems.
         let run = ArchiveRun(session: "Trip", trigger: "on demand", outcome: "incomplete", message: nil, startedMs: 0,
                              durationMs: 1500, warnings: [], problems: bad)
         let d = try #require(RustArchiveService.status(
-            overview7(sessions: [arcSession(problems: bad, amazon: amz)], runs: [run], amazon: amz), settings: onSnap).detail)
-        #expect(d.sessions[0].problems == bad && d.sessions[0].amazon?.folderMissing == true)
-        #expect(d.runs[0].problems == bad && d.amazon?.folderMissing == true)
+            overview7(sessions: [arcSession(problems: bad)], runs: [run]), settings: onSnap).detail)
+        #expect(d.sessions[0].problems == bad)
+        #expect(d.runs[0].problems == bad)
     }
 
     @Test func popoverWordingForTheNewStates() {
@@ -73,58 +66,17 @@ private func overview7(available: Bool = true, sessions: [SessionArchiveStatus] 
             #expect(!ArchiveDisplay.isProblem(ArchiveDetail.Run(session: "T", trigger: "x", outcome: fine, started: now,
                                                                  duration: .zero)))
         }
-        #expect(ArchiveDisplay.amazonLine(ArchiveDetail.Amazon(folder: "/A", error: "x", folderMissing: true))
-            .hasPrefix("Amazon Photos folder missing: /A"))
     }
 }
 
 @MainActor @Suite struct Arc7SettingsTests {
-    /// A-M2: the chosen folder is bookmarked; a move in Finder is followed,
-    /// a folder deleted (in the Trash, or gone) is reported missing, never recreated.
-    @Test func amazonFolderMovesAreFollowedAndMissingFoldersReported() async throws {
-        let fm = FileManager.default
-        let root = fm.temporaryDirectory.appendingPathComponent("lt-arc7-amz-\(UUID())")
-        defer { try? fm.removeItem(at: root) }
-        let chosen = root.appendingPathComponent("Amazon Photos")
-        try fm.createDirectory(at: chosen, withIntermediateDirectories: true)
-        let s = makeSettings()
-        s.chooseAmazonFolder(chosen)
-        #expect(s.amazonPhotosFolder == chosen && s.amazonPhotosFolderBookmark != nil)
-        // Persisted.
-        let again = AppSettings(defaults: s.userDefaults)
-        #expect(again.amazonPhotosFolderBookmark == s.amazonPhotosFolderBookmark)
-        #expect(await s.followMovedAmazonFolder() == false, "not moved")
-        // Renamed in Finder: followed.
-        let moved = root.appendingPathComponent("Amazon Photos (moved)")
-        try fm.moveItem(at: chosen, to: moved)
-        #expect(await s.followMovedAmazonFolder())
-        #expect(s.amazonPhotosFolder?.standardizedFileURL.path == moved.standardizedFileURL.path)
-        let m = ArchiveSettingsModel(settings: s, checker: { _ in .notSet }, appInstalled: { true })
-        await m.checkAmazonFolder()
-        #expect(!m.amazonFolderMissing && !m.amazonText.hasPrefix("Folder missing"))
-        // Deleted: missing (a folder in the Trash is never followed).
-        let trash = root.appendingPathComponent(".Trash")
-        try fm.createDirectory(at: trash, withIntermediateDirectories: true)
-        try fm.moveItem(at: moved, to: trash.appendingPathComponent("Amazon Photos (moved)"))
-        await m.checkAmazonFolder()
-        #expect(m.amazonFolderMissing && m.amazonText.hasPrefix("Folder missing"))
-        #expect(!fm.fileExists(atPath: moved.path), "never recreated")
-        // Turned off: no bookmark, nothing missing.
-        s.chooseAmazonFolder(nil)
-        #expect(s.amazonPhotosFolder == nil && s.amazonPhotosFolderBookmark == nil)
-        await m.checkAmazonFolder()
-        #expect(!m.amazonFolderMissing)
-        #expect(await s.followMovedAmazonFolder() == false)
-        #expect(AppSettings.followBookmark(Data([1, 2, 3])) == nil)
-    }
-
     /// A-H4: the target field commits on submit or when it loses focus, not
     /// per keystroke; committing the same value does nothing.
     @Test func targetCommitsOnlyWhenChanged() async {
         let s = makeSettings()
         let checked = Arc7Counter()
         let m = ArchiveSettingsModel(settings: s, checker: { _ in checked.bump(); return .ready(fsType: "apfs") },
-                                     exists: { _ in false }, appInstalled: { true })
+                                     exists: { _ in false })
         await m.commitTarget("  /Volumes/x/Luxtable ")
         #expect(s.archiveTarget == "/Volumes/x/Luxtable" && checked.value == 1)
         await m.commitTarget("/Volumes/x/Luxtable")
@@ -137,10 +89,10 @@ private func overview7(available: Bool = true, sessions: [SessionArchiveStatus] 
         let suite = testSuiteName()
         let d = UserDefaults(suiteName: suite)!
         d.set("/Volumes/pics/Luxtable", forKey: "archiveTarget")
-        d.set("/x/Amazon", forKey: "amazonPhotosFolder")
+        d.set("/x/Sessions", forKey: "sessionsFolder")
         AppModel.resetSnapshotDefaults(suite)
         let fresh = UserDefaults(suiteName: suite)!
-        #expect(fresh.string(forKey: "archiveTarget") == nil && fresh.string(forKey: "amazonPhotosFolder") == nil)
+        #expect(fresh.string(forKey: "archiveTarget") == nil && fresh.string(forKey: "sessionsFolder") == nil)
         AppModel.resetSnapshotDefaults("app.luxtable.Luxtable") // refused: no effect, no crash
     }
 }
@@ -173,8 +125,7 @@ final class Arc7Counter: @unchecked Sendable {
 
     /// A-H1 on the live path: an original rsync can't read shows as
     /// "Archived with problems" with the file listed; A-H4: a settings change
-    /// (the Amazon folder) keeps that state; A-M2: a missing Amazon folder
-    /// asks the app to follow its bookmark and is never created.
+    /// (the interval) keeps that state.
     @Test func unreadableOriginalShowsProblemsAndSettingsKeepIt() async throws {
         guard !geteuidIsRoot(), let dir = try sampleFolderCopy(limit: 2) else { return }
         let fm = FileManager.default
@@ -193,14 +144,11 @@ final class Arc7Counter: @unchecked Sendable {
         let info = try await store.add(folder: dir)
         await store.waitForHashing(info.id)
         try fm.setAttributes([.posixPermissions: 0], ofItemAtPath: locked.path)
-        let missingAmazon = tmp.appendingPathComponent("Amazon Photos (gone)")
-        let box = Box(ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60, amazonFolder: nil))
-        let followed = Arc7Counter()
+        let box = Box(ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60))
         let service = RustArchiveService(initial: box.snapshot, settings: { box.snapshot },
                                          handles: { await store.archiveHandle(for: $0) },
-                                         manifest: tmp.appendingPathComponent("support/manifest.json"),
                                          lockDir: tmp.appendingPathComponent("locks").path, tick: .milliseconds(50),
-                                         followAmazonFolder: { followed.bump() }, watchVolumes: false)
+                                         watchVolumes: false)
         let updates = service.statusUpdates()
         let watcher = Task { for await _ in updates {} }
         defer { watcher.cancel() }
@@ -211,15 +159,10 @@ final class Arc7Counter: @unchecked Sendable {
         #expect(s.problems.count == 1 && s.problems[0].hasPrefix(files[1] + ": ") && s.problems[0].contains("Permission denied"),
                 "\(s.problems)")
         #expect(ArchiveDisplay.sessionLine(s).hasPrefix("1 item not archived"))
-        // A settings change (an Amazon folder that doesn't exist) keeps the problem state.
-        box.snapshot = ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 60, amazonFolder: missingAmazon)
+        // A settings change (the interval) keeps the problem state.
+        box.snapshot = ArchiveSettingsSnapshot(enabled: true, target: target.path, intervalMinutes: 30)
         await service.refresh()
         #expect(service.snapshot().state == .problems(count: 1))
-        await service.syncNow() // the hand-off runs, finds the folder missing
-        #expect(await waitFor(30) { followed.value >= 1 }, "the app is asked to follow the bookmark")
-        #expect(!fm.fileExists(atPath: missingAmazon.path), "never created")
-        let a = try #require(service.snapshot().detail?.sessions.first?.amazon)
-        #expect(a.folderMissing && ArchiveDisplay.amazonLine(a).hasPrefix("Amazon Photos folder missing"))
         // Readable again: a clean run clears it.
         try fm.setAttributes([.posixPermissions: 0o644], ofItemAtPath: locked.path)
         await service.syncNow()

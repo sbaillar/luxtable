@@ -5,7 +5,7 @@ import Metal
 
 /// The FFI contract revision these Swift sources were written against.
 /// `SelfTest` fails if the linked Rust library reports a different one.
-public let expectedFFIContract: UInt32 = 48
+public let expectedFFIContract: UInt32 = 49
 
 /// `Renderer` backed by the Rust `Engine`.
 ///

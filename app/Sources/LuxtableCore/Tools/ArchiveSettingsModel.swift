@@ -3,8 +3,8 @@ import Foundation
 import Observation
 
 /// Settings › Archive: the destination (a folder, or S3-compatible object storage),
-/// interval, on/off, and the Amazon Photos folder. Every look at a volume runs off the
-/// main thread with a timeout; the object storage keys live only in the Keychain.
+/// interval and on/off. Every look at a volume runs off the main thread with a
+/// timeout; the object storage keys live only in the Keychain.
 @MainActor @Observable
 public final class ArchiveSettingsModel {
     public enum TargetState: Equatable, Sendable {
@@ -27,10 +27,6 @@ public final class ArchiveSettingsModel {
     public private(set) var targetState: TargetState = .notSet
     /// `/Volumes/NAS/Photos` when that share is mounted and no target is set.
     public private(set) var suggestion: String?
-    /// `nil` until checked (L4: the last answer in this process is shown at once).
-    public private(set) var amazonAppInstalled: Bool? = ArchiveSettingsModel.lastAppLookup.value
-    /// The chosen Amazon Photos folder isn't there (and couldn't be followed).
-    public private(set) var amazonFolderMissing = false
     /// The target folder doesn't exist but its parent is a mounted, writable folder:
     /// "Create It" makes it (C1; the archive creates its root only on the confirmed volume, N3).
     public private(set) var canCreateTarget = false
@@ -57,21 +53,15 @@ public final class ArchiveSettingsModel {
 
     @ObservationIgnored private let checker: Checker
     @ObservationIgnored private let exists: Exists
-    @ObservationIgnored private let appInstalled: @Sendable () -> Bool
     @ObservationIgnored private let timeout: Double
     @ObservationIgnored private let creatable: @Sendable (String) -> Bool
     @ObservationIgnored private let makeFolder: @Sendable (String) throws -> Void
     @ObservationIgnored private let volumeIdentity: ArchiveVolumeIdentity
 
     public nonisolated static let intervalChoices = [5, 10, 15, 30, 60]
-    /// Where to get the official app.
-    public nonisolated static let amazonInstallURL = URL(string: "https://www.amazon.com/photos")! // links to the Mac app download
-    /// Bundle ids the Amazon Photos Mac app has shipped under.
-    public nonisolated static let amazonBundleIDs = ["com.amazon.clouddrive.mac", "com.amazon.photos.mac"]
 
     public init(settings: AppSettings, checker: @escaping Checker = ArchiveSettingsModel.ffiCheck,
                 exists: @escaping Exists = { FileManager.default.fileExists(atPath: $0) },
-                appInstalled: @escaping @Sendable () -> Bool = ArchiveSettingsModel.amazonAppFound,
                 creatable: @escaping @Sendable (String) -> Bool = ArchiveSettingsModel.canCreate,
                 makeFolder: @escaping @Sendable (String) throws -> Void = {
                     try FileManager.default.createDirectory(atPath: $0, withIntermediateDirectories: false)
@@ -87,7 +77,6 @@ public final class ArchiveSettingsModel {
         self.settings = settings
         self.checker = checker
         self.exists = exists
-        self.appInstalled = appInstalled
         self.creatable = creatable
         self.makeFolder = makeFolder
         self.timeout = timeout
@@ -100,10 +89,6 @@ public final class ArchiveSettingsModel {
         let parent = (path as NSString).deletingLastPathComponent
         return fm.fileExists(atPath: parent) && fm.isWritableFile(atPath: parent)
     }
-
-    /// L1: what the Amazon hand-off takes.
-    public nonisolated static let amazonVideosNote =
-        String(localized: "Photos only: videos are archived with the session but aren't handed to Amazon Photos.")
 
     /// FFI check (the Rust side bounds the file-system call to 2 s).
     public nonisolated static let ffiCheck: Checker = { path in
@@ -119,50 +104,10 @@ public final class ArchiveSettingsModel {
         return .unavailable(r.reason ?? String(localized: "unavailable"))
     }
 
-    /// Launch Services by bundle id, then `/Applications/Amazon Photos.app`.
-    public nonisolated static let amazonAppFound: @Sendable () -> Bool = {
-        amazonBundleIDs.contains { PlatformWorkspace.hasApplication(bundleID: $0) }
-            || ((try? amazonPhotosAppInstalled()) ?? false)
-    }
-
-    /// The Amazon app lookup's last answer in this process (L4).
-    nonisolated static let lastAppLookup = AppLookupCache()
-
-    final class AppLookupCache: @unchecked Sendable {
-        private let lock = NSLock()
-        private var stored: Bool?
-        var value: Bool? {
-            get { lock.withLock { stored } }
-            set { lock.withLock { stored = newValue } }
-        }
-    }
-
-    /// Re-check the target, the suggestion, the Amazon app and folder. The app lookup
-    /// runs alongside the target check and shows as soon as it answers, not after
-    /// the target check (L4: the text used to say "Checking…" for up to 2 s).
+    /// Re-check the target and the suggestion.
     public func refresh() async {
-        let installed = appInstalled, timeout = timeout
-        let app = Task { @MainActor [weak self] in
-            let found = await blockingWithTimeout(timeout) { installed() }
-            if let found { Self.lastAppLookup.value = found } // a timeout isn't an answer
-            self?.amazonAppInstalled = found ?? false
-        }
-        await Task.yield() // the lookup starts before the (possibly slow) target check
         await checkTarget()
-        await app.value
         await suggest()
-        await checkAmazonFolder()
-    }
-
-    /// Follow a moved Amazon folder (bookmark), else report it missing (A-M2).
-    public func checkAmazonFolder() async {
-        await settings.followMovedAmazonFolder(timeout: timeout)
-        guard let folder = settings.amazonPhotosFolder?.path else {
-            amazonFolderMissing = false
-            return
-        }
-        let exists = exists
-        amazonFolderMissing = !(await blockingWithTimeout(timeout) { exists(folder) } ?? false)
     }
 
     /// Commit the typed target (Return or leaving the field; not per keystroke).
@@ -252,19 +197,6 @@ public final class ArchiveSettingsModel {
             String(localized: "This folder doesn't exist yet (\(why)). Create it to start archiving.")
         case .unavailable(let why): String(localized: "Not available: \(why). Changes are queued until it is.")
         case .notResponding: String(localized: "The volume isn't responding. Changes are queued; the app keeps working.")
-        }
-    }
-
-    public var amazonText: String {
-        if amazonFolderMissing, let f = settings.amazonPhotosFolder {
-            return String(localized: "Folder missing: \(f.path). It was moved or deleted, or its disk isn't connected. Luxtable never recreates it: choose it again.")
-        }
-        return switch amazonAppInstalled {
-        case nil: String(localized: "Originals are handed to the folder the Amazon Photos app backs up.")
-        case true?: settings.amazonPhotosFolder == nil
-            ? String(localized: "Amazon Photos is installed. Choose the folder it backs up.")
-            : String(localized: "Originals are handed to Amazon Photos after each import.")
-        case false?: String(localized: "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it.")
         }
     }
 

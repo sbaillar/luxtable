@@ -4,7 +4,7 @@ import LuxtableUI
 import SwiftUI
 
 /// Settings › Archive: the destination (a folder through rsync, or S3-compatible object
-/// storage), interval, on/off. (Amazon Photos has its own tab.)
+/// storage), interval, on/off.
 struct ArchiveSettingsView: View {
     @State var model: ArchiveSettingsModel
     /// The target being typed: committed on Return or when the field loses

@@ -14,8 +14,8 @@ use crate::exif::ExifMeta;
 ///   `sequence_image_number` within a continuous-drive burst, as
 ///   `"{n-1:03}"`. This is an *ordering key*, not a true fraction: frames
 ///   shot within one second export with distinct, increasing
-///   `DateTimeOriginal`+`SubSecTimeOriginal`, so photo apps (Amazon Photos,
-///   Lightroom, Photos) keep burst order instead of sorting ties by name.
+///   `DateTimeOriginal`+`SubSecTimeOriginal`, so photo apps (Lightroom,
+///   Photos, Immich) keep burst order instead of sorting ties by name.
 ///   Single shots (`n = 1`) get `"000"`.
 pub fn exif_from_raw(m: &lt_raw::ImageMeta) -> ExifMeta {
     let non_empty = |s: &str| {

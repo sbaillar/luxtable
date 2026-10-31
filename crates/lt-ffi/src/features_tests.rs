@@ -13,7 +13,6 @@ fn the_bundled_integrations_are_listed_and_start_off() {
     let records = h.list();
     for (id, feature) in [
         ("luxtable.archive", ARCHIVE),
-        ("luxtable.amazon-photos", AMAZON_PHOTOS),
         ("luxtable.immich", IMMICH),
         ("luxtable.google-photos", GOOGLE_PHOTOS),
     ] {
@@ -38,7 +37,7 @@ fn the_bundled_integrations_are_listed_and_start_off() {
     assert_eq!(h.native_features().len(), 0);
     let mut undecided = h.undecided_features();
     undecided.sort();
-    assert_eq!(undecided, [AMAZON_PHOTOS, ARCHIVE, GOOGLE_PHOTOS, IMMICH]);
+    assert_eq!(undecided, [ARCHIVE, GOOGLE_PHOTOS, IMMICH]);
 }
 
 #[test]
@@ -47,7 +46,7 @@ fn migration_and_switching_go_through_the_registry() {
     let user = t.path().join("Plugins");
     let h = PluginHost::unshared(Some(builtin()), user.clone());
     let configured = HashMap::from([(ARCHIVE.to_owned(), true), (IMMICH.to_owned(), false)]);
-    assert_eq!(h.seed_features(configured.clone()).unwrap().len(), 4);
+    assert_eq!(h.seed_features(configured.clone()).unwrap().len(), 3);
     assert_eq!(h.native_features(), [ARCHIVE]);
     assert_eq!(h.undecided_features().len(), 0);
     assert_eq!(h.seed_features(configured).unwrap().len(), 0, "once");
@@ -82,7 +81,7 @@ fn the_bundled_plugins_of_this_build_load() {
     assert!(ok.loaded.contains(&"luxtable.looks".to_owned()));
     let mut f = ok.features.clone();
     f.sort();
-    assert_eq!(f, [AMAZON_PHOTOS, ARCHIVE, GOOGLE_PHOTOS, IMMICH]);
+    assert_eq!(f, [ARCHIVE, GOOGLE_PHOTOS, IMMICH]);
     // A copy with a changed file is reported, not loaded.
     let t = tempfile::tempdir().unwrap();
     let copy = t.path().join("luxtable-archive.ltplugin");

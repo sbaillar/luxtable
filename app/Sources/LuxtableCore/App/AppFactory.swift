@@ -12,15 +12,15 @@ extension AppModel {
     ///   shows the embedded preview at once, then the lt-pipeline develop render (GPU,
     ///   CPU fallback), Vision AI.
     ///   Import copies and verifies through lt-import into sessions in the sessions
-    ///   folder; the archive runs through lt-archive (rsync + the Amazon Photos hand-off).
+    ///   folder; the archive runs through lt-archive (rsync or object storage).
     ///   Ratings, tags, picks and edits persist in lt-session sidecars.
     /// - demo: generated sessions, simulated import and archive.
     public static func make(mode: AppMode, settings: AppSettings = AppSettings(),
                             defaults: UserDefaults = .standard) -> AppModel {
         switch mode {
         case .live:
-            // Settings ▸ Plugins: the integrations (archive, Amazon Photos, Immich, Google
-            // Photos) are decided before anything asks whether they are on.
+            // Settings ▸ Plugins: the integrations (archive, Immich, Google Photos) are
+            // decided before anything asks whether they are on.
             let plugins = PluginStore.shared
             migrateFeatures(plugins, settings: settings)
             let previews = RustPreviewProvider()
@@ -45,12 +45,11 @@ extension AppModel {
                     libraryRoot: { await MainActor.run { RustImportService.libraryRoot(sessionsFolder: settings.sessionsFolder) } },
                     autoApply: { await MainActor.run { PresetStore.shared.autoApplyPreset } },
                     metadataPreset: { await MainActor.run { MetadataPresetStore.shared.importPreset?.fields } }),
-                // lt-archive: rsync in the background + the Amazon Photos hand-off.
+                // lt-archive: rsync (or object storage) in the background.
                 archive: RustArchiveService(initial: settings.archiveSnapshot,
                                             settings: { await MainActor.run { settings.archiveSnapshot } },
                                             handles: { await store.archiveHandle(for: $0) },
                                             lockDir: RustArchiveService.defaultLockDir,
-                                            followAmazonFolder: { _ = await settings.followMovedAmazonFolder() },
                                             plugins: PluginHosts.shared),
                 ai: makeAIService(),
                 settings: settings,
@@ -181,7 +180,7 @@ extension AppModel {
     static func defaults(arguments: [String], environment: [String: String] = [:]) -> UserDefaults {
         let name = defaultsSuiteName(arguments: arguments, environment: environment)
         // Every `--snapshot` run starts from empty preferences, so one run's
-        // archive target / Amazon folder never leaks into the next.
+        // archive target never leaks into the next.
         // Only a private suite is emptied: `--defaults-suite com.apple.finder --snapshot` must not wipe that domain.
         if arguments.contains("--snapshot"), let name, name == snapshotSuite || name.hasPrefix("/") {
             resetSnapshotDefaults(name)

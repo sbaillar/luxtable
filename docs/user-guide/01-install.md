@@ -42,7 +42,6 @@ The first time Luxtable opens, a short setup sheet walks you through a few steps
 2. **What did you use before?** Choose Luxtable, Lightroom Classic or Capture One. This only moves panels, keyboard shortcuts and a few names to where your hands expect them (Settings ▸ Familiar). If you are new to photo editing, choose **Nothing yet: I'm new to photo editing** to start in [Simple mode](06-develop.md#simple-mode): an Auto button, looks and a few easy sliders.
 3. **Where should sessions live?** The folder where new sessions are created. Pick your fastest disk.
 4. **Archive (optional):** tick **Archive sessions automatically** and choose a folder (for example on a NAS) that sessions are copied to in the background. It stays off until you turn it on.
-5. **Amazon Photos (optional):** a folder the Amazon Photos app backs up. This step only appears while the Amazon Photos integration is on (see [Optional integrations](12-plugins.md#optional-integrations)).
 
 ### Getting Started tour
 

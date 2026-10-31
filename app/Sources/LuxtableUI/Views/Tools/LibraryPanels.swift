@@ -291,29 +291,3 @@ struct ExportPanel: View {
         }
     }
 }
-
-struct AmazonPhotosPanel: View {
-    @Bindable var settings: AppSettings
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: DS.Space.s) {
-            PanelNote(text: "Luxtable mirrors your originals into a folder that the official Amazon Photos app backs up. No passwords, no private APIs.")
-            InfoRow(label: "Folder", value: settings.amazonPhotosFolder?.path ?? String(localized: "Off"))
-            HStack {
-                Button("Choose…") {
-                    if let url = PlatformPanels.chooseItem(files: false, directories: true, createDirectories: true,
-                                                           prompt: String(localized: "Use Folder"),
-                                                           message: String(localized: "Choose the folder the Amazon Photos app backs up")) {
-                        settings.amazonPhotosFolder = url
-                    }
-                }
-                .help("Pick the folder watched by the Amazon Photos app")
-                if settings.amazonPhotosFolder != nil {
-                    Button("Turn Off") { settings.amazonPhotosFolder = nil }
-                        .help("Stop mirroring originals to Amazon Photos")
-                }
-            }
-            .controlSize(.small)
-        }
-    }
-}

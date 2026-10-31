@@ -438,7 +438,7 @@ public struct ArchiveStatus: Sendable, Equatable {
     public var state: State
     public var target: String
     public var lastSuccess: Date?
-    /// Per-session status, recent runs and the Amazon hand-off (live mode).
+    /// Per-session status and recent runs (live mode).
     public var detail: ArchiveDetail?
 
     public init(state: State, target: String, lastSuccess: Date?, detail: ArchiveDetail? = nil) {
@@ -471,8 +471,6 @@ public struct ArchiveDetail: Sendable, Equatable {
         public var notResponding: Bool
         /// This session's own folder on the target.
         public var archiveFolder: String?
-        /// This session's Amazon Photos hand-off.
-        public var amazon: Amazon?
         /// The raw error behind `lastError` (rsync's output), for "Details".
         public var errorDetail: String?
         /// Originals at the last run, and the rejected ones it left out (N2).
@@ -482,14 +480,13 @@ public struct ArchiveDetail: Sendable, Equatable {
                     lastError: String? = nil, pending: Int = 0, behindSince: Date? = nil, running: Bool = false,
                     fraction: Double? = nil, bytesPerSecond: Double? = nil, retryIn: Duration? = nil,
                     problems: [String] = [], notResponding: Bool = false, archiveFolder: String? = nil,
-                    amazon: Amazon? = nil, errorDetail: String? = nil, originals: Int = 0, rejectsExcluded: Int = 0) {
+                    errorDetail: String? = nil, originals: Int = 0, rejectsExcluded: Int = 0) {
             self.errorDetail = errorDetail
             self.originals = originals
             self.rejectsExcluded = rejectsExcluded
             self.problems = problems
             self.notResponding = notResponding
             self.archiveFolder = archiveFolder
-            self.amazon = amazon
             self.name = name
             self.source = source
             self.notArchivable = notArchivable
@@ -533,50 +530,17 @@ public struct ArchiveDetail: Sendable, Equatable {
         }
     }
 
-    public struct Amazon: Sendable, Equatable {
-        public var folder: String
-        public var running: Bool
-        public var lastRun: Date?
-        public var placed: Int
-        public var alreadyMirrored: Int
-        /// Not hashed yet (handed over by a later run).
-        public var waiting: Int
-        public var failed: [String]
-        public var error: String?
-        /// The chosen folder is gone (moved, deleted, disk unplugged); it is never recreated.
-        public var folderMissing: Bool
-        /// Rejected originals not handed over (N2: off by default).
-        public var rejectsExcluded: Int
-        public init(folder: String, running: Bool = false, lastRun: Date? = nil, placed: Int = 0, alreadyMirrored: Int = 0,
-                    waiting: Int = 0, failed: [String] = [], error: String? = nil, folderMissing: Bool = false,
-                    rejectsExcluded: Int = 0) {
-            self.rejectsExcluded = rejectsExcluded
-            self.folderMissing = folderMissing
-            self.folder = folder
-            self.running = running
-            self.lastRun = lastRun
-            self.placed = placed
-            self.alreadyMirrored = alreadyMirrored
-            self.waiting = waiting
-            self.failed = failed
-            self.error = error
-        }
-    }
-
     public var targetReason: String?
     /// e.g. "/opt/homebrew/bin/rsync (rsync 3.5.1)".
     public var rsync: String?
     public var sessions: [Session]
     public var runs: [Run]
-    public var amazon: Amazon?
 
-    public init(targetReason: String? = nil, rsync: String? = nil, sessions: [Session] = [], runs: [Run] = [],
-                amazon: Amazon? = nil) {
+    public init(targetReason: String? = nil, rsync: String? = nil, sessions: [Session] = [], runs: [Run] = []) {
         self.targetReason = targetReason
         self.rsync = rsync
         self.sessions = sessions
         self.runs = runs
-        self.amazon = amazon
     }
 }
 
@@ -593,12 +557,11 @@ public protocol ArchiveService: Sendable {
     /// `n` files changed in `session` (ratings, tags, edits): archived after a quiet period.
     func noteChanges(_ n: Int, in session: SessionInfo) async
     /// **Import hook** (the import flow calls it once an import into `session`
-    /// finished, with the number of files copied): archive the session now and
-    /// mirror its originals into the Amazon Photos folder when one is set.
+    /// finished, with the number of files copied): archive the session now.
     func afterImport(session: SessionInfo, files: Int) async
     /// A volume was mounted or unmounted: check the target again now.
     func volumesChanged() async
-    /// Quit: cancel a running rsync and the Amazon hand-off (bounded wait).
+    /// Quit: cancel a running rsync (bounded wait).
     func shutdown() async
 }
 

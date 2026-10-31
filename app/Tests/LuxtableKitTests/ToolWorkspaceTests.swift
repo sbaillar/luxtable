@@ -218,6 +218,13 @@ struct ToolWorkspaceTests {
         // No usable tab at all: the default.
         let empty = try JSONDecoder().decode(ToolWorkspace.self, from: Data(#"{"tabs":[{"id":"zzz","panels":[]}]}"#.utf8))
         #expect(empty == .default)
+        // A layout saved with the removed Amazon Photos panel still loads, without it.
+        let old = try JSONDecoder().decode(ToolWorkspace.self, from: Data("""
+        {"tabs":[{"id":"output","panels":["export","amazonPhotos"]}],"known":["export","amazonPhotos"],
+         "collapsed":["amazonPhotos"]}
+        """.utf8))
+        #expect(old.panels(for: .output).first == .export && !old.panels(for: .output).map(\.rawValue).contains("amazonPhotos"))
+        #expect(old.collapsed == [])
         // Encoding records what this build knows.
         let obj = try JSONSerialization.jsonObject(with: JSONEncoder().encode(ToolWorkspace.default)) as? [String: Any]
         #expect((obj?["known"] as? [String])?.count == ToolPanelID.allCases.count && obj?["collapsed"] == nil)

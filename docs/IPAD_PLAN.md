@@ -17,7 +17,7 @@ Not in the first version: card import, layers and masks, export, archiving. Thes
 | Swift models and services (≈ 200 of 259 files) | Mostly platform-neutral | Move into a shared target. 35 files use AppKit (`NSEvent`, `NSImage`, panels, pasteboard…) and need small `#if os(macOS)` seams |
 | SwiftUI views (57 files) | Built for a Mac window with keyboard and hover | New touch layouts; reuse the leaf controls (sliders, rows, thumbnails) |
 | On-device AI: Vision, Core ML (denoise, upscale), speech, Foundation Models | Available on iPadOS | Use as is; check memory on 24–60 MP images |
-| Card watching (DiskArbitration), rsync archive, Amazon Photos hand-off | Not available | Mac-only; iPad uses ImageCaptureCore and the Files app instead |
+| Card watching (DiskArbitration), rsync archive | Not available | Mac-only; iPad uses ImageCaptureCore and the Files app instead |
 
 ## Prerequisites (you)
 
@@ -248,7 +248,7 @@ Each phase is one agent batch: build, adversarial review, fix, merge. All gates 
 
 ## Not planned for iPad
 - **rsync archive to the NAS:** stays a Mac job. A built-in SMB copy is possible later if it's wanted.
-- **Tethered shooting, disk-image tests, the Amazon Photos hand-off:** Mac-only.
+- **Tethered shooting, disk-image tests:** Mac-only.
 
 ## Risks
 - **Memory:** iPadOS kills apps that use too much. Large panoramas, HDR merges and AI on 60 MP files may need smaller tiles on iPad. Phase 0 measures this.

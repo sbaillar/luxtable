@@ -94,7 +94,6 @@ A GPU pipeline with tool tabs you can rearrange, a CPU reference implementation 
 - **Export recipes** (⌘E): JPEG, HEIC, 16-bit TIFF and PNG; size, sharpening, colour space, naming, watermarks and metadata per recipe, several recipes in one go, in the background. Soft proofing (⇧S) shows the photo through any ICC profile.
 - **Google Photos** (optional): a recipe can also upload into an album in your Google Photos account ([setup](docs/GOOGLE_PHOTOS.md)).
 - **Archive** (optional): sessions copied in the background, on a schedule, to a folder (a NAS share, an external drive or a local folder) or to S3-compatible object storage (see [Archive](#archive) below). It never deletes from the archive.
-- **Amazon Photos hand-off** (optional): originals are copied into the folder Amazon Photos backs up.
 - **Immich** (optional): your edited photos, stars and tags in a self-hosted [Immich](https://immich.app) server that indexes the archive (see [Immich](#immich) below).
 - The optional ones are off until you turn them on in Settings ▸ Plugins (see [Optional integrations](#optional-integrations)).
 - **Metadata in every export:** star rating (`xmp:Rating`), keywords as `dc:subject`, `lr:hierarchicalSubject` and `digiKam:TagsList`, and optionally the colour label and pick flag as `Luxtable/Label/Red`, `Luxtable/Pick`, `Luxtable/Reject` tags.
@@ -108,7 +107,7 @@ Settings ▸ Archive picks where sessions go. Each session gets its own folder t
 - **Folder:** rsync to a mounted volume (a NAS share under `/Volumes`, an external drive) or a local folder. Nothing is written while the volume isn't mounted: changes wait, and the archive catches up when it is back. A local folder must exist (and can't be inside a session or Luxtable's own support folder).
 - **Object storage:** any S3-compatible service: Amazon S3, Backblaze B2, Wasabi, Cloudflare R2, MinIO. Enter the endpoint (empty for Amazon S3, which uses the region), the region, the bucket, a path (key prefix: `luxtable/` puts a session at `luxtable/<session>/…`) and, if the service needs it, path-style addressing. The access key ID and secret access key are kept only in your Keychain, never in preferences or files; the secret is never shown again. Test Connection checks the bucket and leaves one small test object under the path in `.lt-archive-test/`.
 
-Either way, the archive never deletes anything. A file that changed is archived again only after its previous version is moved aside (a folder's `.lt-archive-trash/<time>/`, or copied to `<path>.lt-archive-trash/<time>/` in the bucket). Unchanged files are skipped (on object storage by a BLAKE3 hash stored with each object); every upload is checked against its MD5 and SHA-256 by the service and verified afterwards; large files go up in 8 MB parts. The live session database is never copied, only a consistent snapshot of it, and caches and half-written files stay out. Developed copies and XMP sidecars travel with the session. Immich needs a folder it can index, so with object storage its album sync is skipped (Settings ▸ Immich says so); the Amazon Photos hand-off works with either destination.
+Either way, the archive never deletes anything. A file that changed is archived again only after its previous version is moved aside (a folder's `.lt-archive-trash/<time>/`, or copied to `<path>.lt-archive-trash/<time>/` in the bucket). Unchanged files are skipped (on object storage by a BLAKE3 hash stored with each object); every upload is checked against its MD5 and SHA-256 by the service and verified afterwards; large files go up in 8 MB parts. The live session database is never copied, only a consistent snapshot of it, and caches and half-written files stay out. Developed copies and XMP sidecars travel with the session. Immich needs a folder it can index, so with object storage its album sync is skipped (Settings ▸ Immich says so).
 
 ### Immich
 
@@ -124,12 +123,11 @@ Rate and tag in Luxtable: Immich shows what the sidecars and developed copies sa
 
 ### Optional integrations
 
-Four integrations are built in but off until you turn them on, so Luxtable stays out of services you don't use. Turn each on or off in **Settings ▸ Plugins ▸ Integrations**; its own Settings tab appears while it is on.
+Three integrations are built in but off until you turn them on, so Luxtable stays out of services you don't use. Turn each on or off in **Settings ▸ Plugins ▸ Integrations**; its own Settings tab appears while it is on.
 
 | Integration | What it does | Where to set it up |
 |---|---|---|
 | **Archive** | Copies sessions to a drive or NAS in the background with rsync; never deletes from the archive. Onboarding offers it. | Settings ▸ Archive |
-| **Amazon Photos** | Copies originals into the folder the Amazon Photos app backs up. | Settings ▸ Amazon Photos |
 | **Immich** | Developed copies, XMP sidecars and rule albums for an Immich server that indexes the archive (needs the archive). | Settings ▸ Immich |
 | **Google Photos** | Uploads a recipe's exports into a Google Photos album. | Settings ▸ Google Photos, then the Export sheet |
 
@@ -202,7 +200,6 @@ This is a feature-level comparison based on the other products' publicly documen
 | Watermarks on export | ✅ | ✅ | ✅ |
 | Soft proofing | ✅ | ✅ | ✅ |
 | Scheduled rsync archive to a NAS | ✅ | ❌ | ❌ |
-| Backup hand-off to Amazon Photos | ✅ | ❌ | ❌ |
 | Export straight to Google Photos | ✅ | ❌ | ❌ |
 | Print, book or web modules | ❌ | ◐ print | ✅ |
 | Tethered capture | ❌ | ✅ | ◐ |
@@ -240,7 +237,7 @@ flowchart TD
     end
     subgraph Flow["Import and output"]
         direction TB
-        Import["lt-import<br/>card copy, BLAKE3 verify"] ~~~ Export["lt-export<br/>recipes, encoders"] ~~~ Archive["lt-archive<br/>rsync or S3, Amazon Photos"]
+        Import["lt-import<br/>card copy, BLAKE3 verify"] ~~~ Export["lt-export<br/>recipes, encoders"] ~~~ Archive["lt-archive<br/>rsync or S3"]
     end
     subgraph Connect["Interop and services"]
         direction TB
@@ -262,7 +259,7 @@ flowchart LR
     Session --> Cull["Cull<br/>rate, label, pick,<br/>AI Cull, Survey"]
     Cull --> Develop["Develop<br/>GPU pipeline,<br/>layers, AI tools"]
     Develop --> Export["Export recipes<br/>files, Google Photos"]
-    Session --> Archive["Archive<br/>rsync to NAS,<br/>Amazon Photos"]
+    Session --> Archive["Archive<br/>rsync to NAS<br/>or S3"]
 ```
 
 The card is only ever read. Duplicates of anything already imported are skipped, and an interrupted import resumes from its journal.
@@ -399,8 +396,6 @@ Luxtable has no accounts, analytics or telemetry. Your photos stay on your Mac a
 | Mac ↔ iPad link | Off by default; Settings ▸ Devices | Your session, to devices you paired, over mutually authenticated TLS on your network |
 | Archive | When you set an archive target | To a folder: your sessions, copied by rsync to the drive or NAS you chose. To object storage: your sessions' files (originals, sidecars, developed copies, a snapshot of the session database), uploaded to the bucket you chose at the S3-compatible service you chose, signed with your access key (kept in your Keychain), with each file's BLAKE3 hash and modification time as object metadata, plus one small connection-test object when you press Test Connection |
 | Immich | Only after you set up Settings ▸ Immich, at each album sync (after archive runs, or Sync Albums Now) | To your own Immich server, with your API key: the paths of the archived photos the album rules match (to find them there), album names and membership changes, and library scan requests. No photos are uploaded: Immich reads them from the archive |
-
-Amazon Photos backup is a hand-off: Luxtable copies originals into a local folder and Amazon's own app uploads it.
 
 ## Documentation
 

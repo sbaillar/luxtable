@@ -1,6 +1,6 @@
-# Archive, Immich and Amazon Photos
+# Archive and Immich
 
-Archive, Immich and Amazon Photos are [optional integrations](12-plugins.md#optional-integrations). Each is off until you turn it on in Settings ▸ Plugins ▸ Integrations, and its Settings pane appears while it is on.
+Archive and Immich are [optional integrations](12-plugins.md#optional-integrations). Each is off until you turn it on in Settings ▸ Plugins ▸ Integrations, and its Settings pane appears while it is on.
 
 ## Archive
 
@@ -50,7 +50,3 @@ The archive never deletes anything. A file that changed is archived again only a
 Rate and tag in Luxtable: Immich shows what the sidecars and developed copies say. If you only want the developed JPEGs in Immich, add the exclusion pattern `**/*.ARW` (and your other RAW extensions) to the external library. Album changes and scan requests are the only things Luxtable asks of Immich; scans need an admin's API key (otherwise Immich finds new files on its own schedule).
 
 Immich needs a folder it can index, so it needs the archive to go to a folder. With object storage, album sync is skipped, and Settings ▸ Immich says so.
-
-## Amazon Photos hand-off
-
-Amazon Photos has no public API, so Luxtable mirrors your originals into a folder that the official Amazon Photos app backs up. Turn it on in Settings ▸ Plugins, then choose that folder in Settings ▸ Amazon Photos, and choose whether rejected photos are sent too. It works with either archive destination.
