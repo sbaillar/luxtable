@@ -1669,11 +1669,15 @@
 "Move to" = "移到";
 "Move to Selects takes picked photos and" = "“移到 Selects”会移动留用的照片以及";
 "Move to Selects?" = "要移到 Selects 吗？";
+"Move to Session Trash" = "移到会话废纸篓";
 "Move to Trash" = "移到废纸篓";
+"Move to the session Trash (⌘Z to undo)" = "移到会话废纸篓（⌘Z 可撤销）";
 "Moved %lld photos to Selects (⌘Z to undo)" = "已将 %lld 张照片移到精选（按 ⌘Z 撤销）";
+"Moved %lld photos to the session Trash (⌘Z to undo)" = "已将 %lld 张照片移到会话废纸篓（⌘Z 可撤销）";
 "Moved %lld rejected files to the Trash" = "已将 %lld 个已排除的文件移到废纸篓";
 "Moved %lld rejected photos to the session Trash" = "已将 %lld 张已排除的照片移到会话废纸篓";
 "Moved 1 photo to Selects (⌘Z to undo)" = "已将 1 张照片移到精选（按 ⌘Z 撤销）";
+"Moved 1 photo to the session Trash (⌘Z to undo)" = "已将 1 张照片移到会话废纸篓（⌘Z 可撤销）";
 "Moved 1 rejected file to the Trash" = "已将 1 个已排除的文件移到废纸篓";
 "Moved 1 rejected photo to the session Trash" = "已将 1 张已排除的照片移到会话废纸篓";
 "My Presets" = "我的预设";

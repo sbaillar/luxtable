@@ -1669,11 +1669,15 @@
 "Move to" = "Bewegen nach";
 "Move to Selects takes picked photos and" = "„In Selects bewegen“ übernimmt ausgewählte Fotos und";
 "Move to Selects?" = "In Selects bewegen?";
+"Move to Session Trash" = "In den Session-Papierkorb legen";
 "Move to Trash" = "In den Papierkorb legen";
+"Move to the session Trash (⌘Z to undo)" = "In den Session-Papierkorb legen (⌘Z zum Widerrufen)";
 "Moved %lld photos to Selects (⌘Z to undo)" = "%lld Fotos in Selects bewegt (⌘Z zum Widerrufen)";
+"Moved %lld photos to the session Trash (⌘Z to undo)" = "%lld Fotos in den Session-Papierkorb gelegt (⌘Z zum Widerrufen)";
 "Moved %lld rejected files to the Trash" = "%lld abgelehnte Dateien in den Papierkorb gelegt";
 "Moved %lld rejected photos to the session Trash" = "%lld abgelehnte Fotos in den Session-Papierkorb gelegt";
 "Moved 1 photo to Selects (⌘Z to undo)" = "1 Foto in Selects bewegt (⌘Z zum Widerrufen)";
+"Moved 1 photo to the session Trash (⌘Z to undo)" = "1 Foto in den Session-Papierkorb gelegt (⌘Z zum Widerrufen)";
 "Moved 1 rejected file to the Trash" = "1 abgelehnte Datei in den Papierkorb gelegt";
 "Moved 1 rejected photo to the session Trash" = "1 abgelehntes Foto in den Session-Papierkorb gelegt";
 "My Presets" = "Meine Vorgaben";

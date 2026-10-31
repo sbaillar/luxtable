@@ -1669,11 +1669,15 @@
 "Move to" = "Mover a";
 "Move to Selects takes picked photos and" = "Mover a Selects incluye las fotos elegidas y las";
 "Move to Selects?" = "¿Mover a Selects?";
+"Move to Session Trash" = "Mover a la papelera de la sesión";
 "Move to Trash" = "Mover a la papelera";
+"Move to the session Trash (⌘Z to undo)" = "Mover a la papelera de la sesión (⌘Z para deshacer)";
 "Moved %lld photos to Selects (⌘Z to undo)" = "%lld fotos movidas a Selects (⌘Z para deshacer)";
+"Moved %lld photos to the session Trash (⌘Z to undo)" = "%lld fotos movidas a la papelera de la sesión (⌘Z para deshacer)";
 "Moved %lld rejected files to the Trash" = "%lld archivos rechazados movidos a la Papelera";
 "Moved %lld rejected photos to the session Trash" = "%lld fotos rechazadas movidas a la papelera de la sesión";
 "Moved 1 photo to Selects (⌘Z to undo)" = "1 foto movida a Selects (⌘Z para deshacer)";
+"Moved 1 photo to the session Trash (⌘Z to undo)" = "1 foto movida a la papelera de la sesión (⌘Z para deshacer)";
 "Moved 1 rejected file to the Trash" = "1 archivo rechazado movido a la Papelera";
 "Moved 1 rejected photo to the session Trash" = "1 foto rechazada movida a la papelera de la sesión";
 "My Presets" = "Mis ajustes preestablecidos";

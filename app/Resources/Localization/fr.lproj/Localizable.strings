@@ -1669,11 +1669,15 @@
 "Move to" = "Déplacer vers";
 "Move to Selects takes picked photos and" = "Déplacer vers Selects prend les photos retenues et";
 "Move to Selects?" = "Déplacer vers Selects ?";
+"Move to Session Trash" = "Placer dans la corbeille de la session";
 "Move to Trash" = "Placer dans la corbeille";
+"Move to the session Trash (⌘Z to undo)" = "Placer dans la corbeille de la session (⌘Z pour annuler)";
 "Moved %lld photos to Selects (⌘Z to undo)" = "%lld photos déplacées vers Sélections (⌘Z pour annuler)";
+"Moved %lld photos to the session Trash (⌘Z to undo)" = "%lld photos placées dans la corbeille de la session (⌘Z pour annuler)";
 "Moved %lld rejected files to the Trash" = "%lld fichiers rejetés placés dans la corbeille";
 "Moved %lld rejected photos to the session Trash" = "%lld photos rejetées placées dans la corbeille de la session";
 "Moved 1 photo to Selects (⌘Z to undo)" = "1 photo déplacée vers Sélections (⌘Z pour annuler)";
+"Moved 1 photo to the session Trash (⌘Z to undo)" = "1 photo placée dans la corbeille de la session (⌘Z pour annuler)";
 "Moved 1 rejected file to the Trash" = "1 fichier rejeté placé dans la corbeille";
 "Moved 1 rejected photo to the session Trash" = "1 photo rejetée placée dans la corbeille de la session";
 "My Presets" = "Mes préréglages";

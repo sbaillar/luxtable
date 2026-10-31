@@ -5011,11 +5011,20 @@
 /* LuxtableUI/Views/Browser/CullViews.swift */
 "Move to Selects?" = "Move to Selects?";
 
+/* LuxtableUI/Views/Browser/BurstStrip.swift */
+"Move to Session Trash" = "Move to Session Trash";
+
 /* LuxtableUI/Views/Browser/CullViews.swift */
 "Move to Trash" = "Move to Trash";
 
+/* LuxtableUI/Views/Browser/BurstStrip.swift */
+"Move to the session Trash (⌘Z to undo)" = "Move to the session Trash (⌘Z to undo)";
+
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Moved %lld photos to Selects (⌘Z to undo)" = "Moved %lld photos to Selects (⌘Z to undo)";
+
+/* LuxtableCore/Browser/CullFinishing.swift */
+"Moved %lld photos to the session Trash (⌘Z to undo)" = "Moved %lld photos to the session Trash (⌘Z to undo)";
 
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Moved %lld rejected files to the Trash" = "Moved %lld rejected files to the Trash";
@@ -5025,6 +5034,9 @@
 
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Moved 1 photo to Selects (⌘Z to undo)" = "Moved 1 photo to Selects (⌘Z to undo)";
+
+/* LuxtableCore/Browser/CullFinishing.swift */
+"Moved 1 photo to the session Trash (⌘Z to undo)" = "Moved 1 photo to the session Trash (⌘Z to undo)";
 
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Moved 1 rejected file to the Trash" = "Moved 1 rejected file to the Trash";
