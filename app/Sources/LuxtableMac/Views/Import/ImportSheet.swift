@@ -8,6 +8,8 @@ struct ImportSheet: View {
     @Bindable var model: AppModel
     @State private var importer: ImportModel
     @State private var thumbnails: ImportThumbnails
+    /// iPhones and iPads on USB: other sources for this sheet.
+    private let devices = ConnectedDevices.shared
 
     init(model: AppModel, volume: URL?) {
         self.model = model
@@ -17,7 +19,10 @@ struct ImportSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ImportHeader(importer: importer, chooseFolder: chooseFolder)
+            ImportHeader(importer: importer, chooseFolder: chooseFolder,
+                         otherSources: model.canImportExternal ? devices.devices : nil,
+                         openSource: { model.showExternalImport($0) },
+                         openPhotos: { model.showPhotosLibraryImport() })
             Divider()
             if !importer.copyEnabled {
                 LiveImportNotice(importer: importer, close: { model.sheet = nil })
@@ -30,14 +35,22 @@ struct ImportSheet: View {
         .frame(width: 920, height: 640)
         .background(DS.panelBackground)
         .task { await importer.findCardIfNeeded(source: WorkspaceVolumeEvents()) }
+        .onAppear { if model.canImportExternal { devices.start() } }
     }
 
     @ViewBuilder private var content: some View {
         switch importer.phase {
         case .idle:
-            ImportEmptyState(title: String(localized: "No card detected"),
-                             message: String(localized: "Insert a memory card and it will appear here, or choose any folder that contains photos."),
-                             symbol: "sdcard", action: (String(localized: "Choose Folder…"), chooseFolder))
+            if model.canImportExternal, let device = devices.devices.first {
+                ImportEmptyState(title: String(localized: "\(device.name) is connected"),
+                                 message: String(localized: "Import its photos, or insert a memory card or choose a folder instead."),
+                                 symbol: "iphone",
+                                 action: (String(localized: "Import from \(device.name)…"), { model.showExternalImport(device.source) }))
+            } else {
+                ImportEmptyState(title: String(localized: "No card detected"),
+                                 message: String(localized: "Insert a memory card, plug in an iPhone or iPad, or choose any folder that contains photos."),
+                                 symbol: "sdcard", action: (String(localized: "Choose Folder…"), chooseFolder))
+            }
         case .scanning:
             ProgressView("Reading card…").frame(maxWidth: .infinity, maxHeight: .infinity)
         case .failed(let message) where importer.candidates.isEmpty:
@@ -75,6 +88,10 @@ struct ImportSheet: View {
 private struct ImportHeader: View {
     let importer: ImportModel
     let chooseFolder: () -> Void
+    /// Devices to offer (nil: no Photos/iPhone import in this mode).
+    let otherSources: [ConnectedDevice]?
+    let openSource: (any ExternalPhotoSource) -> Void
+    let openPhotos: () -> Void
 
     var body: some View {
         HStack(spacing: DS.Space.m) {
@@ -88,6 +105,18 @@ private struct ImportHeader: View {
                 Text(subtitle).font(DS.Font.label).foregroundStyle(DS.textSecondary)
             }
             Spacer()
+            if let otherSources {
+                Menu("Other Sources") {
+                    ForEach(otherSources) { d in
+                        Button("\(d.name)…") { openSource(d.source) }
+                    }
+                    if !otherSources.isEmpty { Divider() }
+                    Button("Photos Library…", action: openPhotos)
+                }
+                .fixedSize()
+                .disabled(importer.isBusy)
+                .help("Import from an iPhone or iPad on USB, or from your Photos library")
+            }
             Button("Choose Folder…", action: chooseFolder)
                 .disabled(importer.isBusy)
                 .help("Import from any folder instead of a card")
@@ -442,7 +471,9 @@ private struct ImportDoneView: View {
                             Text(ImportWording.ejectAnywayMessage(summary))
                         }
                 }
-                if let line = ImportWording.cardLine(summary) {
+                if ExternalStaging.isStaged(importer.volume) {
+                    Label(ImportWording.stagedLine, systemImage: "checkmark.shield").foregroundStyle(DS.textSecondary)
+                } else if let line = ImportWording.cardLine(summary) {
                     Label(line, systemImage: summary.ejected ? "eject.fill"
                         : (summary.safeToRemove ? "checkmark.shield" : "exclamationmark.triangle"))
                         .foregroundStyle(summary.ejectError != nil || !summary.safeToRemove ? DS.reject : DS.textSecondary)

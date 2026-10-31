@@ -169,6 +169,7 @@ struct MainWindow: View {
             case .captureOneSettings(let m): C1SettingsSheet(app: model, model: m)
             case .lightroomImport(let m): LightroomImportSheet(app: model, model: m)
             case .appleLibraryImport(let m): AppleLibraryImportSheet(app: model, model: m)
+            case .externalImport(let m): ExternalImportSheet(app: model, model: m)
             case .merge(let m): MergeSheet(model: m)
             }
         }

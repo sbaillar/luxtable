@@ -14,6 +14,11 @@
        the Hardened Runtime silently delivers silence. -->
   <key>com.apple.security.device.audio-input</key><true/>
 
+  <!-- File ▸ Import from Photos Library… reads the Photos library through PhotoKit
+       (NSPhotoLibraryUsageDescription). Under the Hardened Runtime, access is refused without
+       this. iPhone/iPad import goes through ImageCaptureCore's agent and needs no entitlement. -->
+  <key>com.apple.security.personal-information.photos-library</key><true/>
+
   <!-- Deliberately absent: cs.allow-jit and cs.allow-unsigned-executable-memory (Core ML and
        Metal compile shaders through system services, not in-process JIT),
        cs.disable-library-validation (nothing is dlopen'd; all code is in the signed bundle),

@@ -298,6 +298,8 @@ struct AppCommands: Commands {
             openRecentMenu
             item(.showLibrary).help(CommandCatalog.help(.showLibrary, model: model) ?? "") // [library]
             item(.importCard)
+            Button("Import from Photos Library\u{2026}") { model.showPhotosLibraryImport() }
+                .disabled(!model.canImportExternal)
             item(.closeSession).help(CommandCatalog.help(.closeSession, model: model) ?? "")
             Button("Import Capture One Edits\u{2026}") { model.showCaptureOneImport() }
                 .disabled(!model.canImportCaptureOne)
