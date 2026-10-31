@@ -49,7 +49,7 @@ public actor SpeechAnalyzerEngine: VoiceEngine {
             await close(run)
             if current === run { current = nil }
             throw error as? VoiceEngineError
-                ?? VoiceEngineError.unavailable("The microphone couldn't start: \(error.localizedDescription)")
+                ?? VoiceEngineError.unavailable(String(localized: "The microphone couldn't start: \(error.localizedDescription)"))
         }
     }
 
@@ -62,7 +62,7 @@ public actor SpeechAnalyzerEngine: VoiceEngine {
         guard SpeechTranscriber.isAvailable,
               let locale = await SpeechTranscriber.supportedLocale(equivalentTo: Self.preferredLocale())
         else {
-            throw VoiceEngineError.unavailable("On-device English speech recognition isn't available on this Mac, so voice commands are off. (Luxtable never sends audio to a server.)")
+            throw VoiceEngineError.unavailable(String(localized: "On-device English speech recognition isn't available on this Mac, so voice commands are off. (Luxtable never sends audio to a server.)"))
         }
         try check(run)
         // Volatile + fast results: the tracker can act on a settled partial before finalization.
@@ -83,10 +83,10 @@ public actor SpeechAnalyzerEngine: VoiceEngine {
         let audio = AVAudioEngine()
         let micFormat = audio.inputNode.outputFormat(forBus: 0)
         guard micFormat.sampleRate > 0, micFormat.channelCount > 0 else {
-            throw VoiceEngineError.unavailable("No microphone is connected.")
+            throw VoiceEngineError.unavailable(String(localized: "No microphone is connected."))
         }
         guard let format = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [transcriber], considering: micFormat)
-        else { throw VoiceEngineError.unavailable("The speech model can't read this microphone's audio.") }
+        else { throw VoiceEngineError.unavailable(String(localized: "The speech model can't read this microphone's audio.")) }
         try await analyzer.prepareToAnalyze(in: format)
         try check(run)
 
@@ -101,7 +101,7 @@ public actor SpeechAnalyzerEngine: VoiceEngine {
                 }
             } catch is CancellationError {
             } catch {
-                eventContinuation.yield(.failed("Speech recognition stopped: \(error.localizedDescription)"))
+                eventContinuation.yield(.failed(String(localized: "Speech recognition stopped: \(error.localizedDescription)")))
             }
             eventContinuation.finish()
         }
@@ -174,7 +174,7 @@ public actor SpeechAnalyzerEngine: VoiceEngine {
         switch await AssetInventory.status(forModules: [transcriber]) {
         case .installed: return
         case .unsupported:
-            throw VoiceEngineError.unavailable("This Mac's speech model doesn't support English, so voice commands are off.")
+            throw VoiceEngineError.unavailable(String(localized: "This Mac's speech model doesn't support English, so voice commands are off."))
         case .supported, .downloading:
             // The system downloads Apple's speech model once; no audio is involved.
             if let request = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {
@@ -189,7 +189,7 @@ public actor SpeechAnalyzerEngine: VoiceEngine {
                                                to format: AVAudioFormat,
                                                into input: AsyncStream<AnalyzerInput>.Continuation) throws {
         guard let converter = AVAudioConverter(from: micFormat, to: format) else {
-            throw VoiceEngineError.unavailable("The microphone's audio format isn't supported.")
+            throw VoiceEngineError.unavailable(String(localized: "The microphone's audio format isn't supported."))
         }
         let box = ConverterBox(converter)
         node.installTap(onBus: 0, bufferSize: 2048, format: micFormat) { buffer, _ in

@@ -46,10 +46,11 @@ struct ExportSheet: View {
                 .frame(width: 36, height: 36)
                 .background(DS.accent.opacity(0.14), in: .rect(cornerRadius: DS.Radius.m))
             VStack(alignment: .leading, spacing: 2) {
-                Text("Export \(model.items.count) \(model.items.count == 1 ? "Photo" : "Photos")")
+                Text(model.items.count == 1 ? "Export 1 Photo" : "Export \(model.items.count) Photos")
                     .font(.system(size: 15, weight: .semibold))
-                Text("\(model.enabledRecipes.count) recipe\(model.enabledRecipes.count == 1 ? "" : "s") · "
-                     + "\(model.outputCount) file\(model.outputCount == 1 ? "" : "s") into \(folderLabel)")
+                Text((model.enabledRecipes.count == 1 ? String(localized: "1 recipe") : String(localized: "\(model.enabledRecipes.count) recipes"))
+                     + " · " + (model.outputCount == 1 ? String(localized: "1 file into \(folderLabel)")
+                                : String(localized: "\(model.outputCount) files into \(folderLabel)")))
                     .font(DS.Font.label).foregroundStyle(DS.textSecondary)
                     .lineLimit(1).truncationMode(.middle)
                 if let note = model.skippedVideosNote {
@@ -114,7 +115,7 @@ struct ExportSheet: View {
             Spacer()
             ProgressView(value: Double(model.uploading?.done ?? done), total: Double(max(model.uploading?.total ?? total, 1)))
                 .frame(width: 360)
-            Text(model.runningText ?? "Exporting \(done) of \(total)…").font(DS.Font.label).foregroundStyle(DS.textSecondary)
+            Text(model.runningText ?? String(localized: "Exporting \(done) of \(total)…")).font(DS.Font.label).foregroundStyle(DS.textSecondary)
                 .monospacedDigit()
             Spacer()
         }
@@ -230,8 +231,7 @@ private struct RecipeEditor: View {
             Toggle("AI Upscale", isOn: $recipe.aiUpscale)
                 .help(model.aiUpscaleHelp)
             Toggle("Constrain to sensor pixels", isOn: $recipe.constrainToSensorPixels)
-                .help("Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back "
-                    + "up to the original size.")
+                .help("Export a straightened or lens-corrected photo at its inscribed size instead of scaling it back up to the original size.")
             if let p = recipe.outputProfile {
                 LabeledContent("ICC profile") {
                     HStack {
@@ -252,7 +252,7 @@ private struct RecipeEditor: View {
             LabeledContent("Sharpening") {
                 HStack {
                     Slider(value: $recipe.sharpen, in: 0...2)
-                    Text(recipe.sharpen == 0 ? "Off" : recipe.sharpen.formatted(.number.precision(.fractionLength(1))))
+                    Text(recipe.sharpen == 0 ? String(localized: "Off") : recipe.sharpen.formatted(.number.precision(.fractionLength(1))))
                         .font(DS.Font.value).frame(width: 28, alignment: .trailing)
                 }
             }
@@ -314,7 +314,7 @@ private struct RecipeEditor: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.canCreateDirectories = true
-        panel.prompt = "Choose"
+        panel.prompt = String(localized: "Choose")
         if panel.runModal() == .OK, let url = panel.url { recipe.destination = url }
     }
 }
@@ -442,8 +442,7 @@ private struct WatermarkEditor: View {
         switch watermark.kind {
         case .text:
             TextField("Text", text: $watermark.text)
-                .help("Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings › General "
-                    + "(else the photo's own metadata).")
+                .help("Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings › General (else the photo's own metadata).")
             Picker("Font", selection: $watermark.fontFamily) {
                 Text("System").tag("")
                 ForEach(Self.families, id: \.self) { Text($0).tag($0) }
@@ -454,7 +453,7 @@ private struct WatermarkEditor: View {
         case .logo:
             LabeledContent("Logo") {
                 HStack {
-                    Text(watermark.logo?.lastPathComponent ?? "None").lineLimit(1).truncationMode(.middle)
+                    Text(watermark.logo?.lastPathComponent ?? String(localized: "None")).lineLimit(1).truncationMode(.middle)
                         .foregroundStyle(DS.textSecondary)
                     Button("Choose…", action: chooseLogo)
                 }
@@ -469,7 +468,7 @@ private struct WatermarkEditor: View {
         percentSlider("Opacity", value: $watermark.opacity, range: 0.05...1)
     }
 
-    private func percentSlider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>) -> some View {
+    private func percentSlider(_ title: LocalizedStringKey, value: Binding<Double>, range: ClosedRange<Double>) -> some View {
         LabeledContent(title) {
             HStack {
                 Slider(value: value, in: range)
@@ -484,7 +483,7 @@ private struct WatermarkEditor: View {
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         panel.allowedContentTypes = [.png]
-        panel.prompt = "Choose"
+        panel.prompt = String(localized: "Choose")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         // The recipe keeps its own copy, so moving the original doesn't break it.
         if let copy = try? WatermarkLogos.importLogo(url) { watermark.logo = copy } else { NSSound.beep() }

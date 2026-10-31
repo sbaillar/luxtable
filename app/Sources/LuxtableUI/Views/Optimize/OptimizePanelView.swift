@@ -127,8 +127,8 @@ package struct OptimizePanelView: View {
 
     static func status(_ item: OptimizePanelModel.Item) -> String {
         switch item.state {
-        case .analyzing: "Analyzing…"
-        case .failed(let why): "Couldn't analyze: \(why)"
+        case .analyzing: String(localized: "Analyzing…")
+        case .failed(let why): String(localized: "Couldn't analyze: \(why)")
         case .ready(let r): r.compactSummary
         }
     }

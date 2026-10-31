@@ -10,23 +10,23 @@ public enum AdjustGroup: String, CaseIterable, Sendable, Codable, Identifiable {
 
     public var title: String {
         switch self {
-        case .profile: "Camera Profile"
-        case .whiteBalance: "White Balance"
-        case .exposure: "Exposure"
-        case .presence: "Presence"
-        case .hdr: "High Dynamic Range"
-        case .levels: "Levels"
-        case .curve: "Curve"
-        case .colorBalance: "Color Balance"
-        case .colorEditor: "Color Editor"
-        case .detail: "Clarity & Sharpening"
-        case .noise: "Noise Reduction"
-        case .vignette: "Vignetting"
-        case .effects: "Effects"
-        case .lens: "Lens Correction"
-        case .crop: "Crop & Straighten"
-        case .layers: "Layers"
-        case .spots: "Heal & Clone"
+        case .profile: String(localized: "Camera Profile")
+        case .whiteBalance: String(localized: "White Balance")
+        case .exposure: String(localized: "Exposure")
+        case .presence: String(localized: "Presence")
+        case .hdr: String(localized: "High Dynamic Range")
+        case .levels: String(localized: "Levels")
+        case .curve: String(localized: "Curve")
+        case .colorBalance: String(localized: "Color Balance")
+        case .colorEditor: String(localized: "Color Editor")
+        case .detail: String(localized: "Clarity & Sharpening")
+        case .noise: String(localized: "Noise Reduction")
+        case .vignette: String(localized: "Vignetting")
+        case .effects: String(localized: "Effects")
+        case .lens: String(localized: "Lens Correction")
+        case .crop: String(localized: "Crop & Straighten")
+        case .layers: String(localized: "Layers")
+        case .spots: String(localized: "Heal & Clone")
         }
     }
 

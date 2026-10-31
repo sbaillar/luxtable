@@ -179,7 +179,7 @@ public actor RustImportService: ImportService, ImportVerifying, ImportResuming, 
             create = true
         case .existing(let s):
             guard Self.isImportSession(s.url) else {
-                throw MockError.invalid("“\(s.name)” is a folder opened in place. Import into a new session instead.")
+                throw MockError.invalid(String(localized: "“\(s.name)” is a folder opened in place. Import into a new session instead."))
             }
             dir = s.url
             name = s.name
@@ -200,7 +200,7 @@ public actor RustImportService: ImportService, ImportVerifying, ImportResuming, 
     /// The scan the plan was made from. C1: the card in the reader must be the
     /// scanned one; a scan of another card is never used for this plan.
     private func cardScan(for plan: ImportPlan) async throws -> CardScan {
-        guard let volume = plan.volume else { throw MockError.invalid("No card to import from") }
+        guard let volume = plan.volume else { throw MockError.invalid(String(localized: "No card to import from")) }
         if let s = scans[Self.key(volume)], plan.volumeID == nil || (try? s.summary().volumeId) == plan.volumeID {
             return s
         }
@@ -261,7 +261,7 @@ public actor RustImportService: ImportService, ImportVerifying, ImportResuming, 
             return ImportRunError.cardChanged
         case .Io(let m) where m.hasPrefix("not enough free space"):
             return ImportRunError.notEnoughSpace(
-                "Not enough free space for this import. Nothing was copied or created; choose fewer files or another sessions folder.")
+                String(localized: "Not enough free space for this import. Nothing was copied or created; choose fewer files or another sessions folder."))
         default:
             return RustSessionStore.mapped(e)
         }
@@ -282,7 +282,7 @@ public actor RustImportService: ImportService, ImportVerifying, ImportResuming, 
             skippedUnknown: r.skippedUnknown.map(issue),
             failed: (r.failed + r.backupFailed).map(issue), registerErrors: r.registerErrors.map(issue),
             skippedDuplicates: r.skippedDuplicates.count, cancelled: r.cancelled,
-            sourceLost: r.sourceLost.map { _ in "The card was removed" },
+            sourceLost: r.sourceLost.map { _ in String(localized: "The card was removed") },
             sessionURL: URL(fileURLWithPath: r.sessionDir, isDirectory: true), sessionName: r.sessionName,
             cardOnly: r.cardOnly.map(issue), safeToRemove: r.safeToRemove,
             damagedLibraryCopies: r.damagedLibraryCopies.map(issue), volumeID: r.volumeId)

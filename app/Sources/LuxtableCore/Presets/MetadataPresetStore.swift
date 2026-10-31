@@ -43,7 +43,7 @@ public final class MetadataPresetStore {
     public func save(name: String, fields: IPTCMetadata) -> MetadataPreset? {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, !fields.isEmpty else {
-            lastError = trimmed.isEmpty ? "Give the preset a name." : "Fill in at least one field first."
+            lastError = trimmed.isEmpty ? String(localized: "Give the preset a name.") : String(localized: "Fill in at least one field first.")
             return nil
         }
         var name = trimmed
@@ -81,12 +81,12 @@ public final class MetadataPresetStore {
             } catch {
                 saveBlocked = PresetStore.backUp(fileURL, data) == nil
                 lastError = saveBlocked
-                    ? "Couldn’t read metadata presets, and couldn’t back up the file."
-                    : "Couldn’t read metadata presets; the file was kept as a backup."
+                    ? String(localized: "Couldn’t read metadata presets, and couldn’t back up the file.")
+                    : String(localized: "Couldn’t read metadata presets; the file was kept as a backup.")
             }
         } catch {
             saveBlocked = true
-            lastError = "Couldn’t read metadata presets: \(error.localizedDescription)"
+            lastError = String(localized: "Couldn’t read metadata presets: \(error.localizedDescription)")
         }
     }
 
@@ -98,7 +98,7 @@ public final class MetadataPresetStore {
             enc.outputFormatting = [.prettyPrinted, .sortedKeys]
             try enc.encode(presets).write(to: fileURL, options: .atomic)
         } catch {
-            lastError = "Couldn’t save metadata presets: \(error.localizedDescription)"
+            lastError = String(localized: "Couldn’t save metadata presets: \(error.localizedDescription)")
         }
     }
 }

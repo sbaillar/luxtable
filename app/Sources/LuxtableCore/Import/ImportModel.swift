@@ -208,7 +208,7 @@ public final class ImportModel {
         }
     }
 
-    public var volumeName: String { volume?.lastPathComponent ?? "No card" }
+    public var volumeName: String { volume?.lastPathComponent ?? String(localized: "No card") }
 
     // MARK: - Scan
 
@@ -366,7 +366,7 @@ public final class ImportModel {
             let camera = meta?.camera ?? ""
             if let r = importer as? any ImportTemplateRendering {
                 return (try? r.renderRename(renameTemplate, original: c.filename, date: date, seq: i + 1,
-                                           camera: camera, text: sessionText)) ?? "Invalid template"
+                                           camera: camera, text: sessionText)) ?? String(localized: "Invalid template")
             }
             return ImportTemplates.rename(renameTemplate, original: c.filename, date: date, seq: i + 1,
                                           camera: camera, text: sessionText, timeZone: timeZone)
@@ -380,7 +380,7 @@ public final class ImportModel {
         guard let r = importer as? any ImportTemplateRendering else { return t }
         let meta = previewMeta[c.url]
         return (try? r.renderSubfolder(t, original: c.filename, date: meta?.date ?? c.captureDate,
-                                       camera: meta?.camera ?? "", text: sessionText)) ?? "Invalid template"
+                                       camera: meta?.camera ?? "", text: sessionText)) ?? String(localized: "Invalid template")
     }
 
     /// Reload the rename preview's metadata and the free space (off the main actor).
@@ -505,7 +505,7 @@ public final class ImportModel {
             lastReport = report
             guard let report else {
                 phase = Task.isCancelled ? .failed(ImportWording.stopped(done: last?.filesDone ?? 0, total: plan.candidates.count))
-                    : .failed("The import didn’t report back. Nothing was deleted from the card; import again to continue.")
+                    : .failed(String(localized: "The import didn’t report back. Nothing was deleted from the card; import again to continue."))
                 return
             }
             // Finish outside the (possibly cancelled) task: after Stop the session
@@ -689,7 +689,7 @@ public enum ImportFailure: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .incomplete(let d, let t): "Import stopped after \(d) of \(t) files. Nothing was removed from the card."
+        case .incomplete(let d, let t): String(localized: "Import stopped after \(d) of \(t) files. Nothing was removed from the card.")
         }
     }
 }
@@ -852,7 +852,7 @@ public enum ImportAutoApply {
         if let session, model.currentSession?.id != session { return 0 }
         let ids = newPhotoIDs(in: model, prior: prior).filter { model.photo($0)?.isVideo != true }
         guard !ids.isEmpty else { return 0 }
-        model.updateEdits(ids, label: "Auto-apply “\(preset.name)”") { _, e in e = preset.apply(to: e) }
+        model.updateEdits(ids, label: String(localized: "Auto-apply “\(preset.name)”")) { _, e in e = preset.apply(to: e) }
         return ids.count
     }
 }

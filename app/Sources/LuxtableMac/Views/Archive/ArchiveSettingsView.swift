@@ -28,12 +28,10 @@ struct ArchiveSettingsView: View {
                 Picker("Check every", selection: $settings.archiveIntervalMinutes) {
                     ForEach(ArchiveSettingsModel.intervalChoices, id: \.self) { Text("\($0) min").tag($0) }
                 }
-                Text("The archive runs when there are changes, after an import, and when you close a session. "
-                    + "It never deletes anything from the archive.")
+                Text("The archive runs when there are changes, after an import, and when you close a session. It never deletes anything from the archive.")
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
                 Toggle("Archive rejected photos", isOn: $settings.archiveRejected) // N2: the archive is the backup
-                    .help("Off: photos you rejected (and the session's Trash) stay out of the archive, "
-                          + "and deleting them leaves no copy")
+                    .help("Off: photos you rejected (and the session's Trash) stay out of the archive, and deleting them leaves no copy")
             }
         }
         .formStyle(.grouped)
@@ -59,7 +57,7 @@ struct ArchiveSettingsView: View {
                         if !editing { Task { await model.commitTarget(draftTarget) } }
                     }
                 Button("Choose…") {
-                    if let url = pickFolder("Choose the archive folder (on your NAS, an external disk or this Mac)") {
+                    if let url = pickFolder(String(localized: "Choose the archive folder (on your NAS, an external disk or this Mac)")) {
                         Task { await model.setTarget(url.path) }
                     }
                 }
@@ -75,8 +73,7 @@ struct ArchiveSettingsView: View {
             }
             if model.canCreateTarget {
                 Button("Create It") { Task { await model.createTarget() } }
-                    .help("Create this folder now (the archive also creates a missing folder on a mounted volume "
-                          + "on its first run, but only on the volume you confirmed)")
+                    .help("Create this folder now (the archive also creates a missing folder on a mounted volume on its first run, but only on the volume you confirmed)")
             }
             if let e = model.createError {
                 Text(e).font(DS.Font.caption).foregroundStyle(DS.warningText)
@@ -116,8 +113,7 @@ struct ArchiveSettingsView: View {
             if let m = model.objectMessage {
                 Text(m).font(DS.Font.caption).foregroundStyle(model.objectFailed ? DS.warningText : DS.textSecondary)
             }
-            Text("Test Connection checks the bucket and leaves one small test object under the path, in "
-                + ".lt-archive-test/.")
+            Text("Test Connection checks the bucket and leaves one small test object under the path, in .lt-archive-test/.")
                 .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
             Text(ArchiveSettingsModel.objectNote).font(DS.Font.caption).foregroundStyle(DS.textSecondary)
         }

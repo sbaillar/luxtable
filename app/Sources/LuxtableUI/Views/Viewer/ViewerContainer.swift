@@ -230,19 +230,24 @@ struct ViewerHUD: View {
         .allowsHitTesting(false)
     }
 
+    private func hudLabel(_ text: LocalizedStringKey, symbol: String? = nil) -> some View {
+        HUDLabel(text: Text(text), symbol: symbol)
+    }
+
+    @_disfavoredOverload
     private func hudLabel(_ text: String, symbol: String? = nil) -> some View {
-        HUDLabel(text: text, symbol: symbol)
+        HUDLabel(text: Text(verbatim: text), symbol: symbol)
     }
 }
 
 struct HUDLabel: View {
-    let text: String
+    let text: Text
     var symbol: String?
 
     var body: some View {
         HStack(spacing: DS.Space.xs) {
             if let symbol { Image(systemName: symbol) }
-            Text(text)
+            text
         }
         .font(.system(size: 11, weight: .medium))
         .foregroundStyle(.white)
@@ -263,7 +268,7 @@ struct ReadoutChip: View {
             if let rgb = readout.rgbText { Text(rgb) }
             if let lab = readout.labText { Text(lab).foregroundStyle(DS.textSecondary) }
             if let p = readout.pinned {
-                Text(String(format: "Picked %3.0f %3.0f %3.0f", p.x * 255, p.y * 255, p.z * 255))
+                Text("Picked \(String(format: "%3.0f %3.0f %3.0f", p.x * 255, p.y * 255, p.z * 255))")
                     .foregroundStyle(DS.accent)
             }
         }

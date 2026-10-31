@@ -91,12 +91,23 @@ extension View {
 
 struct PanelEmptyState: View {
     let symbol: String
-    let text: String
+    let text: Text
+
+    init(symbol: String, text: LocalizedStringKey) {
+        self.symbol = symbol
+        self.text = Text(text)
+    }
+
+    @_disfavoredOverload
+    init(symbol: String, text: String) {
+        self.symbol = symbol
+        self.text = Text(verbatim: text)
+    }
 
     var body: some View {
         HStack(spacing: DS.Space.s) {
             Image(systemName: symbol).foregroundStyle(DS.textTertiary)
-            Text(text).font(DS.Font.label).foregroundStyle(DS.textSecondary)
+            text.font(DS.Font.label).foregroundStyle(DS.textSecondary)
             Spacer(minLength: 0)
         }
         .padding(.vertical, DS.Space.xs)
@@ -105,9 +116,15 @@ struct PanelEmptyState: View {
 
 /// Small explanatory footnote under a panel.
 struct PanelNote: View {
-    let text: String
+    let text: Text
+
+    init(text: LocalizedStringKey) { self.text = Text(text) }
+
+    @_disfavoredOverload
+    init(text: String) { self.text = Text(verbatim: text) }
+
     var body: some View {
-        Text(text)
+        text
             .font(DS.Font.caption)
             .foregroundStyle(DS.textSecondary)
             .fixedSize(horizontal: false, vertical: true)
@@ -117,11 +134,23 @@ struct PanelNote: View {
 
 /// Label/value row for read-only info.
 struct InfoRow: View {
-    let label: String
+    let label: Text
     let value: String
+
+    init(label: LocalizedStringKey, value: String) {
+        self.label = Text(label)
+        self.value = value
+    }
+
+    @_disfavoredOverload
+    init(label: String, value: String) {
+        self.label = Text(verbatim: label)
+        self.value = value
+    }
+
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text(label).font(DS.Font.label).foregroundStyle(DS.textSecondary).frame(width: 72, alignment: .leading)
+            label.font(DS.Font.label).foregroundStyle(DS.textSecondary).frame(width: 72, alignment: .leading)
             Text(value).font(DS.Font.value).lineLimit(1).truncationMode(.middle)
             Spacer(minLength: 0)
         }
@@ -130,16 +159,31 @@ struct InfoRow: View {
 
 /// Compact segmented-style chip.
 struct Chip: View {
-    let title: String
+    let title: Text
     var color: Color?
     let selected: Bool
     let action: () -> Void
+
+    init(title: LocalizedStringKey, color: Color? = nil, selected: Bool, action: @escaping () -> Void) {
+        self.title = Text(title)
+        self.color = color
+        self.selected = selected
+        self.action = action
+    }
+
+    @_disfavoredOverload
+    init(title: String, color: Color? = nil, selected: Bool, action: @escaping () -> Void) {
+        self.title = Text(verbatim: title)
+        self.color = color
+        self.selected = selected
+        self.action = action
+    }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: DS.Space.xs) {
                 if let color { Circle().fill(color).frame(width: 7, height: 7) }
-                Text(title).font(DS.Font.caption).lineLimit(1)
+                title.font(DS.Font.caption).lineLimit(1)
             }
             .padding(.horizontal, DS.Space.s)
             .padding(.vertical, DS.Space.xs)

@@ -36,39 +36,34 @@ public enum ViewerProblem: Equatable, Sendable {
     public var message: String {
         switch self {
         case .sessionMissing(let folder, let volume?):
-            "Drive not connected — reconnect “\(volume)” to see the originals of “\(folder)”: "
-                + "edits are saved but can’t be previewed or exported."
+            String(localized: "Drive not connected — reconnect “\(volume)” to see the originals of “\(folder)”: edits are saved but can’t be previewed or exported.")
         case .sessionMissing(let folder, nil):
-            "The originals of “\(folder)” aren’t there (a removed card, an unmounted drive or a deleted folder): "
-                + "edits are saved but can’t be previewed or exported."
+            String(localized: "The originals of “\(folder)” aren’t there (a removed card, an unmounted drive or a deleted folder): edits are saved but can’t be previewed or exported.")
         case .missingOriginal(let name, _):
-            "Original file missing (\(name)): edits are saved but can’t be previewed or exported."
+            String(localized: "Original file missing (\(name)): edits are saved but can’t be previewed or exported.")
         case .missingOnOtherVolume(let name, let volume):
-            "Original file missing (\(name)). Remove isn’t offered: “\(volume)” isn’t the disk this session was "
-                + "recorded on (a clone or a restore?). Locate Folder… confirms it."
+            String(localized: "Original file missing (\(name)). Remove isn’t offered: “\(volume)” isn’t the disk this session was recorded on (a clone or a restore?). Locate Folder… confirms it.")
         case .driveDisconnected(let volume):
-            "Drive not connected — reconnect “\(volume)”: edits are saved but can’t be previewed or exported."
+            String(localized: "Drive not connected — reconnect “\(volume)”: edits are saved but can’t be previewed or exported.")
         case .renderFailed(let reason):
-            "This photo couldn’t be developed: \(reason)"
+            String(localized: "This photo couldn’t be developed: \(reason)")
         case .cannotDevelop where needsRawlerHelper:
-            "Developing this file needs the RAW helper, a free add-on that isn’t installed. You’re seeing its "
-                + "embedded preview: you can still rate, tag and compare it."
+            String(localized: "Developing this file needs the RAW helper, a free add-on that isn’t installed. You’re seeing its embedded preview: you can still rate, tag and compare it.")
         case .cannotDevelop(let reason):
-            "Luxtable can’t develop this file yet (\(reason)). You’re seeing its embedded preview: "
-                + "you can still rate, tag and compare it."
+            String(localized: "Luxtable can’t develop this file yet (\(reason)). You’re seeing its embedded preview: you can still rate, tag and compare it.")
         }
     }
 
     /// The banner's buttons, in order, with their titles.
     public var actions: [(action: Action, title: String)] {
         switch self {
-        case .sessionMissing: [(.locateFolder, "Locate Folder…"), (.removeFromRecents, "Remove from Recents")]
-        case .missingOriginal(_, true): [(.locateFile, "Locate…"), (.removePhoto, "Remove…")]
-        case .missingOriginal(_, false): [(.locateFile, "Locate…")]
-        case .missingOnOtherVolume: [(.locateFile, "Locate…"), (.locateFolder, "Locate Folder…")]
+        case .sessionMissing: [(.locateFolder, String(localized: "Locate Folder…")), (.removeFromRecents, String(localized: "Remove from Recents"))]
+        case .missingOriginal(_, true): [(.locateFile, String(localized: "Locate…")), (.removePhoto, String(localized: "Remove…"))]
+        case .missingOriginal(_, false): [(.locateFile, String(localized: "Locate…"))]
+        case .missingOnOtherVolume: [(.locateFile, String(localized: "Locate…")), (.locateFolder, String(localized: "Locate Folder…"))]
         case .driveDisconnected: []
-        case .renderFailed: [(.retry, "Retry")]
-        case .cannotDevelop where needsRawlerHelper: [(.getRawlerHelper, "Get RAW Helper")]
+        case .renderFailed: [(.retry, String(localized: "Retry"))]
+        case .cannotDevelop where needsRawlerHelper: [(.getRawlerHelper, String(localized: "Get RAW Helper"))]
         case .cannotDevelop: []
         }
     }

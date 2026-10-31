@@ -106,8 +106,8 @@ package struct ToolCustomizeView: View {
         .padding(DS.Space.m)
     }
 
-    private func columnTitle(_ text: String) -> some View {
-        Text(text.uppercased()).font(DS.Font.panelTitle).tracking(0.6).foregroundStyle(DS.textSecondary)
+    private func columnTitle(_ text: LocalizedStringKey) -> some View {
+        Text(text).textCase(.uppercase).font(DS.Font.panelTitle).tracking(0.6).foregroundStyle(DS.textSecondary)
             .accessibilityAddTraits(.isHeader)
     }
 
@@ -120,7 +120,7 @@ package struct ToolCustomizeView: View {
                 Spacer()
                 Menu {
                     Button("New Tab") {
-                        ToolWorkspaceCommands.newTab(title: "New Tab", model: model, layout: layout)
+                        ToolWorkspaceCommands.newTab(title: String(localized: "New Tab"), model: model, layout: layout)
                         focus = .tabName
                     }
                     let hidden = layout.workspace.hiddenBuiltIns
@@ -354,7 +354,7 @@ package struct ToolCustomizeView: View {
         if ToolWorkspaceCommands.saveWorkspace(named: workspaceName, model: model, layout: layout) { workspaceName = "" }
     }
 
-    private func iconButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {
+    private func iconButton(_ symbol: String, label: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) { Image(systemName: symbol).frame(width: 16, height: 16) }
             .buttonStyle(.borderless)
             .help(label)

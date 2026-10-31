@@ -116,7 +116,7 @@ private struct TabContextItems: View {
         Divider()
         AddToolMenu(tab: tab, model: model, layout: layout)
         Button("New Tab") {
-            ToolWorkspaceCommands.newTab(title: "New Tab", model: model, layout: layout)
+            ToolWorkspaceCommands.newTab(title: String(localized: "New Tab"), model: model, layout: layout)
             layout.customizeFocus = .tabName
             openWindow(id: ToolCustomizeView.windowID)
         }
@@ -175,7 +175,7 @@ private struct StripButton: View {
             }
         }
         .animation(.easeOut(duration: 0.12), value: hovering)
-        .help(tab == .favorites ? "Favorites: right-click any panel header to add it here" : title)
+        .help(tab == .favorites ? String(localized: "Favorites: right-click any panel header to add it here") : title)
         .accessibilityLabel(ToolStripControl.tab(tab, title: title, selected: selected).label + (aiChanged ? AIHighlightStyle.containerSuffix : ""))
         .accessibilityHint(ToolStripControl.tab(tab, title: title, selected: selected).hint ?? "")
         .accessibilityAddTraits(selected ? .isSelected : [])
@@ -218,8 +218,29 @@ package struct ToolSidebar: View {
     }
 
     package var body: some View {
+        Group {
+            if model.settings.simpleMode {
+                // Simple mode: one panel of easy controls instead of the tabs.
+                VStack(spacing: 0) {
+                    SimpleModeSwitch(model: model)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 36)
+                        .background(DS.chrome)
+                    Divider()
+                    SimplePanel(model: model)
+                }
+            } else {
+                fullTools
+            }
+        }
+        .frame(width: PanelWidth.clamp(width))
+        .background(DS.panelBackground)
+        .overlay(alignment: side == .left ? .trailing : .leading) { resizeHandle }
+    }
+
+    private var fullTools: some View {
         let tab = ToolWorkspaceCommands.selectedTab(model: model, layout: layout)
-        VStack(spacing: 0) {
+        return VStack(spacing: 0) {
             ToolTabStrip(model: model, layout: layout)
                 .zIndex(1)
             Divider()
@@ -249,6 +270,7 @@ package struct ToolSidebar: View {
                     .foregroundStyle(DS.text)
                 Spacer()
                 WhyButton(model: model)
+                SimpleModeSwitch(model: model).controlSize(.small)
                 if model.editAllSelected, model.selection.count > 1 {
                     Text(PanelChrome.photoCount(model.selection.count))
                         .font(DS.Font.caption)
@@ -312,9 +334,6 @@ package struct ToolSidebar: View {
                     .padding(DS.Space.s)
             }
         }
-        .frame(width: PanelWidth.clamp(width))
-        .background(DS.panelBackground)
-        .overlay(alignment: side == .left ? .trailing : .leading) { resizeHandle }
     }
 
     private var resizeHandle: some View {
@@ -478,7 +497,7 @@ struct ToolPanelSection: View {
         ToolStripControl.panelHeader(panel, collapsed: collapsed, favorite: layout.isFavorite(panel))
     }
 
-    private func headerButton(_ symbol: String, help: String, label: String, action: @escaping () -> Void) -> some View {
+    private func headerButton(_ symbol: String, help: LocalizedStringKey, label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbol).font(.system(size: 11))
         }

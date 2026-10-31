@@ -55,7 +55,7 @@ extension C1SettingsScan {
         items += r.aspectRatios.map(Self.cropRatio)
         items += r.styles.map(Self.preset)
         items += r.keywordLibraries.map {
-            C1SettingsItem(category: .keywords, key: "keywords:\($0.file)", title: "\($0.name) (\($0.keywords.count) keywords)",
+            C1SettingsItem(category: .keywords, key: "keywords:\($0.file)", title: String(localized: "\($0.name) (\($0.keywords.count) keywords)"),
                            fingerprint: $0.fingerprint, payload: .keywords($0.keywords))
         }
         if let p = r.prefs {
@@ -90,7 +90,7 @@ extension C1SettingsScan {
                                                     blackPointCompensation: true)
             } else {
                 notes.append(C1Note(key: "outputProfile",
-                                    text: "ICC profile \u{201c}\(name)\u{201d} isn't installed on this Mac: exports are sRGB",
+                                    text: String(localized: "ICC profile \u{201c}\(name)\u{201d} isn't installed on this Mac: exports are sRGB"),
                                     dropped: true))
             }
         }
@@ -133,17 +133,17 @@ extension C1SettingsScan {
             }
         }
         if !r.unknownTools.isEmpty {
-            notes.append(C1Note(key: "tools", text: "No Luxtable tool for: \(r.unknownTools.joined(separator: ", "))",
+            notes.append(C1Note(key: "tools", text: String(localized: "No Luxtable tool for: \(r.unknownTools.joined(separator: ", "))"),
                                 dropped: true))
         }
         if !empty.isEmpty {
-            notes.append(C1Note(key: "tabs", text: "Tabs left out (no Luxtable tools in them): \(empty.joined(separator: ", "))",
+            notes.append(C1Note(key: "tabs", text: String(localized: "Tabs left out (no Luxtable tools in them): \(empty.joined(separator: ", "))"),
                                 dropped: true))
         }
         let w = ToolWorkspace(tabs: tabs, collapsed: Set(r.collapsed.compactMap(ToolPanelID.init(rawValue:))))
         return C1SettingsItem(category: .workspaces, key: "workspace:\(r.file)", title: r.name, fingerprint: r.fingerprint,
                               notes: notes, payload: .workspace(name: r.name, w),
-                              unavailable: tabs.isEmpty ? "no Luxtable tools in it" : nil)
+                              unavailable: tabs.isEmpty ? String(localized: "no Luxtable tools in it") : nil)
     }
 
     static func cropRatio(_ r: C1AspectRatioRecord) -> C1SettingsItem {
@@ -151,14 +151,14 @@ extension C1SettingsScan {
         return C1SettingsItem(category: .cropRatios, key: "ratio:\(r.key)", title: r.name,
                               fingerprint: "\(r.name)|\(r.width)|\(r.height)", notes: r.notes.map(C1Note.init),
                               payload: .cropRatio(ratio),
-                              unavailable: r.builtin.map { "same as Luxtable's \($0) crop" })
+                              unavailable: r.builtin.map { String(localized: "same as Luxtable's \($0) crop") })
     }
 
     static func preset(_ r: C1StyleRecord) -> C1SettingsItem {
         // An unreadable result is never a preset: it would reset the tools it names.
         let edit = try? AdjustmentsCodec.decode(r.adjustmentsJson).0
         let preset = Preset(name: r.name, groups: Set(r.groups.map(AdjustGroup.init(rust:))), edit: edit ?? EditState())
-        let unavailable = edit == nil ? "couldn't be read" : preset.groups.isEmpty ? "nothing in it maps to Luxtable" : nil
+        let unavailable = edit == nil ? String(localized: "couldn't be read") : preset.groups.isEmpty ? String(localized: "nothing in it maps to Luxtable") : nil
         return C1SettingsItem(category: .presets, key: "style:\(r.file)", title: r.name,
                               group: r.category ?? (r.isPreset ? "Presets" : "Styles"), fingerprint: r.fingerprint,
                               notes: r.notes.map(C1Note.init), payload: .preset(preset), unavailable: unavailable)
@@ -167,15 +167,15 @@ extension C1SettingsScan {
     static func preferences(_ p: C1PrefsRecord, profiles: [ProofProfile]) -> [C1SettingsItem] {
         var out: [C1SettingsItem] = []
         if let t = p.importNaming {
-            out.append(C1SettingsItem(category: .preferences, key: "pref:renameTemplate", title: "Import file names: \(t)",
+            out.append(C1SettingsItem(category: .preferences, key: "pref:renameTemplate", title: String(localized: "Import file names: \(t)"),
                                       fingerprint: t, payload: .preference(.renameTemplate(t))))
         }
         if let name = p.proofProfile {
             let found = profile(named: name, in: profiles)
             let stand = found ?? ProofProfile(name: name, path: "", kind: .display, model: .rgb)
-            out.append(C1SettingsItem(category: .preferences, key: "pref:proofProfile", title: "Soft-proof profile: \(name)",
+            out.append(C1SettingsItem(category: .preferences, key: "pref:proofProfile", title: String(localized: "Soft-proof profile: \(name)"),
                                       fingerprint: name, payload: .preference(.proofProfile(stand)),
-                                      unavailable: found == nil ? "not installed on this Mac" : nil))
+                                      unavailable: found == nil ? String(localized: "not installed on this Mac") : nil))
         }
         return out
     }

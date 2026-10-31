@@ -27,9 +27,9 @@ public enum BlurMode: String, CaseIterable, Sendable {
 
     public var title: String {
         switch self {
-        case .depth: "Depth"
-        case .plane: "Tilt-Shift"
-        case .newer: "Newer"
+        case .depth: String(localized: "Depth")
+        case .plane: String(localized: "Tilt-Shift")
+        case .newer: String(localized: "Newer")
         }
     }
 
@@ -48,9 +48,9 @@ public enum BokehShape: String, CaseIterable, Sendable {
 
     public var title: String {
         switch self {
-        case .circle: "Circle"
-        case .blades: "Blades"
-        case .catEye: "Swirl"
+        case .circle: String(localized: "Circle")
+        case .blades: String(localized: "Blades")
+        case .catEye: String(localized: "Swirl")
         }
     }
 }

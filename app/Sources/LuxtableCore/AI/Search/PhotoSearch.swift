@@ -40,6 +40,14 @@ public final class PhotoSearch {
     public enum Scope: String, CaseIterable, Sendable {
         case session = "This Session"
         case allSessions = "All Sessions"
+
+        /// The scope picker's label.
+        public var title: String {
+            switch self {
+            case .session: String(localized: "This Session")
+            case .allSessions: String(localized: "All Sessions")
+            }
+        }
     }
 
     public enum Phase: Equatable, Sendable {
@@ -120,7 +128,7 @@ public final class PhotoSearch {
     /// A line for the status bar while indexing runs.
     public var indexingMessage: String? {
         guard let p = indexing, p.total > 0, p.done < p.total else { return nil }
-        return "Indexing for search… \(p.done.formatted()) of \(p.total.formatted())"
+        return String(localized: "Indexing for search… \(p.done.formatted()) of \(p.total.formatted())")
     }
 
     // MARK: - Model
@@ -374,7 +382,7 @@ public final class PhotoSearch {
             lastRequest = .similar(id)
             // The photo itself first, then what looks like it.
             show([SearchMatch(id: id, score: 1)] + hits, tuning: similarTuning, keep: id)
-            if hits.isEmpty { app.show(Toast("This photo isn't indexed for search yet.", symbol: "magnifyingglass")) }
+            if hits.isEmpty { app.show(Toast(String(localized: "This photo isn't indexed for search yet."), symbol: "magnifyingglass")) }
         } catch is CancellationError {
             if mine == ticket { phase = .idle }
         } catch {
@@ -461,7 +469,7 @@ public final class PhotoSearch {
     public func addSuggestedKeyword(_ keyword: String) {
         guard let s = keywordSuggestions, let app, app.photo(s.photo) != nil else { return }
         let new = Keywords.parse(keyword)
-        app.updatePhotos([s.photo], label: "Add Keywords") { $0.keywords = Keywords.merge($0.keywords, adding: new) }
+        app.updatePhotos([s.photo], label: String(localized: "Add Keywords")) { $0.keywords = Keywords.merge($0.keywords, adding: new) }
     }
 
     public func dismissKeywordSuggestions() {

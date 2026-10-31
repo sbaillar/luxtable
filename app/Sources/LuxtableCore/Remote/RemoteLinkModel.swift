@@ -78,7 +78,7 @@ public final class RemoteLinkModel {
             fingerprint = s.fingerprint
             error = nil
             if !advertiser.advertise(name: macName, port: s.port) {
-                error = "Bonjour isn't advertising this Mac; pair with the QR code."
+                error = String(localized: "Bonjour isn't advertising this Mac; pair with the QR code.")
             }
             poller = Task { [weak self] in
                 while !Task.isCancelled {
@@ -88,7 +88,7 @@ public final class RemoteLinkModel {
                 }
             }
         } catch {
-            self.error = "Couldn't start: \(error.localizedDescription)"
+            self.error = String(localized: "Couldn't start: \(error.localizedDescription)")
         }
     }
 
@@ -137,7 +137,7 @@ public final class RemoteLinkModel {
         do {
             devices = try backend.devices(stateDir: stateDir).sorted { $0.pairedAt < $1.pairedAt }
         } catch {
-            self.error = "The paired-device list can't be read: \(error.localizedDescription)"
+            self.error = String(localized: "The paired-device list can't be read: \(error.localizedDescription)")
         }
     }
 
@@ -180,7 +180,8 @@ public final class RemoteLinkModel {
     /// The toolbar indicator: nil when nothing is connected.
     public var indicator: (symbol: String, label: String)? {
         guard running, status.connections > 0 else { return nil }
-        if status.transferring { return ("arrow.up.arrow.down.circle.fill", "Transferring with iPad") }
-        return ("ipad.landscape", status.connections == 1 ? "iPad connected" : "\(status.connections) devices connected")
+        if status.transferring { return ("arrow.up.arrow.down.circle.fill", String(localized: "Transferring with iPad")) }
+        return ("ipad.landscape", status.connections == 1 ? String(localized: "iPad connected")
+            : String(localized: "\(Int(status.connections)) devices connected"))
     }
 }

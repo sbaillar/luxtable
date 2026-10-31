@@ -140,7 +140,7 @@ public enum MockError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .notFound(let s): "Not found: \(s)"
+        case .notFound(let s): String(localized: "Not found: \(s)")
         case .invalid(let s): s
         }
     }

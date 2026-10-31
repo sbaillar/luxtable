@@ -47,11 +47,11 @@ public enum CameraProfileRef: Equatable, Hashable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .standard: "Luxtable Standard"
-        case .neutral: "Luxtable Neutral"
-        case .vivid: "Luxtable Vivid"
+        case .standard: String(localized: "Luxtable Standard")
+        case .neutral: String(localized: "Luxtable Neutral")
+        case .vivid: String(localized: "Luxtable Vivid")
         case let .dcp(_, name): name
-        case .other: "Unknown Profile"
+        case .other: String(localized: "Unknown Profile")
         }
     }
 
@@ -140,7 +140,7 @@ public enum CameraProfileLibrary {
     public static func options(current: CameraProfileRef) -> [CameraProfileOption] {
         var all = options()
         if !all.contains(where: { $0.profile == current }) {
-            all.append(CameraProfileOption(profile: current, name: current.displayName + " (missing)", camera: nil))
+            all.append(CameraProfileOption(profile: current, name: String(localized: "\(current.displayName) (missing)"), camera: nil))
         }
         return all
     }

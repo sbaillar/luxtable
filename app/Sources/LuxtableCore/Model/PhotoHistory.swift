@@ -59,7 +59,7 @@ public struct PhotoHistory: Equatable, Sendable {
     /// Cleared: one "Current edit" row for `state`; the next edit adds rows above it.
     public static func cleared(_ state: HistoryState) -> PhotoHistory {
         var h = PhotoHistory()
-        h.top = HistoryNode(label: "Current edit", state: state, time: Date(), parent: nil, isBase: true)
+        h.top = HistoryNode(label: String(localized: "Current edit"), state: state, time: Date(), parent: nil, isBase: true)
         h.current = h.top
         return h
     }
@@ -102,7 +102,7 @@ public struct PhotoHistory: Equatable, Sendable {
             return
         }
         let base = current
-            ?? HistoryNode(label: before.edit.isDefault ? "Original" : "Start", state: before, time: time, parent: nil,
+            ?? HistoryNode(label: before.edit.isDefault ? String(localized: "Original") : String(localized: "Start"), state: before, time: time, parent: nil,
                            isBase: true)
         var node = HistoryNode(label: label, state: after, time: time, coalesceKey: coalesceKey, parent: base)
         // Bounded: past twice the limit, copy the newest `limit` rows into a fresh chain so

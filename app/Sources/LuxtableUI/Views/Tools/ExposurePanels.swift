@@ -33,7 +33,7 @@ struct LevelsPanel: View {
     var body: some View {
         LevelsView(levels: model.focusedEdit.levels, histogram: model.viewer.histogram?.normalized(.luma),
                    aiChanged: model.aiNote(AIFieldMap.levels) != nil) { l, key in
-            model.updateEdit(label: "Levels", coalesceKey: key) { $0.levels = l }
+            model.updateEdit(label: String(localized: "Levels"), coalesceKey: key) { $0.levels = l }
         }
         .endsEditGesture(model)
         .modifier(AIHighlightRow(note: model.aiNote(AIFieldMap.levels), undo: model.aiUndo(AIFieldMap.levels)))
@@ -49,7 +49,7 @@ struct CurvePanel: View {
         VStack(spacing: DS.Space.s) {
             Picker("Channel", selection: $channel) {
                 ForEach(CurveChannel.allCases, id: \.self) { c in
-                    Text(c == .rgb ? "RGB" : c == .luma ? "Luma" : String(c.rawValue.prefix(1))).tag(c)
+                    Text(c == .rgb ? "RGB" : c == .luma ? String(localized: "Luma") : String(c.rawValue.prefix(1))).tag(c)
                 }
             }
             .pickerStyle(.segmented)
@@ -58,7 +58,7 @@ struct CurvePanel: View {
             CurveEditorView(points: curve.points(for: channel), color: color(channel),
                             histogram: model.viewer.histogram?.normalized(histogramChannel(channel))) { pts in
                 let ch = channel
-                model.updateEdit(label: "Curve", coalesceKey: "curve-\(ch.rawValue)") { $0.curve.points[ch] = pts.isEmpty ? nil : pts }
+                model.updateEdit(label: String(localized: "Curve"), coalesceKey: "curve-\(ch.rawValue)") { $0.curve.points[ch] = pts.isEmpty ? nil : pts }
             }
             .endsEditGesture(model)
             .aiHighlight(model, AIFieldMap.curve)

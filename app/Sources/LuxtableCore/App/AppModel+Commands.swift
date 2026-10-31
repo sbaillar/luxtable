@@ -15,10 +15,10 @@ extension AppModel {
             let adjusted = try await developAuto(p, base: base, estimate: estimate)
             guard isStill(in: session) else { return } // another session is opening or opened: its ids differ
             // Apply only what the AI changed, on top of edits made while it ran.
-            updateEdits([p.id], label: "Auto Adjust", ai: .auto) { _, e in e = AIEditMerge.apply(result: adjusted, base: base, current: e) }
+            updateEdits([p.id], label: String(localized: "Auto Adjust"), ai: .auto) { _, e in e = AIEditMerge.apply(result: adjusted, base: base, current: e) }
             // Say what changed, like the ⌘K summary ("Auto: +0.4 EV, 5235→5208 K").
             let summary = InstructionSummary.describe(before: base, after: adjusted, asShot: asShot(for: p.id))
-            show(Toast(summary.isEmpty ? "Auto white balance and tone applied" : "Auto: \(summary)", symbol: "wand.and.stars"))
+            show(Toast(summary.isEmpty ? String(localized: "Auto white balance and tone applied") : String(localized: "Auto: \(summary)"), symbol: "wand.and.stars"))
         } catch {
             show(error)
         }
@@ -59,7 +59,7 @@ extension AppModel {
             // change, and the toast counts the changes actually made.
             let plan = AICullApplication.plan(targets.compactMap { photo($0.id) }, suggestions: cullSuggestions)
             if !plan.changes.isEmpty {
-                updatePhotos(Array(plan.changes.keys), label: "AI Cull") { p in
+                updatePhotos(Array(plan.changes.keys), label: String(localized: "AI Cull")) { p in
                     if let pick = plan.changes[p.id] {
                         AICullApplication.apply(pick, note: cullSuggestions[p.id]?.rejectNote, to: &p)
                     }
@@ -170,7 +170,7 @@ extension AppModel {
         case .auto: Task { await autoAdjust() }
         case .toggleSoftProof:
             softProof.toggle()
-            show(Toast(softProof.enabled ? softProof.statusText ?? "Soft proof on" : "Soft proof off", symbol: "printer"))
+            show(Toast(softProof.enabled ? softProof.statusText ?? String(localized: "Soft proof on") : String(localized: "Soft proof off"), symbol: "printer"))
         case .selectAll: selectAll()
         case .escape:
             viewer.cancelCanvasDrag() // Esc abandons a drag in progress

@@ -33,14 +33,14 @@ extension ViewerModel {
         switch mode {
         case .pickRange:
             var index = 0
-            app.updateEdits([id], label: "Add Color Range") { _, e in
+            app.updateEdits([id], label: String(localized: "Add Color Range")) { _, e in
                 e.colorEditor.advanced.append(ColorPick.range(for: rgb))
                 index = e.colorEditor.advanced.count - 1
             }
             app.colorTools.selectedRange = index
             app.colorTools.mode = nil
         case .pickSkin:
-            app.updateEdits([id], label: "Pick Skin Tone") { _, e in
+            app.updateEdits([id], label: String(localized: "Pick Skin Tone")) { _, e in
                 e.colorEditor.skin = ColorPick.skin(for: rgb, keeping: e.colorEditor.skin)
             }
             app.colorTools.mode = nil
@@ -51,7 +51,7 @@ extension ViewerModel {
                 app.colorTools.mode = nil
                 return true
             }
-            app.updateEdits([id], label: "Color Range Mask") { _, e in
+            app.updateEdits([id], label: String(localized: "Color Range Mask")) { _, e in
                 if let i = e.layers.firstIndex(where: { $0.id == layer }) {
                     e.layers[i].mask.colorRange = ColorPick.range(for: rgb)
                 }
@@ -80,7 +80,7 @@ extension ViewerModel {
                 guard Self.inUnit(at) else { return nil }
                 return ColorMath.sample(f, at: at, radius: max(1, Int(r * Double(max(f.width, f.height)) / 2)))
             }
-        app.updateEdits([start.photo], label: kind == .heal ? "Heal Spot" : "Clone Spot") { _, e in
+        app.updateEdits([start.photo], label: kind == .heal ? String(localized: "Heal Spot") : String(localized: "Clone Spot")) { _, e in
             e.spots.append(SpotEdit(kind: kind, center: center, radius: radius, source: source))
         }
     }
@@ -100,7 +100,7 @@ extension ViewerModel {
             return true
         }
         let amount = TargetedAdjust.amount(from: d.start, to: pane.normalized(p))
-        app.updateEdits([d.photo], label: "Targeted \(channel.rawValue)", coalesceKey: "targeted-adjust") { _, e in
+        app.updateEdits([d.photo], label: String(localized: "Targeted \(channel.title)"), coalesceKey: "targeted-adjust") { _, e in
             e = TargetedAdjust.apply(hue: d.hue, amount: amount, channel: channel, to: d.edit)
         }
         return true

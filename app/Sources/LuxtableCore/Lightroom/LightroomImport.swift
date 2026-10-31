@@ -19,20 +19,20 @@ public enum LRCategory: String, CaseIterable, Sendable, Hashable {
 
     public var title: String {
         switch self {
-        case .rating: "Rating"
-        case .label: "Colour label"
-        case .flag: "Pick / reject flag"
-        case .keywords: "Keywords"
-        case .metadata: "Title, caption and copyright"
-        case .collections: "Collections"
-        case .crop: "Crop and straighten"
-        case .tone: "Tone"
-        case .whiteBalance: "White balance"
-        case .color: "Colour"
-        case .detail: "Detail"
-        case .effects: "Vignette and grain"
-        case .lens: "Lens corrections"
-        case .masks: "Local adjustments"
+        case .rating: String(localized: "Rating")
+        case .label: String(localized: "Colour label")
+        case .flag: String(localized: "Pick / reject flag")
+        case .keywords: String(localized: "Keywords")
+        case .metadata: String(localized: "Title, caption and copyright")
+        case .collections: String(localized: "Collections")
+        case .crop: String(localized: "Crop and straighten")
+        case .tone: String(localized: "Tone")
+        case .whiteBalance: String(localized: "White balance")
+        case .color: String(localized: "Colour")
+        case .detail: String(localized: "Detail")
+        case .effects: String(localized: "Vignette and grain")
+        case .lens: String(localized: "Lens corrections")
+        case .masks: String(localized: "Local adjustments")
         }
     }
 
@@ -49,20 +49,20 @@ public enum LRCategory: String, CaseIterable, Sendable, Hashable {
     /// What the import does to a photo of this category, for the summary lines.
     var verb: String {
         switch self {
-        case .rating: "rated"
-        case .label: "colour-labelled"
-        case .flag: "picked or rejected"
-        case .keywords: "given keywords"
-        case .metadata: "given a title, caption or copyright"
-        case .collections: "added to collections"
-        case .crop: "cropped or straightened"
-        case .tone: "given tone edits"
-        case .whiteBalance: "given a white balance"
-        case .color: "given colour edits"
-        case .detail: "given detail edits"
-        case .effects: "given a vignette or grain"
-        case .lens: "given lens corrections"
-        case .masks: "given local adjustments"
+        case .rating: String(localized: "rated")
+        case .label: String(localized: "colour-labelled")
+        case .flag: String(localized: "picked or rejected")
+        case .keywords: String(localized: "given keywords")
+        case .metadata: String(localized: "given a title, caption or copyright")
+        case .collections: String(localized: "added to collections")
+        case .crop: String(localized: "cropped or straightened")
+        case .tone: String(localized: "given tone edits")
+        case .whiteBalance: String(localized: "given a white balance")
+        case .color: String(localized: "given colour edits")
+        case .detail: String(localized: "given detail edits")
+        case .effects: String(localized: "given a vignette or grain")
+        case .lens: String(localized: "given lens corrections")
+        case .masks: String(localized: "given local adjustments")
         }
     }
 }
@@ -94,7 +94,7 @@ public struct LRSourceInfo: Sendable, Equatable {
     /// "Catalog.lrcat: 1200 photos, 14 collections".
     public var line: String {
         var parts = [LRImportSummary.photos(photos)]
-        if collections > 0 { parts.append("\(collections) collection\(collections == 1 ? "" : "s")") }
+        if collections > 0 { parts.append(collections == 1 ? String(localized: "1 collection") : String(localized: "\(collections) collections")) }
         let by = writtenBy.map { " (Lightroom \($0))" } ?? ""
         return "\(origin)\(by): " + parts.joined(separator: ", ")
     }
@@ -248,55 +248,67 @@ public struct LRImportSummary: Sendable, Equatable {
     /// "812 of 1200 photos are in this session (by path 800, by content 10, by name 2)".
     public var matchLine: String {
         var how: [String] = []
-        if matchedByPath > 0 { how.append("by path \(matchedByPath)") }
-        if matchedByHash > 0 { how.append("by content \(matchedByHash)") }
-        if matchedByName > 0 { how.append("by name and capture time \(matchedByName)") }
+        if matchedByPath > 0 { how.append(String(localized: "by path \(matchedByPath)")) }
+        if matchedByHash > 0 { how.append(String(localized: "by content \(matchedByHash)")) }
+        if matchedByName > 0 { how.append(String(localized: "by name and capture time \(matchedByName)")) }
         let tail = how.isEmpty ? "" : " (\(how.joined(separator: ", ")))"
-        return "\(matched) of \(Self.photos(photos)) matched a photo in this session\(tail)"
+        return String(localized: "\(matched) of \(Self.photos(photos)) matched a photo in this session\(tail)")
     }
 
     /// What is (or will be) brought over, one line each; zero counts are left out.
     public var lines: [String] {
-        let verb = dryRun ? "will be" : "were"
         var out: [String] = []
         for c in LRCategory.allCases where c != .collections {
             let n = count(c)
-            if n > 0 { out.append("\(Self.photos(n)) \(verb) \(c.verb)") }
+            if n > 0 {
+                out.append(dryRun ? String(localized: "\(Self.photos(n)) will be \(c.verb)")
+                    : String(localized: "\(Self.photos(n)) were \(c.verb)"))
+            }
         }
         if variantsCreated > 0 {
-            let was = dryRun ? "will be" : variantsCreated == 1 ? "was" : "were"
-            out.append("\(variantsCreated) virtual cop\(variantsCreated == 1 ? "y" : "ies") \(was) added as new variants")
+            out.append(dryRun ? (variantsCreated == 1 ? String(localized: "1 virtual copy will be added as new variants")
+                                    : String(localized: "\(variantsCreated) virtual copies will be added as new variants"))
+                : variantsCreated == 1 ? String(localized: "1 virtual copy was added as new variants")
+                : String(localized: "\(variantsCreated) virtual copies were added as new variants"))
         }
         let albums = albumsCreated + albumsUpdated
         if albums > 0 {
-            let was = dryRun ? "will be" : albums == 1 ? "was" : "were"
-            out.append("\(albums) album\(albums == 1 ? "" : "s") \(was) created or updated")
+            out.append(dryRun ? (albums == 1 ? String(localized: "1 album will be created or updated")
+                                    : String(localized: "\(albums) albums will be created or updated"))
+                : albums == 1 ? String(localized: "1 album was created or updated")
+                : String(localized: "\(albums) albums were created or updated"))
         }
-        if out.isEmpty { out.append(conflicts.isEmpty ? "Everything is already up to date." : "Nothing new apart from the conflicts below.") }
+        if out.isEmpty {
+            out.append(conflicts.isEmpty ? String(localized: "Everything is already up to date.")
+                : String(localized: "Nothing new apart from the conflicts below."))
+        }
         return out
     }
 
     /// The Luxtable tool a Lightroom setting lands in.
     static func tool(for key: String) -> String {
         switch key {
-        case "Exposure2012": return "Exposure"
-        case "Contrast2012": return "Contrast"
-        case "Highlights2012": return "Highlights"
-        case "Shadows2012": return "Shadows"
-        case "Whites2012": return "Whites"
-        case "Blacks2012": return "Blacks"
-        case "Clarity2012": return "Clarity"
-        case "Temperature", "Tint", "WhiteBalance": return "White balance"
-        case "LuminanceSmoothing", "ColorNoiseReduction": return "Noise reduction"
-        case "AutoLateralCA": return "Chromatic aberration"
+        case "Exposure2012": return String(localized: "Exposure")
+        case "Contrast2012": return String(localized: "Contrast")
+        case "Highlights2012": return String(localized: "Highlights")
+        case "Shadows2012": return String(localized: "Shadows")
+        case "Whites2012": return String(localized: "Whites")
+        case "Blacks2012": return String(localized: "Blacks")
+        case "Clarity2012": return String(localized: "Clarity")
+        case "Temperature", "Tint", "WhiteBalance": return String(localized: "White balance")
+        case "LuminanceSmoothing", "ColorNoiseReduction": return String(localized: "Noise reduction")
+        case "AutoLateralCA": return String(localized: "Chromatic aberration")
         default: break
         }
         let prefixes: [(String, String)] = [
             ("HueAdjustment", "HSL"), ("SaturationAdjustment", "HSL"), ("LuminanceAdjustment", "HSL"),
-            ("ToneCurve", "Tone curve"), ("Crop", "Crop"), ("Sharp", "Sharpening"), ("PostCropVignette", "Vignette"),
-            ("Grain", "Grain"), ("LensProfile", "Lens corrections"), ("SplitToning", "Colour grading"),
-            ("ColorGrade", "Colour grading"), ("Mask", "Local adjustments"), ("Local", "Local adjustments"),
-            ("GradientBased", "Local adjustments"), ("CircularGradient", "Local adjustments"), ("PaintBased", "Local adjustments"),
+            ("ToneCurve", String(localized: "Tone curve")), ("Crop", String(localized: "Crop")),
+            ("Sharp", String(localized: "Sharpening")), ("PostCropVignette", String(localized: "Vignette")),
+            ("Grain", String(localized: "Grain")), ("LensProfile", String(localized: "Lens corrections")),
+            ("SplitToning", String(localized: "Colour grading")), ("ColorGrade", String(localized: "Colour grading")),
+            ("Mask", String(localized: "Local adjustments")), ("Local", String(localized: "Local adjustments")),
+            ("GradientBased", String(localized: "Local adjustments")),
+            ("CircularGradient", String(localized: "Local adjustments")), ("PaintBased", String(localized: "Local adjustments")),
         ]
         return prefixes.first { key.hasPrefix($0.0) }?.1 ?? key
     }
@@ -311,7 +323,7 @@ public struct LRImportSummary: Sendable, Equatable {
             counts[t] = (max(old?.n ?? 0, m.count), (old?.approx ?? false) || m.approximate)
         }
         return counts.sorted { $0.value.n != $1.value.n ? $0.value.n > $1.value.n : $0.key < $1.key }
-            .map { "\($0.key): \(Self.photos($0.value.n))\($0.value.approx ? " (approximate)" : "")" }
+            .map { "\($0.key): \(Self.photos($0.value.n))\($0.value.approx ? String(localized: " (approximate)") : "")" }
     }
 
     /// Settings that have no Luxtable translation: "Dehaze: 149 photos — reason".
@@ -328,7 +340,7 @@ public struct LRImportSummary: Sendable, Equatable {
             fields[c.file, default: []].append(Self.fieldName(c.field))
         }
         let shown = files.prefix(8).map { "\($0): \(fields[$0]!.joined(separator: ", "))" }
-        return files.count > 8 ? shown + ["and \(Self.photos(files.count - 8)) more"] : shown
+        return files.count > 8 ? shown + [String(localized: "and \(Self.photos(files.count - 8)) more")] : shown
     }
 
     static func fieldName(_ f: String) -> String {
@@ -340,17 +352,25 @@ public struct LRImportSummary: Sendable, Equatable {
     public var leftOutLines: [String] {
         var out: [String] = []
         if notFoundCount > 0 {
-            out.append("\(Self.photos(notFoundCount)) not in this session: \(Self.sample(notFound.map { ($0 as NSString).lastPathComponent }))")
+            let names = Self.sample(notFound.map { ($0 as NSString).lastPathComponent })
+            out.append(String(localized: "\(Self.photos(notFoundCount)) not in this session: \(names)"))
         }
         if !ambiguous.isEmpty {
-            out.append("\(Self.photos(ambiguous.count)) could be several Luxtable photos (not imported): \(Self.sample(ambiguous.map { ($0 as NSString).lastPathComponent }))")
+            let names = Self.sample(ambiguous.map { ($0 as NSString).lastPathComponent })
+            out.append(String(localized: "\(Self.photos(ambiguous.count)) could be several Luxtable photos (not imported): \(names)"))
         }
         for (name, n) in unmappedLabels.sorted(by: { $0.key < $1.key }) {
-            out.append("Label \u{201c}\(name)\u{201d} has no Luxtable colour: \(Self.photos(n)) left unlabelled")
+            out.append(String(localized: "Label \u{201c}\(name)\u{201d} has no Luxtable colour: \(Self.photos(n)) left unlabelled"))
         }
-        if deletedInLuxtable > 0 { out.append("\(deletedInLuxtable) variant\(deletedInLuxtable == 1 ? "" : "s") deleted in Luxtable (not recreated)") }
-        if readOnly > 0 { out.append("\(Self.photos(readOnly)) saved by a newer Luxtable (left alone)") }
-        if keptLuxtable > 0 { out.append("\(keptLuxtable) Luxtable change\(keptLuxtable == 1 ? "" : "s") kept (unchanged in \(source) since the last import)") }
+        if deletedInLuxtable > 0 {
+            out.append(deletedInLuxtable == 1 ? String(localized: "1 variant deleted in Luxtable (not recreated)")
+                : String(localized: "\(deletedInLuxtable) variants deleted in Luxtable (not recreated)"))
+        }
+        if readOnly > 0 { out.append(String(localized: "\(Self.photos(readOnly)) saved by a newer Luxtable (left alone)")) }
+        if keptLuxtable > 0 {
+            out.append(keptLuxtable == 1 ? String(localized: "1 Luxtable change kept (unchanged in \(source) since the last import)")
+                : String(localized: "\(keptLuxtable) Luxtable changes kept (unchanged in \(source) since the last import)"))
+        }
         out += skipped.map { "\u{201c}\($0.name)\u{201d}: \($0.reason)" }
         out += warnings
         return out
@@ -361,11 +381,11 @@ public struct LRImportSummary: Sendable, Equatable {
         notes.map { "\($0.file): " + $0.notes.joined(separator: "; ") }
     }
 
-    package static func photos(_ n: Int) -> String { n == 1 ? "1 photo" : "\(n) photos" }
+    package static func photos(_ n: Int) -> String { n == 1 ? String(localized: "1 photo") : String(localized: "\(n) photos") }
 
     static func sample(_ names: [String], limit: Int = 3) -> String {
         let head = names.prefix(limit).joined(separator: ", ")
-        return names.count > limit ? "\(head) and \(names.count - limit) more" : head
+        return names.count > limit ? String(localized: "\(head) and \(names.count - limit) more") : head
     }
 }
 
@@ -377,10 +397,10 @@ public struct LRRevertSummary: Sendable, Equatable {
     public var albumsRemoved = 0
     public var albumsTrimmed = 0
     /// What was reverted, as the message names it.
-    public var what = "Lightroom import"
+    public var what = String(localized: "Lightroom import")
 
     public init(restored: Int = 0, kept: Int = 0, variantsRemoved: Int = 0, albumsRemoved: Int = 0, albumsTrimmed: Int = 0,
-                what: String = "Lightroom import") {
+                what: String = String(localized: "Lightroom import")) {
         self.what = what
         self.restored = restored
         self.kept = kept
@@ -390,11 +410,17 @@ public struct LRRevertSummary: Sendable, Equatable {
     }
 
     public var message: String {
-        var parts = ["\(what) reverted: \(LRImportSummary.photos(restored)) restored"]
-        if variantsRemoved > 0 { parts.append("\(variantsRemoved) imported variant\(variantsRemoved == 1 ? "" : "s") removed") }
+        var parts = [String(localized: "\(what) reverted: \(LRImportSummary.photos(restored)) restored")]
+        if variantsRemoved > 0 {
+            parts.append(variantsRemoved == 1 ? String(localized: "1 imported variant removed")
+                : String(localized: "\(variantsRemoved) imported variants removed"))
+        }
         let albums = albumsRemoved + albumsTrimmed
-        if albums > 0 { parts.append("\(albums) album\(albums == 1 ? "" : "s") undone") }
-        if kept > 0 { parts.append("\(kept) later Luxtable change\(kept == 1 ? "" : "s") kept") }
+        if albums > 0 { parts.append(albums == 1 ? String(localized: "1 album undone") : String(localized: "\(albums) albums undone")) }
+        if kept > 0 {
+            parts.append(kept == 1 ? String(localized: "1 later Luxtable change kept")
+                : String(localized: "\(kept) later Luxtable changes kept"))
+        }
         return parts.joined(separator: ", ")
     }
 }

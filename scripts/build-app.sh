@@ -89,6 +89,10 @@ LICENSES="$ROOT/THIRD_PARTY_LICENSES.md" # scripts/licenses.sh
 # Bundled plug-ins (plugins/builtin/*.ltplugin): Luxtable's own looks and styles…
 PLUGINS_SRC="$ROOT/plugins/builtin"
 PLUGINS_ID="$(cd "$PLUGINS_SRC" && find . -type f ! -name '.*' -print0 | sort -z | xargs -0 shasum -a 256 | shasum -a 256 | awk '{print $1}')"
+# The string tables (docs/LOCALIZATION.md): <lang>.lproj in Contents/Resources, where
+# SwiftUI, String(localized:) and Info.plist lookups find them (Bundle.main).
+LOC_SRC="$ROOT/app/Resources/Localization"
+LOC_ID="$(cd "$LOC_SRC" && find . -type f ! -name '.*' -print0 | sort -z | xargs -0 shasum -a 256 | shasum -a 256 | awk '{print $1}')"
 
 # Google Photos export: the OAuth client built into the app, never committed. From
 # LT_GOOGLE_CLIENT_ID / LT_GOOGLE_CLIENT_SECRET, else the git-ignored
@@ -129,7 +133,7 @@ STAMP="$ROOT/dist/.Luxtable.inputs"
 # -v: only valid identities (an expired or untrusted one is listed without it and would make codesign fail).
 SIGNER="$(security find-identity -v -p codesigning 2>/dev/null | grep -c '"Luxtable Dev"' || true)"
 SIGN_ID="${LT_SIGN_IDENTITY:-}"
-INPUTS="$(shasum -a 256 "$BIN" "$ICON" "$PLIST" "$ENTITLEMENTS" "$ACK" "$LICENSES" app/.rust/lib/liblt_ffi.a | awk '{print $1}') signer=$SIGNER runtime=1 dist=$SIGN_ID notary=${LT_NOTARY_PROFILE:-} model=$MODEL_ID upscale=$UPSCALE_ID plugins=$PLUGINS_ID"
+INPUTS="$(shasum -a 256 "$BIN" "$ICON" "$PLIST" "$ENTITLEMENTS" "$ACK" "$LICENSES" app/.rust/lib/liblt_ffi.a | awk '{print $1}') signer=$SIGNER runtime=1 dist=$SIGN_ID notary=${LT_NOTARY_PROFILE:-} model=$MODEL_ID upscale=$UPSCALE_ID plugins=$PLUGINS_ID l10n=$LOC_ID"
 if [[ "$(cat "$STAMP" 2>/dev/null)" != "$INPUTS" ]] || ! codesign --verify "$APP" 2>/dev/null; then
   /bin/cp -f "$BIN" "$APP/Contents/MacOS/Luxtable"
   /bin/cp -f "$ICON" "$APP/Contents/Resources/AppIcon.icns"
@@ -139,6 +143,8 @@ if [[ "$(cat "$STAMP" 2>/dev/null)" != "$INPUTS" ]] || ! codesign --verify "$APP
   /bin/rm -rf "$APP/Contents/Resources/Plugins"
   mkdir -p "$APP/Contents/Resources/Plugins"
   for p in "$PLUGINS_SRC"/*.ltplugin; do /bin/cp -R "$p" "$APP/Contents/Resources/Plugins/"; done
+  /bin/rm -rf "$APP/Contents/Resources/"*.lproj
+  for l in "$LOC_SRC"/*.lproj; do /bin/cp -R "$l" "$APP/Contents/Resources/"; done
   /bin/rm -rf "$APP/Contents/Resources/Models"
   if [[ -n "$MODEL_PKG" ]]; then
     mkdir -p "$APP/Contents/Resources/Models"

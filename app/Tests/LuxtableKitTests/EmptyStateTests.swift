@@ -87,3 +87,43 @@ import Testing
         #expect(SmartCriteria(isoMax: 400).explanation.contains("at ISO 400 or less"))
     }
 }
+
+/// First run: the sample photos open in a separate demo window, never in the user's library.
+@MainActor @Suite struct SamplePhotosTests {
+    @Test func firstRunOffersTheSamplesOnlyInLiveModeWithALauncher() async {
+        let m = makeModel(counts: [])
+        await m.start()
+        #expect(m.emptyState == .firstRun)
+        // Demo mode (the tests' default) is already the samples.
+        m.openSamples = {}
+        #expect(!m.emptyStateActions.contains(.trySamples))
+
+        let live = AppModel(sessions: MockSessionStore(counts: []), images: MockImageProvider(latency: .zero),
+                            renderer: FakeRenderer(), importer: MockImportService(bytesPerSecond: 1e12),
+                            archive: MockArchiveService(target: "/nonexistent/archive"), ai: MockAIService(),
+                            settings: makeSettings(), mode: .live)
+        live.watchCards = false
+        await live.start()
+        #expect(live.emptyState == .firstRun && !live.emptyStateActions.contains(.trySamples), "no launcher, no button")
+        var opened = 0
+        live.openSamples = { opened += 1 }
+        #expect(live.emptyStateActions.last == .trySamples)
+        #expect(EmptyState.Action.trySamples.title == "Try with Sample Photos")
+        #expect(live.performEmptyStateAction(.trySamples) && opened == 1)
+    }
+
+    @Test func theLauncherStartsADemoOnAScratchSupportFolder() {
+        let app = URL(fileURLWithPath: "/Applications/Luxtable.app")
+        let root = URL(fileURLWithPath: "/tmp/Luxtable Samples")
+        #expect(SampleLauncher.openArguments(app: app, supportRoot: root)
+            == ["-n", "-a", "/Applications/Luxtable.app", "--env", "LT_SUPPORT_ROOT=/tmp/Luxtable Samples",
+                "--args", "--demo", "--samples"])
+        #expect(SampleLauncher.supportRoot.lastPathComponent == "Luxtable Samples")
+        #expect(SampleLauncher.live(bundle: app, mode: .live) != nil)
+        #expect(SampleLauncher.live(bundle: app, mode: .demo) == nil, "the samples don't open more samples")
+        #expect(SampleLauncher.live(bundle: URL(fileURLWithPath: "/usr/local/bin"), mode: .live) == nil, "no bundle to open")
+        #expect(SampleLauncher.isSampleWindow(arguments: ["Luxtable", "--demo", "--samples"], mode: .demo))
+        #expect(!SampleLauncher.isSampleWindow(arguments: ["Luxtable", "--samples"], mode: .live))
+        #expect(!SampleLauncher.isSampleWindow(arguments: ["Luxtable", "--demo"], mode: .demo))
+    }
+}

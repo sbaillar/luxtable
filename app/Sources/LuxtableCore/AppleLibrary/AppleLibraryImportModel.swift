@@ -24,11 +24,11 @@ public final class AppleLibraryImportModel {
         case failed(String)
     }
 
-    public static let noSession = "No session is open to import into. Open the library's originals as a session below, "
-        + "or open the folder with your photos first (File \u{25B8} Open Folder\u{2026})."
+    public static let noSession = String(localized: "No session is open to import into. Open the library's originals as a session below, ")
+        + String(localized: "or open the folder with your photos first (File \u{25B8} Open Folder\u{2026}).")
 
-    public static let revertHint = "Revert Import takes back every Aperture and iPhoto import since the last revert, "
-        + "here or with File \u{25B8} Revert Aperture or iPhoto Import. Changes you make in Luxtable afterwards are kept."
+    public static let revertHint = String(localized: "Revert Import takes back every Aperture and iPhoto import since the last revert, ")
+        + String(localized: "here or with File \u{25B8} Revert Aperture or iPhoto Import. Changes you make in Luxtable afterwards are kept.")
 
     public private(set) var phase: Phase = .choosing
     /// The session the photos go into; `nil`: none is open (the report can open one).
@@ -68,7 +68,7 @@ public final class AppleLibraryImportModel {
         self.onImported = onImported
     }
 
-    public var title: String { "Import Aperture or iPhoto Library" }
+    public var title: String { String(localized: "Import Aperture or iPhoto Library") }
 
     public var preview: LRImportSummary? {
         if case .preview(let s) = phase { return s }
@@ -117,7 +117,7 @@ public final class AppleLibraryImportModel {
         do {
             info = try await importer.loadAppleLibrary(url)
         } catch is CancellationError {
-            phase = .failed("Cancelled")
+            phase = .failed(String(localized: "Cancelled"))
             return
         } catch {
             phase = .failed(error.localizedDescription)
@@ -181,12 +181,12 @@ public final class AppleLibraryImportModel {
             var s = try await importer.importAppleLibrary(session, library: info.id, categories: ticked, dryRun: true,
                                                           overwriteEdits: false)
             guard g == generation else { return }
-            s.source = "the library"
+            s.source = String(localized: "the library")
             for c in ticked { counts[c] = s.count(c) }
             phase = .preview(s)
         } catch is CancellationError {
             guard g == generation else { return }
-            phase = .failed("Cancelled")
+            phase = .failed(String(localized: "Cancelled"))
         } catch {
             guard g == generation else { return }
             phase = .failed(error.localizedDescription)
@@ -204,7 +204,7 @@ public final class AppleLibraryImportModel {
         do {
             var s = try await importer.importAppleLibrary(session, library: info.id, categories: categories, dryRun: false,
                                                           overwriteEdits: overwriteEdits)
-            s.source = "the library"
+            s.source = String(localized: "the library")
             phase = .done(s)
             await onImported()
         } catch {
@@ -221,7 +221,7 @@ public final class AppleLibraryImportModel {
         phase = .reverting
         do {
             var r = try await importer.revertAppleImport(session) ?? LRRevertSummary()
-            r.what = "Aperture and iPhoto import"
+            r.what = String(localized: "Aperture and iPhoto import")
             phase = .reverted(r)
         } catch {
             phase = .failed(error.localizedDescription)
@@ -318,10 +318,10 @@ extension AppModel {
         let outcome: Toast
         do {
             if var r = try await importer.revertAppleImport(session) {
-                r.what = "Aperture and iPhoto import"
+                r.what = String(localized: "Aperture and iPhoto import")
                 outcome = Toast(r.message, symbol: "arrow.uturn.backward")
             } else {
-                outcome = Toast("No Aperture or iPhoto import to revert", symbol: "arrow.uturn.backward")
+                outcome = Toast(String(localized: "No Aperture or iPhoto import to revert"), symbol: "arrow.uturn.backward")
             }
         } catch {
             outcome = Toast(error.localizedDescription, symbol: "exclamationmark.triangle", isError: true)

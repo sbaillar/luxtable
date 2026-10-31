@@ -93,7 +93,7 @@ extension LRPresetItem {
         let groups = Set(r.groups.map(AdjustGroup.init(rust:))).subtracting([.layers, .spots])
         let preset = Preset(name: r.name, groups: groups, edit: edit ?? EditState())
         self.init(name: r.name, group: r.group, preset: preset, notes: r.notes,
-                  unavailable: edit == nil ? "couldn't be read" : groups.isEmpty ? "nothing in it maps to Luxtable" : nil)
+                  unavailable: edit == nil ? String(localized: "couldn't be read") : groups.isEmpty ? String(localized: "nothing in it maps to Luxtable") : nil)
     }
 }
 

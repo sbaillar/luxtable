@@ -26,7 +26,7 @@ struct AppleLibraryImportSheet: View {
 
     private var sourceLine: some View {
         HStack(spacing: DS.Space.s) {
-            Text(model.info?.line ?? model.source?.path ?? "Choose an Aperture library (.aplibrary) or an iPhoto library")
+            Text(model.info?.line ?? model.source?.path ?? String(localized: "Choose an Aperture library (.aplibrary) or an iPhoto library"))
                 .font(DS.Font.label).foregroundStyle(model.source == nil ? DS.textSecondary : DS.text)
                 .lineLimit(1).truncationMode(.middle)
             Spacer()
@@ -47,7 +47,7 @@ struct AppleLibraryImportSheet: View {
         panel.canChooseFiles = true
         panel.treatsFilePackagesAsDirectories = false
         panel.allowsMultipleSelection = false
-        panel.message = "Choose an Aperture library (.aplibrary) or an iPhoto library"
+        panel.message = String(localized: "Choose an Aperture library (.aplibrary) or an iPhoto library")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         Task { await model.choose(url) }
     }
@@ -97,7 +97,7 @@ struct AppleLibraryImportSheet: View {
         }
     }
 
-    private func busy(_ text: String) -> some View {
+    private func busy(_ text: LocalizedStringKey) -> some View {
         HStack(spacing: DS.Space.s) {
             ProgressView().controlSize(.small)
             Text(text).font(DS.Font.label).foregroundStyle(DS.text)
@@ -108,8 +108,8 @@ struct AppleLibraryImportSheet: View {
 
     private var categories: some View {
         HStack(alignment: .top, spacing: DS.Space.l) {
-            group("Library", AppleImportCategories.organise)
-            group("Edits", AppleImportCategories.develop)
+            group(String(localized: "Library"), AppleImportCategories.organise)
+            group(String(localized: "Edits"), AppleImportCategories.develop)
         }
     }
 

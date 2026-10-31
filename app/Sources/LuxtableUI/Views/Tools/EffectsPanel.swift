@@ -10,7 +10,7 @@ struct EffectsPanel: View {
         VStack(alignment: .leading, spacing: DS.Space.s) {
             Text("LENS BLUR").font(DS.Font.caption).tracking(0.5).foregroundStyle(DS.textSecondary)
             Picker("Mode", selection: Binding(get: { fx.lensBlur.mode }, set: { m in
-                model.updateEdit(label: "Lens Blur Mode") { $0.effects.lensBlur.mode = m }
+                model.updateEdit(label: String(localized: "Lens Blur Mode")) { $0.effects.lensBlur.mode = m }
                 if m != .depth { model.focusPickerActive = false } // its button is gone
             })) {
                 ForEach(BlurMode.pickable, id: \.self) { Text($0.title).tag($0) }
@@ -34,7 +34,7 @@ struct EffectsPanel: View {
             }
             EditSlider(model: model, spec: Specs.highlightBoost, keyPath: \.effects.lensBlur.highlightBoost)
             Picker("Shape", selection: Binding(get: { fx.lensBlur.shape }, set: { s in
-                model.updateEdit(label: "Bokeh Shape") { $0.effects.lensBlur.shape = s }
+                model.updateEdit(label: String(localized: "Bokeh Shape")) { $0.effects.lensBlur.shape = s }
             })) {
                 ForEach(BokehShape.allCases, id: \.self) { Text($0.title).tag($0) }
             }
@@ -61,7 +61,7 @@ struct EffectsPanel: View {
             .help("Click the photo where it should be sharp")
             .accessibilityLabel(model.focusPickerActive ? "Stop picking the focus" : "Pick the focus on the photo")
             Chip(title: "Focus on Subject", selected: lb.focus == nil) {
-                model.updateEdit(label: "Lens Blur Focus") { $0.effects.lensBlur.focus = nil }
+                model.updateEdit(label: String(localized: "Lens Blur Focus")) { $0.effects.lensBlur.focus = nil }
             }
             .help("Keep the main subject sharp (found by Vision)")
             Spacer(minLength: 0)

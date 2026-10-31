@@ -27,19 +27,19 @@ public enum InstructionSummary {
             if a.whiteBalance.temperature.rounded() != from.rounded() {
                 parts.append("\(Safe.clampedInt(from))→\(Safe.clampedInt(a.whiteBalance.temperature)) K")
             }
-            if abs(a.whiteBalance.tint - fromTint) >= 0.05 { parts.append(signed(a.whiteBalance.tint - fromTint, "tint")) }
+            if abs(a.whiteBalance.tint - fromTint) >= 0.05 { parts.append(signed(a.whiteBalance.tint - fromTint, String(localized: "tint"))) }
         }
         if a.exposure.ev != b.exposure.ev { parts.append(InstructionSummary.ev(a.exposure.ev - b.exposure.ev)) }
-        if a.exposure.contrast != b.exposure.contrast { parts.append(signed(a.exposure.contrast - b.exposure.contrast, "contrast")) }
+        if a.exposure.contrast != b.exposure.contrast { parts.append(signed(a.exposure.contrast - b.exposure.contrast, String(localized: "contrast"))) }
         if a.exposure.saturation != b.exposure.saturation {
-            parts.append(a.exposure.saturation <= -100 ? "black and white"
-                         : signed(a.exposure.saturation - b.exposure.saturation, "saturation"))
+            parts.append(a.exposure.saturation <= -100 ? String(localized: "black and white")
+                         : signed(a.exposure.saturation - b.exposure.saturation, String(localized: "saturation")))
         }
-        if a.hdr.highlights != b.hdr.highlights { parts.append(signed(a.hdr.highlights - b.hdr.highlights, "highlights")) }
-        if a.hdr.shadows != b.hdr.shadows { parts.append(signed(a.hdr.shadows - b.hdr.shadows, "shadows")) }
-        if a.colorEditor != b.colorEditor { parts.append("colour bands") }
-        if a.crop.aspect != b.crop.aspect || a.crop.rect != b.crop.rect { parts.append("crop \(a.crop.aspect.rawValue)") }
-        if a.crop.angle != b.crop.angle { parts.append(String(format: "straighten %+.1f°", a.crop.angle - b.crop.angle)) }
+        if a.hdr.highlights != b.hdr.highlights { parts.append(signed(a.hdr.highlights - b.hdr.highlights, String(localized: "highlights"))) }
+        if a.hdr.shadows != b.hdr.shadows { parts.append(signed(a.hdr.shadows - b.hdr.shadows, String(localized: "shadows"))) }
+        if a.colorEditor != b.colorEditor { parts.append(String(localized: "colour bands")) }
+        if a.crop.aspect != b.crop.aspect || a.crop.rect != b.crop.rect { parts.append(String(localized: "crop \(a.crop.aspect.rawValue)")) }
+        if a.crop.angle != b.crop.angle { parts.append(String(format: String(localized: "straighten %+.1f°"), a.crop.angle - b.crop.angle)) }
         return parts.joined(separator: ", ")
     }
 
@@ -88,9 +88,10 @@ extension AppModel {
             case .reset:
                 let ids = instructionTargets().filter { edit(for: $0) != EditState() }
                 guard !ids.isEmpty else { return nil }
-                updateEdits(ids, label: "Reset") { _, e in e = EditState() }
+                updateEdits(ids, label: String(localized: "Reset")) { _, e in e = EditState() }
                 endEditGesture()
-                show(Toast("Reset \(ids.count == 1 ? "" : "\(ids.count) photos ")to the original. ⌘Z to undo",
+                show(Toast(ids.count == 1 ? String(localized: "Reset to the original. ⌘Z to undo")
+                               : String(localized: "Reset \(ids.count) photos to the original. ⌘Z to undo"),
                            symbol: "arrow.counterclockwise"))
             }
             return toast
@@ -189,18 +190,21 @@ extension AppModel {
     static func instructionToast(summary: String, photos: Int = 1, targets: Int = 1, unlevelled: Int = 0,
                                  unrecognized: [String]) -> Toast {
         var parts: [String] = []
-        if !summary.isEmpty { parts.append(photos > 1 ? "\(summary) on \(photos) photos" : summary) }
-        let unknown = unrecognized.isEmpty ? nil : "Didn't understand: " + unrecognized.map { "“\($0)”" }.joined(separator: ", ")
+        if !summary.isEmpty { parts.append(photos > 1 ? String(localized: "\(summary) on \(photos) photos") : summary) }
+        let unknown = unrecognized.isEmpty ? nil
+            : String(localized: "Didn't understand: \(unrecognized.map { "“\($0)”" }.joined(separator: ", "))")
         if parts.isEmpty {
             if let unknown { return Toast(unknown, symbol: "questionmark.bubble", isError: true) }
-            return Toast(unlevelled > 0 ? "No clear horizon found; nothing was straightened" : "Nothing to change",
+            return Toast(unlevelled > 0 ? String(localized: "No clear horizon found; nothing was straightened")
+                             : String(localized: "Nothing to change"),
                          symbol: "sparkles")
         }
         if unlevelled > 0 {
-            parts.append(targets > 1 ? "no clear horizon on \(unlevelled) — not straightened"
-                                     : "no clear horizon — not straightened")
+            parts.append(targets > 1 ? String(localized: "no clear horizon on \(unlevelled) — not straightened")
+                                     : String(localized: "no clear horizon — not straightened"))
         }
-        var message = parts.joined(separator: ", ") + ". ⌘Z to undo"
+        var message = parts.joined(separator: ", ") + String(localized: ". ⌘Z to undo")
+
         if let unknown { message += ". " + unknown }
         return Toast(message, symbol: "sparkles")
     }

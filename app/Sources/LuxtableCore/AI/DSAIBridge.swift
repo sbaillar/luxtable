@@ -90,7 +90,7 @@ public enum DSAI {
             pick = .none
         }
         var reasons = r.reasons.map { capitalized($0.text) }
-        if groupSize > 1, r.suggestion == .best { reasons.insert("Best of \(groupSize) similar frames", at: 0) }
+        if groupSize > 1, r.suggestion == .best { reasons.insert(String(localized: "Best of \(groupSize) similar frames"), at: 0) }
         return CullSuggestion(photoID: PhotoID(r.id), score: Double(r.score), pick: pick, reasons: reasons,
                               rejectNote: pick == .rejected && !r.rejectNote.isEmpty ? r.rejectNote : nil)
     }
@@ -104,7 +104,7 @@ public enum DSAI {
         let byID = Dictionary(report.results.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
         return photos.map { p in
             guard let r = byID[p.id.raw] else {
-                return CullSuggestion(photoID: p.id, score: 0.5, pick: .none, reasons: ["Could not analyze"])
+                return CullSuggestion(photoID: p.id, score: 0.5, pick: .none, reasons: [String(localized: "Could not analyze")])
             }
             return suggestion(for: r, groupSize: sizes[r.group] ?? 1)
         }
@@ -175,7 +175,7 @@ public enum AICullApplication {
 
     /// The reject badge's tooltip: why, when AI Cull rejected it.
     public static func rejectHelp(_ p: Photo) -> String {
-        rejectNote(p).map { "Rejected by AI Cull: \($0)" } ?? "Rejected"
+        rejectNote(p).map { String(localized: "Rejected by AI Cull: \($0)") } ?? String(localized: "Rejected")
     }
 
     /// Apply one planned change: the flag, and with an AI reject its note
@@ -199,10 +199,12 @@ public enum AICullApplication {
         }
         let picks = changes.values.filter { $0 == .picked }.count
         let rejects = changes.values.filter { $0 == .rejected }.count
-        var message = changes.isEmpty ? "AI Cull: no changes"
-            : "AI Cull: \(picks) \(picks == 1 ? "pick" : "picks"), \(rejects) \(rejects == 1 ? "reject" : "rejects")"
-        if kept > 0 { message += "; \(kept) already rated, tagged or flagged left alone" }
-        if !changes.isEmpty { message += ". ⌘Z to undo" }
+        let pickText = picks == 1 ? String(localized: "\(picks) pick") : String(localized: "\(picks) picks")
+        let rejectText = rejects == 1 ? String(localized: "\(rejects) reject") : String(localized: "\(rejects) rejects")
+        var message = changes.isEmpty ? String(localized: "AI Cull: no changes")
+            : String(localized: "AI Cull: \(pickText), \(rejectText)")
+        if kept > 0 { message += String(localized: "; \(kept) already rated, tagged or flagged left alone") }
+        if !changes.isEmpty { message += String(localized: ". ⌘Z to undo") }
         return Plan(changes: changes, message: message)
     }
 }

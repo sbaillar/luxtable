@@ -7,44 +7,45 @@ public enum PanelChrome {
     public static func headerButtonOpacity(hovering: Bool) -> Double { hovering ? 1 : 0.4 }
 
     public static func disclosureLabel(_ title: String, collapsed: Bool) -> String {
-        "\(title), \(collapsed ? "collapsed" : "expanded")"
+        collapsed ? String(localized: "\(title), collapsed") : String(localized: "\(title), expanded")
     }
 
     /// The histogram describes what's on screen: in live mode that is the camera's
     /// embedded JPEG, not the edit.
     public static func histogramTitle(rendersEdits: Bool) -> String {
-        rendersEdits ? "Histogram" : "Preview histogram"
+        rendersEdits ? String(localized: "Histogram") : String(localized: "Preview histogram")
     }
 
     /// "1 photo", "2,000 photos" (the app says "photos" everywhere).
     public static func photoCount(_ n: Int) -> String {
-        "\(n.formatted()) photo\(n == 1 ? "" : "s")"
+        n == 1 ? String(localized: "\(n.formatted()) photo") : String(localized: "\(n.formatted()) photos")
     }
 }
 
 /// VoiceOver descriptions for the custom (canvas-drawn) tool controls (N17).
 public enum ControlDescriptions {
     public static func wheel(_ title: String, _ v: WheelValue) -> (label: String, value: String) {
-        if v == WheelValue() { return ("\(title) color wheel", "neutral") }
-        return ("\(title) color wheel",
-                "hue \(Safe.clampedInt(v.hue)) degrees, saturation \(Safe.clampedInt((v.saturation * 100))) percent, lightness \(Formatters.signed(v.lightness))")
+        if v == WheelValue() { return (String(localized: "\(title) color wheel"), String(localized: "neutral")) }
+        return (String(localized: "\(title) color wheel"),
+                String(localized: "hue \(Safe.clampedInt(v.hue)) degrees, saturation \(Safe.clampedInt((v.saturation * 100))) percent, lightness \(Formatters.signed(v.lightness))"))
     }
 
     public static func curve(_ points: [CurvePoint]) -> (label: String, value: String) {
-        guard !points.isEmpty else { return ("Tone curve", "straight line") }
-        let list = points.map { "\(Safe.clampedInt(($0.x * 255))) to \(Safe.clampedInt(($0.y * 255)))" }.joined(separator: ", ")
-        return ("Tone curve", "\(points.count) point\(points.count == 1 ? "" : "s"): \(list)")
+        guard !points.isEmpty else { return (String(localized: "Tone curve"), String(localized: "straight line")) }
+        let list = points.map { String(localized: "\(Safe.clampedInt(($0.x * 255))) to \(Safe.clampedInt(($0.y * 255)))") }.joined(separator: ", ")
+        return (String(localized: "Tone curve"), points.count == 1
+                    ? String(localized: "\(points.count) point: \(list)") : String(localized: "\(points.count) points: \(list)"))
     }
 
     public static func levels(_ l: LevelsEdit) -> (label: String, value: String) {
         func v(_ x: Double) -> Int { Safe.clampedInt((x * 255)) }
-        return ("Levels", "input \(v(l.inBlack)) to \(v(l.inWhite)), gamma \(String(format: "%.2f", l.gamma)), output \(v(l.outBlack)) to \(v(l.outWhite))")
+        return (String(localized: "Levels"), String(localized: "input \(v(l.inBlack)) to \(v(l.inWhite)), gamma \(String(format: "%.2f", l.gamma)), output \(v(l.outBlack)) to \(v(l.outWhite))"))
     }
 
     /// Wheel hue as its own VoiceOver element (M11).
     public static func wheelHue(_ title: String, _ v: WheelValue) -> (label: String, value: String) {
-        ("\(title) hue and saturation",
-         v.saturation == 0 ? "neutral" : "hue \(Safe.clampedInt(v.hue)) degrees, saturation \(Safe.clampedInt((v.saturation * 100))) percent")
+        (String(localized: "\(title) hue and saturation"),
+         v.saturation == 0 ? String(localized: "neutral") : String(localized: "hue \(Safe.clampedInt(v.hue)) degrees, saturation \(Safe.clampedInt((v.saturation * 100))) percent"))
     }
 }
 

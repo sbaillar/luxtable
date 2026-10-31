@@ -13,7 +13,7 @@ struct SettingsPaneTests {
 
     @Test func anIntegrationThatIsOffOrUnavailableHasNoPane() {
         let none = SettingsPane.visible(isOn: { _ in false }, googlePhotos: true, immich: true)
-        #expect(none == [.general, .familiar, .shortcuts, .raw, .ai, .voice, .devices, .plugins, .updates])
+        #expect(none == [.general, .sharing, .familiar, .shortcuts, .raw, .ai, .voice, .devices, .plugins, .updates])
         let onlyImmich = SettingsPane.visible(isOn: { $0 == .immich }, googlePhotos: true, immich: true)
         #expect(onlyImmich.contains(.immich) && !onlyImmich.contains(.archive))
         let noService = SettingsPane.visible(isOn: { _ in true }, googlePhotos: false, immich: false)

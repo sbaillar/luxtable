@@ -50,8 +50,9 @@ struct RemoveToolSection: View {
                     Button("Try Again") { engine.activate() }.controlSize(.small)
                 }
             } else if on || count > 0 {
-                PanelNote(text: on ? "Paint over what to remove, then release. Esc to stop. " + engine.status
-                          : "\(count) removal\(count == 1 ? "" : "s") on this photo.")
+                PanelNote(text: on ? String(localized: "Paint over what to remove, then release. Esc to stop. ") + engine.status
+                          : count == 1 ? String(localized: "1 removal on this photo.")
+                          : String(localized: "\(count) removals on this photo."))
             }
         }
         .onDisappear {
@@ -61,6 +62,6 @@ struct RemoveToolSection: View {
 }
 
 enum RemoveToolSpecs {
-    static let size = SliderSpec("Size", RemoveToolState.sizeRange, default: 0.04, step: 0.005, format: .percent,
-                                 help: "Brush diameter, as a share of the long edge ([ and ]).")
+    static let size = SliderSpec(String(localized: "Size"), RemoveToolState.sizeRange, default: 0.04, step: 0.005, format: .percent,
+                                 help: String(localized: "Brush diameter, as a share of the long edge ([ and ])."))
 }

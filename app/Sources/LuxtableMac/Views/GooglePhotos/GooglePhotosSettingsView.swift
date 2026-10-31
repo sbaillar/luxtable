@@ -28,8 +28,7 @@ struct GooglePhotosSettingsView: View {
                     }
                     if model.busy { ProgressView().controlSize(.small) }
                 }
-                Text("Exports go to Google Photos only from recipes you turn it on for. Luxtable can add to albums it "
-                    + "created and can't see the rest of your library.")
+                Text("Exports go to Google Photos only from recipes you turn it on for. Luxtable can add to albums it created and can't see the rest of your library.")
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
                 if let m = model.message { Text(m).font(DS.Font.caption).foregroundStyle(DS.textSecondary) }
             }

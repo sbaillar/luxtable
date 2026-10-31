@@ -35,31 +35,31 @@ public struct VoicePhraseBook: Equatable, Sendable {
 
     /// Why `phrase` can't be added for `commandID` (`nil`: it can).
     public func refusal(_ phrase: String, for commandID: String) -> String? {
-        guard VoiceCommandParser.commandsByID[commandID] != nil else { return "Choose a command for it." }
+        guard VoiceCommandParser.commandsByID[commandID] != nil else { return String(localized: "Choose a command for it.") }
         let key = VoiceCommandParser.normalize(phrase)
         let shown = display(phrase)
         if key.isEmpty {
-            return "“\(shown)” has no words to listen for (“the”, “please” and the like are ignored)."
+            return String(localized: "“\(shown)” has no words to listen for (“the”, “please” and the like are ignored).")
         }
         if key.split(separator: " ").first == "edit" {
-            return "Phrases starting with “edit” are Edit with Words instructions."
+            return String(localized: "Phrases starting with “edit” are Edit with Words instructions.")
         }
         if let (other, id) = phrases.first(where: { VoiceCommandParser.normalize($0.key) == key }) {
             let name = VoiceCommandParser.commandsByID[id]?.summary ?? id
-            return id == commandID ? "“\(other)” is already your phrase for \(name)."
-                : "“\(other)” is already your phrase for \(name); remove it first."
+            return id == commandID ? String(localized: "“\(other)” is already your phrase for \(name).")
+                : String(localized: "“\(other)” is already your phrase for \(name); remove it first.")
         }
         if key.contains("?") || key.contains("#") || key.contains("→") {
-            return "“\(shown)” has a number after “photo”, “number” or “go to”: voice hears that as a position."
+            return String(localized: "“\(shown)” has a number after “photo”, “number” or “go to”: voice hears that as a position.")
         }
         if let meaning = VoiceCommandParser.parse(phrase, custom: actions) {
-            return "“\(shown)” already means \(meaning.map(\.label).joined(separator: " · "))."
+            return String(localized: "“\(shown)” already means \(meaning.map(\.label).joined(separator: " · ")).")
         }
         // It must be heard: a phrase starting with a word voice skips ("photo finish",
         // "the next keeper") would never fire.
         if let action = VoiceCommandParser.commandsByID[commandID]?.action,
            VoiceCommandParser.parse(phrase, custom: actions.merging([key: action]) { a, _ in a }) != [action] {
-            return "“\(shown)” can’t be heard as one command: try other words (“photo”, “number” and “the next” at the start are taken)."
+            return String(localized: "“\(shown)” can’t be heard as one command: try other words (“photo”, “number” and “the next” at the start are taken).")
         }
         return nil
     }

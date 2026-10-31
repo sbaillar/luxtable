@@ -352,7 +352,7 @@ public final class DenoiseService {
         guard let app, model.availability == .available else { return 0 }
         let ids = app.selectedIDs.filter { app.photo($0)?.isVideo == false }
         guard !ids.isEmpty else { return 0 }
-        app.updateEdits(ids, label: "AI Denoise") { _, e in
+        app.updateEdits(ids, label: String(localized: "AI Denoise")) { _, e in
             e.noise.aiDenoise = true
             if e.noise.aiStrength <= 0 { e.noise.aiStrength = NoiseEdit().aiStrength }
         }

@@ -40,8 +40,8 @@ extension PhotoFilter {
 public enum FilterSummary {
     /// "2,000 photos" when unfiltered, "37 of 2,000" when filtered.
     public static func text(shown: Int, total: Int, filtered: Bool) -> String {
-        filtered ? "\(shown.formatted()) of \(total.formatted())"
-            : "\(total.formatted()) photo\(total == 1 ? "" : "s")"
+        filtered ? String(localized: "\(shown.formatted()) of \(total.formatted())")
+            : total == 1 ? String(localized: "\(total.formatted()) photo") : String(localized: "\(total.formatted()) photos")
     }
 }
 
@@ -79,15 +79,15 @@ extension PhotoSort {
 public enum PhotoAccessibility {
     public static func label(_ p: Photo, stackCount: Int? = nil) -> String {
         var parts = [p.filename]
-        parts.append(p.rating == 0 ? "unrated" : "\(p.rating) star\(p.rating == 1 ? "" : "s")")
+        parts.append(p.rating == 0 ? String(localized: "unrated") : p.rating == 1 ? String(localized: "1 star") : String(localized: "\(p.rating) stars"))
         switch p.pick {
-        case .picked: parts.append("picked")
-        case .rejected: parts.append("rejected")
+        case .picked: parts.append(String(localized: "picked"))
+        case .rejected: parts.append(String(localized: "rejected"))
         case .none: break
         }
-        if p.colorTag != .none { parts.append("\(p.colorTag.name.lowercased()) tag") }
-        if p.isEdited { parts.append("adjusted") }
-        if let n = stackCount { parts.append("stack of \(n) photos") }
+        if p.colorTag != .none { parts.append(String(localized: "\(p.colorTag.title.lowercased()) tag")) }
+        if p.isEdited { parts.append(String(localized: "adjusted")) }
+        if let n = stackCount { parts.append(String(localized: "stack of \(n) photos")) }
         if let b = MissingActions.badge(p) { parts.append(b.lowercased()) }
         return parts.joined(separator: ", ")
     }

@@ -69,9 +69,9 @@ public enum SmartFolderError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .builtin: "Built-in smart folders can't be changed or deleted."
-        case .emptyName: "Give the smart folder a name."
-        case .notFound: "That smart folder no longer exists."
+        case .builtin: String(localized: "Built-in smart folders can't be changed or deleted.")
+        case .emptyName: String(localized: "Give the smart folder a name.")
+        case .notFound: String(localized: "That smart folder no longer exists.")
         }
     }
 }

@@ -18,9 +18,9 @@ public enum LayoutPreset: String, CaseIterable, Codable, Sendable, Identifiable 
     /// One line for Settings and the first-run choice.
     public var summary: String {
         switch self {
-        case .luxtable: "Tools on the right, Copy and Apply in the toolbar"
-        case .lightroomClassic: "Tools on the right, Copy… and Paste below them"
-        case .captureOne: "Tools on the left, Copy and Apply at the far right"
+        case .luxtable: String(localized: "Tools on the right, Copy and Apply in the toolbar")
+        case .lightroomClassic: String(localized: "Tools on the right, Copy… and Paste below them")
+        case .captureOne: String(localized: "Tools on the left, Copy and Apply at the far right")
         }
     }
 
@@ -71,24 +71,24 @@ public enum NameSet: String, CaseIterable, Codable, Sendable, Identifiable {
     public var title: String { LayoutPreset(rawValue: rawValue)?.title ?? rawValue }
 
     /// The Copy / Apply buttons.
-    public var copyButton: String { self == .lightroomClassic ? "Copy…" : "Copy" }
-    public var applyButton: String { self == .lightroomClassic ? "Paste" : "Apply" }
+    public var copyButton: String { self == .lightroomClassic ? String(localized: "Copy…") : String(localized: "Copy") }
+    public var applyButton: String { self == .lightroomClassic ? String(localized: "Paste") : String(localized: "Apply") }
 
     /// The same commands in the menus.
-    public var copyMenu: String { self == .lightroomClassic ? "Copy Settings…" : "Copy Adjustments" }
-    public var applyMenu: String { self == .lightroomClassic ? "Paste Settings" : "Apply Adjustments" }
+    public var copyMenu: String { self == .lightroomClassic ? String(localized: "Copy Settings…") : String(localized: "Copy Adjustments") }
+    public var applyMenu: String { self == .lightroomClassic ? String(localized: "Paste Settings") : String(localized: "Apply Adjustments") }
 
-    public var newVariant: String { self == .lightroomClassic ? "Create Virtual Copy" : "New Variant" }
+    public var newVariant: String { self == .lightroomClassic ? String(localized: "Create Virtual Copy") : String(localized: "New Variant") }
 
     /// The Layers tab and panel.
-    public var layers: String { self == .lightroomClassic ? "Masks" : "Layers" }
+    public var layers: String { self == .lightroomClassic ? String(localized: "Masks") : String(localized: "Layers") }
 
     /// The looks / styles / presets panel.
     public var styles: String {
         switch self {
-        case .luxtable: "Styles & Presets"
-        case .lightroomClassic: "Presets"
-        case .captureOne: "Styles"
+        case .luxtable: String(localized: "Styles & Presets")
+        case .lightroomClassic: String(localized: "Presets")
+        case .captureOne: String(localized: "Styles")
         }
     }
 

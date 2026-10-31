@@ -190,7 +190,7 @@ public final class Updater {
         } catch {
             let m = Self.message(error)
             if manual {
-                state = .failed("Luxtable couldn’t check for updates: \(m)")
+                state = .failed(String(localized: "Luxtable couldn’t check for updates: \(m)"))
             } else {
                 lastError = m
             }
@@ -352,8 +352,8 @@ public final class Updater {
             })
         } catch let e as ModelFetchError {
             switch e {
-            case .download(let m): throw UpdateError("The update couldn’t be downloaded: \(m)")
-            case .checksum: throw UpdateError("The download isn’t the file GitHub published (checksum mismatch). Nothing was installed.")
+            case .download(let m): throw UpdateError(String(localized: "The update couldn’t be downloaded: \(m)"))
+            case .checksum: throw UpdateError(String(localized: "The download isn’t the file GitHub published (checksum mismatch). Nothing was installed."))
             }
         }
         try Task.checkCancellation()
@@ -376,23 +376,23 @@ public final class Updater {
                                    running: URL, tools: UpdateTools) async throws -> URL {
         let fm = FileManager.default
         let size = (try? fm.attributesOfItem(atPath: zip.path)[.size] as? NSNumber)?.int64Value
-        guard size == r.asset.size else { throw UpdateError("The download isn’t the expected size. Nothing was installed.") }
+        guard size == r.asset.size else { throw UpdateError(String(localized: "The download isn’t the expected size. Nothing was installed.")) }
         let unpacked = staging.appendingPathComponent("unpacked", isDirectory: true)
         try await tools.unzip(zip, unpacked)
         let apps = ((try? fm.contentsOfDirectory(atPath: unpacked.path)) ?? []).filter { $0.hasSuffix(".app") }
-        guard apps.count == 1, let name = apps.first else { throw UpdateError("The download doesn’t contain Luxtable.") }
+        guard apps.count == 1, let name = apps.first else { throw UpdateError(String(localized: "The download doesn’t contain Luxtable.")) }
         let app = unpacked.appendingPathComponent(name, isDirectory: true)
         let plist = (try? Data(contentsOf: app.appendingPathComponent("Contents/Info.plist")))
             .flatMap { try? PropertyListSerialization.propertyList(from: $0, format: nil) as? [String: Any] } ?? [:]
         let id = plist["CFBundleIdentifier"] as? String ?? ""
-        guard id == identifier else { throw UpdateError("The download isn’t Luxtable (its identifier is “\(id)”). Nothing was installed.") }
+        guard id == identifier else { throw UpdateError(String(localized: "The download isn’t Luxtable (its identifier is “\(id)”). Nothing was installed.")) }
         let version = plist["CFBundleShortVersionString"] as? String ?? ""
         guard version == r.version.description else {
-            throw UpdateError("The download is version “\(version)”, not \(r.version). Nothing was installed.")
+            throw UpdateError(String(localized: "The download is version “\(version)”, not \(r.version.description). Nothing was installed."))
         }
         try await tools.verifySignature(app)
         guard try tools.signer(running).accepts(try tools.signer(app)) else {
-            throw UpdateError("The download isn’t signed the way this copy of Luxtable is. Nothing was installed.")
+            throw UpdateError(String(localized: "The download isn’t signed the way this copy of Luxtable is. Nothing was installed."))
         }
         return app
     }
@@ -405,19 +405,19 @@ public final class Updater {
 /// What Settings ▸ Updates and the update sheet say.
 public enum UpdateText {
     public static func available(_ r: UpdateRelease, current: String) -> String {
-        "Luxtable \(r.version) is available (you have \(current))."
+        String(localized: "Luxtable \(r.version.description) is available (you have \(current)).")
     }
 
     public static func title(_ state: Updater.State) -> String {
         switch state {
-        case .idle, .checking: "Checking for updates…"
-        case .upToDate: "You’re up to date"
-        case .available(let r): "Luxtable \(r.version) is available"
-        case .downloading(let r, _): "Downloading Luxtable \(r.version)…"
-        case .verifying(let r): "Checking Luxtable \(r.version)…"
-        case .ready(let r): "Luxtable \(r.version) is ready to install"
-        case .failed: "The update didn’t work"
-        case .manualInstall(let r, _): "Install Luxtable \(r.version) by hand"
+        case .idle, .checking: String(localized: "Checking for updates…")
+        case .upToDate: String(localized: "You’re up to date")
+        case .available(let r): String(localized: "Luxtable \(r.version.description) is available")
+        case .downloading(let r, _): String(localized: "Downloading Luxtable \(r.version.description)…")
+        case .verifying(let r): String(localized: "Checking Luxtable \(r.version.description)…")
+        case .ready(let r): String(localized: "Luxtable \(r.version.description) is ready to install")
+        case .failed: String(localized: "The update didn’t work")
+        case .manualInstall(let r, _): String(localized: "Install Luxtable \(r.version.description) by hand")
         }
     }
 
@@ -425,33 +425,33 @@ public enum UpdateText {
         switch state {
         case .idle, .checking: ""
         case .upToDate:
-            "Luxtable \(current) is the newest \(beta ? "version, betas included" : "version")."
-        case .available: "You have \(current)."
+            beta ? String(localized: "Luxtable \(current) is the newest version, betas included.") : String(localized: "Luxtable \(current) is the newest version.")
+        case .available: String(localized: "You have \(current).")
         case .downloading(_, let f): "\(Int((f * 100).rounded()))%"
-        case .verifying: "Checking its fingerprint and signature."
-        case .ready: "It installs when you quit Luxtable. Restart now to use it right away: you’ll be back on the same photo."
+        case .verifying: String(localized: "Checking its fingerprint and signature.")
+        case .ready: String(localized: "It installs when you quit Luxtable. Restart now to use it right away: you’ll be back on the same photo.")
         case .failed(let m): m
         case .manualInstall(_, let app):
-            "Luxtable can’t replace itself in “\(app.deletingLastPathComponent().path)” (no permission there). "
-                + "The new version is shown in Finder: quit Luxtable and drag it to your Applications folder."
+            String(localized: "Luxtable can’t replace itself in “\(app.deletingLastPathComponent().path)” (no permission there). ")
+                + String(localized: "The new version is shown in Finder: quit Luxtable and drag it to your Applications folder.")
         }
     }
 
     /// Settings ▸ Updates' status line.
     @MainActor public static func status(_ u: Updater) -> String {
-        if !u.isAvailable { return "Updates are available only in the installed app." }
+        if !u.isAvailable { return String(localized: "Updates are available only in the installed app.") }
         switch u.state {
-        case .checking: return "Checking…"
-        case .available(let r): return "Luxtable \(r.version) is available."
-        case .downloading(let r, let f): return "Downloading Luxtable \(r.version)… \(Int((f * 100).rounded()))%"
-        case .verifying(let r): return "Checking Luxtable \(r.version)…"
-        case .ready(let r): return "Luxtable \(r.version) installs when you quit."
+        case .checking: return String(localized: "Checking…")
+        case .available(let r): return String(localized: "Luxtable \(r.version.description) is available.")
+        case .downloading(let r, let f): return String(localized: "Downloading Luxtable \(r.version.description)… \(Int((f * 100).rounded()))%")
+        case .verifying(let r): return String(localized: "Checking Luxtable \(r.version.description)…")
+        case .ready(let r): return String(localized: "Luxtable \(r.version.description) installs when you quit.")
         case .failed(let m): return m
-        case .manualInstall(let r, _): return "Luxtable \(r.version) is waiting to be installed by hand."
+        case .manualInstall(let r, _): return String(localized: "Luxtable \(r.version.description) is waiting to be installed by hand.")
         case .idle, .upToDate:
-            if let e = u.lastError { return "The last check didn’t work: \(e)" }
-            guard let d = u.lastChecked else { return "Not checked yet." }
-            return "Last checked \(d.formatted(date: .abbreviated, time: .shortened))."
+            if let e = u.lastError { return String(localized: "The last check didn’t work: \(e)") }
+            guard let d = u.lastChecked else { return String(localized: "Not checked yet.") }
+            return String(localized: "Last checked \(d.formatted(date: .abbreviated, time: .shortened)).")
         }
     }
 }

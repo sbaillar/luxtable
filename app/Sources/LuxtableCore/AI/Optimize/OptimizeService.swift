@@ -109,7 +109,7 @@ public struct RustPhotoOptimizer: PhotoOptimizing {
 
     public func analyze(_ photo: Photo, edit: EditState, signals: OptimizeSignals, prior: OptimizeReport?,
                         masks: DevelopRenderer.MaskProvider?) async throws -> OptimizeReport {
-        guard let url = photo.url else { throw OptimizeError.unavailable("\(photo.filename) has no file") }
+        guard let url = photo.url else { throw OptimizeError.unavailable(String(localized: "\(photo.filename) has no file")) }
         let json = try AdjustmentsCodec.encode(edit)
         var source: StaticMasks?
         let targets = DevelopRenderer.aiTargets(in: edit)

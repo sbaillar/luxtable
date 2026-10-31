@@ -27,6 +27,7 @@ public struct LuxtableApp: App {
         UserDefaults.standard.register(defaults: ["NSTreatUnknownArgumentsAsOpen": "NO"])
         let model = AppModel.live()
         model.confirmClose = SessionCloseAlert.ask // Close Session asks while jobs run
+        model.openSamples = SampleLauncher.live(mode: model.mode)
         UpscaleService.shared.confirmDownload = UpscaleService.askDownload // its terms, once
         _model = State(initialValue: model)
         let updater = Updater.live(model: model)
@@ -58,6 +59,11 @@ public struct LuxtableApp: App {
                         model.settings.onboardingComplete = true
                         model.sheet = nil
                         Task { await WindowSnapshot.run(model: model, path: args[i + 1]) }
+                    }
+                    if SampleLauncher.isSampleWindow(arguments: args, mode: model.mode) {
+                        // The sample photos have nothing to set up (scratch preferences).
+                        model.settings.onboardingComplete = true
+                        model.sheet = nil
                     }
                     await model.start()
                     if !AppModel.usesPrivateDefaults { updater.startAutomaticChecks() } // never in dev/snapshot runs
@@ -96,6 +102,15 @@ extension AppearancePreference {
         case .dark: .dark
         case .light: .light
         case .system: nil
+        }
+    }
+
+    /// The picker title (the raw value is the persisted English name).
+    var title: LocalizedStringKey {
+        switch self {
+        case .dark: "Dark"
+        case .light: "Light"
+        case .system: "System"
         }
     }
 }
@@ -172,7 +187,7 @@ extension SessionCloseAlert {
         alert.messageText = spec.title
         alert.informativeText = spec.message
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "Cancel"))
         alert.addButton(withTitle: SessionCloseAlert.confirm)
         return alert.runModal() == .alertSecondButtonReturn
     }
@@ -183,10 +198,10 @@ extension UpscaleService {
     @MainActor
     static func askDownload(_ notice: String) -> Bool {
         let alert = NSAlert()
-        alert.messageText = "Download the AI Upscale model?"
+        alert.messageText = String(localized: "Download the AI Upscale model?")
         alert.informativeText = notice
-        alert.addButton(withTitle: "Download")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "Download"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
         return alert.runModal() == .alertFirstButtonReturn
     }
 }
@@ -252,7 +267,7 @@ struct AppCommands: Commands {
         return out
     }
 
-    private func toggle(_ title: String, _ key: KeyEquivalent, _ path: ReferenceWritableKeyPath<ViewerModel, Bool>) -> some View {
+    private func toggle(_ title: LocalizedStringKey, _ key: KeyEquivalent, _ path: ReferenceWritableKeyPath<ViewerModel, Bool>) -> some View {
         Toggle(title, isOn: Bindable(model.viewer)[dynamicMember: path]).keyboardShortcut(key, modifiers: [.command, .option])
     }
 
@@ -263,10 +278,10 @@ struct AppCommands: Commands {
                 .disabled(!updater.isAvailable)
         }
         CommandGroup(replacing: .undoRedo) {
-            Button(model.history.undoLabel.map { "Undo \($0)" } ?? "Undo") { shared(.undo) }
+            Button(model.history.undoLabel.map { String(localized: "Undo \($0)") } ?? String(localized: "Undo")) { shared(.undo) }
                 .keyboardShortcut("z")
                 .disabled(!MenuActions.isEnabled(.undo, model: model, textEditing: TextEditing.isActive))
-            Button(model.history.redoLabel.map { "Redo \($0)" } ?? "Redo") { shared(.redo) }
+            Button(model.history.redoLabel.map { String(localized: "Redo \($0)") } ?? String(localized: "Redo")) { shared(.redo) }
                 .keyboardShortcut("z", modifiers: [.command, .shift])
                 .disabled(!MenuActions.isEnabled(.redo, model: model, textEditing: TextEditing.isActive))
         }
@@ -283,6 +298,8 @@ struct AppCommands: Commands {
             openRecentMenu
             item(.showLibrary).help(CommandCatalog.help(.showLibrary, model: model) ?? "") // [library]
             item(.importCard)
+            Button("Import from Photos Library\u{2026}") { model.showPhotosLibraryImport() }
+                .disabled(!model.canImportExternal)
             item(.closeSession).help(CommandCatalog.help(.closeSession, model: model) ?? "")
             Button("Import Capture One Edits\u{2026}") { model.showCaptureOneImport() }
                 .disabled(!model.canImportCaptureOne)
@@ -299,6 +316,7 @@ struct AppCommands: Commands {
                 .disabled(!model.canRevertAppleLibrary)
             Divider()
             item(.exportSelected) // [exp6]
+            item(.share).help(CommandCatalog.help(.share, model: model) ?? "")
         }
         CommandMenu("Photo") {
             ForEach(Array(CommandCatalog.photoMenu.enumerated()), id: \.offset) { _, c in
@@ -373,6 +391,7 @@ struct AppCommands: Commands {
             item(.showHistory)
             Toggle("Tools on Left", isOn: Binding(get: { model.settings.toolSide == .left },
                                                   set: { model.settings.putTools(on: $0 ? .left : .right) }))
+            simpleModeToggle
             Divider()
             item(.fullScreen)
             Divider()
@@ -380,6 +399,14 @@ struct AppCommands: Commands {
             item(.voiceHelp)
             item(.cheatSheet)
         }
+    }
+
+    /// View ▸ Simple Mode (⌃⌘S), checked while on.
+    private var simpleModeToggle: some View {
+        let s = MenuCommand.simpleMode.shortcut!
+        return Toggle(CommandCatalog.title(.simpleMode, model: model),
+                      isOn: Binding(get: { model.settings.simpleMode }, set: { _ in CommandCatalog.perform(.simpleMode, model: model) }))
+            .keyboardShortcut(KeyEquivalent(s.key), modifiers: Self.modifiers(s.modifiers))
     }
 
     /// View ▸ Voice Commands (⌃⌘V), checked while on.

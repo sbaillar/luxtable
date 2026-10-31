@@ -131,9 +131,9 @@ public enum MultiViewLayout {
 
     /// VoiceOver label for a tile: "Photo 2 of 4, focused".
     public static func accessibilityLabel(position: Int, of count: Int, focused: Bool) -> String {
-        "Photo \(position) of \(count)\(focused ? ", focused" : "")"
+        focused ? String(localized: "Photo \(position) of \(count), focused") : String(localized: "Photo \(position) of \(count)")
     }
 
     /// The overflow tile's text.
-    public static func moreLabel(_ n: Int) -> String { "+\(n) more" }
+    public static func moreLabel(_ n: Int) -> String { String(localized: "+\(n) more") }
 }

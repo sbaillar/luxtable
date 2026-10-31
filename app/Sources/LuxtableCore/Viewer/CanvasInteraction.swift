@@ -243,17 +243,17 @@ extension CanvasTool {
     /// Short label for tool pickers.
     public var viewerLabel: String {
         switch self {
-        case .pan: "Pan"
-        case .crop: "Crop"
-        case .straighten: "Straighten"
-        case .rotate: "Rotate"
-        case .colorPicker: "Color Readout"
-        case .wbPicker: "White Balance Picker"
-        case .focusPoint: "Lens Blur Focus"
-        case .brush: "Brush"
-        case .eraser: "Eraser"
-        case .linearGradient: "Linear Gradient"
-        case .radialGradient: "Radial Gradient"
+        case .pan: String(localized: "Pan")
+        case .crop: String(localized: "Crop")
+        case .straighten: String(localized: "Straighten")
+        case .rotate: String(localized: "Rotate")
+        case .colorPicker: String(localized: "Color Readout")
+        case .wbPicker: String(localized: "White Balance Picker")
+        case .focusPoint: String(localized: "Lens Blur Focus")
+        case .brush: String(localized: "Brush")
+        case .eraser: String(localized: "Eraser")
+        case .linearGradient: String(localized: "Linear Gradient")
+        case .radialGradient: String(localized: "Radial Gradient")
         }
     }
 

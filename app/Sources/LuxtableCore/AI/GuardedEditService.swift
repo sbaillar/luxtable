@@ -167,7 +167,8 @@ public enum IntentGuard {
                 let n = mentioned.contains(.straighten) ? ControlMentions.degrees(in: clause) ?? number : number
                 if let n, let c = EditControl.allCases.first(where: { mentioned.contains($0) && range[$0] != nil }),
                    abs(n) > range[c]! {
-                    unknown.append("\(clause) (beyond the ±\(String(format: "%g", range[c]!)) range)")
+                    unknown.append(String(localized: "\(clause) (beyond the ±\(String(format: "%g", range[c]!)) range)"))
+
                 } else {
                     unknown.append(clause)
                 }

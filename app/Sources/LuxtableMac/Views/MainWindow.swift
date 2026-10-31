@@ -107,6 +107,7 @@ struct MainWindow: View {
                     .transition(.opacity)
             }
         }
+        .overlay(alignment: .top) { if let s = model.share { ShareProgressHUD(share: s) } } // Share… rendering
         .overlay {
             if model.showCheatSheet {
                 CheatSheetOverlay(bindings: model.settings.keyBindings) { model.showCheatSheet = false }
@@ -169,6 +170,7 @@ struct MainWindow: View {
             case .captureOneSettings(let m): C1SettingsSheet(app: model, model: m)
             case .lightroomImport(let m): LightroomImportSheet(app: model, model: m)
             case .appleLibraryImport(let m): AppleLibraryImportSheet(app: model, model: m)
+            case .externalImport(let m): ExternalImportSheet(app: model, model: m)
             case .merge(let m): MergeSheet(model: m)
             }
         }
@@ -244,8 +246,8 @@ struct StatusBar: View {
     private var countText: String {
         let n = model.visibleIDs.count
         let sel = model.selection.count
-        let base = "\(n.formatted()) photo\(n == 1 ? "" : "s")"
-        return sel > 1 ? "\(base) · \(sel.formatted()) selected" : base
+        let base = n == 1 ? String(localized: "1 photo") : String(localized: "\(n.formatted()) photos")
+        return sel > 1 ? base + " · " + String(localized: "\(sel.formatted()) selected") : base
     }
 }
 
@@ -302,7 +304,8 @@ struct SaveStatusView: View {
             }
         case .failed(let message, let pending):
             HStack(spacing: DS.Space.xs) {
-                Label("\(pending) unsaved change\(pending == 1 ? "" : "s")", systemImage: "exclamationmark.triangle.fill")
+                Label(pending == 1 ? String(localized: "1 unsaved change") : String(localized: "\(pending) unsaved changes"),
+                      systemImage: "exclamationmark.triangle.fill")
                     .foregroundStyle(DS.reject)
                     .help(message)
                 Button("Retry") { Task { await model.saver.retry() } }
@@ -310,7 +313,8 @@ struct SaveStatusView: View {
             }
         case .dropped(let message, let count):
             HStack(spacing: DS.Space.xs) {
-                Label("\(count) change\(count == 1 ? "" : "s") not saved", systemImage: "exclamationmark.triangle.fill")
+                Label(count == 1 ? String(localized: "1 change not saved") : String(localized: "\(count) changes not saved"),
+                      systemImage: "exclamationmark.triangle.fill")
                     .foregroundStyle(DS.reject)
                     .help(message)
                 Button("Dismiss") { model.saver.dismissDropped() }

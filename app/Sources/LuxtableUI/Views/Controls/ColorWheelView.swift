@@ -70,7 +70,7 @@ struct ColorWheelView: View {
             .accessibilityAction(named: "Reset") { onChange(WheelValue(), "Reset \(title)") }
 
             SliderTrack(spec: Specs.wheelLightness, value: value.lightness, tint: DS.accent, gradient: nil,
-                        accessibilityName: "\(title) lightness") { l in
+                        accessibilityName: String(localized: "\(title) lightness")) { l in
                 var w = value
                 w.lightness = l
                 onChange(w, "\(title) lightness")

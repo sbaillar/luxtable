@@ -18,6 +18,8 @@ Luxtable checks `GET https://api.github.com/repos/sbaillar/luxtable/releases` (a
 
 Each release also has `Luxtable-<version>-macos-arm64.dmg`, the installer people download by hand: a window with Luxtable.app and an arrow to the Applications folder. `scripts/make-dmg.sh` makes it from `dist/Luxtable.app` (Finder lays out the window, so it runs in a logged-in session and the first run asks to let the terminal control Finder). The updater ignores it. Link the disk image in the notes' `## Install` section.
 
+After publishing, `scripts/update-cask.sh` points the Homebrew tap (`sbaillar/homebrew-luxtable`, its `Casks/luxtable.rb`) at the new disk image and its SHA-256, so `brew tap sbaillar/luxtable && brew install --cask luxtable` installs it; betas are skipped. A failure there only warns: run it again by hand. The tap is a separate repository because the checksum exists only after the release commit is pushed.
+
 `scripts/release.sh` does all of this. It builds with `scripts/build-app.sh` at the tag, checks that the app's version is the tag's and that `codesign --verify --deep --strict` passes, zips it and makes the disk image in `dist/`, and runs `gh release create --verify-tag` with both (`--prerelease` for a beta). By hand, it is:
 
 ```sh
@@ -52,11 +54,19 @@ gh release create rawler-helper-2 dist/rawler-helper/luxtable-rawler-macos-arm64
 |---|---|---|
 | Development | `scripts/build-app.sh` | Signed with the local `Luxtable Dev` identity when it is valid (`security find-identity -v`), else ad hoc. |
 | Distribution (opt-in) | `LT_SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" scripts/build-app.sh` | Hardened Runtime, secure timestamp, `app/Resources/Luxtable.entitlements`. |
-| Notarized (opt-in) | add `LT_NOTARY_PROFILE=<profile>` | Submits with `notarytool --wait`, staples the ticket, runs `spctl --assess`. |
+| Notarized (opt-in) | add `LT_NOTARY_PROFILE=<profile>` | Submits with `notarytool --wait`, staples the ticket, runs `spctl --assess`; `scripts/make-dmg.sh` does the same for the disk image. |
 
 Create the notary profile once, interactively, with `xcrun notarytool store-credentials <profile>`; the credentials live in your keychain, never in the repository or the environment.
 
 **Not tested end to end.** The distribution path needs a paid Apple Developer account, which the automated gates don't have. Everything up to the `codesign` call is exercised by the normal build; the Hardened Runtime launch, the voice feature (microphone entitlement) and notarization still need a first run by the account owner. The app is deliberately not sandboxed (it runs rsync, hdiutil and diskutil and reads folders the user picks); the entitlements file explains each entry.
+
+### Switching releases to Developer ID
+
+1. In the Apple Developer account, create a **Developer ID Application** certificate (Certificates, IDs & Profiles ▸ +) and install it in the login keychain; `security find-identity -v -p codesigning` lists its full name.
+2. Create an app-specific password at account.apple.com, then store the notary profile once: `xcrun notarytool store-credentials luxtable --apple-id <id> --team-id <TEAMID>`.
+3. Release with both set: `LT_SIGN_IDENTITY="Developer ID Application: Name (TEAMID)" LT_NOTARY_PROFILE=luxtable scripts/release.sh …`. The app, the zip the updater downloads and the disk image are all notarized.
+4. The updater accepts an update only from the running app's signer (`CodeSigner.accepts`: same certificate, or same team), so a self-signed copy refuses a Developer ID build. Before the first Developer ID release, ship one more self-signed release whose `CodeSigner.accepts` also takes `.team("<TEAMID>")`; copies that have it then move to Developer ID through Check for Updates. Older copies need the disk image once: say so in the notes.
+5. Replace the "self-signed, not notarized" wording in `README.md`, `docs/user-guide/01-install.md` and the release notes.
 
 ## What every build checks
 

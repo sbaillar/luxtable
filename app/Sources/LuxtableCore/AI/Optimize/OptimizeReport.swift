@@ -147,6 +147,6 @@ public struct OptimizeReport: Equatable, Sendable {
 
     /// "Exposure +0.40 EV · Highlights +27 · Levels black 8.0%, white 99%" (batch rows).
     public var compactSummary: String {
-        changes.isEmpty ? "No changes needed" : changes.map { "\($0.label) \($0.to)" }.joined(separator: " · ")
+        changes.isEmpty ? String(localized: "No changes needed") : changes.map { "\($0.label) \($0.to)" }.joined(separator: " · ")
     }
 }

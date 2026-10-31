@@ -73,8 +73,7 @@ struct MergeSheet: View {
             Toggle("Auto crop", isOn: $model.options.autoCrop)
                 .accessibilityHint("Crops away the empty edges of the stitched panorama")
         case .burst:
-            Text("Starts from the best frame and takes, from the others, faces that look better "
-                 + "(open eyes first) and areas that are sharper. Nothing that moved is taken.")
+            Text("Starts from the best frame and takes, from the others, faces that look better (open eyes first) and areas that are sharper. Nothing that moved is taken.")
                 .font(DS.Font.label).foregroundStyle(DS.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }

@@ -11,6 +11,9 @@
   <key>CFBundleVersion</key><string>@BUILD_NUMBER@</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundleDevelopmentRegion</key><string>en</string>
+  <!-- app/Resources/Localization (docs/LOCALIZATION.md). -->
+  <key>CFBundleLocalizations</key>
+  <array><string>en</string><string>de</string><string>fr</string><string>es</string><string>ja</string><string>zh-Hans</string></array>
   <key>NSHumanReadableCopyright</key><string>Copyright © 2026 The Luxtable Authors</string>
   <key>LSMinimumSystemVersion</key><string>26.0</string>
   <key>LSApplicationCategoryType</key><string>public.app-category.photography</string>
@@ -20,6 +23,7 @@
   <key>NSDocumentsFolderUsageDescription</key><string>Luxtable keeps your sessions in a folder you choose.</string>
   <key>NSDesktopFolderUsageDescription</key><string>Luxtable imports photos from your Desktop folder when you choose it, and never modifies the originals.</string>
   <key>NSDownloadsFolderUsageDescription</key><string>Luxtable imports photos from your Downloads folder when you choose it, and never modifies the originals.</string>
+  <key>NSPhotoLibraryUsageDescription</key><string>Luxtable copies the originals of the photos you choose from your Photos library into a session. It never changes or deletes anything in Photos.</string>
   <key>NSRemovableVolumesUsageDescription</key><string>Luxtable imports photos from memory cards and never modifies them.</string>
   <key>NSNetworkVolumesUsageDescription</key><string>Luxtable archives sessions to your network photo share.</string>
   <key>NSLocalNetworkUsageDescription</key><string>Luxtable archives sessions to a NAS on your local network and keeps albums in your Immich server up to date.</string>

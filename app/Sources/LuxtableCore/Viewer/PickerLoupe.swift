@@ -22,10 +22,10 @@ public enum PickerSample: String, CaseIterable, Sendable, Identifiable {
 
     public var label: String {
         switch self {
-        case .point: "1 px"
+        case .point: String(localized: "1 px")
         case .box3: "3×3"
         case .box5: "5×5"
-        case .average: "11×11 average"
+        case .average: String(localized: "11×11 average")
         }
     }
 }
@@ -211,14 +211,14 @@ public final class PickerLoupe {
     nonisolated public static func neutrality(_ rgb: SIMD3<Double>) -> String {
         let (a, b) = oklabAB(rgb)
         let chroma = (a * a + b * b).squareRoot()
-        if chroma < 0.008 { return "Neutral" }
+        if chroma < 0.008 { return String(localized: "Neutral") }
         let cast: String
         if abs(b) >= abs(a) {
-            cast = b > 0 ? "warm" : "cool"
+            cast = b > 0 ? String(localized: "warm") : String(localized: "cool")
         } else {
-            cast = a > 0 ? "magenta" : "green"
+            cast = a > 0 ? String(localized: "magenta") : String(localized: "green")
         }
-        return chroma < 0.025 ? "Nearly neutral, slightly \(cast)" : "Not neutral: \(cast) cast"
+        return chroma < 0.025 ? String(localized: "Nearly neutral, slightly \(cast)") : String(localized: "Not neutral: \(cast) cast")
     }
 
     /// OKLab a, b of an sRGB colour (0…1).
@@ -237,16 +237,16 @@ public final class PickerLoupe {
 
     /// The readout as spoken by VoiceOver.
     nonisolated public static func spoken(_ r: Readout, kind: Kind) -> String {
-        var parts = ["Red \(r.rgb.x), green \(r.rgb.y), blue \(r.rgb.z)"]
+        var parts = [String(localized: "Red \(r.rgb.x), green \(r.rgb.y), blue \(r.rgb.z)")]
         if kind == .whiteBalance {
             if let wb = r.whiteBalance {
-                parts.append("\(Int(wb.temperature)) Kelvin, tint \(Formatters.signed(wb.tint, decimals: 1))")
+                parts.append(String(localized: "\(String(Int(wb.temperature))) Kelvin, tint \(Formatters.signed(wb.tint, decimals: 1))"))
             } else if let e = r.whiteBalanceError {
                 parts.append(e)
             }
         }
         parts.append(r.neutrality)
-        if r.clipped { parts.append("Clipped: pick a neutral that isn't blown out") }
+        if r.clipped { parts.append(String(localized: "Clipped: pick a neutral that isn't blown out")) }
         return parts.joined(separator: ". ")
     }
 }

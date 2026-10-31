@@ -54,7 +54,7 @@ package struct ViewerArea: View {
                     .accessibilityElement(children: .contain)
                     .accessibilityLabel(plan.isMulti
                         ? MultiViewLayout.accessibilityLabel(position: model.focusedID.flatMap(plan.position) ?? 1, of: count, focused: true)
-                        : "Viewer")
+                        : String(localized: "Viewer"))
                     .position(x: f.midX, y: f.midY)
             }
             .onAppear { model.viewerAreaWidth = geo.size.width }

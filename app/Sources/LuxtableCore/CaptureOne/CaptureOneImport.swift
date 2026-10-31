@@ -73,53 +73,71 @@ public struct C1ImportSummary: Sendable, Equatable {
 
     /// What is (or would be) brought over, one line each; zero counts are left out.
     public var lines: [String] {
-        let verb = dryRun ? "will be" : "were"
         var out: [String] = []
-        func add(_ n: Int, _ what: String) {
-            if n > 0 { out.append("\(Self.photos(n)) \(what)") }
+        func add(_ n: Int, _ future: (String) -> String, _ past: (String) -> String) {
+            if n > 0 { out.append(dryRun ? future(Self.photos(n)) : past(Self.photos(n))) }
         }
-        add(rated, "\(verb) rated")
-        add(tagged, "\(verb) colour-tagged")
-        add(picked, "\(verb) picked or unpicked (Capture One's Selects folder)")
-        add(keyworded, "\(verb) given keywords")
-        add(editsMapped, "\(verb) given Capture One's edits")
-        func counted(_ n: Int) -> String { dryRun ? "will be" : n == 1 ? "was" : "were" }
+        add(rated, { String(localized: "\($0) will be rated") }, { String(localized: "\($0) were rated") })
+        add(tagged, { String(localized: "\($0) will be colour-tagged") }, { String(localized: "\($0) were colour-tagged") })
+        add(picked, { String(localized: "\($0) will be picked or unpicked (Capture One's Selects folder)") },
+            { String(localized: "\($0) were picked or unpicked (Capture One's Selects folder)") })
+        add(keyworded, { String(localized: "\($0) will be given keywords") }, { String(localized: "\($0) were given keywords") })
+        add(editsMapped, { String(localized: "\($0) will be given Capture One's edits") },
+            { String(localized: "\($0) were given Capture One's edits") })
         if variantsCreated > 0 {
-            out.append("\(variantsCreated) Capture One variant\(variantsCreated == 1 ? "" : "s") \(counted(variantsCreated)) added as new variants")
+            out.append(dryRun ? (variantsCreated == 1 ? String(localized: "1 Capture One variant will be added as new variants")
+                                    : String(localized: "\(variantsCreated) Capture One variants will be added as new variants"))
+                : variantsCreated == 1 ? String(localized: "1 Capture One variant was added as new variants")
+                : String(localized: "\(variantsCreated) Capture One variants were added as new variants"))
         }
         let albums = albumsCreated + albumsUpdated
-        if albums > 0 { out.append("\(albums) album\(albums == 1 ? "" : "s") \(counted(albums)) created or updated") }
-        if out.isEmpty { out.append(conflicts.isEmpty ? "Everything is already up to date." : "Nothing new apart from the conflicts below.") }
+        if albums > 0 {
+            out.append(dryRun ? (albums == 1 ? String(localized: "1 album will be created or updated")
+                                    : String(localized: "\(albums) albums will be created or updated"))
+                : albums == 1 ? String(localized: "1 album was created or updated")
+                : String(localized: "\(albums) albums were created or updated"))
+        }
+        if out.isEmpty {
+            out.append(conflicts.isEmpty ? String(localized: "Everything is already up to date.")
+                : String(localized: "Nothing new apart from the conflicts below."))
+        }
         return out
     }
 
     /// The Luxtable tool each mapped C1 key lands in.
     static func tool(for key: String) -> String {
         switch key {
-        case "Exposure", "Contrast", "Brightness", "Saturation": key
-        case "HighlightRecoveryEx": "HDR highlights"
-        case "ShadowRecovery": "HDR shadows"
-        case "WhiteRecovery": "HDR whites"
-        case "BlackRecovery": "HDR blacks"
-        case "WhiteBalance", "WhiteBalanceTemperature", "WhiteBalanceTint": "White balance"
-        case "Crop": "Crop"
-        case "Rotation": "Rotation and straighten"
-        case "Clarity": "Clarity"
-        case "ClarityStructure": "Structure"
-        case "DehazeAmount": "Dehaze"
-        case "Vignetting": "Vignetting"
-        case "NrAmount", "CnrAmount", "NoiseDetailsAmount": "Noise reduction"
-        case "Shadow", "Highlight", "TargetShadow", "TargetHighlight": "Levels"
-        case "ChromaticAberEnabled": "Chromatic aberration"
-        case let k where k.hasPrefix("Usm"): "Sharpening"
-        case let k where k.hasPrefix("GradationCurve"): "Curve"
+        case "Exposure": String(localized: "Exposure")
+        case "Contrast": String(localized: "Contrast")
+        case "Brightness": String(localized: "Brightness")
+        case "Saturation": String(localized: "Saturation")
+        case "HighlightRecoveryEx": String(localized: "HDR highlights")
+        case "ShadowRecovery": String(localized: "HDR shadows")
+        case "WhiteRecovery": String(localized: "HDR whites")
+        case "BlackRecovery": String(localized: "HDR blacks")
+        case "WhiteBalance", "WhiteBalanceTemperature", "WhiteBalanceTint": String(localized: "White balance")
+        case "Crop": String(localized: "Crop")
+        case "Rotation": String(localized: "Rotation and straighten")
+        case "Clarity": String(localized: "Clarity")
+        case "ClarityStructure": String(localized: "Structure")
+        case "DehazeAmount": String(localized: "Dehaze")
+        case "Vignetting": String(localized: "Vignetting")
+        case "NrAmount", "CnrAmount", "NoiseDetailsAmount": String(localized: "Noise reduction")
+        case "Shadow", "Highlight", "TargetShadow", "TargetHighlight": String(localized: "Levels")
+        case "ChromaticAberEnabled": String(localized: "Chromatic aberration")
+        case let k where k.hasPrefix("Usm"): String(localized: "Sharpening")
+        case let k where k.hasPrefix("GradationCurve"): String(localized: "Curve")
         default: key
         }
     }
 
     /// Tools whose scale is translated approximately (see docs/C1_FORMAT.md).
-    static let approximateTools: Set<String> = ["Clarity", "Structure", "Dehaze", "Vignetting", "Sharpening",
-                                                "Noise reduction", "Curve", "Levels", "Crop"]
+    /// (Localized like `tool(for:)`'s names, which they are compared with.)
+    static let approximateTools: Set<String> = [
+        String(localized: "Clarity"), String(localized: "Structure"), String(localized: "Dehaze"),
+        String(localized: "Vignetting"), String(localized: "Sharpening"), String(localized: "Noise reduction"),
+        String(localized: "Curve"), String(localized: "Levels"), String(localized: "Crop"),
+    ]
 
     /// Mapped edits per Luxtable tool, most photos first: "Exposure: 149 photos".
     /// A tool fed by several keys counts its most frequent key.
@@ -127,7 +145,7 @@ public struct C1ImportSummary: Sendable, Equatable {
         var counts: [String: Int] = [:]
         for c in mapped { counts[Self.tool(for: c.key), default: 0] = max(counts[Self.tool(for: c.key)] ?? 0, c.count) }
         return counts.sorted { $0.value != $1.value ? $0.value > $1.value : $0.key < $1.key }
-            .map { "\($0.key): \(Self.photos($0.value))\(Self.approximateTools.contains($0.key) ? " (approximate)" : "")" }
+            .map { "\($0.key): \(Self.photos($0.value))\(Self.approximateTools.contains($0.key) ? String(localized: " (approximate)") : "")" }
     }
 
     /// Luxtable edits the import would replace (with the overwrite option), one line per photo.
@@ -139,13 +157,13 @@ public struct C1ImportSummary: Sendable, Equatable {
             fields[c.file, default: []].append(Self.fieldName(c.field))
         }
         let shown = files.prefix(8).map { "\($0): \(fields[$0]!.joined(separator: ", "))" }
-        return files.count > 8 ? shown + ["and \(Self.photos(files.count - 8)) more"] : shown
+        return files.count > 8 ? shown + [String(localized: "and \(Self.photos(files.count - 8)) more")] : shown
     }
 
     static func fieldName(_ f: String) -> String {
         switch f {
-        case "color_tag": "colour tag"
-        case "adjustments": "edits"
+        case "color_tag": String(localized: "colour tag")
+        case "adjustments": String(localized: "edits")
         default: f
         }
     }
@@ -158,22 +176,30 @@ public struct C1ImportSummary: Sendable, Equatable {
     /// Photos and albums left out, and why.
     public var leftOutLines: [String] {
         var out: [String] = []
-        if inTrash > 0 { out.append("\(Self.photos(inTrash)) in Capture One's Trash (not listed in Luxtable)") }
-        if outsideFolder > 0 { out.append("\(Self.photos(outsideFolder)) outside this folder (other folders the Capture One session references)") }
-        if !notFound.isEmpty { out.append("\(Self.photos(notFound.count)) not found in Luxtable: \(Self.sample(notFound))") }
-        if deletedInLuxtable > 0 { out.append("\(deletedInLuxtable) variant\(deletedInLuxtable == 1 ? "" : "s") deleted in Luxtable (not recreated)") }
-        if readOnly > 0 { out.append("\(Self.photos(readOnly)) saved by a newer Luxtable (left alone)") }
-        if keptLuxtable > 0 { out.append("\(keptLuxtable) Luxtable change\(keptLuxtable == 1 ? "" : "s") kept (unchanged in Capture One since the last import)") }
+        if inTrash > 0 { out.append(String(localized: "\(Self.photos(inTrash)) in Capture One's Trash (not listed in Luxtable)")) }
+        if outsideFolder > 0 {
+            out.append(String(localized: "\(Self.photos(outsideFolder)) outside this folder (other folders the Capture One session references)"))
+        }
+        if !notFound.isEmpty { out.append(String(localized: "\(Self.photos(notFound.count)) not found in Luxtable: \(Self.sample(notFound))")) }
+        if deletedInLuxtable > 0 {
+            out.append(deletedInLuxtable == 1 ? String(localized: "1 variant deleted in Luxtable (not recreated)")
+                : String(localized: "\(deletedInLuxtable) variants deleted in Luxtable (not recreated)"))
+        }
+        if readOnly > 0 { out.append(String(localized: "\(Self.photos(readOnly)) saved by a newer Luxtable (left alone)")) }
+        if keptLuxtable > 0 {
+            out.append(keptLuxtable == 1 ? String(localized: "1 Luxtable change kept (unchanged in Capture One since the last import)")
+                : String(localized: "\(keptLuxtable) Luxtable changes kept (unchanged in Capture One since the last import)"))
+        }
         out += skipped.map { "\u{201c}\($0.name)\u{201d}: \($0.reason)" }
         out += warnings
         return out
     }
 
-    package static func photos(_ n: Int) -> String { n == 1 ? "1 photo" : "\(n) photos" }
+    package static func photos(_ n: Int) -> String { n == 1 ? String(localized: "1 photo") : String(localized: "\(n) photos") }
 
     static func sample(_ names: [String], limit: Int = 3) -> String {
         let head = names.prefix(limit).joined(separator: ", ")
-        return names.count > limit ? "\(head) and \(names.count - limit) more" : head
+        return names.count > limit ? String(localized: "\(head) and \(names.count - limit) more") : head
     }
 }
 
@@ -186,11 +212,17 @@ public struct C1RevertSummary: Sendable, Equatable {
     public var albumsTrimmed = 0
 
     public var message: String {
-        var parts = ["Capture One import reverted: \(C1ImportSummary.photos(restored)) restored"]
-        if variantsRemoved > 0 { parts.append("\(variantsRemoved) imported variant\(variantsRemoved == 1 ? "" : "s") removed") }
+        var parts = [String(localized: "Capture One import reverted: \(C1ImportSummary.photos(restored)) restored")]
+        if variantsRemoved > 0 {
+            parts.append(variantsRemoved == 1 ? String(localized: "1 imported variant removed")
+                : String(localized: "\(variantsRemoved) imported variants removed"))
+        }
         let albums = albumsRemoved + albumsTrimmed
-        if albums > 0 { parts.append("\(albums) album\(albums == 1 ? "" : "s") undone") }
-        if kept > 0 { parts.append("\(kept) later Luxtable change\(kept == 1 ? "" : "s") kept") }
+        if albums > 0 { parts.append(albums == 1 ? String(localized: "1 album undone") : String(localized: "\(albums) albums undone")) }
+        if kept > 0 {
+            parts.append(kept == 1 ? String(localized: "1 later Luxtable change kept")
+                : String(localized: "\(kept) later Luxtable changes kept"))
+        }
         return parts.joined(separator: ", ")
     }
 }
@@ -249,11 +281,11 @@ public final class CaptureOneImportModel {
     }
 
     /// Under the result: what Revert Import (and File ▸ Revert Capture One Import) takes back.
-    public static let revertHint = "Revert Import takes back every Capture One import since the last revert, "
-        + "here or with File \u{25B8} Revert Capture One Import. Changes you make in Luxtable afterwards are kept."
+    public static let revertHint = String(localized: "Revert Import takes back every Capture One import since the last revert, ")
+        + String(localized: "here or with File \u{25B8} Revert Capture One Import. Changes you make in Luxtable afterwards are kept.")
 
     public var title: String {
-        offered ? "\u{201c}\(session.name)\u{201d} is a Capture One session" : "Import Capture One Edits"
+        offered ? String(localized: "\u{201c}\(session.name)\u{201d} is a Capture One session") : String(localized: "Import Capture One Edits")
     }
 
     /// The dry run's summary while previewing.
@@ -281,7 +313,7 @@ public final class CaptureOneImportModel {
         do {
             phase = .preview(try await importer.importCaptureOne(session, dryRun: true, overwriteEdits: false))
         } catch is CancellationError {
-            phase = .failed("Cancelled")
+            phase = .failed(String(localized: "Cancelled"))
         } catch {
             phase = .failed(error.localizedDescription)
         }
@@ -369,7 +401,7 @@ extension AppModel {
         let outcome: Toast
         do {
             let r = try await importer.revertCaptureOneImport(session)
-            outcome = Toast(r?.message ?? "No Capture One import to revert", symbol: "arrow.uturn.backward")
+            outcome = Toast(r?.message ?? String(localized: "No Capture One import to revert"), symbol: "arrow.uturn.backward")
         } catch {
             outcome = Toast(error.localizedDescription, symbol: "exclamationmark.triangle", isError: true)
         }

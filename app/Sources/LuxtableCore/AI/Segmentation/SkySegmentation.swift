@@ -12,10 +12,11 @@ public enum SegmentationError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .download(let m): "Couldn't download the sky model: \(m)"
-        case .checksum(let f): "The downloaded sky model is damaged (\(f)). Try again."
-        case .compile(let m): "Couldn't prepare the sky model: \(m)"
-        case .inference(let m): "Sky detection failed: \(m)"
+        case .download(let m): String(localized: "Couldn't download the sky model: \(m)")
+        case .checksum(let f): String(localized: "The downloaded sky model is damaged (\(f)). Try again.")
+        case .compile(let m): String(localized: "Couldn't prepare the sky model: \(m)")
+        case .inference(let m): String(localized: "Sky detection failed: \(m)")
+
         }
     }
 }

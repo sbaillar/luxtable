@@ -26,7 +26,7 @@ This builds `dist/Luxtable.app` and opens it. You can then copy it to your Appli
 
 ## Try it without your photos
 
-Demo mode opens sample sessions of synthetic photos and simulates imports and archiving. It never reads or changes your own files:
+On the first run, click **Try with Sample Photos** on the welcome screen. A second Luxtable window opens in demo mode: sample sessions of synthetic photos, with simulated imports and archiving. It has its own settings and never reads or changes your own files, so try anything there and quit it when you're done. From Terminal, the same demo mode is:
 
 ```sh
 dist/Luxtable.app/Contents/MacOS/Luxtable --demo
@@ -39,10 +39,14 @@ Every screenshot in this guide was taken in demo mode.
 The first time Luxtable opens, a short setup sheet walks you through a few steps. **Skip for Now** keeps the defaults, and everything can be changed later in Settings (`⌘,`).
 
 1. **Welcome:** what Luxtable does.
-2. **What did you use before?** Choose Luxtable, Lightroom Classic or Capture One. This only moves panels, keyboard shortcuts and a few names to where your hands expect them (Settings ▸ Familiar).
+2. **What did you use before?** Choose Luxtable, Lightroom Classic or Capture One. This only moves panels, keyboard shortcuts and a few names to where your hands expect them (Settings ▸ Familiar). If you are new to photo editing, choose **Nothing yet: I'm new to photo editing** to start in [Simple mode](06-develop.md#simple-mode): an Auto button, looks and a few easy sliders.
 3. **Where should sessions live?** The folder where new sessions are created. Pick your fastest disk.
 4. **Archive (optional):** tick **Archive sessions automatically** and choose a folder (for example on a NAS) that sessions are copied to in the background. It stays off until you turn it on.
 5. **Amazon Photos (optional):** a folder the Amazon Photos app backs up. This step only appears while the Amazon Photos integration is on (see [Optional integrations](12-plugins.md#optional-integrations)).
+
+## Language
+
+Luxtable is available in English, German (Deutsch), French (Français), Spanish (Español), Japanese (日本語) and Simplified Chinese (简体中文). It follows the language order in **System Settings ▸ General ▸ Language & Region**. To use a different language for Luxtable only, add it under **Applications** in the same pane (click **+**, choose Luxtable and the language), then quit and reopen Luxtable. Photo names, keywords, folder names and anything you type stay as they are.
 
 ## Permissions
 

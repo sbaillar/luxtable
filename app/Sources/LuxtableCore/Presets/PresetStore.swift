@@ -33,7 +33,7 @@ public final class PresetStore {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         let groups = groups.subtracting([.layers])
         guard !trimmed.isEmpty, !groups.isEmpty else {
-            lastError = trimmed.isEmpty ? "Give the preset a name." : "Choose at least one adjustment group."
+            lastError = trimmed.isEmpty ? String(localized: "Give the preset a name.") : String(localized: "Choose at least one adjustment group.")
             return nil
         }
         let p = Preset(name: uniqueName(trimmed), groups: groups, relative: relative ?? Preset.defaultRelative(for: groups),
@@ -88,7 +88,7 @@ public final class PresetStore {
     /// Copy any preset (a built-in style too) into My Presets, to adjust it.
     @discardableResult
     public func duplicate(_ preset: Preset) -> Preset {
-        let p = Preset(name: uniqueName(preset.name + " Copy"), groups: preset.groups, relative: preset.relative,
+        let p = Preset(name: uniqueName(String(localized: "\(preset.name) Copy")), groups: preset.groups, relative: preset.relative,
                        absoluteFields: preset.absoluteFields, edit: preset.edit)
         userPresets.append(p)
         persist()
@@ -205,7 +205,7 @@ public final class PresetStore {
         } catch {
             // Unreadable on disk (permissions, I/O): don't write over what we couldn't read.
             saveBlocked = true
-            loadError = "Couldn’t read presets: \(error.localizedDescription)"
+            loadError = String(localized: "Couldn’t read presets: \(error.localizedDescription)")
             lastError = loadError
             return
         }
@@ -219,13 +219,14 @@ public final class PresetStore {
         userPresets = salvaged
         guard let backup = Self.backUp(fileURL, data) else {
             saveBlocked = true
-            loadError = "Couldn’t read presets, and couldn’t back up the file; new presets won’t be saved until presets.json is fixed or removed."
+            loadError = String(localized: "Couldn’t read presets, and couldn’t back up the file; new presets won’t be saved until presets.json is fixed or removed.")
             lastError = loadError
             return
         }
-        let what = unreadable > 0 ? "\(unreadable) preset\(unreadable == 1 ? "" : "s") couldn’t be read"
-                                  : "Couldn’t read presets"
-        loadError = "\(what); the file was kept as \(backup.lastPathComponent)."
+        let what = unreadable == 1 ? String(localized: "1 preset couldn’t be read")
+            : unreadable > 0 ? String(localized: "\(unreadable) presets couldn’t be read")
+            : String(localized: "Couldn’t read presets")
+        loadError = String(localized: "\(what); the file was kept as \(backup.lastPathComponent).")
         lastError = loadError
     }
 
@@ -260,7 +261,7 @@ public final class PresetStore {
             try Self.encode(userPresets).write(to: fileURL, options: .atomic)
             lastError = loadError
         } catch {
-            lastError = "Couldn’t save presets: \(error.localizedDescription)"
+            lastError = String(localized: "Couldn’t save presets: \(error.localizedDescription)")
         }
     }
 }

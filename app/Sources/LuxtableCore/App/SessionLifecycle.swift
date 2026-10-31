@@ -32,17 +32,17 @@ public enum SessionNameRules {
     /// folders already there; the default volume ignores case).
     public static func problem(_ name: String, taken: Set<String>) -> String? {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty { return "Enter a name for the session." }
-        if trimmed.hasPrefix(".") { return "A session name can’t start with a period." }
+        if trimmed.isEmpty { return String(localized: "Enter a name for the session.") }
+        if trimmed.hasPrefix(".") { return String(localized: "A session name can’t start with a period.") }
         let illegal = ["/", ":"].filter(trimmed.contains)
         if !illegal.isEmpty {
-            return "A session name can’t contain " + illegal.map { "“\($0)”" }.joined(separator: " or ") + "."
+            return String(localized: "A session name can’t contain \(illegal.map { "“\($0)”" }.joined(separator: String(localized: " or "))).")
         }
         if trimmed.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }) {
-            return "A session name can’t contain control characters."
+            return String(localized: "A session name can’t contain control characters.")
         }
-        if trimmed.utf8.count > maxBytes { return "That name is too long." }
-        if taken.contains(trimmed.lowercased()) { return "A session named “\(trimmed)” already exists here." }
+        if trimmed.utf8.count > maxBytes { return String(localized: "That name is too long.") }
+        if taken.contains(trimmed.lowercased()) { return String(localized: "A session named “\(trimmed)” already exists here.") }
         return nil
     }
 
@@ -223,12 +223,13 @@ extension AppModel {
         repeat {
             let left = deadline - .now
             guard left > .zero, await flushSaves(within: left) else {
-                show(Toast("“\(session.name)” is still open: saving is taking too long. Try again in a moment.",
+                show(Toast(String(localized: "“\(session.name)” is still open: saving is taking too long. Try again in a moment."),
                            symbol: "exclamationmark.triangle", isError: true))
                 return
             }
             if case .failed(let message, let pending) = saver.state {
-                show(Toast("“\(session.name)” is still open: \(pending) change\(pending == 1 ? "" : "s") couldn’t be saved (\(message))",
+                show(Toast(pending == 1 ? String(localized: "“\(session.name)” is still open: 1 change couldn’t be saved (\(message))")
+                           : String(localized: "“\(session.name)” is still open: \(pending) changes couldn’t be saved (\(message))"),
                            symbol: "exclamationmark.triangle", isError: true))
                 return
             }
@@ -275,7 +276,7 @@ extension AppModel {
             return
         }
         await reloadSessions()
-        show(Toast("Import into “\(session.name)” finished", symbol: "sdcard", openSession: session))
+        show(Toast(String(localized: "Import into “\(session.name)” finished"), symbol: "sdcard", openSession: session))
     }
 
     /// The toast's Open button.
@@ -293,8 +294,9 @@ extension AppModel {
     /// What closing says: imports, exports and archive runs in flight are not stopped.
     nonisolated static func closedMessage(_ name: String, imports: Int, exporting: Bool, archiving: Bool = false) -> String {
         let running = SessionCloseAlert.running(imports: imports, exporting: exporting, archiving: archiving)
-        guard !running.isEmpty else { return "Closed “\(name)”" }
-        return "Closed “\(name)” (\(running.list) \(running.plural ? "keep" : "keeps") running)"
+        guard !running.isEmpty else { return String(localized: "Closed “\(name)”") }
+        return running.plural ? String(localized: "Closed “\(name)” (\(running.list) keep running)")
+            : String(localized: "Closed “\(name)” (\(running.list) keeps running)")
     }
 }
 
@@ -303,25 +305,28 @@ public struct SessionCloseAlert: Equatable, Sendable {
     public var title: String
     public var message: String
     /// The confirming button (Cancel is the default).
-    public static let confirm = "Close Session"
+    public static let confirm = String(localized: "Close Session")
 
     /// nil: nothing is running, close without asking.
     public static func make(session: String, imports: Int, exporting: Bool, archiving: Bool) -> SessionCloseAlert? {
         let r = running(imports: imports, exporting: exporting, archiving: archiving)
         guard !r.isEmpty else { return nil }
         return SessionCloseAlert(
-            title: "\(r.list.prefix(1).uppercased() + r.list.dropFirst()) \(r.plural ? "are" : "is") still running",
-            message: "Close “\(session)” anyway? \(r.plural ? "They keep" : "It keeps") running and \(r.plural ? "finish" : "finishes") "
-                + "on \(r.plural ? "their" : "its") own. Nothing is deleted, and the session stays in the Sessions list.")
+            title: r.plural ? String(localized: "\(r.list.prefix(1).uppercased() + r.list.dropFirst()) are still running")
+                : String(localized: "\(r.list.prefix(1).uppercased() + r.list.dropFirst()) is still running"),
+            message: r.plural
+                ? String(localized: "Close “\(session)” anyway? They keep running and finish on their own. Nothing is deleted, and the session stays in the Sessions list.")
+                : String(localized: "Close “\(session)” anyway? It keeps running and finishes on its own. Nothing is deleted, and the session stays in the Sessions list."))
     }
 
     /// "the import", "2 imports", "the export", "the archive run", joined in words.
     static func running(imports: Int, exporting: Bool, archiving: Bool) -> (list: String, plural: Bool, isEmpty: Bool) {
         var r: [String] = []
-        if imports > 0 { r.append(imports == 1 ? "the import" : "\(imports) imports") }
-        if exporting { r.append("the export") }
-        if archiving { r.append("the archive run") }
-        let list = r.count > 2 ? r.dropLast().joined(separator: ", ") + " and " + r[r.count - 1] : r.joined(separator: " and ")
+        if imports > 0 { r.append(imports == 1 ? String(localized: "the import") : String(localized: "\(imports) imports")) }
+        if exporting { r.append(String(localized: "the export")) }
+        if archiving { r.append(String(localized: "the archive run")) }
+        let list = r.count > 2 ? r.dropLast().joined(separator: ", ") + String(localized: " and ") + r[r.count - 1]
+            : r.joined(separator: String(localized: " and "))
         return (list, r.count > 1 || imports > 1, r.isEmpty)
     }
 }
@@ -335,13 +340,13 @@ public enum SessionLocation {
         for s in sessions {
             let root = canonical(s.url)
             if d.path == root.path || d.path.hasPrefix(root.path + "/") {
-                return "That folder is inside “\(s.name)”. Choose a folder outside any session."
+                return String(localized: "That folder is inside “\(s.name)”. Choose a folder outside any session.")
             }
         }
         var probe = d
         while probe.path != "/" {
             if SessionDataFolder.exists(in: probe) {
-                return "That folder is inside the session “\(probe.lastPathComponent)”. Choose a folder outside any session."
+                return String(localized: "That folder is inside the session “\(probe.lastPathComponent)”. Choose a folder outside any session.")
             }
             probe.deleteLastPathComponent()
         }
@@ -354,8 +359,7 @@ public enum SessionLocation {
         let p = dir.standardizedFileURL.path
         let synced = ["/Library/Mobile Documents/", "/Library/CloudStorage/", "/Dropbox/", "/Google Drive/", "/OneDrive/"]
         guard synced.contains(where: { p.contains($0) || p.hasSuffix(String($0.dropLast())) }) else { return nil }
-        return "This folder is synced by a cloud service. Originals may be offloaded or synced while Luxtable writes; "
-            + "a local or external drive is safer."
+        return String(localized: "This folder is synced by a cloud service. Originals may be offloaded or synced while Luxtable writes; a local or external drive is safer.")
     }
 
     /// `dir` and those of its parents that don't exist yet, deepest first (what creating

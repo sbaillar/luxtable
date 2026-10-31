@@ -107,7 +107,7 @@ public final class UpscaleService {
         /// "Upscaling 2 of 3, 42%".
         public var status: String {
             let pct = "\(Int((fraction * 100).rounded()))%"
-            return photos > 1 ? "Upscaling \(photo) of \(photos), \(pct)" : "Upscaling, \(pct)"
+            return photos > 1 ? String(localized: "Upscaling \(photo) of \(photos), \(pct)") : String(localized: "Upscaling, \(pct)")
         }
     }
 
@@ -180,8 +180,8 @@ public final class UpscaleService {
     /// Why Upscale 2× can't run on `app`'s selection, or nil.
     public func unavailableReason(in app: AppModel) -> String? {
         if let r = modelUnavailableReason { return r }
-        if !(app.sessions is any DerivedPhotoAdding) { return "This session can’t take new photos." }
-        if targets(in: app).isEmpty { return "Select a photo to upscale." }
+        if !(app.sessions is any DerivedPhotoAdding) { return String(localized: "This session can’t take new photos.") }
+        if targets(in: app).isEmpty { return String(localized: "Select a photo to upscale.") }
         return nil
     }
 
@@ -192,21 +192,21 @@ public final class UpscaleService {
 
     /// The menu item's help.
     public func help(in app: AppModel) -> String {
-        if isRunning { return "Stop upscaling; photos already done stay" }
-        if download?.isDownloading == true { return "Stop the download; nothing is kept" }
-        if offersDownload { return "Download the AI Upscale model (about 34 MB) to this Mac" }
-        return unavailableReason(in: app) ?? "Make a new photo twice the size of each selected photo with on-device AI"
+        if isRunning { return String(localized: "Stop upscaling; photos already done stay") }
+        if download?.isDownloading == true { return String(localized: "Stop the download; nothing is kept") }
+        if offersDownload { return String(localized: "Download the AI Upscale model (about 34 MB) to this Mac") }
+        return unavailableReason(in: app) ?? String(localized: "Make a new photo twice the size of each selected photo with on-device AI")
     }
 
     /// Menu title: how many photos, the run's Cancel, or the model's download.
     public func title(in app: AppModel) -> String {
-        if isRunning { return "Cancel Upscale" }
+        if isRunning { return String(localized: "Cancel Upscale") }
         if case .downloading(let f) = download?.state {
-            return "Cancel AI Upscale Model Download (\(Int((f * 100).rounded()))%)"
+            return String(localized: "Cancel AI Upscale Model Download (\(Int((f * 100).rounded()))%)")
         }
-        if offersDownload { return "Download AI Upscale Model…" }
+        if offersDownload { return String(localized: "Download AI Upscale Model…") }
         let n = targets(in: app).count
-        return n > 1 ? "Upscale \(n) Photos 2×" : "Upscale 2×"
+        return n > 1 ? String(localized: "Upscale \(n) Photos 2×") : String(localized: "Upscale 2×")
     }
 
     /// Upscale the selected photos 2× in the background, one after another (or cancel
@@ -240,7 +240,8 @@ public final class UpscaleService {
             defer { fetching = nil }
             do {
                 model.install(package: try await download.download())
-                app?.show(Toast("AI Upscale model installed: Upscale 2× is ready", symbol: "arrow.up.left.and.arrow.down.right"))
+                app?.show(Toast(String(localized: "AI Upscale model installed: Upscale 2× is ready"),
+                                symbol: "arrow.up.left.and.arrow.down.right"))
             } catch is CancellationError {
             } catch {
                 app?.show(error)
@@ -260,7 +261,7 @@ public final class UpscaleService {
             do {
                 guard app.isStill(in: session) else { break }
                 guard let store = app.sessions as? any DerivedPhotoAdding else {
-                    throw UpscaleError.unavailable("This session can’t take new photos.")
+                    throw UpscaleError.unavailable(String(localized: "This session can’t take new photos."))
                 }
                 let name = try await store.freeDerivedName(for: p.url, from: p.id, suffix: "Upscaled")
                 let dng = try await upscale(p.url, name: name)
@@ -276,8 +277,9 @@ public final class UpscaleService {
         guard !added.isEmpty, app.isStill(in: session) else { return }
         await app.refreshCurrentSession(keepingHistory: true)
         if let last = added.last, app.photo(last) != nil { app.focus(last, extend: false) }
-        let name = added.count == 1 ? (app.photo(added[0])?.filename ?? "the new photo") : "\(added.count) new photos"
-        app.show(Toast("Upscaled 2×: \(name)", symbol: "arrow.up.left.and.arrow.down.right"))
+        let name = added.count == 1 ? (app.photo(added[0])?.filename ?? String(localized: "the new photo"))
+            : String(localized: "\(added.count) new photos")
+        app.show(Toast(String(localized: "Upscaled 2×: \(name)"), symbol: "arrow.up.left.and.arrow.down.right"))
     }
 
     /// Add the placed DNG to the session. Not cancellable: a cancel that arrives once the
@@ -310,7 +312,8 @@ public final class UpscaleService {
                 if self?.progress != nil { self?.progress?.fraction = f }
             }
         }
-        guard let dng = tiles.result else { throw UpscaleError.failed("no file was written") }
+        guard let dng = tiles.result else { throw UpscaleError.failed(String(localized: "no file was written")) }
+
         return dng
     }
 

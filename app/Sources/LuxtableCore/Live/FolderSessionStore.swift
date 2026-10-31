@@ -131,7 +131,7 @@ public actor FolderSessionStore: SessionStore {
     public func albums(in session: SessionInfo) async throws -> [Album] { [] }
 
     public func createSession(named name: String) async throws -> SessionInfo {
-        throw MockError.invalid("New sessions aren't available here. Open a folder instead.")
+        throw MockError.invalid(String(localized: "New sessions aren't available here. Open a folder instead."))
     }
 
     public func save(photos updated: [Photo]) async throws {
@@ -372,7 +372,7 @@ public struct ReadOnlyCardScanner: ImportService {
 public struct ImportUnavailable: Error, LocalizedError, Equatable {
     public init() {}
     public var errorDescription: String? {
-        "Verified import isn't available here. Luxtable doesn't copy from cards unless it can verify every file."
+        String(localized: "Verified import isn't available here. Luxtable doesn't copy from cards unless it can verify every file.")
     }
 }
 
@@ -383,7 +383,7 @@ public struct UnavailableArchiveService: ArchiveService {
 
     public func statusUpdates() -> AsyncStream<ArchiveStatus> {
         AsyncStream { c in
-            c.yield(ArchiveStatus(state: .unavailable("Archiving isn't connected here; nothing is archived."),
+            c.yield(ArchiveStatus(state: .unavailable(String(localized: "Archiving isn't connected here; nothing is archived.")),
                                   target: target, lastSuccess: nil))
             c.finish()
         }

@@ -21,7 +21,7 @@ public final class AISettingsModel {
         self.foundationModelsAvailable = foundationModelsAvailable
         jevEnabled = jev.enabled
         hasKey = jev.hasKey
-        if hasKey, jev.keyRejected { message = "Jev rejected the saved key. Enter a new one to use Jev." }
+        if hasKey, jev.keyRejected { message = String(localized: "Jev rejected the saved key. Enter a new one to use Jev.") }
     }
 
     public func saveKey() {
@@ -30,23 +30,23 @@ public final class AISettingsModel {
         if jev.setKey(key) {
             hasKey = true
             keyEntry = ""
-            message = "Key saved in your Keychain."
+            message = String(localized: "Key saved in your Keychain.")
         } else {
-            message = "The Keychain refused the key."
+            message = String(localized: "The Keychain refused the key.")
         }
     }
 
     public func removeKey() {
         _ = jev.setKey(nil)
         hasKey = jev.hasKey
-        message = "Key removed."
+        message = String(localized: "Key removed.")
     }
 
     /// The order typed edits go through, in words.
     public var order: String {
-        var steps = ["Luxtable's own phrase rules"]
-        if jevEnabled && hasKey { steps.append("TypeSafe Jev (text only, needs the network)") }
-        if foundationModelsAvailable { steps.append("Apple Intelligence on this Mac") }
+        var steps = [String(localized: "Luxtable's own phrase rules")]
+        if jevEnabled && hasKey { steps.append(String(localized: "TypeSafe Jev (text only, needs the network)")) }
+        if foundationModelsAvailable { steps.append(String(localized: "Apple Intelligence on this Mac")) }
         return steps.joined(separator: " → ")
     }
 }

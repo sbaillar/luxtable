@@ -26,6 +26,18 @@ public enum WhiteBalancePreset: String, CaseIterable, Sendable, Identifiable {
         }
     }
 
+    /// The preset's name in the UI (the raw value is its stable identifier).
+    public var title: String {
+        switch self {
+        case .daylight: String(localized: "Daylight")
+        case .cloudy: String(localized: "Cloudy")
+        case .shade: String(localized: "Shade")
+        case .tungsten: String(localized: "Tungsten")
+        case .fluorescent: String(localized: "Fluorescent")
+        case .flash: String(localized: "Flash")
+        }
+    }
+
     public var symbol: String {
         switch self {
         case .daylight: "sun.max"

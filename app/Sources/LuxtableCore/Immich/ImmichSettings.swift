@@ -38,12 +38,12 @@ public struct ImmichAlbumRule: Codable, Equatable, Hashable, Sendable, Identifia
     /// "★★★★★ or more · Picked · Red · “beach”".
     public var summary: String {
         var parts: [String] = []
-        if minRating > 0 { parts.append(String(repeating: "★", count: min(5, minRating)) + (minRating < 5 ? " or more" : "")) }
-        if pickedOnly { parts.append("Picked") }
-        if let label, label != .none { parts.append(label.name) }
+        if minRating > 0 { parts.append(String(repeating: "★", count: min(5, minRating)) + (minRating < 5 ? String(localized: " or more") : "")) }
+        if pickedOnly { parts.append(String(localized: "Picked")) }
+        if let label, label != .none { parts.append(label.title) }
         let k = keyword.trimmingCharacters(in: .whitespaces)
         if !k.isEmpty { parts.append("“\(k)”") }
-        return parts.isEmpty ? "No criterion (skipped)" : parts.joined(separator: " · ")
+        return parts.isEmpty ? String(localized: "No criterion (skipped)") : parts.joined(separator: " · ")
     }
 
     /// The FFI rule.
@@ -176,7 +176,7 @@ public enum ImmichError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .notSetUp: "Set up Immich first in Settings ▸ Immich."
+        case .notSetUp: String(localized: "Set up Immich first in Settings ▸ Immich.")
         case .notArchivable(let why): why
         case .failed(let m): m
         }
@@ -197,9 +197,9 @@ public enum ImmichCopyBadge: Sendable, Equatable {
 
     public var help: String {
         switch self {
-        case .current: "Developed copy for Immich, up to date"
-        case .outOfDate: "Developed copy for Immich, out of date: updated before the next archive run"
-        case .pending: "Developed copy for Immich: not made yet"
+        case .current: String(localized: "Developed copy for Immich, up to date")
+        case .outOfDate: String(localized: "Developed copy for Immich, out of date: updated before the next archive run")
+        case .pending: String(localized: "Developed copy for Immich: not made yet")
         }
     }
 

@@ -8,6 +8,8 @@ struct ImportSheet: View {
     @Bindable var model: AppModel
     @State private var importer: ImportModel
     @State private var thumbnails: ImportThumbnails
+    /// iPhones and iPads on USB: other sources for this sheet.
+    private let devices = ConnectedDevices.shared
 
     init(model: AppModel, volume: URL?) {
         self.model = model
@@ -17,7 +19,10 @@ struct ImportSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ImportHeader(importer: importer, chooseFolder: chooseFolder)
+            ImportHeader(importer: importer, chooseFolder: chooseFolder,
+                         otherSources: model.canImportExternal ? devices.devices : nil,
+                         openSource: { model.showExternalImport($0) },
+                         openPhotos: { model.showPhotosLibraryImport() })
             Divider()
             if !importer.copyEnabled {
                 LiveImportNotice(importer: importer, close: { model.sheet = nil })
@@ -30,26 +35,34 @@ struct ImportSheet: View {
         .frame(width: 920, height: 640)
         .background(DS.panelBackground)
         .task { await importer.findCardIfNeeded(source: WorkspaceVolumeEvents()) }
+        .onAppear { if model.canImportExternal { devices.start() } }
     }
 
     @ViewBuilder private var content: some View {
         switch importer.phase {
         case .idle:
-            ImportEmptyState(title: "No card detected",
-                             message: "Insert a memory card and it will appear here, or choose any folder that contains photos.",
-                             symbol: "sdcard", action: ("Choose Folder…", chooseFolder))
+            if model.canImportExternal, let device = devices.devices.first {
+                ImportEmptyState(title: String(localized: "\(device.name) is connected"),
+                                 message: String(localized: "Import its photos, or insert a memory card or choose a folder instead."),
+                                 symbol: "iphone",
+                                 action: (String(localized: "Import from \(device.name)…"), { model.showExternalImport(device.source) }))
+            } else {
+                ImportEmptyState(title: String(localized: "No card detected"),
+                                 message: String(localized: "Insert a memory card, plug in an iPhone or iPad, or choose any folder that contains photos."),
+                                 symbol: "sdcard", action: (String(localized: "Choose Folder…"), chooseFolder))
+            }
         case .scanning:
             ProgressView("Reading card…").frame(maxWidth: .infinity, maxHeight: .infinity)
         case .failed(let message) where importer.candidates.isEmpty:
-            ImportEmptyState(title: "Couldn’t read the card", message: message, symbol: "exclamationmark.triangle",
-                             action: ("Try Again", { importer.retry() }))
+            ImportEmptyState(title: String(localized: "Couldn’t read the card"), message: message, symbol: "exclamationmark.triangle",
+                             action: (String(localized: "Try Again"), { importer.retry() }))
         case .finished(let summary):
             ImportDoneView(summary: summary, importer: importer)
         default:
             if importer.candidates.isEmpty {
-                ImportEmptyState(title: "No photos found",
-                                 message: "This location has no supported photos. Choose another folder.",
-                                 symbol: "photo.on.rectangle.angled", action: ("Choose Folder…", chooseFolder))
+                ImportEmptyState(title: String(localized: "No photos found"),
+                                 message: String(localized: "This location has no supported photos. Choose another folder."),
+                                 symbol: "photo.on.rectangle.angled", action: (String(localized: "Choose Folder…"), chooseFolder))
             } else {
                 HStack(spacing: 0) {
                     CandidateGrid(importer: importer, thumbnails: thumbnails)
@@ -65,8 +78,8 @@ struct ImportSheet: View {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.prompt = "Choose"
-        panel.message = "Choose a memory card or a folder with photos"
+        panel.prompt = String(localized: "Choose")
+        panel.message = String(localized: "Choose a memory card or a folder with photos")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         Task { await importer.setVolume(url) }
     }
@@ -75,6 +88,10 @@ struct ImportSheet: View {
 private struct ImportHeader: View {
     let importer: ImportModel
     let chooseFolder: () -> Void
+    /// Devices to offer (nil: no Photos/iPhone import in this mode).
+    let otherSources: [ConnectedDevice]?
+    let openSource: (any ExternalPhotoSource) -> Void
+    let openPhotos: () -> Void
 
     var body: some View {
         HStack(spacing: DS.Space.m) {
@@ -88,6 +105,18 @@ private struct ImportHeader: View {
                 Text(subtitle).font(DS.Font.label).foregroundStyle(DS.textSecondary)
             }
             Spacer()
+            if let otherSources {
+                Menu("Other Sources") {
+                    ForEach(otherSources) { d in
+                        Button("\(d.name)…") { openSource(d.source) }
+                    }
+                    if !otherSources.isEmpty { Divider() }
+                    Button("Photos Library…", action: openPhotos)
+                }
+                .fixedSize()
+                .disabled(importer.isBusy)
+                .help("Import from an iPhone or iPad on USB, or from your Photos library")
+            }
             Button("Choose Folder…", action: chooseFolder)
                 .disabled(importer.isBusy)
                 .help("Import from any folder instead of a card")
@@ -96,12 +125,12 @@ private struct ImportHeader: View {
     }
 
     private var subtitle: String {
-        guard !importer.candidates.isEmpty else { return importer.volume?.path ?? "Waiting for a memory card" }
+        guard !importer.candidates.isEmpty else { return importer.volume?.path ?? String(localized: "Waiting for a memory card") }
         let videos = importer.videoCount
-        var s = "\(importer.candidates.count - videos) photos"
-        if videos > 0 { s += " · \(videos) video\(videos == 1 ? "" : "s")" }
+        var s = String(localized: "\(importer.candidates.count - videos) photos")
+        if videos > 0 { s += " · " + (videos == 1 ? String(localized: "1 video") : String(localized: "\(videos) videos")) }
         s += " · \(Formatters.bytes(importer.totalBytes))"
-        if importer.duplicateCount > 0 { s += " · \(importer.duplicateCount) already imported" }
+        if importer.duplicateCount > 0 { s += " · " + String(localized: "\(importer.duplicateCount) already imported") }
         return s
     }
 }
@@ -234,7 +263,7 @@ private struct ImportOptions: View {
                     Label(ImportWording.damagedNote(importer.damagedCount), systemImage: "exclamationmark.triangle")
                         .font(DS.Font.label).foregroundStyle(DS.star)
                 }
-                section("Destination") {
+                section(String(localized: "Destination")) {
                     Picker("", selection: $importer.destination) {
                         Text("New Session").tag(ImportModel.Destination.newSession)
                         if !importer.existingSessions.isEmpty {
@@ -262,7 +291,7 @@ private struct ImportOptions: View {
                     Label(importer.destinationName, systemImage: "folder")
                         .font(DS.Font.label).foregroundStyle(DS.textSecondary).lineLimit(1)
                 }
-                section("Rename Files") {
+                section(String(localized: "Rename Files")) {
                     HStack {
                         TextField("Template", text: $importer.renameTemplate)
                             .textFieldStyle(.roundedBorder)
@@ -282,7 +311,7 @@ private struct ImportOptions: View {
                     .font(DS.Font.value)
                     .foregroundStyle(DS.textSecondary)
                 }
-                section("Subfolder") {
+                section(String(localized: "Subfolder")) {
                     TextField("None", text: $importer.subfolderTemplate, prompt: Text("e.g. {date}"))
                         .textFieldStyle(.roundedBorder)
                         .font(DS.Font.value)
@@ -292,9 +321,9 @@ private struct ImportOptions: View {
                             .font(DS.Font.value).foregroundStyle(DS.textSecondary).lineLimit(1)
                     }
                 }
-                section("Backup Copy") {
+                section(String(localized: "Backup Copy")) {
                     HStack {
-                        Text(importer.backupFolder?.path ?? "None")
+                        Text(importer.backupFolder?.path ?? String(localized: "None"))
                             .font(DS.Font.label).foregroundStyle(DS.textSecondary)
                             .lineLimit(1).truncationMode(.middle)
                         Spacer()
@@ -309,7 +338,7 @@ private struct ImportOptions: View {
                     Text(ImportWording.backupNote(verifies: importer.verifies))
                         .font(DS.Font.caption).foregroundStyle(DS.textTertiary)
                 }
-                section("Options") {
+                section(String(localized: "Options")) {
                     Toggle("Skip duplicates", isOn: $importer.skipDuplicates)
                         .help("Files already in any session are not copied again")
                     Toggle("Re-read the card after copying", isOn: $importer.verifySourceReread)
@@ -338,7 +367,7 @@ private struct ImportOptions: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.canCreateDirectories = true
-        panel.prompt = "Use for Backup"
+        panel.prompt = String(localized: "Use for Backup")
         if panel.runModal() == .OK { importer.backupFolder = panel.url }
     }
 }
@@ -385,7 +414,7 @@ private struct ImportFooter: View {
                     Text("\(p?.filesDone ?? 0) of \(p?.filesTotal ?? 0) files")
                     Text("\(Formatters.bytes(p?.bytesDone ?? 0)) of \(Formatters.bytes(p?.bytesTotal ?? 0))")
                     Text(importer.throughput.map { Formatters.throughput(bytesPerSecond: $0) } ?? "–")
-                    Text(importer.eta.map { "\(Formatters.duration($0)) left" } ?? "Estimating…")
+                    Text(importer.eta.map { String(localized: "\(Formatters.duration($0)) left") } ?? String(localized: "Estimating…"))
                 }
                 .font(DS.Font.value).foregroundStyle(DS.textSecondary)
             }
@@ -442,7 +471,9 @@ private struct ImportDoneView: View {
                             Text(ImportWording.ejectAnywayMessage(summary))
                         }
                 }
-                if let line = ImportWording.cardLine(summary) {
+                if ExternalStaging.isStaged(importer.volume) {
+                    Label(ImportWording.stagedLine, systemImage: "checkmark.shield").foregroundStyle(DS.textSecondary)
+                } else if let line = ImportWording.cardLine(summary) {
                     Label(line, systemImage: summary.ejected ? "eject.fill"
                         : (summary.safeToRemove ? "checkmark.shield" : "exclamationmark.triangle"))
                         .foregroundStyle(summary.ejectError != nil || !summary.safeToRemove ? DS.reject : DS.textSecondary)
@@ -458,7 +489,8 @@ private struct ImportDoneView: View {
         let failed = summary.failed + summary.registerErrors
         if !failed.isEmpty {
             VStack(alignment: .leading, spacing: DS.Space.xs) {
-                Label("\(failed.count) file\(failed.count == 1 ? "" : "s") need attention", systemImage: "xmark.octagon")
+                Label(failed.count == 1 ? String(localized: "1 file needs attention")
+                                         : String(localized: "\(failed.count) files need attention"), systemImage: "xmark.octagon")
                     .font(.system(size: 12, weight: .semibold)).foregroundStyle(DS.reject)
                 ForEach(failed.prefix(6), id: \.self) { i in
                     Text("\(i.url.lastPathComponent): \(i.reason)").font(DS.Font.caption).foregroundStyle(DS.textSecondary)

@@ -72,8 +72,8 @@ public final class CoreTextWatermarkRenderer: WatermarkTextRenderer, @unchecked 
 /// `watermark_preview` draws on.
 enum WatermarkPreview {
     /// Under the preview when the text is blank for the preview photo.
-    static let blankMessage = "The watermark text is empty for this photo (no copyright or artist?), "
-        + "so its export will be left without a watermark."
+    static let blankMessage = String(localized: "The watermark text is empty for this photo (no copyright or artist?), ")
+        + String(localized: "so its export will be left without a watermark.")
 
     /// `image` as sRGB RGBA8 (premultiplied-last; opaque photos are unaffected),
     /// at most `maxPixelSize` on the long edge.

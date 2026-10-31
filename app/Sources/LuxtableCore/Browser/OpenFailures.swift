@@ -3,7 +3,7 @@ import Foundation
 /// Files a folder open couldn't use, and damaged RAWs (final-journeys M2).
 public enum OpenFailures {
     /// What lt-ffi says about a RAW file that is damaged or incomplete.
-    public static let damagedMessage = "This RAW file is damaged or incomplete — copy it from the card again."
+    public static let damagedMessage = String(localized: "This RAW file is damaged or incomplete — copy it from the card again.")
 
     /// The open result, naming the files: "Couldn't read EMPTY.ARW." / "… and 3 more."
     public static func message(_ urls: [URL], shown: Int = 3) -> String {
@@ -11,8 +11,10 @@ public enum OpenFailures {
         guard !names.isEmpty else { return "" }
         let head = names.prefix(shown).joined(separator: ", ")
         let rest = names.count - min(shown, names.count)
-        let tail = rest > 0 ? " and \(rest) more" : ""
-        return "Couldn’t read \(head)\(tail): damaged, incomplete or unreadable. Copy \(names.count == 1 ? "it" : "them") from the card again."
+        let tail = rest > 0 ? String(localized: " and \(rest) more") : ""
+        return names.count == 1
+            ? String(localized: "Couldn’t read \(head)\(tail): damaged, incomplete or unreadable. Copy it from the card again.")
+            : String(localized: "Couldn’t read \(head)\(tail): damaged, incomplete or unreadable. Copy them from the card again.")
     }
 
     /// A render or preview failed because the original file isn't there (deleted,
@@ -43,15 +45,15 @@ public enum OpenFailures {
 /// [cul9] L6: what VoiceOver says for the histogram: its brightness and clipping.
 public enum HistogramText {
     public static func value(_ h: Histogram?) -> String {
-        guard let h, h.pixelCount > 0 else { return "No image" }
+        guard let h, h.pixelCount > 0 else { return String(localized: "No image") }
         let total = Double(h.pixelCount)
         var sum = 0.0
         for (i, n) in h.luma.enumerated() { sum += Double(i) * Double(n) }
         let mean = Int((sum / total / 255 * 100).rounded())
         let shadows = Double(h.shadowClipped) / total * 100
         let highlights = Double(h.highlightClipped) / total * 100
-        let tone = mean < 35 ? "dark" : (mean > 65 ? "bright" : "mid-tone")
-        return String(format: "Mostly %@, average brightness %d%%; %.1f%% clipped shadows, %.1f%% clipped highlights",
+        let tone = mean < 35 ? String(localized: "dark") : (mean > 65 ? String(localized: "bright") : String(localized: "mid-tone"))
+        return String(format: String(localized: "Mostly %@, average brightness %d%%; %.1f%% clipped shadows, %.1f%% clipped highlights"),
                       tone, mean, shadows, highlights)
     }
 }
@@ -60,7 +62,7 @@ public enum HistogramText {
 public enum RatingText {
     /// "1 star", "3 stars", "Unrated".
     public static func label(_ rating: Int) -> String {
-        rating <= 0 ? "Unrated" : "\(rating) \(rating == 1 ? "star" : "stars")"
+        rating <= 0 ? String(localized: "Unrated") : rating == 1 ? String(localized: "1 star") : String(localized: "\(rating) stars")
     }
 
     /// A click on star `n` of a photo rated `current`: the same star again clears it.

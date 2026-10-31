@@ -56,11 +56,11 @@ public enum Formatters {
 
     /// "2 min ago" style for archive status.
     public static func relative(_ date: Date?, now: Date = Date()) -> String {
-        guard let date else { return "never" }
+        guard let date else { return String(localized: "never") }
         let d = now.timeIntervalSince(date)
-        if d < 60 { return "just now" }
-        if d < 3600 { return "\(Int(d / 60)) min ago" }
-        if d < 86_400 { return "\(Int(d / 3600)) h ago" }
-        return "\(Int(d / 86_400)) d ago"
+        if d < 60 { return String(localized: "just now") }
+        if d < 3600 { return String(localized: "\(Int(d / 60)) min ago") }
+        if d < 86_400 { return String(localized: "\(Int(d / 3600)) h ago") }
+        return String(localized: "\(Int(d / 86_400)) d ago")
     }
 }

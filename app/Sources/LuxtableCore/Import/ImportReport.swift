@@ -110,7 +110,7 @@ public struct ImportEjectGate: Equatable, Sendable {
     public var offersEject: Bool { canEject && !ejected }
     /// Pressing it asks first.
     public var requiresConfirmation: Bool { !safe && !acknowledged }
-    public var buttonTitle: String { safe ? "Eject Card" : "Eject Anyway…" }
+    public var buttonTitle: String { safe ? String(localized: "Eject Card") : String(localized: "Eject Anyway…") }
 }
 
 /// Import services that verify copies (lt-import) conform and hand back the
@@ -131,7 +131,7 @@ public enum ImportRunError: Error, Equatable, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .cardChanged:
-            "A different card is in the reader. It was scanned again; check the selection and import."
+            String(localized: "A different card is in the reader. It was scanned again; check the selection and import.")
         case .notEnoughSpace(let why): why
         }
     }
@@ -140,28 +140,29 @@ public enum ImportRunError: Error, Equatable, LocalizedError {
 /// What the import UI may say. Pure, so "never claim verified or safe without
 /// a report that says so" is enforced by tests rather than by view code.
 public enum ImportWording {
-    public static let liveUnavailableTitle = "Import isn’t available yet"
+    public static let liveUnavailableTitle = String(localized: "Import isn’t available yet")
     public static let liveUnavailableMessage =
-        "Verified import isn't available in this build. Luxtable never copies from cards without verifying, so it can't lose files. You can browse the card read-only."
+        String(localized: "Verified import isn't available in this build. Luxtable never copies from cards without verifying, so it can't lose files. You can browse the card read-only.")
 
     /// "1 photo", "3 photos", "2 videos", "3 photos and 1 video".
     public static func items(photos: Int, videos: Int) -> String {
-        func n(_ k: Int, _ word: String) -> String { "\(k) \(word)\(k == 1 ? "" : "s")" }
+        let p = photos == 1 ? String(localized: "1 photo") : String(localized: "\(photos) photos")
+        let v = videos == 1 ? String(localized: "1 video") : String(localized: "\(videos) videos")
         switch (photos, videos) {
-        case (_, 0): return n(photos, "photo")
-        case (0, _): return n(videos, "video")
-        default: return "\(n(photos, "photo")) and \(n(videos, "video"))"
+        case (_, 0): return p
+        case (0, _): return v
+        default: return String(localized: "\(p) and \(v)")
         }
     }
 
     /// "1 file", "3 files".
-    public static func files(_ k: Int) -> String { "\(k) file\(k == 1 ? "" : "s")" }
+    public static func files(_ k: Int) -> String { k == 1 ? String(localized: "1 file") : String(localized: "\(k) files") }
 
     public static func doneTitle(_ s: ImportModel.ImportSummary) -> String {
         let what = items(photos: s.files - s.videos, videos: s.videos)
-        if !s.verified, s.files > 0, !s.checkedByService { return "Copied \(what) (not verified)" }
-        if s.files == 0 { return s.skippedDuplicates > 0 ? "Everything was already in the library" : "Nothing was imported" }
-        return "Imported \(what)"
+        if !s.verified, s.files > 0, !s.checkedByService { return String(localized: "Copied \(what) (not verified)") }
+        if s.files == 0 { return s.skippedDuplicates > 0 ? String(localized: "Everything was already in the library") : String(localized: "Nothing was imported") }
+        return String(localized: "Imported \(what)")
     }
 
     /// Per-file facts: what was verified, what went wrong, never "nothing was
@@ -170,16 +171,17 @@ public enum ImportWording {
         let bytes = Formatters.bytes(s.bytes)
         let time = Formatters.duration(s.seconds)
         guard s.checkedByService else {
-            return "\(bytes) copied into “\(s.sessionName)” in \(time). The copies were not verified, so keep the card."
+            return String(localized: "\(bytes) copied into “\(s.sessionName)” in \(time). The copies were not verified, so keep the card.")
         }
         var line = s.files > 0
-            ? "\(files(s.files)) copied and verified into “\(s.sessionName)” (\(bytes) in \(time))."
-            : "Nothing new was copied into “\(s.sessionName)”."
+            ? String(localized: "\(files(s.files)) copied and verified into “\(s.sessionName)” (\(bytes) in \(time)).")
+            : String(localized: "Nothing new was copied into “\(s.sessionName)”.")
         var problems: [String] = []
-        if !s.registerErrors.isEmpty { problems.append("\(files(s.registerErrors.count)) copied but not added to the session") }
-        if !s.failed.isEmpty { problems.append("\(files(s.failed.count)) failed") }
+        if !s.registerErrors.isEmpty { problems.append(String(localized: "\(files(s.registerErrors.count)) copied but not added to the session")) }
+        if !s.failed.isEmpty { problems.append(String(localized: "\(files(s.failed.count)) failed")) }
         if !s.scanErrors.isEmpty {
-            problems.append("\(s.scanErrors.count) part\(s.scanErrors.count == 1 ? "" : "s") of the card unreadable")
+            problems.append(s.scanErrors.count == 1 ? String(localized: "1 part of the card unreadable")
+                : String(localized: "\(s.scanErrors.count) parts of the card unreadable"))
         }
         if !problems.isEmpty { line += " " + problems.joined(separator: "; ") + "." }
         return line
@@ -189,138 +191,156 @@ public enum ImportWording {
     public static func cardLine(_ s: ImportModel.ImportSummary) -> String? {
         if s.ejected {
             return s.safeToRemove
-                ? "Card ejected. Every file on it has a verified copy in your library, so it is safe to remove."
-                : "Card ejected. Keep it: the files listed above are only on the card."
+                ? String(localized: "Card ejected. Every file on it has a verified copy in your library, so it is safe to remove.")
+                : String(localized: "Card ejected. Keep it: the files listed above are only on the card.")
         }
-        if let err = s.ejectError { return "Couldn’t eject the card: \(err)" }
-        if !s.checkedByService { return "Keep this card: these copies were not verified." }
-        if s.safeToRemove { return "Every file on the card has a verified copy in your library. It is safe to remove." }
-        if !s.stayOnCard.isEmpty { return "Keep this card: \(files(s.stayOnCard.count)) \(s.stayOnCard.count == 1 ? "is" : "are") only on it." }
-        return "Keep this card: not every file on it has a verified copy in your library yet."
+        if let err = s.ejectError { return String(localized: "Couldn’t eject the card: \(err)") }
+        if !s.checkedByService { return String(localized: "Keep this card: these copies were not verified.") }
+        if s.safeToRemove { return String(localized: "Every file on the card has a verified copy in your library. It is safe to remove.") }
+        if !s.stayOnCard.isEmpty {
+            return s.stayOnCard.count == 1 ? String(localized: "Keep this card: 1 file is only on it.")
+                : String(localized: "Keep this card: \(files(s.stayOnCard.count)) are only on it.")
+        }
+        return String(localized: "Keep this card: not every file on it has a verified copy in your library yet.")
     }
 
     public static func readyLine(bytes: Int64, destination: String, verifies: Bool, free: Int64? = nil) -> String {
-        let space = free.map { " · \(Formatters.bytes($0)) free" } ?? ""
+        let space = free.map { String(localized: " · \(Formatters.bytes($0)) free") } ?? ""
         return verifies
-            ? "\(Formatters.bytes(bytes)) to copy and verify into “\(destination)”\(space)"
-            : "\(Formatters.bytes(bytes)) to copy into “\(destination)” (demo: not verified)"
+            ? String(localized: "\(Formatters.bytes(bytes)) to copy and verify into “\(destination)”\(space)")
+            : String(localized: "\(Formatters.bytes(bytes)) to copy into “\(destination)” (demo: not verified)")
     }
 
     /// Shown instead of the ready line when the selection can't fit.
     public static func notEnoughSpace(needed: Int64, free: Int64) -> String {
-        "Not enough space: \(Formatters.bytes(needed)) to copy, \(Formatters.bytes(free)) free. Choose fewer files or another sessions folder."
+        String(localized: "Not enough space: \(Formatters.bytes(needed)) to copy, \(Formatters.bytes(free)) free. Choose fewer files or another sessions folder.")
     }
 
     /// VoiceOver label for a candidate tile.
     public static func tileLabel(_ c: ImportCandidate, selected: Bool, locked: Bool) -> String {
-        let state = locked ? "already imported" : (selected ? "selected" : "not selected")
+        let state = locked ? String(localized: "already imported") : (selected ? String(localized: "selected") : String(localized: "not selected"))
         return "\(c.filename), \(Formatters.bytes(c.size)), \(state)"
     }
 
     /// The Import button.
     public static func importButton(photos: Int, videos: Int) -> String {
-        func n(_ k: Int, _ word: String) -> String { "\(k) \(word)\(k == 1 ? "" : "s")" }
-        let parts = [(photos, "Photo"), (videos, "Video")].filter { $0.0 > 0 }.map { n($0.0, $0.1) }
-        return parts.isEmpty ? "Import" : "Import " + parts.joined(separator: " and ")
+        let p = photos == 1 ? String(localized: "Import 1 Photo") : String(localized: "Import \(photos) Photos")
+        let v = videos == 1 ? String(localized: "1 Video") : String(localized: "\(videos) Videos")
+        let vOnly = videos == 1 ? String(localized: "Import 1 Video") : String(localized: "Import \(videos) Videos")
+        switch (photos > 0, videos > 0) {
+        case (false, false): return String(localized: "Import")
+        case (true, false): return p
+        case (false, true): return vOnly
+        case (true, true): return String(localized: "\(p) and \(v)")
+        }
     }
 
     /// Card panel note in the Import & Archive tab.
     public static func cardPanelNote(verifies: Bool, live: Bool) -> String {
         if verifies {
-            return "Insert a memory card and Luxtable opens the import automatically. Files are copied, verified, and never deleted from the card."
+            return String(localized: "Insert a memory card and Luxtable opens the import automatically. Files are copied, verified, and never deleted from the card.")
         }
         return live
-            ? "Import is coming soon. Insert a card to browse it read-only; Luxtable never copies from or deletes on a card until copies can be verified."
-            : "Demo: imports are simulated and not verified. Nothing is ever deleted from a card."
+            ? String(localized: "Import is coming soon. Insert a card to browse it read-only; Luxtable never copies from or deletes on a card until copies can be verified.")
+            : String(localized: "Demo: imports are simulated and not verified. Nothing is ever deleted from a card.")
     }
 
     /// Onboarding line about importing.
     public static func onboardingImport(verifies: Bool) -> (title: String, text: String) {
         verifies
-            ? ("Insert a card, press Import", "Copies are verified before you're told they're safe. Nothing is ever deleted from a card.")
-            : ("Insert a card to browse it", "Verified import is coming soon. Until then Luxtable never copies from or deletes on a card.")
+            ? (String(localized: "Insert a card, press Import"),
+               String(localized: "Copies are verified before you're told they're safe. Nothing is ever deleted from a card."))
+            : (String(localized: "Insert a card to browse it"),
+               String(localized: "Verified import is coming soon. Until then Luxtable never copies from or deletes on a card."))
     }
 
     /// Note under the backup destination.
     public static func backupNote(verifies: Bool) -> String {
-        verifies ? "A second verified copy, written during import." : "A second copy, written during import (not verified in this build)."
+        verifies ? String(localized: "A second verified copy, written during import.")
+            : String(localized: "A second copy, written during import (not verified in this build).")
     }
 
     public static func stoppedWhileFinishing(sessionName: String, ejected: Bool) -> String {
-        "Import stopped while finishing. The copied files are in “\(sessionName)”."
-            + (ejected ? " The card was ejected." : " The card was not ejected.")
+        String(localized: "Import stopped while finishing. The copied files are in “\(sessionName)”.")
+            + (ejected ? String(localized: " The card was ejected.") : String(localized: " The card was not ejected."))
     }
 
     /// Heading over the list of card files that were not imported.
     public static func issuesTitle(scanErrors: Int, skipped: Int) -> String {
         switch (scanErrors, skipped) {
         case (0, 0): ""
-        case (0, let k): "\(k) file\(k == 1 ? "" : "s") on the card \(k == 1 ? "was" : "were") not imported"
-        case (let e, 0): "\(e) part\(e == 1 ? "" : "s") of the card couldn’t be read"
-        case (let e, let k): "\(e) unreadable, \(k) not imported"
+        case (0, let k):
+            k == 1 ? String(localized: "1 file on the card was not imported") : String(localized: "\(k) files on the card were not imported")
+        case (let e, 0):
+            e == 1 ? String(localized: "1 part of the card couldn’t be read") : String(localized: "\(e) parts of the card couldn’t be read")
+        case (let e, let k): String(localized: "\(e) unreadable, \(k) not imported")
         }
     }
 
     /// Heading over the files that stay only on the card after an import.
     public static func stayOnCardTitle(_ n: Int) -> String {
-        "\(files(n)) \(n == 1 ? "is" : "are") only on the card"
+        n == 1 ? String(localized: "1 file is only on the card") : String(localized: "\(files(n)) are only on the card")
     }
 
     /// Why the card stays: shown whenever something on it was not imported.
     public static func keepCardNote(scanErrors: Int) -> String {
         scanErrors > 0
-            ? "Parts of the card couldn’t be read, so the import isn’t complete. Keep the card and check it on another reader."
-            : "These files stay only on the card. Copy them yourself if you need them before formatting it."
+            ? String(localized: "Parts of the card couldn’t be read, so the import isn’t complete. Keep the card and check it on another reader.")
+            : String(localized: "These files stay only on the card. Copy them yourself if you need them before formatting it.")
     }
 
     /// The "Eject Anyway" confirmation.
     public static func ejectAnywayTitle(_ n: Int) -> String {
-        n == 0 ? "Eject the card?" : "Eject with \(files(n)) only on the card?"
+        n == 0 ? String(localized: "Eject the card?") : String(localized: "Eject with \(files(n)) only on the card?")
     }
 
     public static func ejectAnywayMessage(_ s: ImportModel.ImportSummary) -> String {
-        guard s.checkedByService else { return "These copies were not verified. Keep the card until they are." }
+        guard s.checkedByService else { return String(localized: "These copies were not verified. Keep the card until they are.") }
         let names = s.stayOnCard.prefix(5).map { $0.url.lastPathComponent }.joined(separator: ", ")
-        let more = s.stayOnCard.count > 5 ? " and \(s.stayOnCard.count - 5) more" : ""
+        let more = s.stayOnCard.count > 5 ? String(localized: " and \(s.stayOnCard.count - 5) more") : ""
         return names.isEmpty
-            ? "Keep the card until the import is complete."
-            : "\(names)\(more) \(s.stayOnCard.count == 1 ? "has" : "have") no copy in your library. Don’t format the card until they do."
+            ? String(localized: "Keep the card until the import is complete.")
+            : s.stayOnCard.count == 1
+            ? String(localized: "\(names)\(more) has no copy in your library. Don’t format the card until they do.")
+            : String(localized: "\(names)\(more) have no copy in your library. Don’t format the card until they do.")
     }
 
-    public static let acknowledgeLabel = "I understand these files are only on the card"
+    public static let acknowledgeLabel = String(localized: "I understand these files are only on the card")
 
     /// Line for an import that stopped part-way (journal kept for resume).
     public static func stopped(done: Int, total: Int) -> String {
-        "Import stopped after \(done) of \(files(total)). The verified copies are kept; import again to continue."
+        String(localized: "Import stopped after \(done) of \(files(total)). The verified copies are kept; import again to continue.")
     }
 
     /// The card went away mid-import (no raw path or errno).
     public static func cardRemoved(_ name: String) -> String {
-        "\(name) was removed. Nothing was deleted from it; insert it again to continue the import."
+        String(localized: "\(name) was removed. Nothing was deleted from it; insert it again to continue the import.")
     }
 
     /// Continuing an earlier, unfinished import of this card.
     public static func resumeNote(sessionName: String, left: Int) -> String {
-        "Continuing the unfinished import into “\(sessionName)”: \(files(left)) left."
+        String(localized: "Continuing the unfinished import into “\(sessionName)”: \(files(left)) left.")
     }
 
     /// The launch prompt for an unfinished import.
     public static func resumePrompt(sessionName: String, done: Int, pending: Int) -> String {
-        "The import into “\(sessionName)” didn’t finish: \(done) file\(done == 1 ? "" : "s") verified, \(pending) left. "
-            + "Insert the card and import again to resume, or discard the unfinished copies."
+        (done == 1 ? String(localized: "The import into “\(sessionName)” didn’t finish: 1 file verified, \(pending) left. ")
+            : String(localized: "The import into “\(sessionName)” didn’t finish: \(done) files verified, \(pending) left. "))
+            + String(localized: "Insert the card and import again to resume, or discard the unfinished copies.")
     }
 
     /// Quitting while an import runs (M3).
-    public static let quitImportTitle = "An import is running"
-    public static let quitImportMessage = "Stop it and quit? It resumes the next time you import the card."
+    public static let quitImportTitle = String(localized: "An import is running")
+    public static let quitImportMessage = String(localized: "Stop it and quit? It resumes the next time you import the card.")
 
     public static func damagedNote(_ n: Int) -> String {
-        "The library copy of \(files(n)) was damaged. \(n == 1 ? "It is" : "They are") imported again from the card."
+        n == 1 ? String(localized: "The library copy of 1 file was damaged. It is imported again from the card.")
+            : String(localized: "The library copy of \(files(n)) was damaged. They are imported again from the card.")
     }
 
     public static func ejectHelp(canEject: Bool) -> String {
         canEject
-            ? "Nothing is ever deleted from the card. Eject says whether every file on it has a verified copy in your library."
-            : "Only local removable volumes can be ejected."
+            ? String(localized: "Nothing is ever deleted from the card. Eject says whether every file on it has a verified copy in your library.")
+            : String(localized: "Only local removable volumes can be ejected.")
     }
 }

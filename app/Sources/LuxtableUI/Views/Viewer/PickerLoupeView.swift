@@ -21,7 +21,7 @@ struct PickerLoupeView: View {
             .position(x: rect.midX, y: rect.minY + (d + 6 + PickerLoupe.readoutHeight) / 2)
             .allowsHitTesting(false)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(loupe.readout.map { PickerLoupe.spoken($0, kind: kind) } ?? "Magnifier")
+            .accessibilityLabel(loupe.readout.map { PickerLoupe.spoken($0, kind: kind) } ?? String(localized: "Magnifier"))
             // Debounced: a new readout cancels the pending one, so VoiceOver speaks
             // where the cursor rests, not every pixel it crosses.
             .task(id: loupe.announcement) {
@@ -156,6 +156,6 @@ private struct LoupeReadoutView: View {
 
     static func hue(_ rgb: SIMD3<Int>) -> String {
         let hs = ColorPick.hueSaturation(SIMD3(Double(rgb.x), Double(rgb.y), Double(rgb.z)) / 255)
-        return "Hue \(Int(hs.hue.rounded()))°  Saturation \(Int((hs.saturation * 100).rounded()))%"
+        return String(localized: "Hue \(Int(hs.hue.rounded()))°  Saturation \(Int((hs.saturation * 100).rounded()))%")
     }
 }

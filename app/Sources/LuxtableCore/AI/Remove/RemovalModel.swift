@@ -74,9 +74,9 @@ public final class RemovalModel {
         guard model.state == .ready else { return nil }
         activate()
         if let loading { await Self.wait(for: loading) }
-        if Task.isCancelled { return "the export was cancelled" }
+        if Task.isCancelled { return String(localized: "the export was cancelled") }
         if registered { return nil }
-        return "the removal model couldn't be loaded (\(status)), and its fills would differ from the ones previewed"
+        return String(localized: "the removal model couldn't be loaded (\(status)), and its fills would differ from the ones previewed")
     }
 
     /// Cancel the download; PatchMatch keeps filling.
@@ -108,9 +108,9 @@ public final class RemovalModel {
     /// What the Remove panel says about the engine.
     public var status: String {
         switch model.state {
-        case .ready: registered ? "Removing with LaMa on this Mac." : "Preparing the removal model…"
-        case .notDownloaded: "Basic fill. The first removal downloads a 217 MB model for better fills."
-        case .downloading(let f): "Downloading the removal model… \(Int((f * 100).rounded())) %"
+        case .ready: registered ? String(localized: "Removing with LaMa on this Mac.") : String(localized: "Preparing the removal model…")
+        case .notDownloaded: String(localized: "Basic fill. The first removal downloads a 217 MB model for better fills.")
+        case .downloading(let f): String(localized: "Downloading the removal model… \(Int((f * 100).rounded())) %")
         case .failed(let m): m
         }
     }

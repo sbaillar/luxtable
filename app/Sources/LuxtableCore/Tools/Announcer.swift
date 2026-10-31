@@ -24,9 +24,10 @@ public enum Announcer {
     public static func announcement(for state: SaveCoordinator.State) -> (text: String, priority: Priority)? {
         switch state {
         case .failed(let message, let pending):
-            ("\(pending) unsaved change\(pending == 1 ? "" : "s"). Saving failed: \(message)", .urgent)
+            (pending == 1 ? String(localized: "\(pending) unsaved change. Saving failed: \(message)")
+                : String(localized: "\(pending) unsaved changes. Saving failed: \(message)"), .urgent)
         case .dropped(let message, let count):
-            ("\(count) change\(count == 1 ? "" : "s") not saved. \(message)", .urgent)
+            (count == 1 ? String(localized: "\(count) change not saved. \(message)") : String(localized: "\(count) changes not saved. \(message)"), .urgent)
         case .saved, .pending, .saving:
             nil
         }

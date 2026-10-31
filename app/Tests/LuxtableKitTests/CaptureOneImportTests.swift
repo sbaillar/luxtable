@@ -110,7 +110,7 @@ private let session = SessionInfo(name: "Shoot", url: URL(fileURLWithPath: "/tmp
         #expect(s.notMappedLines == ["Clarity: 149 photos — Clarity: no equivalent"])
         #expect(s.leftOutLines == [
             "685 photos in Capture One's Trash (not listed in Luxtable)",
-            "2114 photos outside this folder (other folders the Capture One session references)",
+            "\(2114.formatted()) photos outside this folder (other folders the Capture One session references)",
             "4 photos not found in Luxtable: x.ARW, y.ARW, z.ARW and 1 more",
             "2 variants deleted in Luxtable (not recreated)",
             "1 photo saved by a newer Luxtable (left alone)",

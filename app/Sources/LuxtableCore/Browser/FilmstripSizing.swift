@@ -8,9 +8,9 @@ public enum FilmstripPosition: String, CaseIterable, Codable, Sendable {
     public var isVertical: Bool { self != .bottom }
     public var title: String {
         switch self {
-        case .bottom: "Bottom"
-        case .left: "Left"
-        case .right: "Right"
+        case .bottom: String(localized: "Bottom")
+        case .left: String(localized: "Left")
+        case .right: String(localized: "Right")
         }
     }
 }
@@ -143,8 +143,8 @@ public enum FilmstripSizing {
 /// [multiview] The separator's VoiceOver value.
 public enum FilmstripText {
     public static func size(lines: Int, vertical: Bool) -> String {
-        guard lines > 0 else { return "Collapsed" }
-        let unit = vertical ? "column" : "row"
-        return "\(lines) \(unit)\(lines == 1 ? "" : "s")"
+        guard lines > 0 else { return String(localized: "Collapsed") }
+        if vertical { return lines == 1 ? String(localized: "1 column") : String(localized: "\(lines) columns") }
+        return lines == 1 ? String(localized: "1 row") : String(localized: "\(lines) rows")
     }
 }

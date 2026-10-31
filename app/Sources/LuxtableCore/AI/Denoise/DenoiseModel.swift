@@ -31,11 +31,11 @@ public enum DenoiseError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .missing: "AI Denoise model not included in this build."
-        case .damaged: "The AI Denoise model in this build is damaged (its checksum doesn't match)."
-        case .compile(let m): "Couldn't prepare the AI Denoise model: \(m)"
-        case .model(let m): "The AI Denoise model can't run: \(m)"
-        case .denoise(let m): "AI Denoise failed: \(m)"
+        case .missing: String(localized: "AI Denoise model not included in this build.")
+        case .damaged: String(localized: "The AI Denoise model in this build is damaged (its checksum doesn't match).")
+        case .compile(let m): String(localized: "Couldn't prepare the AI Denoise model: \(m)")
+        case .model(let m): String(localized: "The AI Denoise model can't run: \(m)")
+        case .denoise(let m): String(localized: "AI Denoise failed: \(m)")
         }
     }
 }

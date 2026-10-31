@@ -66,6 +66,9 @@ publish() {
     exit 1
   }
   echo "published v$1"
+  # Betas stay out of Homebrew; the cask is a convenience, so a failure only warns.
+  [ ${#pre[@]} -gt 0 ] || scripts/update-cask.sh "$1" "$dmg" \
+    || echo "release: warning: the Homebrew cask wasn't updated; run scripts/update-cask.sh $1 $dmg" >&2
 }
 
 # An earlier run committed and tagged v$old but never pushed it: finish that one.

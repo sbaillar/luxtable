@@ -57,19 +57,20 @@ public final class OptimizePanelModel {
     /// "Analyzing 3 of 8…" while a batch runs.
     public var progressText: String? {
         guard isAnalyzing else { return nil }
-        guard isBatch else { return "Analyzing…" }
+        guard isBatch else { return String(localized: "Analyzing…") }
         let done = items.count(where: { $0.state != .analyzing })
-        return "Analyzing \(min(done + 1, items.count)) of \(items.count)…"
+        return String(localized: "Analyzing \(min(done + 1, items.count)) of \(items.count)…")
     }
 
     /// The Apply button's title ("Apply 4 Changes", "Apply to 3 Photos").
     public var applyTitle: String {
         if isBatch {
             let n = applicableItems.count
-            return "Apply to \(n) Photo\(n == 1 ? "" : "s")"
+            return n == 1 ? String(localized: "Apply to \(n) Photo") : String(localized: "Apply to \(n) Photos")
         }
         let n = selected.count
-        return n == 0 ? "Apply" : "Apply \(n) Change\(n == 1 ? "" : "s")"
+        return n == 0 ? String(localized: "Apply")
+            : n == 1 ? String(localized: "Apply \(n) Change") : String(localized: "Apply \(n) Changes")
     }
 
     public var canApply: Bool { isBatch ? !applicableItems.isEmpty : !selected.isEmpty && report != nil }
@@ -99,7 +100,8 @@ public final class OptimizePanelModel {
     func wait() async { await task?.value }
 
     private func analyze(_ id: PhotoID) async {
-        guard let app, let photo = app.photo(id), let base = bases[id] else { return set(id, .failed("Not found")) }
+        guard let app, let photo = app.photo(id), let base = bases[id] else { return set(id, .failed(String(localized: "Not found"))) }
+
         do {
             let signals = await app.optimizeSignals(photo)
             try Task.checkCancellation()

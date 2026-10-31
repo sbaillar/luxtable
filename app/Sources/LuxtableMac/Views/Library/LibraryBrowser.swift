@@ -126,9 +126,9 @@ private struct LibrarySidebar: View {
 
     private func title(_ n: Naming) -> String {
         switch n {
-        case .collection: "New Collection from \(library.selection.count) Selected"
-        case .smart: "New Smart Collection from the Current Filter"
-        case .rename: "Rename Collection"
+        case .collection: String(localized: "New Collection from \(library.selection.count) Selected")
+        case .smart: String(localized: "New Smart Collection from the Current Filter")
+        case .rename: String(localized: "Rename Collection")
         }
     }
 
@@ -175,7 +175,7 @@ private struct LibraryFilterBar: View {
             }
             .labelsHidden().fixedSize().help("Minimum rating")
             Picker("Flag", selection: $library.filter.pick) {
-                ForEach(PhotoFilter.barPickOptions, id: \.self) { Text($0.rawValue) }
+                ForEach(PhotoFilter.barPickOptions, id: \.self) { Text($0.barTitle) }
             }
             .pickerStyle(.segmented).labelsHidden().fixedSize().help("Filter by pick flag")
             HStack(spacing: 3) {
@@ -189,8 +189,8 @@ private struct LibraryFilterBar: View {
                             .padding(2).contentShape(.circle)
                     }
                     .buttonStyle(.plain)
-                    .help("\(tag.name) label")
-                    .accessibilityLabel("\(tag.name) label filter")
+                    .help("\(tag.title) label")
+                    .accessibilityLabel("\(tag.title) label filter")
                     .accessibilityAddTraits(library.filter.label == tag ? .isSelected : [])
                 }
             }
@@ -312,7 +312,7 @@ private struct LibraryCell: View {
             .contentShape(.rect)
             .help(item.map { "\($0.sessionName) · \(Self.fileName($0))" } ?? "")
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(item.map { LibraryText.label($0) } ?? "Loading")
+            .accessibilityLabel(item.map { LibraryText.label($0) } ?? String(localized: "Loading"))
             .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
             .onTapGesture { click(item) }
             .simultaneousGesture(TapGesture(count: 2).onEnded { open(item) })
@@ -441,11 +441,11 @@ private struct LibraryMenu: View {
         Divider()
         Menu("Rating") {
             ForEach(0...5, id: \.self) { n in
-                Button(n == 0 ? "No Rating" : String(repeating: "★", count: n)) { prepare(); library.rate(n) }
+                Button(n == 0 ? String(localized: "No Rating") : String(repeating: "★", count: n)) { prepare(); library.rate(n) }
             }
         }
         Menu("Label") {
-            ForEach(ColorTag.allCases, id: \.self) { t in Button(t.name) { prepare(); library.setLabel(t) } }
+            ForEach(ColorTag.allCases, id: \.self) { t in Button(t.title) { prepare(); library.setLabel(t) } }
         }
         Menu("Flag") {
             Button("Pick") { prepare(); library.setFlag(.picked) }

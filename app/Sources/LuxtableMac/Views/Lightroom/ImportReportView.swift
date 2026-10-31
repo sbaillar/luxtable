@@ -17,11 +17,11 @@ struct ImportReportView: View {
             VStack(alignment: .leading, spacing: DS.Space.s) {
                 Text(s.matchLine).font(DS.Font.label).foregroundStyle(DS.textSecondary)
                 section(nil, s.lines)
-                section("Edits by tool", s.toolLines)
-                section("Conflicts: changed in Luxtable since the last import", s.conflictLines, warning: true)
-                section("Not mapped (no Luxtable equivalent)", s.notMappedLines)
+                section(String(localized: "Edits by tool"), s.toolLines)
+                section(String(localized: "Conflicts: changed in Luxtable since the last import"), s.conflictLines, warning: true)
+                section(String(localized: "Not mapped (no Luxtable equivalent)"), s.notMappedLines)
                 folderList
-                section("Left out", s.leftOutLines)
+                section(String(localized: "Left out"), s.leftOutLines)
                 if !s.noteLines.isEmpty {
                     DisclosureGroup("Notes per photo (\(s.noteLines.count))") {
                         VStack(alignment: .leading, spacing: DS.Space.xxs) {

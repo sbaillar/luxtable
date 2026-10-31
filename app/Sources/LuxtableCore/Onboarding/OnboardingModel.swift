@@ -14,11 +14,11 @@ public final class OnboardingModel {
 
         public var title: String {
             switch self {
-            case .welcome: "Welcome to Luxtable"
-            case .familiar: "What did you use before?"
-            case .sessions: "Where should sessions live?"
-            case .archive: "Archive"
-            case .amazon: "Amazon Photos (optional)"
+            case .welcome: String(localized: "Welcome to Luxtable")
+            case .familiar: String(localized: "What did you use before?")
+            case .sessions: String(localized: "Where should sessions live?")
+            case .archive: String(localized: "Archive")
+            case .amazon: String(localized: "Amazon Photos (optional)")
             }
         }
     }
@@ -48,6 +48,8 @@ public final class OnboardingModel {
     public var amazonFolder: URL?
     /// The familiar layout (and its keys and names) to start with.
     public var familiar: LayoutPreset
+    /// "Nothing, I'm new to photo editing": Luxtable's layout, starting in Simple mode.
+    public private(set) var newToEditing: Bool
 
     @ObservationIgnored private let settings: AppSettings
     @ObservationIgnored private let features: FeatureGates?
@@ -87,6 +89,19 @@ public final class OnboardingModel {
         archiveEnabled = features?.isOn(.archive) ?? true
         amazonFolder = settings.amazonPhotosFolder
         familiar = settings.layoutPreset
+        newToEditing = settings.simpleMode
+    }
+
+    /// The "What did you use before?" choice of an app: its layout, in Full mode.
+    public func choose(_ layout: LayoutPreset) {
+        familiar = layout
+        newToEditing = false
+    }
+
+    /// The "I'm new to photo editing" choice: Luxtable's layout, starting in Simple mode.
+    public func chooseNewToEditing() {
+        familiar = .luxtable
+        newToEditing = true
     }
 
     /// The steps shown: Amazon Photos only while its integration is on.
@@ -129,11 +144,11 @@ public final class OnboardingModel {
                                           isWritable: (String) -> Bool = { _ in true }) -> TargetStatus {
         let path = normalized(target)
         guard !path.isEmpty else { return .empty }
-        guard path.hasPrefix("/") else { return .invalid("Use a full path, like /Volumes/NAS/Photos.") }
+        guard path.hasPrefix("/") else { return .invalid(String(localized: "Use a full path, like /Volumes/NAS/Photos.")) }
         let url = URL(fileURLWithPath: path).standardizedFileURL
         let comps = url.pathComponents
         let wholeDisk = comps.count <= 1 || (comps[1] == "Volumes" && comps.count <= 3)
-        guard !wholeDisk else { return .invalid("Choose a folder, not a whole disk.") }
+        guard !wholeDisk else { return .invalid(String(localized: "Choose a folder, not a whole disk.")) }
         if comps.count >= 3, comps[1] == "Volumes", !fileExists("/Volumes/\(comps[2])") {
             return .notMounted(comps[2])
         }
@@ -200,6 +215,7 @@ public final class OnboardingModel {
             settings.toolSidePreset = nil
             settings.useKeyPreset(KeyPreset(layout: familiar))
         }
+        settings.simpleMode = newToEditing
         settings.onboardingComplete = true
         if let features {
             let on = chosenFeatures.filter { !features.isOn($0) }

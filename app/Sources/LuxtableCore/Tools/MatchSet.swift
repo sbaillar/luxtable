@@ -80,18 +80,18 @@ extension RustDevelopTools: SetMatching {
 
 /// Toast texts of the match commands (pure, tested).
 public enum MatchSummary {
-    static func photos(_ n: Int) -> String { n == 1 ? "1 photo" : "\(n) photos" }
+    static func photos(_ n: Int) -> String { n == 1 ? String(localized: "1 photo") : String(localized: "\(n) photos") }
 
     public static func exposure(_ out: [ExposureMatchOutcome]) -> String {
         let matched = out.filter { $0.source != .unmatched }
         let exif = matched.count(where: { $0.source == .exif })
         let failed = out.count - matched.count
-        var s = matched.isEmpty ? "No exposures could be matched" : "Matched the exposure of \(photos(matched.count))"
-        if exif > 0 { s += " (\(exif) from camera settings)" }
-        if failed > 0, !matched.isEmpty { s += "; \(photos(failed)) could not be measured" }
+        var s = matched.isEmpty ? String(localized: "No exposures could be matched") : String(localized: "Matched the exposure of \(photos(matched.count))")
+        if exif > 0 { s += " (" + String(localized: "\(exif) from camera settings") + ")" }
+        if failed > 0, !matched.isEmpty { s += "; " + String(localized: "\(photos(failed)) could not be measured") }
         let disagree = matched.count(where: { $0.source == .metered && $0.exifDisagrees })
         if disagree > 0 {
-            s += "; camera settings disagreed by more than 3 EV for \(photos(disagree)) (another scene?)"
+            s += "; " + String(localized: "camera settings disagreed by more than 3 EV for \(photos(disagree)) (another scene?)")
         }
         return s
     }
@@ -99,8 +99,8 @@ public enum MatchSummary {
     public static func whiteBalance(_ out: [WhiteBalanceMatchOutcome]) -> String {
         let changed = out.count(where: { $0.value != nil })
         let failed = out.count(where: { $0.error != nil })
-        var s = changed == 0 ? "White balance already matches" : "Matched the white balance of \(photos(changed))"
-        if failed > 0 { s += "; \(photos(failed)) could not be read" }
+        var s = changed == 0 ? String(localized: "White balance already matches") : String(localized: "Matched the white balance of \(photos(changed))")
+        if failed > 0 { s += "; " + String(localized: "\(photos(failed)) could not be read") }
         return s
     }
 }
@@ -158,7 +158,7 @@ extension AppModel {
                 for (t, o) in zip(targets, out) where o.source != .unmatched && photo(t.photo.id) != nil {
                     deltas[t.photo.id] = o.deltaEV
                 }
-                updateEdits(Array(deltas.keys), label: "Match Total Exposures") { id, e in
+                updateEdits(Array(deltas.keys), label: String(localized: "Match Total Exposures")) { id, e in
                     let ev = e.exposure.ev + (deltas[id] ?? 0)
                     e.exposure.ev = min(5, max(-5, (ev * 100).rounded() / 100))
                 }
@@ -187,7 +187,7 @@ extension AppModel {
                 for (t, o) in zip(targets, out) where photo(t.photo.id) != nil {
                     if let v = o.value { values[t.photo.id] = v }
                 }
-                updateEdits(Array(values.keys), label: "Match White Balance") { id, e in
+                updateEdits(Array(values.keys), label: String(localized: "Match White Balance")) { id, e in
                     if let v = values[id] { e.whiteBalance = .custom(v) }
                 }
                 show(Toast(MatchSummary.whiteBalance(out), symbol: "thermometer.medium"))

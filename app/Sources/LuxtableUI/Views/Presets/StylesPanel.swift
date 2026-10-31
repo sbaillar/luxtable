@@ -22,11 +22,11 @@ struct StylesPanel: View {
             }
             originalRow
             if !suggestions.isEmpty {
-                lookSection("AI Looks", suggestions.map { ($0.look, $0.reason) })
+                lookSection(String(localized: "AI Looks"), suggestions.map { ($0.look, $0.reason) })
             }
             lookSection(LookPack.category, LookPack.all.map { ($0, $0.summary) })
             if !store.userPresets.isEmpty {
-                section("My Presets", store.userPresets)
+                section(String(localized: "My Presets"), store.userPresets)
             }
             ForEach(Preset.builtInCategories, id: \.self) { c in
                 section(c, store.styles(in: c))
@@ -43,8 +43,8 @@ struct StylesPanel: View {
                     let edit = model.focusedEdit
                     PlatformPanels.copy(LookJSON.item(from: edit, name: "My Look"))
                     let left = LookJSON.leftOut(edit)
-                    model.show(Toast(left.isEmpty ? "Copied as look JSON"
-                        : "Copied as look JSON (without \(left.joined(separator: ", ")))", symbol: "doc.on.clipboard"))
+                    model.show(Toast(left.isEmpty ? String(localized: "Copied as look JSON")
+                        : String(localized: "Copied as look JSON (without \(left.joined(separator: ", ")))"), symbol: "doc.on.clipboard"))
                 } label: {
                     Label("Copy as Look JSON", systemImage: "doc.on.clipboard")
                 }
@@ -100,8 +100,9 @@ struct StylesPanel: View {
             previewHover(nil)
             model.resetToOriginal()
         } label: {
-            PresetRow(title: "Original", symbol: "photo", detail: isOriginal ? "Current" : "No adjustments",
-                      summary: "Back to the photo as shot, without any adjustments (⌘Z undoes it)", hovered: hovered == id, tile: thumbnails?.tile(id), applied: isOriginal)
+            PresetRow(title: String(localized: "Original"), symbol: "photo",
+                      detail: isOriginal ? String(localized: "Current") : String(localized: "No adjustments"),
+                      summary: String(localized: "Back to the photo as shot, without any adjustments (⌘Z undoes it)"), hovered: hovered == id, tile: thumbnails?.tile(id), applied: isOriginal)
         }
         .buttonStyle(.plain)
         .disabled(model.focusedID == nil)
@@ -129,7 +130,7 @@ struct StylesPanel: View {
                     previewHover(inside ? p : nil)
                 }
                 .contextMenu { menu(for: p) }
-                .accessibilityLabel("Apply \(p.isBuiltIn ? "style" : "preset") \(p.name)")
+                .accessibilityLabel(p.isBuiltIn ? "Apply style \(p.name)" : "Apply preset \(p.name)")
             }
         }
     }
@@ -201,13 +202,13 @@ struct StylesPanel: View {
 }
 
 /// The applied look's Intensity slider: 0 restores the photo as it was before the look.
-private struct LookIntensityRow: View {
+struct LookIntensityRow: View {
     @Bindable var model: AppModel
     let look: AppliedLookEdit
 
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.xxs) {
-            Text("LOOK: \((LookPack.look(id: look.id)?.name ?? "Custom").uppercased())")
+            Text("LOOK: \((LookPack.look(id: look.id)?.name ?? String(localized: "Custom")).uppercased())")
                 .font(DS.Font.caption).tracking(0.5).foregroundStyle(DS.textSecondary)
             ToolSlider(spec: LookSpecs.intensity, value: look.intensity, onEnd: { model.endEditGesture() }) { v in
                 model.setLookIntensity(v)
@@ -217,8 +218,8 @@ private struct LookIntensityRow: View {
 }
 
 enum LookSpecs {
-    static let intensity = SliderSpec("Intensity", 0...1, default: 1, step: 0.01, format: .percent,
-                                      help: "How strongly the look is applied; 0 shows the photo as it was before it.")
+    static let intensity = SliderSpec(String(localized: "Intensity"), 0...1, default: 1, step: 0.01, format: .percent,
+                                      help: String(localized: "How strongly the look is applied; 0 shows the photo as it was before it."))
 }
 
 private struct PresetRow: View {
@@ -234,7 +235,7 @@ private struct PresetRow: View {
 
     init(preset: Preset, hovered: Bool, tile: (image: CGImage, isStale: Bool)?, applied: Bool = false) {
         self.init(title: preset.name, symbol: preset.isBuiltIn ? "camera.filters" : "slider.horizontal.3",
-                  detail: preset.groups.count == 1 ? preset.groups.first!.title : "\(preset.groups.count) groups",
+                  detail: preset.groups.count == 1 ? preset.groups.first!.title : String(localized: "\(preset.groups.count) groups"),
                   hovered: hovered, tile: tile, applied: applied)
         autoApply = preset.autoApplyOnImport
         summary = preset.summary

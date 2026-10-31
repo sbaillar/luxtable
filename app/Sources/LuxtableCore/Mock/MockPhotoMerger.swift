@@ -13,7 +13,7 @@ public struct MockPhotoMerger: PhotoMerging {
     }
 
     public func preview(_ photos: [Photo], options: PhotoMergeOptions, maxEdge: Int) async throws -> PhotoMergePreview {
-        guard photos.count >= 2 else { throw MockError.invalid("Choose two or more photos to merge.") }
+        guard photos.count >= 2 else { throw MockError.invalid(String(localized: "Choose two or more photos to merge.")) }
         try await Task.sleep(for: step)
         let (w, h) = Self.size(of: photos, options: options)
         let scale = min(1, Double(maxEdge) / Double(max(w, h, 1)))
@@ -33,7 +33,7 @@ public struct MockPhotoMerger: PhotoMerging {
         let all = try await store.photos(in: session)
         let sources = photos.compactMap { id in all.first { $0.id == id } }
         guard sources.count >= 2, let first = sources.first else {
-            throw MockError.invalid("Choose two or more photos to merge.")
+            throw MockError.invalid(String(localized: "Choose two or more photos to merge."))
         }
         for i in 1...4 {
             try await Task.sleep(for: step)

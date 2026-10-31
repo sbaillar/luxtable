@@ -123,7 +123,7 @@ public final class SharedPreviewProvider: PreviewProvider, @unchecked Sendable {
         let encoded = try await encodedJPEG(url, source)
         try Task.checkCancellation()
         guard let img = imaging.decode(jpeg: encoded.jpeg, maxPixelSize: size, exifOrientation: encoded.orientation) else {
-            throw RenderError(.Unsupported(message: "the embedded preview of \(url.lastPathComponent) can't be decoded"))
+            throw RenderError(.Unsupported(message: String(localized: "the embedded preview of \(url.lastPathComponent) can't be decoded")))
         }
         put(key, img)
         return img

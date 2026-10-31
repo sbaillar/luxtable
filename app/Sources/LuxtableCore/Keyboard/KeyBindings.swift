@@ -60,35 +60,35 @@ public enum BindableCommand: String, CaseIterable, Codable, Sendable, Identifiab
 
     public var title: String {
         switch self {
-        case .rate0: "Clear rating"
-        case .rate1, .rate2, .rate3, .rate4, .rate5: "Rate \(rawValue.last!) star\(rawValue.last == "1" ? "" : "s")"
-        case .tagRed: "Red tag"
-        case .tagYellow: "Yellow tag"
-        case .tagGreen: "Green tag"
-        case .tagBlue: "Blue tag"
-        case .tagPurple: "Purple tag"
-        case .tagOrange: "Orange tag"
-        case .tagPink: "Pink tag"
-        case .pick: "Pick"
-        case .reject: "Reject"
-        case .unflag: "Unflag"
-        case .togglePanels: "Hide panels"
-        case .gridMode: "Grid"
-        case .viewerMode: "Viewer"
-        case .beforeAfter: "Before / after"
-        case .pinCompare: "Pin for compare"
-        case .toggleStack: "Expand / collapse stack"
-        case .toggleFilmstrip: "Hide filmstrip"
-        case .cropTool: "Crop tool"
-        case .straightenTool: "Straighten tool"
-        case .colorPickerTool: "Color picker"
-        case .brushTool: "Brush mask"
-        case .eraserTool: "Erase mask"
-        case .gradientTool: "Linear gradient mask"
-        case .radialTool: "Radial gradient mask"
-        case .whiteBalanceTool: "White balance picker"
-        case .survey: "Survey selected"
-        case .toggleClipping: "Clipping warning"
+        case .rate0: String(localized: "Clear rating")
+        case .rate1, .rate2, .rate3, .rate4, .rate5: rawValue.last == "1" ? String(localized: "Rate 1 star") : String(localized: "Rate \(String(rawValue.last!)) stars")
+        case .tagRed: String(localized: "Red tag")
+        case .tagYellow: String(localized: "Yellow tag")
+        case .tagGreen: String(localized: "Green tag")
+        case .tagBlue: String(localized: "Blue tag")
+        case .tagPurple: String(localized: "Purple tag")
+        case .tagOrange: String(localized: "Orange tag")
+        case .tagPink: String(localized: "Pink tag")
+        case .pick: String(localized: "Pick")
+        case .reject: String(localized: "Reject")
+        case .unflag: String(localized: "Unflag")
+        case .togglePanels: String(localized: "Hide panels")
+        case .gridMode: String(localized: "Grid")
+        case .viewerMode: String(localized: "Viewer")
+        case .beforeAfter: String(localized: "Before / after")
+        case .pinCompare: String(localized: "Pin for compare")
+        case .toggleStack: String(localized: "Expand / collapse stack")
+        case .toggleFilmstrip: String(localized: "Hide filmstrip")
+        case .cropTool: String(localized: "Crop tool")
+        case .straightenTool: String(localized: "Straighten tool")
+        case .colorPickerTool: String(localized: "Color picker")
+        case .brushTool: String(localized: "Brush mask")
+        case .eraserTool: String(localized: "Erase mask")
+        case .gradientTool: String(localized: "Linear gradient mask")
+        case .radialTool: String(localized: "Radial gradient mask")
+        case .whiteBalanceTool: String(localized: "White balance picker")
+        case .survey: String(localized: "Survey selected")
+        case .toggleClipping: String(localized: "Clipping warning")
         }
     }
 }
@@ -146,10 +146,10 @@ public struct KeyBindings: Equatable, Sendable {
 
         public var message: String {
             switch self {
-            case .fixedKey(let name): "\(name) is a fixed navigation key and can't be rebound."
-            case .modified: "Shortcuts with ⌘, ⌥ or ⌃ belong to the menus. Press a single key."
-            case .reserved(let c): "“\(c)” is reserved."
-            case .notASingleKey: "Press a single letter, digit or symbol key."
+            case .fixedKey(let name): String(localized: "\(name) is a fixed navigation key and can't be rebound.")
+            case .modified: String(localized: "Shortcuts with ⌘, ⌥ or ⌃ belong to the menus. Press a single key.")
+            case .reserved(let c): String(localized: "“\(String(c))” is reserved.")
+            case .notASingleKey: String(localized: "Press a single letter, digit or symbol key.")
             }
         }
     }
@@ -159,11 +159,11 @@ public struct KeyBindings: Equatable, Sendable {
     public static func recordable(_ key: KeyInput) -> Result<Character, Rejection> {
         if let special = key.special {
             let name = switch special {
-            case .escape: "Esc"
-            case .tab: "Tab"
-            case .returnKey: "Return"
-            case .space: "Space"
-            case .left, .right, .up, .down: "An arrow key"
+            case .escape: String(localized: "Esc")
+            case .tab: String(localized: "Tab")
+            case .returnKey: String(localized: "Return")
+            case .space: String(localized: "Space")
+            case .left, .right, .up, .down: String(localized: "An arrow key")
             }
             return .failure(.fixedKey(name))
         }
@@ -263,7 +263,7 @@ public enum ShortcutRecorder {
         case .success(let ch):
             var b = bindings
             let displaced = b.bind(command, to: ch)
-            let note = displaced.map { "“\(KeyBindings.display(ch))” moved from \($0.title)." }
+            let note = displaced.map { String(localized: "“\(KeyBindings.display(ch))” moved from \($0.title).") }
             return Outcome(bindings: b, note: note, done: true)
         }
     }

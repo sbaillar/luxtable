@@ -23,6 +23,15 @@ public enum ColorTool: Equatable, Sendable {
 
 public enum TargetedChannel: String, CaseIterable, Sendable {
     case hue = "Hue", saturation = "Saturation", lightness = "Lightness"
+
+    /// The channel's name in the UI (the raw value is its stable identifier).
+    public var title: String {
+        switch self {
+        case .hue: String(localized: "Hue")
+        case .saturation: String(localized: "Saturation")
+        case .lightness: String(localized: "Lightness")
+        }
+    }
 }
 
 /// Which colour tool is active and which Advanced range the panel edits.
@@ -177,15 +186,15 @@ extension Array {
 
 /// Slider specs of the colour-editor tools and the layer panel.
 public enum ColorToolSpecs {
-    public static let rangeCenter = SliderSpec("Hue", 0...359, step: 1, format: .integer, help: "Centre of the picked colour range.")
-    public static let rangeWidth = SliderSpec("Width", 5...120, default: 45, step: 1, format: .integer,
-                                              help: "How many hues around the centre are included.")
-    public static let rangeSmoothness = SliderSpec("Softness", 0...1, default: 0.5, step: 0.01, format: .percent,
-                                                   help: "How gradually the range fades out.")
-    public static let hueUniformity = SliderSpec("Hue Unify", 0...100, format: .integer,
-                                                 help: "Pull skin hues toward one tone (evens out redness).")
-    public static let saturationUniformity = SliderSpec("Sat Unify", 0...100, format: .integer,
-                                                        help: "Even out skin saturation (blotchiness).")
-    public static let lightnessUniformity = SliderSpec("Light Unify", 0...100, format: .integer,
-                                                       help: "Even out skin lightness.")
+    public static let rangeCenter = SliderSpec(String(localized: "Hue"), 0...359, step: 1, format: .integer, help: String(localized: "Centre of the picked colour range."))
+    public static let rangeWidth = SliderSpec(String(localized: "Width"), 5...120, default: 45, step: 1, format: .integer,
+                                              help: String(localized: "How many hues around the centre are included."))
+    public static let rangeSmoothness = SliderSpec(String(localized: "Softness"), 0...1, default: 0.5, step: 0.01, format: .percent,
+                                                   help: String(localized: "How gradually the range fades out."))
+    public static let hueUniformity = SliderSpec(String(localized: "Hue Unify"), 0...100, format: .integer,
+                                                 help: String(localized: "Pull skin hues toward one tone (evens out redness)."))
+    public static let saturationUniformity = SliderSpec(String(localized: "Sat Unify"), 0...100, format: .integer,
+                                                        help: String(localized: "Even out skin saturation (blotchiness)."))
+    public static let lightnessUniformity = SliderSpec(String(localized: "Light Unify"), 0...100, format: .integer,
+                                                       help: String(localized: "Even out skin lightness."))
 }

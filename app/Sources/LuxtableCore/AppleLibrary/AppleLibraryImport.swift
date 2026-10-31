@@ -23,13 +23,13 @@ public enum AppleLibraryKind: String, Sendable, Equatable {
         switch self {
         case .aperture, .iphoto, .iphotoXML: nil
         case .photos:
-            "\u{201c}\(name)\u{201d} is a Photos library, which Luxtable doesn't read: only Aperture and iPhoto libraries are "
-                + "supported. In Photos, export the unmodified originals (File \u{25B8} Export) and open that folder instead."
+            String(localized: "\u{201c}\(name)\u{201d} is a Photos library, which Luxtable doesn't read: only Aperture and iPhoto libraries are ")
+                + String(localized: "supported. In Photos, export the unmodified originals (File \u{25B8} Export) and open that folder instead.")
         case .oldAperture:
-            "\u{201c}\(name)\u{201d} was written by Aperture 1 or 2, which Luxtable can't read. Open it once in Aperture 3 "
-                + "to upgrade it, then choose it again."
+            String(localized: "\u{201c}\(name)\u{201d} was written by Aperture 1 or 2, which Luxtable can't read. Open it once in Aperture 3 ")
+                + String(localized: "to upgrade it, then choose it again.")
         case .unknown:
-            "\u{201c}\(name)\u{201d} isn't an Aperture or iPhoto library."
+            String(localized: "\u{201c}\(name)\u{201d} isn't an Aperture or iPhoto library.")
         }
     }
 }
@@ -62,7 +62,7 @@ public struct AppleLibraryInfo: Sendable, Equatable {
     /// "Library.aplibrary (Aperture 3): 1200 photos, 14 albums".
     public var line: String {
         var parts = [LRImportSummary.photos(photos)]
-        if albums > 0 { parts.append("\(albums) album\(albums == 1 ? "" : "s")") }
+        if albums > 0 { parts.append(albums == 1 ? String(localized: "1 album") : String(localized: "\(albums) albums")) }
         let by = writtenBy.map { " (\($0))" } ?? ""
         return "\(origin)\(by): " + parts.joined(separator: ", ")
     }
@@ -78,8 +78,8 @@ public enum AppleImportCategories {
     /// The checkbox's words for this import.
     public static func title(_ c: LRCategory) -> String {
         switch c {
-        case .metadata: "Title, caption and place"
-        case .collections: "Projects, events and albums"
+        case .metadata: String(localized: "Title, caption and place")
+        case .collections: String(localized: "Projects, events and albums")
         default: c.title
         }
     }

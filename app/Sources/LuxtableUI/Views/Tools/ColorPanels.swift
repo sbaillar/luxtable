@@ -21,7 +21,7 @@ struct WhiteBalancePanel: View {
                 Picker("Mode", selection: Binding(
                     get: { wb.asShot },
                     set: { toAsShot in
-                        model.updateEdit(label: toAsShot ? "As Shot WB" : "Custom WB") { e in
+                        model.updateEdit(label: toAsShot ? String(localized: "As Shot WB") : String(localized: "Custom WB")) { e in
                             // Custom starts from what As Shot showed.
                             if !toAsShot, e.whiteBalance.asShot, let a = asShot { e.whiteBalance = .custom(a) }
                             e.whiteBalance.asShot = toAsShot
@@ -37,9 +37,9 @@ struct WhiteBalancePanel: View {
                 Menu {
                     ForEach(WhiteBalancePreset.allCases) { p in
                         Button {
-                            model.updateEdit(label: "WB \(p.rawValue)") { $0.whiteBalance = p.applied(to: $0.whiteBalance) }
+                            model.updateEdit(label: String(localized: "WB \(p.title)")) { $0.whiteBalance = p.applied(to: $0.whiteBalance) }
                         } label: {
-                            Label("\(p.rawValue)  \(Formatters.kelvin(p.temperature))", systemImage: p.symbol)
+                            Label("\(p.title)  \(Formatters.kelvin(p.temperature))", systemImage: p.symbol)
                         }
                     }
                 } label: {
@@ -106,11 +106,11 @@ struct ColorBalancePanel: View {
     var body: some View {
         let cb = model.focusedEdit.colorBalance
         VStack(spacing: DS.Space.m) {
-            ColorWheelView(title: "Master", value: cb.master, diameter: 120) { v, key in set(\.master, v, key) }
+            ColorWheelView(title: String(localized: "Master"), value: cb.master, diameter: 120) { v, key in set(\.master, v, key) }
             HStack(alignment: .top, spacing: DS.Space.s) {
-                ColorWheelView(title: "Shadows", value: cb.shadows, diameter: 76) { v, key in set(\.shadows, v, key) }
-                ColorWheelView(title: "Midtones", value: cb.midtones, diameter: 76) { v, key in set(\.midtones, v, key) }
-                ColorWheelView(title: "Highlights", value: cb.highlights, diameter: 76) { v, key in set(\.highlights, v, key) }
+                ColorWheelView(title: String(localized: "Shadows"), value: cb.shadows, diameter: 76) { v, key in set(\.shadows, v, key) }
+                ColorWheelView(title: String(localized: "Midtones"), value: cb.midtones, diameter: 76) { v, key in set(\.midtones, v, key) }
+                ColorWheelView(title: String(localized: "Highlights"), value: cb.highlights, diameter: 76) { v, key in set(\.highlights, v, key) }
             }
         }
         .frame(maxWidth: .infinity)
@@ -119,7 +119,7 @@ struct ColorBalancePanel: View {
     }
 
     private func set(_ kp: WritableKeyPath<ColorBalanceEdit, WheelValue>, _ v: WheelValue, _ key: String) {
-        model.updateEdit(label: "Color Balance", coalesceKey: key) { $0.colorBalance[keyPath: kp] = v }
+        model.updateEdit(label: String(localized: "Color Balance"), coalesceKey: key) { $0.colorBalance[keyPath: kp] = v }
     }
 }
 
@@ -134,7 +134,7 @@ struct ColorEditorPanel: View {
         let editor = model.focusedEdit.colorEditor
         VStack(alignment: .leading, spacing: DS.Space.s) {
             Picker("Mode", selection: $mode) {
-                ForEach(ColorEditorMode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                ForEach(ColorEditorMode.allCases, id: \.self) { Text($0.title).tag($0) }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
@@ -170,8 +170,8 @@ struct ColorEditorPanel: View {
                 .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
             HStack(spacing: DS.Space.xs) {
                 ForEach(TargetedChannel.allCases, id: \.self) { ch in
-                    toolButton(.targeted(ch), title: ch.rawValue, symbol: nil,
-                               help: "Drag up or down on a colour in the image to change its \(ch.rawValue.lowercased())")
+                    toolButton(.targeted(ch), title: ch.title, symbol: nil,
+                               help: "Drag up or down on a colour in the image to change its \(ch.title.lowercased())")
                 }
             }
         }
@@ -182,12 +182,12 @@ struct ColorEditorPanel: View {
 
     @ViewBuilder private func advanced(_ editor: ColorEditorEdit) -> some View {
         HStack {
-            toolButton(.pickRange, title: "Pick Color", symbol: "eyedropper.halffull",
+            toolButton(.pickRange, title: String(localized: "Pick Color"), symbol: "eyedropper.halffull",
                        help: "Click a colour in the image to add a range for it")
             Spacer()
             if let i = selected(editor) {
                 Button(role: .destructive) {
-                    model.updateEdit(label: "Remove Color Range") { e in
+                    model.updateEdit(label: String(localized: "Remove Color Range")) { e in
                         e.colorEditor.advanced = ColorRangeOps.removing(i, from: e.colorEditor.advanced)
                     }
                     model.colorTools.selectedRange = ColorRangeOps.selection(afterRemoving: i, count: editor.advanced.count)
@@ -205,7 +205,7 @@ struct ColorEditorPanel: View {
             HStack(spacing: DS.Space.xs) {
                 ForEach(editor.advanced.indices, id: \.self) { i in
                     let c = WheelMath.rgb(hue: editor.advanced[i].centerHue, saturation: 0.8, value: 0.95)
-                    Chip(title: "\(i + 1)", color: Color(red: c.r, green: c.g, blue: c.b),
+                    Chip(title: String(i + 1), color: Color(red: c.r, green: c.g, blue: c.b),
                          selected: selected(editor) == i) { model.colorTools.selectedRange = i }
                 }
             }
@@ -218,11 +218,11 @@ struct ColorEditorPanel: View {
 
     @ViewBuilder private func skin(_ editor: ColorEditorEdit) -> some View {
         HStack {
-            toolButton(.pickSkin, title: "Pick Skin", symbol: "eyedropper.halffull",
+            toolButton(.pickSkin, title: String(localized: "Pick Skin"), symbol: "eyedropper.halffull",
                        help: "Click skin in the image to set the skin-tone range")
             Spacer()
             if editor.skin != nil {
-                Button("Reset") { model.updateEdit(label: "Reset Skin Tone") { $0.colorEditor.skin = nil } }
+                Button("Reset") { model.updateEdit(label: String(localized: "Reset Skin Tone")) { $0.colorEditor.skin = nil } }
                     .controlSize(.small)
             }
         }
@@ -267,7 +267,7 @@ struct ColorEditorPanel: View {
         return i
     }
 
-    private func toolButton(_ tool: ColorTool, title: String, symbol: String?, help: String) -> some View {
+    private func toolButton(_ tool: ColorTool, title: String, symbol: String?, help: LocalizedStringKey) -> some View {
         let on = model.colorTools.mode == tool
         return Button {
             model.colorTools.mode = on ? nil : tool
@@ -284,12 +284,20 @@ struct ColorEditorPanel: View {
         }
         .buttonStyle(.plain)
         .help(help)
-        .accessibilityLabel(on ? "Stop \(title.lowercased())" : title)
+        .accessibilityLabel(on ? String(localized: "Stop \(title.lowercased())") : title)
     }
 }
 
 enum ColorEditorMode: String, CaseIterable {
     case basic = "Basic", advanced = "Advanced", skin = "Skin Tone"
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .basic: "Basic"
+        case .advanced: "Advanced"
+        case .skin: "Skin Tone"
+        }
+    }
 }
 
 /// A slider over any value of the edit (the value may not exist yet: `get` supplies

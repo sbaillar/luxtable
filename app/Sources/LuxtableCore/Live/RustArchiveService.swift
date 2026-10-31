@@ -67,7 +67,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
             manager = nil
             startError = "\(error)"
         }
-        current = ArchiveStatus(state: .unavailable(initial.isActive ? "Checking the archive…" : ArchiveDisplay.offText(initial)),
+        current = ArchiveStatus(state: .unavailable(initial.isActive ? String(localized: "Checking the archive…") : ArchiveDisplay.offText(initial)),
                                 target: initial.target, lastSuccess: nil)
         // Settings ▸ Plugins: no run, hand-off or Immich step while its feature is off.
         // (Set before the hand-off folder and before any session is registered, so
@@ -143,7 +143,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
         }
     }
 
-    static let settingsErrorPrefix = "Archive settings not applied"
+    static let settingsErrorPrefix = String(localized: "Archive settings not applied")
 
     /// Applies the parts of `new` that differ from `old`. A part that throws is not recorded as
     /// applied (so the next tick retries it) and is reported in `error`.
@@ -166,7 +166,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
                 applied.targetVolume = new.targetVolume
                 applied.objectStore = new.objectStore
             } catch {
-                failures.append("archive target (\(error))")
+                failures.append(String(localized: "archive target (\(String(describing: error)))"))
             }
         }
         if forceAmazon || old.amazonFolder != new.amazonFolder {
@@ -174,7 +174,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
                 try setAmazon(new)
                 applied.amazonFolder = new.amazonFolder
             } catch {
-                failures.append("Amazon Photos folder (\(error))")
+                failures.append(String(localized: "Amazon Photos folder (\(String(describing: error)))"))
             }
         }
         let error = failures.isEmpty ? nil : settingsErrorPrefix + ": " + failures.joined(separator: "; ")
@@ -253,7 +253,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
     public func snapshot() -> ArchiveStatus {
         let s = lock.withLock { applied }
         guard let manager else {
-            return ArchiveStatus(state: .failed("Archiving could not start: \(startError ?? "unknown error")"),
+            return ArchiveStatus(state: .failed(String(localized: "Archiving could not start: \(startError ?? String(localized: "unknown error"))")),
                                  target: s.target, lastSuccess: nil)
         }
         guard let o = try? manager.status() else { return lock.withLock { current } }
@@ -392,13 +392,13 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
             state = .unavailable(ArchiveDisplay.offText(s))
         } else if !o.target.available, o.target.reason == "checking…" {
             // Before the first target check answers, never claim "up to date".
-            state = .unavailable("Checking the archive…")
+            state = .unavailable(String(localized: "Checking the archive…"))
         } else if let running = archivable.first(where: { $0.running && !$0.notResponding }) {
             state = .syncing(fraction: running.fraction ?? -1)
         } else if !o.target.available {
             state = .offline
         } else if archivable.contains(where: \.notResponding) {
-            state = .failed("the archive volume is not responding")
+            state = .failed(String(localized: "the archive volume is not responding"))
         } else if problems > 0 {
             state = .problems(count: problems)
         } else if let failing = archivable.first(where: { $0.lastError != nil }), let e = failing.lastError {

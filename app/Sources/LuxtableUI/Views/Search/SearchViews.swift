@@ -71,7 +71,7 @@ struct PhotoSearchField: View {
     private var menu: some View {
         Menu {
             Picker("Search In", selection: Bindable(search).scope) {
-                ForEach(PhotoSearch.Scope.allCases, id: \.self) { Text($0.rawValue) }
+                ForEach(PhotoSearch.Scope.allCases, id: \.self) { Text($0.title) }
             }
             .onChange(of: search.scope) { _, _ in search.submit() }
             Divider()
@@ -176,7 +176,7 @@ private struct SessionResultRow: View {
         VStack(alignment: .leading, spacing: DS.Space.xs) {
             HStack {
                 Text(group.name).fontWeight(.semibold)
-                Text("\(group.hits.count) photo\(group.hits.count == 1 ? "" : "s")").foregroundStyle(DS.textSecondary)
+                Text(group.hits.count == 1 ? "1 photo" : "\(group.hits.count) photos").foregroundStyle(DS.textSecondary)
                 if !group.available { Text("offline").foregroundStyle(DS.warningText) }
                 Spacer()
                 Button("Open Session") { Task { await model.search.open(group) } }

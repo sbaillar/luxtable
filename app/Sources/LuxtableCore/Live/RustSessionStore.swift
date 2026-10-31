@@ -79,14 +79,14 @@ extension FolderSessionStore: FolderSessionOpening {
     }
     public func removeMissing(_ ids: [PhotoID]) async throws {}
     public func locate(_ id: PhotoID, at url: URL) async throws {
-        throw MockError.invalid("Locate needs a saved session")
+        throw MockError.invalid(String(localized: "Locate needs a saved session"))
     }
     public func restorePrevious(_ id: PhotoID) async throws {
-        throw MockError.invalid("Restoring needs a saved session")
+        throw MockError.invalid(String(localized: "Restoring needs a saved session"))
     }
     public func dismissFileChanged(_ id: PhotoID) async throws {}
     public func restoreToFolder(_ id: PhotoID) async throws {
-        throw MockError.invalid("Restoring needs a saved session")
+        throw MockError.invalid(String(localized: "Restoring needs a saved session"))
     }
     public func relocate(_ session: SessionInfo, to folder: URL) async throws -> SessionInfo {
         try register(folder: folder)
@@ -503,7 +503,7 @@ public actor RustSessionStore: CurrentSessionPointing, FolderSessionOpening, Use
     /// and added to the recents like an imported one.
     public func createSession(named name: String) async throws -> SessionInfo {
         guard let libraryRoot else {
-            throw MockError.invalid("New sessions are created by importing from a card. Open a folder instead.")
+            throw MockError.invalid(String(localized: "New sessions are created by importing from a card. Open a folder instead."))
         }
         return try await createSession(named: name, in: await libraryRoot())
     }
@@ -519,7 +519,7 @@ public actor RustSessionStore: CurrentSessionPointing, FolderSessionOpening, Use
             (FileManager.default.fileExists(atPath: dir.path), SessionLocation.problem(root, sessions: known),
              SessionLocation.missing(dir))
         }.value
-        guard !exists else { throw MockError.invalid("“\(name)” already exists in \(root.path).") }
+        guard !exists else { throw MockError.invalid(String(localized: "“\(name)” already exists in \(root.path).")) }
         if let nested { throw MockError.invalid(nested) }
         do {
             _ = try await Self.call { token in try await LuxtableFFI.createSession(dir: dir.path, name: name, token: token) }

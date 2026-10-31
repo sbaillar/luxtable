@@ -28,10 +28,10 @@ struct FilterBar: View {
                 Divider().frame(height: 14)
             }
             stars
-            chip(.unrated, "Unrated", on: model.filter.unratedOnly)
+            chip(.unrated, String(localized: "Unrated"), on: model.filter.unratedOnly)
 
             Picker("Flag", selection: $model.filter.pick) {
-                ForEach(PhotoFilter.barPickOptions, id: \.self) { Text($0.rawValue) }
+                ForEach(PhotoFilter.barPickOptions, id: \.self) { Text($0.barTitle) }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
@@ -198,7 +198,7 @@ struct MissingActionsBar: View {
 
     private func locate() {
         guard let id = model.focusedID, let name = model.focusedPhoto?.filename else { return }
-        guard let url = PlatformPanels.chooseItem(message: "Where is \(name) now?") else { return }
+        guard let url = PlatformPanels.chooseItem(message: String(localized: "Where is \(name) now?")) else { return }
         Task { await model.locate(id, at: url) }
     }
 }
@@ -236,16 +236,40 @@ struct SortMenu: View {
         Menu {
             Picker("Sort by", selection: $model.sort) {
                 ForEach(PhotoSort.allCases, id: \.self) { s in
-                    Label(s.rawValue, systemImage: s.symbol).tag(s)
+                    Label(s.menuTitle, systemImage: s.symbol).tag(s)
                 }
             }
             .pickerStyle(.inline)
         } label: {
-            Label(model.sort.rawValue, systemImage: "arrow.up.arrow.down")
+            Label(model.sort.menuTitle, systemImage: "arrow.up.arrow.down")
         }
         .menuStyle(.borderlessButton)
         .fixedSize()
         .help("Sort order")
+    }
+}
+
+extension PhotoFilter.PickFilter {
+    /// The filter bar's segment titles (the raw values are the English names).
+    public var barTitle: LocalizedStringKey {
+        switch self {
+        case .all: "All"
+        case .picked: "Picked"
+        case .unflagged: "Unflagged"
+        case .unrejected: "Not Rejected"
+        case .rejected: "Rejected"
+        }
+    }
+}
+
+extension PhotoSort {
+    /// The sort menu's titles (the raw values are the English names).
+    var menuTitle: LocalizedStringKey {
+        switch self {
+        case .captureTime: "Capture Time"
+        case .filename: "Filename"
+        case .rating: "Rating"
+        }
     }
 }
 

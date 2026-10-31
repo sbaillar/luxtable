@@ -102,6 +102,14 @@ public final class MapModel {
     public enum Scope: String, CaseIterable, Sendable {
         case session = "This Session"
         case allSessions = "All Sessions"
+
+        /// The scope picker's label.
+        public var title: String {
+            switch self {
+            case .session: String(localized: "This Session")
+            case .allSessions: String(localized: "All Sessions")
+            }
+        }
     }
 
     public enum Loading: Equatable, Sendable {
@@ -113,7 +121,7 @@ public final class MapModel {
     public enum Tiles: Equatable, Sendable { case ask, on, off }
 
     public static let tilesNotice =
-        "Map tiles come from Apple Maps. The areas you view are requested from Apple; your photos and their locations aren't uploaded."
+        String(localized: "Map tiles come from Apple Maps. The areas you view are requested from Apple; your photos and their locations aren't uploaded.")
 
     public var scope: Scope = .session {
         didSet { if scope != oldValue { Task { await reloadRemote() } } }
@@ -356,7 +364,7 @@ public final class MapModel {
     @discardableResult
     public func drop(_ item: PhotoDragItem, at point: CGPoint, on surface: any MapSurface) -> Bool {
         guard let app, item.instance == PhotoDragItem.thisInstance, item.session == app.currentSession?.id else {
-            app?.show(Toast("Drag photos from this window's filmstrip to set their location", symbol: "mappin.slash"))
+            app?.show(Toast(String(localized: "Drag photos from this window's filmstrip to set their location"), symbol: "mappin.slash"))
             return false
         }
         guard let location = surface.location(at: point) else { return false }
@@ -369,7 +377,8 @@ public final class MapModel {
     public func setLocation(_ location: GeoPoint, for ids: [PhotoID]) -> Bool {
         guard let app else { return false }
         let targets = withSiblings(ids).filter { app.photo($0).map { !$0.isVideo && $0.geotag != location } ?? false }
-        app.updatePhotos(targets, label: targets.count == 1 ? "Set Location" : "Set Location of \(targets.count) Photos") {
+        app.updatePhotos(targets, label: targets.count == 1 ? String(localized: "Set Location")
+                            : String(localized: "Set Location of \(targets.count) Photos")) {
             $0.geotag = location
         }
         return !targets.isEmpty
@@ -379,7 +388,7 @@ public final class MapModel {
     public func removeLocation(of ids: [PhotoID]) {
         guard let app else { return }
         let targets = withSiblings(ids).filter { app.photo($0)?.geotag != nil }
-        app.updatePhotos(targets, label: "Remove Location") { $0.geotag = nil }
+        app.updatePhotos(targets, label: String(localized: "Remove Location")) { $0.geotag = nil }
     }
 
     /// `ids` plus the other variants of their originals, in session order.

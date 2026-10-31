@@ -20,7 +20,7 @@ extension AppModel {
         guard let f = focusedID, let rows = photoHistories[f], rows.rows.contains(where: { $0 === node }) else { return }
         var after = rows
         after.jump(to: node)
-        var step = HistoryStep(label: "Go to \(node.label)")
+        var step = HistoryStep(label: String(localized: "Go to \(node.label)"))
         let now = historyState(f)
         let to = node.state
         if now.edit != to.edit {

@@ -152,14 +152,14 @@ public struct SmartFolder: Identifiable, Equatable, Sendable {
     /// index, e.g. demo mode). Ids are negative so they never collide with lt-session ids.
     public static func builtins(tagsInUse: Set<ColorTag>) -> [SmartFolder] {
         var out: [SmartFolder] = (1...5).reversed().map { n in
-            SmartFolder(id: -Int64(n), name: n == 1 ? "1 star" : "\(n) stars", builtin: "rating:\(n)",
+            SmartFolder(id: -Int64(n), name: n == 1 ? String(localized: "1 star") : String(localized: "\(n) stars"), builtin: "rating:\(n)",
                         criteria: .exactRating(n))
         }
-        out.append(SmartFolder(id: -10, name: "Unrated", builtin: "unrated", criteria: SmartCriteria(maxRating: 0)))
-        out.append(SmartFolder(id: -11, name: "Picked", builtin: "picked", criteria: SmartCriteria(pick: .picked)))
-        out.append(SmartFolder(id: -12, name: "Rejected", builtin: "rejected", criteria: SmartCriteria(pick: .rejected)))
+        out.append(SmartFolder(id: -10, name: String(localized: "Unrated"), builtin: "unrated", criteria: SmartCriteria(maxRating: 0)))
+        out.append(SmartFolder(id: -11, name: String(localized: "Picked"), builtin: "picked", criteria: SmartCriteria(pick: .picked)))
+        out.append(SmartFolder(id: -12, name: String(localized: "Rejected"), builtin: "rejected", criteria: SmartCriteria(pick: .rejected)))
         for t in ColorTag.allCases where t != .none && tagsInUse.contains(t) {
-            out.append(SmartFolder(id: -20 - Int64(t.rawValue), name: t.name, builtin: "tag:\(t.name.lowercased())",
+            out.append(SmartFolder(id: -20 - Int64(t.rawValue), name: t.title, builtin: "tag:\(t.name.lowercased())",
                                    criteria: SmartCriteria(tags: [t])))
         }
         return out

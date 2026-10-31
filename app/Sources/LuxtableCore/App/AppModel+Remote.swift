@@ -40,6 +40,6 @@ extension AppModel {
               roots.contains(where: { URL(fileURLWithPath: $0).standardizedFileURL == root.standardizedFileURL })
         else { return }
         await refreshCurrentSession(keepingHistory: true)
-        show(Toast("Updated from your iPad", symbol: "ipad.landscape"))
+        show(Toast(String(localized: "Updated from your iPad"), symbol: "ipad.landscape"))
     }
 }

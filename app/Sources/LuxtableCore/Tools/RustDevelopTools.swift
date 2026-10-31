@@ -72,7 +72,7 @@ public final class RustDevelopTools: DevelopTools, @unchecked Sendable {
     static func json(_ e: EditState) throws -> String { try AdjustmentsCodec.encode(e) }
 
     static func file(_ photo: Photo) throws -> URL {
-        guard let url = photo.url else { throw DevelopToolsError.unavailable("\(photo.filename) has no file") }
+        guard let url = photo.url else { throw DevelopToolsError.unavailable(String(localized: "\(photo.filename) has no file")) }
         return url
     }
 
@@ -111,7 +111,7 @@ public final class RustDevelopTools: DevelopTools, @unchecked Sendable {
 
     public func editedThumbnail(for photo: Photo, edit: EditState) async throws -> (image: CGImage, cached: Bool) {
         let url = try Self.file(photo)
-        guard let thumbnails else { throw DevelopToolsError.unavailable("no edited-thumbnail cache") }
+        guard let thumbnails else { throw DevelopToolsError.unavailable(String(localized: "no edited-thumbnail cache")) }
         let json = try Self.json(edit)
         let sendableMasks: DevelopMaskSource? = await StaticMasks.gather(edit, photo: photo.id, provider: maskProvider,
                                                                          persons: personMaskProvider)
@@ -119,7 +119,7 @@ public final class RustDevelopTools: DevelopTools, @unchecked Sendable {
             try await thumbnails.thumbnail(path: url.path, variant: UInt64(bitPattern: photo.id.raw), adjustmentsJson: json,
                                            masks: sendableMasks, token: $0)
         }
-        guard let img = ThumbnailJPEG.image(t.jpeg) else { throw DevelopToolsError.unavailable("the thumbnail could not be decoded") }
+        guard let img = ThumbnailJPEG.image(t.jpeg) else { throw DevelopToolsError.unavailable(String(localized: "the thumbnail could not be decoded")) }
         return (img, t.cached)
     }
 }
@@ -128,7 +128,7 @@ public enum DevelopToolsError: Error, Equatable, LocalizedError {
     case unavailable(String)
     public var errorDescription: String? {
         switch self {
-        case .unavailable(let why): "Not available: \(why)"
+        case .unavailable(let why): String(localized: "Not available: \(why)")
         }
     }
 }

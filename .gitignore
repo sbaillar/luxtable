@@ -32,3 +32,4 @@ secrets/
 *.mobileprovision
 *.keychain*
 AuthKey_*.p8
+__pycache__/

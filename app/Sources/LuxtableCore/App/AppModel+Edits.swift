@@ -93,7 +93,7 @@ extension AppModel {
     public func setRating(_ r: Int) {
         let rating = min(max(r, 0), 5)
         let before = focusedID
-        updatePhotos(selectedIDs, label: rating == 0 ? "Clear Rating" : "Rate \(rating)") { $0.rating = rating }
+        updatePhotos(selectedIDs, label: rating == 0 ? String(localized: "Clear Rating") : String(localized: "Rate \(rating)")) { $0.rating = rating }
         autoAdvanceIfNeeded(focusBefore: before)
     }
 
@@ -102,14 +102,14 @@ extension AppModel {
         let ids = selectedIDs
         let allHave = ids.allSatisfy { photo($0)?.colorTag == tag }
         let value = allHave ? .none : tag
-        updatePhotos(ids, label: "Color Tag \(value.name)") { $0.colorTag = value }
+        updatePhotos(ids, label: String(localized: "Color Tag \(value.name)")) { $0.colorTag = value }
     }
 
     public func setPick(_ state: PickState) {
         let label = switch state {
-        case .picked: "Pick"
-        case .rejected: "Reject"
-        case .none: "Unflag"
+        case .picked: String(localized: "Pick")
+        case .rejected: String(localized: "Reject")
+        case .none: String(localized: "Unflag")
         }
         let before = focusedID
         updatePhotos(selectedIDs, label: label) { $0.pick = state }
@@ -241,7 +241,7 @@ extension AppModel {
     }
 
     public func resetGroup(_ group: AdjustGroup) {
-        updateEdit(label: "Reset \(group.title)") { e in
+        updateEdit(label: String(localized: "Reset \(group.title)")) { e in
             e = AdjustmentClipboard(source: EditState()).apply(to: e, options: PasteOptions(groups: [group]))
             if group == .layers { e.layers = [] }
         }
@@ -267,7 +267,7 @@ extension AppModel {
         applyHistories(step.histories.mapValues(\.before), edited: step.editsBefore.keys)
         applyPhotos(step.photosBefore)
         if !step.photosBefore.isEmpty { persist(photos: Array(step.photosBefore.values)) }
-        show(Toast("Undo \(step.label)", symbol: "arrow.uturn.backward"))
+        show(Toast(String(localized: "Undo \(step.label)"), symbol: "arrow.uturn.backward"))
     }
 
     public func redo() {
@@ -278,7 +278,7 @@ extension AppModel {
         applyHistories(step.histories.mapValues(\.after), edited: step.editsAfter.keys)
         applyPhotos(step.photosAfter)
         if !step.photosAfter.isEmpty { persist(photos: Array(step.photosAfter.values)) }
-        show(Toast("Redo \(step.label)", symbol: "arrow.uturn.forward"))
+        show(Toast(String(localized: "Redo \(step.label)"), symbol: "arrow.uturn.forward"))
     }
 
     // MARK: - Copy / Apply
@@ -323,13 +323,13 @@ extension AppModel {
     func pasteLoadingAsShotIfNeeded(to targets: [PhotoID], options: PasteOptions) -> Int {
         guard var clip = clipboard else { return 0 }
         guard pendingPaste == nil else {
-            show(Toast("Still loading the as-shot white balance for the last Apply…", symbol: "hourglass"))
+            show(Toast(String(localized: "Still loading the as-shot white balance for the last Apply…"), symbol: "hourglass"))
             return 0
         }
         if clip.sourceAsShot == nil { clip.sourceAsShot = clip.sourceID.flatMap(asShot(for:)) }
         let missing = missingAsShot(for: targets, options: options, clipboard: clip)
         guard !missing.isEmpty else { return applyClipboard(to: targets, options: options, clipboard: clip) }
-        show(Toast("Loading the as-shot white balance of \(MatchSummary.photos(missing.count))…", symbol: "hourglass"))
+        show(Toast(String(localized: "Loading the as-shot white balance of \(MatchSummary.photos(missing.count))…"), symbol: "hourglass"))
         let session = currentSession?.id
         pendingPaste = Task { [weak self, clip] in
             guard let self else { return 0 }
@@ -357,7 +357,7 @@ extension AppModel {
         let sourceSize = clipboard.sourceSize
         let sizes = Dictionary(targets.compactMap { id in photo(id).map { (id, $0.pixelSize) } }) { a, _ in a }
         var wbAsIs = 0
-        updateEdits(targets, label: "Apply Adjustments") { [developInfo] id, e in
+        updateEdits(targets, label: String(localized: "Apply Adjustments")) { [developInfo] id, e in
             if options.isRelative(.whiteBalance), options.groups.contains(.whiteBalance),
                AdjustmentClipboard.relativeWhiteBalanceFallsBack(source: clipboard.source.whiteBalance, target: e.whiteBalance,
                                                                  sourceAsShot: sourceAsShot, targetAsShot: developInfo[id]?.asShot) {
@@ -368,9 +368,9 @@ extension AppModel {
         }
         let changedIDs = before.keys.filter { edit(for: $0) != before[$0] }
         let changed = changedIDs.count
-        var message = changed == 0 ? "Nothing to apply" : "Applied to \(MatchSummary.photos(changed))"
+        var message = changed == 0 ? String(localized: "Nothing to apply") : String(localized: "Applied to \(MatchSummary.photos(changed))")
         // Relative white balance without as-shot values (demo mode, no camera data) is absolute.
-        if changed > 0, wbAsIs > 0 { message += "; white balance pasted as is on \(MatchSummary.photos(wbAsIs)) (as-shot unknown)" }
+        if changed > 0, wbAsIs > 0 { message += String(localized: "; white balance pasted as is on \(MatchSummary.photos(wbAsIs)) (as-shot unknown)") }
         let misfits = profileMisfits(in: changedIDs)
         show(Toast(message + Self.profileMisfitNote(misfits),
                    symbol: misfits > 0 || wbAsIs > 0 ? "exclamationmark.triangle" : "doc.on.clipboard"))
@@ -390,17 +390,17 @@ extension AppModel {
 
     /// The warning appended to a toast when a profile doesn't fit some photos' camera.
     static func profileMisfitNote(_ n: Int) -> String {
-        n == 0 ? "" : "; the camera profile is for another camera on \(MatchSummary.photos(n)) (shown with Luxtable Standard)"
+        n == 0 ? "" : String(localized: "; the camera profile is for another camera on \(MatchSummary.photos(n)) (shown with Luxtable Standard)")
     }
 
     /// The profile picker: set the profile (on the selection with Edit All), warning when
     /// it doesn't fit some of the photos' cameras.
     public func setProfile(_ profile: CameraProfileRef) {
         let ids = Set(selectedIDs + (focusedID.map { [$0] } ?? []))
-        updateEdit(label: "Profile") { $0.profile = profile }
+        updateEdit(label: String(localized: "Profile")) { $0.profile = profile }
         let misfits = profileMisfits(in: ids.filter { edit(for: $0).profile == profile })
         if misfits > 0 {
-            show(Toast("\(profile.displayName) is for another camera: \(MatchSummary.photos(misfits)) shown with Luxtable Standard",
+            show(Toast(String(localized: "\(profile.displayName) is for another camera: \(MatchSummary.photos(misfits)) shown with Luxtable Standard"),
                        symbol: "exclamationmark.triangle"))
         }
     }
@@ -413,12 +413,12 @@ extension AppModel {
         let targets = selectedIDs
         let sourceSize = photo(prev)?.pixelSize
         let sizes = Dictionary(targets.compactMap { id in photo(id).map { (id, $0.pixelSize) } }) { a, _ in a }
-        updateEdits(targets, label: "Copy from Previous") { id, e in
+        updateEdits(targets, label: String(localized: "Copy from Previous")) { id, e in
             // The paste keeps each photo's orientation.
             e = source.apply(to: e, options: PasteOptions(), sourceSize: sourceSize, targetSize: sizes[id])
         }
         let misfits = profileMisfits(in: targets)
-        show(Toast("Copied from \(photo(prev)?.filename ?? "previous")" + Self.profileMisfitNote(misfits),
+        show(Toast(String(localized: "Copied from \(photo(prev)?.filename ?? String(localized: "previous"))") + Self.profileMisfitNote(misfits),
                    symbol: misfits > 0 ? "exclamationmark.triangle" : "doc.on.doc"))
     }
 }

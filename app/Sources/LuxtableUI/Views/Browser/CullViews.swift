@@ -94,11 +94,15 @@ private struct SurveyCell: View {
     }
 }
 
-/// The cull-finishing commands in the browser's context menu (grid and filmstrip).
+/// Share…, then the cull-finishing commands, in the browser's context menu (grid and filmstrip).
 struct CullContextMenu: View {
     let model: AppModel
 
     var body: some View {
+        Button(CommandCatalog.title(.share, model: model)) { CommandCatalog.perform(.share, model: model) }
+            .disabled(!CommandCatalog.isEnabled(.share, model: model))
+            .help(CommandCatalog.help(.share, model: model) ?? "")
+        Divider()
         ForEach(Array(CommandCatalog.cullContextMenu.enumerated()), id: \.offset) { _, c in
             if let c {
                 Button(CommandCatalog.title(c, model: model)) { CommandCatalog.perform(c, model: model) }
@@ -135,10 +139,10 @@ package struct CullDialogs: ViewModifier {
             titleVisibility: .visible
         ) {
             let n = cull.pendingSelects?.ids.count ?? 0
-            Button("Move \(n) \(n == 1 ? "Photo" : "Photos")") { Task { await cull.confirmMoveToSelects() } }
+            Button(n == 1 ? "Move 1 Photo" : "Move \(n) Photos") { Task { await cull.confirmMoveToSelects() } }
             Button("Cancel", role: .cancel) { cull.pendingSelects = nil }
         } message: {
-            Text((cull.pendingSelects?.message ?? "") + ". Change the rating in Settings.")
+            Text((cull.pendingSelects?.message ?? "") + String(localized: ". Change the rating in Settings."))
         }
         .confirmationDialog(
             "Delete Rejected Files?",

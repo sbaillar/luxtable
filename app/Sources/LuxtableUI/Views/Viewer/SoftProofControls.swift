@@ -30,8 +30,8 @@ struct SoftProofControls: View {
                     Toggle("Gamut warning", isOn: Binding(get: { proof.settings.gamutWarning },
                                                           set: { proof.setGamutWarning($0) }))
                         .toggleStyle(.checkbox)
-                        .help("Paint colours the profile can't reproduce (relative colorimetric, without black "
-                            + "point compensation: with BPC on, shadows below the paper's black still print, compressed)")
+                        // One literal: a concatenation would be a plain String, not localized.
+                        .help("Paint colours the profile can't reproduce (relative colorimetric, without black point compensation: with BPC on, shadows below the paper's black still print, compressed)")
                     Picker("Color", selection: Binding(get: { proof.settings.warningColor }, set: { proof.setWarningColor($0) })) {
                         ForEach(GamutWarningColor.allCases, id: \.self) { Text($0.title).tag($0) }
                     }

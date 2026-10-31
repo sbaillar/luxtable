@@ -57,31 +57,45 @@ struct FamiliarSettingsView: View {
 /// The first-run choice: one pick sets the layout, its keys and its names.
 struct FamiliarChoiceList: View {
     @Binding var selection: LayoutPreset
+    /// First run only: an "I'm new to photo editing" row first (starts in Simple mode).
+    var newToEditing: Binding<Bool>?
 
     var body: some View {
+        let newcomer = newToEditing?.wrappedValue ?? false
         VStack(alignment: .leading, spacing: DS.Space.s) {
-            ForEach(LayoutPreset.allCases) { l in
-                Button { selection = l } label: {
-                    HStack(alignment: .top, spacing: DS.Space.s) {
-                        Image(systemName: selection == l ? "largecircle.fill.circle" : "circle")
-                            .foregroundStyle(selection == l ? DS.accent : DS.textSecondary)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(FamiliarText.choiceTitle(l)).font(DS.Font.label.weight(.semibold)).foregroundStyle(DS.text)
-                            Text("\(l.summary). Keys: \(KeyPreset(layout: l).summary).")
-                                .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        Spacer(minLength: 0)
-                    }
-                    .padding(DS.Space.s)
-                    .background(selection == l ? DS.accent.opacity(0.12) : Color.primary.opacity(0.04),
-                                in: .rect(cornerRadius: DS.Radius.m))
-                    .contentShape(.rect)
+            if let newToEditing {
+                row(title: FamiliarText.newcomerTitle, detail: FamiliarText.newcomerSummary, selected: newcomer) {
+                    newToEditing.wrappedValue = true
                 }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(selection == l ? .isSelected : [])
+            }
+            ForEach(LayoutPreset.allCases) { l in
+                row(title: FamiliarText.choiceTitle(l, offersNewcomer: newToEditing != nil),
+                    detail: String(localized: "\(l.summary). Keys: \(KeyPreset(layout: l).summary)."),
+                    selected: selection == l && !newcomer) { selection = l }
             }
         }
+    }
+
+    private func row(title: String, detail: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(alignment: .top, spacing: DS.Space.s) {
+                Image(systemName: selected ? "largecircle.fill.circle" : "circle")
+                    .foregroundStyle(selected ? DS.accent : DS.textSecondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(DS.Font.label.weight(.semibold)).foregroundStyle(DS.text)
+                    Text(detail)
+                        .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(DS.Space.s)
+            .background(selected ? DS.accent.opacity(0.12) : Color.primary.opacity(0.04),
+                        in: .rect(cornerRadius: DS.Radius.m))
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
 
@@ -101,7 +115,9 @@ private struct PresetRow: View {
 enum FamiliarText {
     static func keysStatus(_ preset: KeyPreset, _ bindings: KeyBindings) -> String {
         let n = preset.changes(in: bindings)
-        return n == 0 ? "\(preset.title) keys, unchanged" : "\(preset.title) keys + \(n) of your own change\(n == 1 ? "" : "s")"
+        return n == 0 ? String(localized: "\(preset.title) keys, unchanged")
+            : n == 1 ? String(localized: "\(preset.title) keys + 1 of your own change")
+            : String(localized: "\(preset.title) keys + \(n) of your own changes")
     }
 
     static func namesExample(_ n: NameSet) -> String {
@@ -110,10 +126,15 @@ enum FamiliarText {
 
     /// The status bar's reminder of what is in use.
     static func statusLine(_ layout: LayoutPreset, _ keys: KeyPreset) -> String {
-        layout.rawValue == keys.rawValue ? "\(layout.title) layout and keys" : "\(layout.title) layout · \(keys.title) keys"
+        layout.rawValue == keys.rawValue ? String(localized: "\(layout.title) layout and keys")
+            : String(localized: "\(layout.title) layout · \(keys.title) keys")
     }
 
-    static func choiceTitle(_ l: LayoutPreset) -> String {
-        l == .luxtable ? "Luxtable, or nothing yet" : l.title
+    /// `offersNewcomer`: the first-run list, whose own row is for "nothing yet".
+    static func choiceTitle(_ l: LayoutPreset, offersNewcomer: Bool = false) -> String {
+        l == .luxtable && !offersNewcomer ? String(localized: "Luxtable, or nothing yet") : l.title
     }
+
+    static let newcomerTitle = String(localized: "Nothing yet: I'm new to photo editing")
+    static let newcomerSummary = String(localized: "Start in Simple mode: an Auto button, looks and a few easy sliders. Every tool is one switch away (View ▸ Simple Mode).")
 }

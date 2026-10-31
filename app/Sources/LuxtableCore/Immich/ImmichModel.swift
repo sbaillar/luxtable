@@ -123,24 +123,24 @@ public final class ImmichModel {
         pathOnMacEntry = settings.pathOnMac
         if !keyEntry.isEmpty {
             guard settings.apiKeyItem.write(keyEntry.trimmingCharacters(in: .whitespacesAndNewlines)) else {
-                message = "The Keychain refused the API key."
+                message = String(localized: "The Keychain refused the API key.")
                 return
             }
             keyEntry = ""
             hasKey = true
         }
-        message = "Saved."
+        message = String(localized: "Saved.")
         await applyPublish()
     }
 
     /// Forget the server's API key (the Keychain item).
     public func removeKey() async {
         guard settings.apiKeyItem.write(nil) else {
-            message = "The API key couldn't be removed from your Keychain."
+            message = String(localized: "The API key couldn't be removed from your Keychain.")
             return
         }
         hasKey = false
-        message = "API key removed."
+        message = String(localized: "API key removed.")
         await applyPublish()
     }
 
@@ -151,7 +151,7 @@ public final class ImmichModel {
 
     public func testConnection() async {
         guard let service, let server else {
-            message = "Enter the server address and an API key, then Save."
+            message = String(localized: "Enter the server address and an API key, then Save.")
             return
         }
         busy = true
@@ -160,7 +160,7 @@ public final class ImmichModel {
             let c = try await service.testConnection(server: server)
             libraries = c.libraries
             let who = c.userName.isEmpty ? c.userEmail : c.userName
-            var m = "Connected as \(who)\(c.isAdmin ? " (admin)" : "")."
+            var m = c.isAdmin ? String(localized: "Connected as \(who) (admin).") : String(localized: "Connected as \(who).")
             if let note = c.librariesNote { m += " " + note }
             message = m
         } catch {
@@ -172,7 +172,7 @@ public final class ImmichModel {
     /// a library whose import path is named like a folder of the archive's path.
     public func detectMapping() async {
         guard let service, let server, let archive = app?.settings.archiveTarget, !archive.isEmpty else {
-            message = "Set the archive folder (Settings ▸ Archive) and the server first."
+            message = String(localized: "Set the archive folder (Settings ▸ Archive) and the server first.")
             return
         }
         busy = true
@@ -180,14 +180,14 @@ public final class ImmichModel {
         let known = await Task.detached(priority: .utility) { Self.archivedFile(under: URL(fileURLWithPath: archive)) }.value
         do {
             guard let d = try await service.detectMapping(server: server, archiveRoot: archive, knownFile: known?.path) else {
-                message = "Immich didn't tell where it sees the archive: enter both folders by hand."
+                message = String(localized: "Immich didn't tell where it sees the archive: enter both folders by hand.")
                 return
             }
             pathOnServerEntry = d.mapping.immichRoot
             pathOnMacEntry = d.mapping.localRoot
             message = d.how == "asset"
-                ? "Found an archived photo in Immich: check the folders, then Save."
-                : "Guessed from the library's import path: check the folders, then Save."
+                ? String(localized: "Found an archived photo in Immich: check the folders, then Save.")
+                : String(localized: "Guessed from the library's import path: check the folders, then Save.")
         } catch {
             message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
         }
@@ -226,14 +226,14 @@ public final class ImmichModel {
 
     public var developTitle: String {
         let n = targets.count
-        return n > 1 ? "Keep Developed Copies for Immich (\(n) Photos)" : "Keep a Developed Copy for Immich"
+        return n > 1 ? String(localized: "Keep Developed Copies for Immich (\(n) Photos)") : String(localized: "Keep a Developed Copy for Immich")
     }
 
-    public var stopTitle: String { "Stop Updating Developed Copy" }
+    public var stopTitle: String { String(localized: "Stop Updating Developed Copy") }
 
     public var developHelp: String {
-        if !isOn || !settings.isSetUp { return "Set up Immich in Settings ▸ Immich first" }
-        return "A full-size JPEG with every edit, in the session's Developed folder; the archive carries it to Immich"
+        if !isOn || !settings.isSetUp { return String(localized: "Set up Immich in Settings ▸ Immich first") }
+        return String(localized: "A full-size JPEG with every edit, in the session's Developed folder; the archive carries it to Immich")
     }
 
     /// Photo ▸ Keep a Developed Copy for Immich: mark the selection and render the copies.
@@ -247,8 +247,8 @@ public final class ImmichModel {
         guard !ids.isEmpty else { return }
         do {
             _ = try await service.mark(ids, developed: true, in: session)
-            app.show(Toast(ids.count == 1 ? "Making a developed copy for Immich…"
-                : "Making developed copies of \(ids.count) photos for Immich…", symbol: "photo.badge.arrow.down"))
+            app.show(Toast(ids.count == 1 ? String(localized: "Making a developed copy for Immich…")
+                : String(localized: "Making developed copies of \(ids.count) photos for Immich…"), symbol: "photo.badge.arrow.down"))
             await refresh(render: true)
         } catch {
             app.show(Toast((error as? LocalizedError)?.errorDescription ?? "\(error)",
@@ -265,9 +265,10 @@ public final class ImmichModel {
         do {
             let r = try await service.mark(ids, developed: false, in: session)
             let kept = r.keptFiles.count
-            app.show(Toast(kept == 0 ? "Stopped. No developed copy had been made yet."
-                : "Stopped. The \(kept == 1 ? "developed copy stays" : "\(kept) developed copies stay") in Developed and "
-                    + "in the archive; delete them yourself if you no longer want them in Immich.",
+            app.show(Toast(kept == 0 ? String(localized: "Stopped. No developed copy had been made yet.")
+                : (kept == 1 ? String(localized: "Stopped. The developed copy stays in Developed and ")
+                    : String(localized: "Stopped. The \(kept) developed copies stay in Developed and "))
+                    + String(localized: "in the archive; delete them yourself if you no longer want them in Immich."),
                 symbol: "photo.badge.arrow.down"))
             await refresh(render: false)
         } catch {
@@ -354,7 +355,8 @@ public final class ImmichModel {
                                                                   artist: credit.artist,
                                                                   copyright: credit.copyright)) { _ in }
             } catch {
-                app.show(Toast("Developed copies not made: \((error as? LocalizedError)?.errorDescription ?? "\(error)")",
+                let why = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+                app.show(Toast(String(localized: "Developed copies not made: \(why)"),
                                symbol: "exclamationmark.triangle", isError: true))
                 break
             }
@@ -369,7 +371,7 @@ public final class ImmichModel {
                 }
             }
             if let f = outcome.failures.first {
-                app.show(Toast("Developed copy not made: \(f)", symbol: "exclamationmark.triangle", isError: true))
+                app.show(Toast(String(localized: "Developed copy not made: \(f)"), symbol: "exclamationmark.triangle", isError: true))
             }
             if placed > 0 { await app.archive.noteChanges(placed, in: session) }
             await refresh(render: false)
@@ -413,7 +415,8 @@ public final class ImmichModel {
             if r.missing > 0 || r.offline { scheduleRetry() }
         } catch is CancellationError {
         } catch {
-            record("Immich: \((error as? LocalizedError)?.errorDescription ?? "\(error)")", failed: true)
+            let why = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            record(String(localized: "Immich: \(why)"), failed: true)
         }
     }
 
@@ -436,22 +439,24 @@ public final class ImmichModel {
 
     /// Settings ▸ Immich while the archive goes to object storage (album sync is skipped).
     public nonisolated static let objectStorageNote =
-        "The archive goes to object storage, which Immich can't index, so album sync is skipped. "
-        + "To use Immich, choose a folder (the NAS Immich reads) in Settings ▸ Archive."
+        String(localized: "The archive goes to object storage, which Immich can't index, so album sync is skipped. ")
+        + String(localized: "To use Immich, choose a folder (the NAS Immich reads) in Settings ▸ Archive.")
 
     /// "Immich: 3 added, 1 removed · 2 not in Immich yet".
     public static func summary(_ r: ImmichSyncReport) -> String {
-        if r.sessions == 0, r.error == nil, let note = r.scanNote { return "Immich: \(note)" }
+        if r.sessions == 0, r.error == nil, let note = r.scanNote { return String(localized: "Immich: \(note)") }
         if let e = r.error {
-            return r.offline ? "Immich: server not reachable; albums sync when it is back"
-                : r.keyRefused ? "Immich refused the API key: check it in Settings ▸ Immich" : "Immich: \(e)"
+            return r.offline ? String(localized: "Immich: server not reachable; albums sync when it is back")
+                : r.keyRefused ? String(localized: "Immich refused the API key: check it in Settings ▸ Immich") : String(localized: "Immich: \(e)")
         }
         let added = r.albums.reduce(0) { $0 + Int($1.added) }
         let removed = r.albums.reduce(0) { $0 + Int($1.removed) }
-        var parts = [added == 0 && removed == 0 ? "albums up to date" : "\(added) added, \(removed) removed"]
-        if r.missing > 0 { parts.append("\(r.missing) not in Immich yet") }
-        if !r.failures.isEmpty { parts.append("\(r.failures.count) problem\(r.failures.count == 1 ? "" : "s")") }
+        var parts = [added == 0 && removed == 0 ? String(localized: "albums up to date") : String(localized: "\(added) added, \(removed) removed")]
+        if r.missing > 0 { parts.append(String(localized: "\(Int(r.missing)) not in Immich yet")) }
+        if !r.failures.isEmpty {
+            parts.append(r.failures.count == 1 ? String(localized: "1 problem") : String(localized: "\(r.failures.count) problems"))
+        }
         let time = Date(timeIntervalSince1970: Double(r.finishedMs) / 1000).formatted(date: .omitted, time: .shortened)
-        return "Immich: " + parts.joined(separator: " · ") + " (\(time))"
+        return String(localized: "Immich: \(parts.joined(separator: " · ")) (\(time))")
     }
 }

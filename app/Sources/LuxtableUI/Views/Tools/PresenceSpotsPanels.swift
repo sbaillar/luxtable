@@ -23,12 +23,12 @@ struct SpotsPanel: View {
         let spots = model.focusedEdit.spots
         VStack(alignment: .leading, spacing: DS.Space.s) {
             HStack(spacing: DS.Space.xs) {
-                toolButton(.heal, title: "Heal", symbol: "bandage")
-                toolButton(.clone, title: "Clone", symbol: "square.on.square.dashed")
+                toolButton(.heal, title: String(localized: "Heal"), symbol: "bandage")
+                toolButton(.clone, title: String(localized: "Clone"), symbol: "square.on.square.dashed")
                 Spacer()
                 if !spots.isEmpty {
                     Button("Remove Last") {
-                        model.updateEdit(label: "Remove Spot") { e in _ = e.spots.popLast() }
+                        model.updateEdit(label: String(localized: "Remove Spot")) { e in _ = e.spots.popLast() }
                     }
                     .controlSize(.small)
                 }
@@ -41,7 +41,7 @@ struct SpotsPanel: View {
             } else {
                 PanelNote(text: spots.isEmpty
                           ? "Remove dust and small distractions."
-                          : "\(spots.count) spot\(spots.count == 1 ? "" : "s") on this photo.")
+                          : spots.count == 1 ? "1 spot on this photo." : "\(spots.count) spots on this photo.")
             }
         }
         .onDisappear {

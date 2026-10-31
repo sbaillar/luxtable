@@ -258,7 +258,7 @@ extension ViewerModel {
     }
 
     nonisolated static func pickFailure(_ error: Error) -> String {
-        error.localizedDescription.contains("black or clipped") ? "Clipped or black: pick another neutral" : error.localizedDescription
+        error.localizedDescription.contains("black or clipped") ? String(localized: "Clipped or black: pick another neutral") : error.localizedDescription
     }
 
     /// Mean sRGB of the loupe's sample at the display point `u` (the colour pickers use
@@ -297,7 +297,7 @@ extension ViewerModel {
         // No region yet (demo renderers): the develop frame on screen, never a preview.
         let at = frame?.mapping != nil ? u : oriented(u)
         guard let rgb = sampleFrame(at: at) else { return }
-        app.updateEdits([id], label: "White Balance Picker") { _, e in
+        app.updateEdits([id], label: String(localized: "White Balance Picker")) { _, e in
             e.whiteBalance = WhiteBalancePicker.neutralize(e.whiteBalance, sampledRGB: rgb)
         }
     }

@@ -14,9 +14,9 @@ public enum PhotoMergeKind: String, Sendable, CaseIterable {
 
     public var title: String {
         switch self {
-        case .hdr: "Merge to HDR"
-        case .panorama: "Merge to Panorama"
-        case .burst: "Merge to Best Shot"
+        case .hdr: String(localized: "Merge to HDR")
+        case .panorama: String(localized: "Merge to Panorama")
+        case .burst: String(localized: "Merge to Best Shot")
         }
     }
 }
@@ -65,13 +65,27 @@ public struct PhotoMergeOptions: Equatable, Sendable {
     public enum Deghost: String, Sendable, CaseIterable {
         case off, low, medium, high
 
-        public var title: String { rawValue.capitalized }
+        public var title: String {
+            switch self {
+            case .off: String(localized: "Off")
+            case .low: String(localized: "Low")
+            case .medium: String(localized: "Medium")
+            case .high: String(localized: "High")
+            }
+        }
     }
 
     public enum Projection: String, Sendable, CaseIterable {
         case auto, spherical, cylindrical, perspective
 
-        public var title: String { rawValue.capitalized }
+        public var title: String {
+            switch self {
+            case .auto: String(localized: "Auto")
+            case .spherical: String(localized: "Spherical")
+            case .cylindrical: String(localized: "Cylindrical")
+            case .perspective: String(localized: "Perspective")
+            }
+        }
     }
 
     public var kind: PhotoMergeKind
@@ -189,7 +203,7 @@ public final class MergeModel {
     }
 
     public var kind: PhotoMergeKind { options.kind }
-    public var title: String { "\(kind.title) (\(sources.count) Photos)" }
+    public var title: String { String(localized: "\(kind.title) (\(sources.count) Photos)") }
     public var isMerging: Bool { progress != nil }
     /// The message shown in the sheet.
     public var error: String? { mergeError ?? previewError }
@@ -198,21 +212,23 @@ public final class MergeModel {
 
     /// The projection menu's Auto item: "Auto (Cylindrical)" once the preview chose one.
     public var autoProjectionTitle: String {
-        guard let p = preview?.projection, p != .auto else { return "Auto" }
-        return "Auto (\(p.title))"
+        guard let p = preview?.projection, p != .auto else { return String(localized: "Auto") }
+        return String(localized: "Auto (\(p.title))")
     }
 
     /// One line under the preview: size, exposure, (HDR) ghost regions and (Best Shot)
     /// what was taken from the other frames.
     public var previewSummary: String? {
-        guard let p = preview else { return isAnalyzing ? "Looking for faces\u{2026}" : nil }
+        guard let p = preview else { return isAnalyzing ? String(localized: "Looking for faces\u{2026}") : nil }
         var parts = ["\(p.width) × \(p.height)"]
-        if p.exposureEV != 0 { parts.append(String(format: "exposure %+.2f EV", p.exposureEV)) }
+        if p.exposureEV != 0 { parts.append(String(format: String(localized: "exposure %+.2f EV"), p.exposureEV)) }
         if kind == .hdr, p.ghostRegions > 0 {
-            parts.append("\(p.ghostRegions) deghosted region\(p.ghostRegions == 1 ? "" : "s")")
+            parts.append(p.ghostRegions == 1 ? String(localized: "\(p.ghostRegions) deghosted region")
+                                             : String(localized: "\(p.ghostRegions) deghosted regions"))
         }
         if kind == .hdr, p.unalignedFrames > 0 {
-            parts.append("\(p.unalignedFrames) frame\(p.unalignedFrames == 1 ? "" : "s") not aligned")
+            parts.append(p.unalignedFrames == 1 ? String(localized: "\(p.unalignedFrames) frame not aligned")
+                                                : String(localized: "\(p.unalignedFrames) frames not aligned"))
         }
         if kind == .burst { parts += Self.bestShotParts(p) }
         return parts.joined(separator: " · ")
@@ -220,13 +236,17 @@ public final class MergeModel {
 
     /// "1 face improved", "2 sharper regions", … ("nothing to improve" when none).
     static func bestShotParts(_ p: PhotoMergePreview) -> [String] {
-        func n(_ count: Int, _ one: String, _ many: String) -> String { "\(count) \(count == 1 ? one : many)" }
         var parts: [String] = []
-        if p.facesReplaced > 0 { parts.append(n(p.facesReplaced, "face improved", "faces improved")) }
-        if p.regionsReplaced > 0 { parts.append(n(p.regionsReplaced, "sharper region", "sharper regions")) }
-        if p.facesKept > 0 { parts.append(n(p.facesKept, "face moved too much to swap", "faces moved too much to swap")) }
-        if p.unalignedFrames > 0 { parts.append(n(p.unalignedFrames, "frame not used", "frames not used")) }
-        return parts.isEmpty ? ["the best frame as it is: nothing to improve"] : parts
+        let r = p.facesReplaced, s = p.regionsReplaced, k = p.facesKept, u = p.unalignedFrames
+        if r > 0 { parts.append(r == 1 ? String(localized: "\(r) face improved") : String(localized: "\(r) faces improved")) }
+        if s > 0 { parts.append(s == 1 ? String(localized: "\(s) sharper region") : String(localized: "\(s) sharper regions")) }
+        if k > 0 {
+            parts.append(k == 1 ? String(localized: "\(k) face moved too much to swap")
+                                : String(localized: "\(k) faces moved too much to swap"))
+        }
+        if u > 0 { parts.append(u == 1 ? String(localized: "\(u) frame not used") : String(localized: "\(u) frames not used")) }
+        return parts.isEmpty ? [String(localized: "the best frame as it is: nothing to improve")] : parts
+
     }
 
     /// The first preview, at once (a Best Shot first finds the faces in its sources).

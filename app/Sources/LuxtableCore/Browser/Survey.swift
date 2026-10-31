@@ -37,7 +37,7 @@ public final class SurveyModel {
 
     /// "12 of 40" (shown of remaining), or "5" when everything fits.
     public var countLabel: String {
-        pageCount > 1 ? "\(visible.count) of \(candidates.count)" : "\(candidates.count)"
+        pageCount > 1 ? String(localized: "\(visible.count) of \(candidates.count)") : "\(candidates.count)"
     }
 
     /// Focus the first candidate of the page `delta` pages away (clamped).
@@ -167,7 +167,7 @@ extension AppModel {
     public func beginSurvey() {
         let burst = visibleIDs.filter(selection.contains).count < 2
         guard survey.begin(surveyCandidates) else {
-            show(Toast("Select two or more photos (or a burst) to survey", symbol: "square.grid.2x2"))
+            show(Toast(String(localized: "Select two or more photos (or a burst) to survey"), symbol: "square.grid.2x2"))
             return
         }
         // A burst is surveyed from its chosen cover.
@@ -198,10 +198,10 @@ extension AppModel {
         case .rate(let n): rate(id, n)
         case .tag(let t):
             let value: ColorTag = photo(id)?.colorTag == t ? .none : t
-            updatePhotos([id], label: "Color Tag \(value.name)") { $0.colorTag = value }
-        case .pick: updatePhotos([id], label: "Pick") { $0.pick = .picked }
-        case .reject: updatePhotos([id], label: "Reject") { $0.pick = .rejected }
-        case .unflag: updatePhotos([id], label: "Unflag") { $0.pick = .none }
+            updatePhotos([id], label: String(localized: "Color Tag \(value.name)")) { $0.colorTag = value }
+        case .pick: updatePhotos([id], label: String(localized: "Pick")) { $0.pick = .picked }
+        case .reject: updatePhotos([id], label: String(localized: "Reject")) { $0.pick = .rejected }
+        case .unflag: updatePhotos([id], label: String(localized: "Unflag")) { $0.pick = .none }
         default: break
         }
     }
@@ -209,14 +209,14 @@ extension AppModel {
     /// [cul9] L6: rate one photo from its grid stars (one undo step; focus unchanged).
     public func rate(_ id: PhotoID, _ rating: Int) {
         let r = min(max(rating, 0), 5)
-        updatePhotos([id], label: r == 0 ? "Clear Rating" : "Rate \(r)") { $0.rating = r }
+        updatePhotos([id], label: r == 0 ? String(localized: "Clear Rating") : String(localized: "Rate \(r)")) { $0.rating = r }
     }
 
     /// Return: the survivors are picked (one undo step) and selected.
     public func keepSurvey() {
         let kept = survey.finish()
         guard !kept.isEmpty else { return }
-        updatePhotos(kept, label: kept.count == 1 ? "Keep Best" : "Keep \(kept.count)") { $0.pick = .picked }
+        updatePhotos(kept, label: kept.count == 1 ? String(localized: "Keep Best") : String(localized: "Keep \(kept.count)")) { $0.pick = .picked }
         focus(kept[0], extend: false)
         selection = kept.count > 1 ? Set(kept) : []
     }

@@ -38,8 +38,8 @@ public final class LightroomImportModel {
         public var state: FolderState
     }
 
-    public static let noSession = "Open the folder with your RAW files first (File \u{25B8} Open Folder\u{2026}), then choose "
-        + "the Lightroom catalog or sidecar folder again. Edits are imported into the open session."
+    public static let noSession = String(localized: "Open the folder with your RAW files first (File \u{25B8} Open Folder\u{2026}), then choose ")
+        + String(localized: "the Lightroom catalog or sidecar folder again. Edits are imported into the open session.")
 
     public private(set) var phase: Phase = .choosing
     /// The session the edits go into; `nil`: none is open (presets still work).
@@ -84,10 +84,10 @@ public final class LightroomImportModel {
         self.onImported = onImported
     }
 
-    public static let revertHint = "Revert Import takes back every Lightroom import since the last revert, "
-        + "here or with File \u{25B8} Revert Lightroom Import. Changes you make in Luxtable afterwards are kept."
+    public static let revertHint = String(localized: "Revert Import takes back every Lightroom import since the last revert, ")
+        + String(localized: "here or with File \u{25B8} Revert Lightroom Import. Changes you make in Luxtable afterwards are kept.")
 
-    public var title: String { "Import Lightroom" }
+    public var title: String { String(localized: "Import Lightroom") }
 
     public var preview: LRImportSummary? {
         if case .preview(let s) = phase { return s }
@@ -134,13 +134,13 @@ public final class LightroomImportModel {
         kind = await importer.lightroomKind(of: url)
         switch kind {
         case .unknown:
-            phase = .failed("\u{201c}\(url.lastPathComponent)\u{201d} isn't a Lightroom catalog (.lrcat), a folder of XMP sidecars, or presets.")
+            phase = .failed(String(localized: "\u{201c}\(url.lastPathComponent)\u{201d} isn't a Lightroom catalog (.lrcat), a folder of XMP sidecars, or presets."))
         case .presets:
             phase = .loading
             do {
                 phase = .presets(try await importer.readLightroomPresets(url))
             } catch is CancellationError {
-                phase = .failed("Cancelled")
+                phase = .failed(String(localized: "Cancelled"))
             } catch {
                 phase = .failed(error.localizedDescription)
             }
@@ -153,7 +153,7 @@ public final class LightroomImportModel {
             do {
                 info = try await importer.loadLightroomSource(url)
             } catch is CancellationError {
-                phase = .failed("Cancelled")
+                phase = .failed(String(localized: "Cancelled"))
                 return
             } catch {
                 phase = .failed(error.localizedDescription)
@@ -208,7 +208,7 @@ public final class LightroomImportModel {
             phase = .preview(s)
         } catch is CancellationError {
             guard g == generation else { return }
-            phase = .failed("Cancelled")
+            phase = .failed(String(localized: "Cancelled"))
         } catch {
             guard g == generation else { return }
             phase = .failed(error.localizedDescription)
@@ -304,9 +304,9 @@ public final class LightroomImportModel {
                 added += 1
             }
         }
-        var parts = ["\(added) preset\(added == 1 ? "" : "s") imported"]
-        if replaced > 0 { parts.append("\(replaced) replaced") }
-        if skipped > 0 { parts.append("\(skipped) already there") }
+        var parts = [added == 1 ? String(localized: "1 preset imported") : String(localized: "\(added) presets imported")]
+        if replaced > 0 { parts.append(String(localized: "\(replaced) replaced")) }
+        if skipped > 0 { parts.append(String(localized: "\(skipped) already there")) }
         phase = .presetsDone(parts.joined(separator: ", "))
     }
 
@@ -383,7 +383,7 @@ extension AppModel {
         let outcome: Toast
         do {
             let r = try await importer.revertLightroomImport(session)
-            outcome = Toast(r?.message ?? "No Lightroom import to revert", symbol: "arrow.uturn.backward")
+            outcome = Toast(r?.message ?? String(localized: "No Lightroom import to revert"), symbol: "arrow.uturn.backward")
         } catch {
             outcome = Toast(error.localizedDescription, symbol: "exclamationmark.triangle", isError: true)
         }

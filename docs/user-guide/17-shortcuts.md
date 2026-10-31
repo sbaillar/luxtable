@@ -30,6 +30,7 @@ These are Luxtable's default keys. Single keys can be changed in Settings ▸ Sh
 | `⌘0` | Show all photos |
 | `⌘1` – `⌘5` | Show only that many stars |
 | `⌥⌘[` / `⌥⌘]` | Move tool tab left / right |
+| `⌃⌘S` | Simple mode / full tools |
 | `Esc` | Back / close |
 | `?` or `⌘/` | Keyboard cheat sheet |
 
@@ -79,5 +80,6 @@ These are Luxtable's default keys. Single keys can be changed in Settings ▸ Sh
 | `⇧⌘L` | Browse all sessions in the Library |
 | `⇧⌘I` | Import from card |
 | `⌘E` | Export |
+| `⌥⌘E` | Share (Messages, Mail, AirDrop…) |
 | `⌘F` | Find |
 | `⌘,` | Settings |

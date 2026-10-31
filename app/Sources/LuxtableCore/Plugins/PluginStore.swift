@@ -143,7 +143,7 @@ public final class PluginStore {
         switch e {
         case let .InvalidArgument(message), let .Io(message), let .Unsupported(message), let .FolderMoved(message),
              let .Internal(message): return message
-        case .Cancelled: return "Cancelled."
+        case .Cancelled: return String(localized: "Cancelled.")
         }
     }
 
@@ -237,12 +237,12 @@ extension PluginApproval {
     /// The approval in words, for its button's row.
     public var title: String {
         switch self {
-        case .changed: "Its files changed since it was installed."
-        case .notInstalled: "It was added to the Plugins folder by hand."
+        case .changed: String(localized: "Its files changed since it was installed.")
+        case .notInstalled: String(localized: "It was added to the Plugins folder by hand.")
         case let .trustSigner(signer, _, fingerprint):
-            "Signed with key \(fingerprint) (it claims to be “\(signer)”), which you haven't trusted yet."
-        case .allowUnsignedCode: "It runs code and isn't signed: allow this plug-in only if you know where it came from."
-        case let .grant(permission): "Asks for \(permission)."
+            String(localized: "Signed with key \(fingerprint) (it claims to be “\(signer)”), which you haven't trusted yet.")
+        case .allowUnsignedCode: String(localized: "It runs code and isn't signed: allow this plug-in only if you know where it came from.")
+        case let .grant(permission): String(localized: "Asks for \(permission).")
         }
     }
 
@@ -256,10 +256,10 @@ extension PluginApproval {
 
     public var action: String {
         switch self {
-        case .changed, .notInstalled: "Approve"
-        case .trustSigner: "Trust Signer"
-        case .allowUnsignedCode: "Allow"
-        case .grant: "Grant"
+        case .changed, .notInstalled: String(localized: "Approve")
+        case .trustSigner: String(localized: "Trust Signer")
+        case .allowUnsignedCode: String(localized: "Allow")
+        case .grant: String(localized: "Grant")
         }
     }
 }
@@ -268,14 +268,17 @@ extension PluginRecord {
     /// "4 looks · 1 export step" for the row.
     public var contributionSummary: String {
         let counts = Dictionary(grouping: contributions, by: \.kind).mapValues(\.count)
-        let names: [(String, String, String)] = [
-            ("looks", "look pack", "look packs"), ("styles", "style pack", "style packs"),
-            ("voice_phrases", "phrase pack", "phrase packs"), ("export_post_process", "export step", "export steps"),
-            ("export_destination", "export destination", "export destinations"),
-            ("native_feature", "integration", "integrations"),
+        let names: [(String, (Int) -> String)] = [
+            ("looks", { $0 == 1 ? String(localized: "1 look pack") : String(localized: "\($0) look packs") }),
+            ("styles", { $0 == 1 ? String(localized: "1 style pack") : String(localized: "\($0) style packs") }),
+            ("voice_phrases", { $0 == 1 ? String(localized: "1 phrase pack") : String(localized: "\($0) phrase packs") }),
+            ("export_post_process", { $0 == 1 ? String(localized: "1 export step") : String(localized: "\($0) export steps") }),
+            ("export_destination",
+             { $0 == 1 ? String(localized: "1 export destination") : String(localized: "\($0) export destinations") }),
+            ("native_feature", { $0 == 1 ? String(localized: "1 integration") : String(localized: "\($0) integrations") }),
         ]
-        return names.compactMap { kind, one, many in
-            counts[kind].map { "\($0) \($0 == 1 ? one : many)" }
+        return names.compactMap { kind, text in
+            counts[kind].map(text)
         }.joined(separator: " · ")
     }
 
@@ -288,22 +291,22 @@ extension PluginRecord {
     /// "Built-in", "Key 3F2A-… (“Jane”)", "Unsigned", and DEV for a development folder.
     public var trustLabel: String {
         let base = switch trust {
-        case .builtIn: "Built-in"
-        case let .signed(signer, _, fingerprint): "Key \(fingerprint) (“\(signer)”)"
-        case let .untrusted(signer, _, fingerprint): "Key \(fingerprint) (“\(signer)”, not trusted)"
-        case .unsigned: "Unsigned"
+        case .builtIn: String(localized: "Built-in")
+        case let .signed(signer, _, fingerprint): String(localized: "Key \(fingerprint) (“\(signer)”)")
+        case let .untrusted(signer, _, fingerprint): String(localized: "Key \(fingerprint) (“\(signer)”, not trusted)")
+        case .unsigned: String(localized: "Unsigned")
         }
         return dev ? "DEV · \(base)" : base
     }
 
     public var stateLabel: String {
         switch state {
-        case .active: "On"
-        case .disabled: "Off"
-        case .needsApproval: "Waiting for you"
-        case .shadowed: "Replaced by another copy"
-        case .unsupported: "Not for this Mac"
-        case .error: "Didn't load"
+        case .active: String(localized: "On")
+        case .disabled: String(localized: "Off")
+        case .needsApproval: String(localized: "Waiting for you")
+        case .shadowed: String(localized: "Replaced by another copy")
+        case .unsupported: String(localized: "Not for this Mac")
+        case .error: String(localized: "Didn't load")
         }
     }
 }
@@ -312,23 +315,25 @@ extension PluginRecord {
 public enum PluginInstallText {
     public static func signer(_ p: PluginInstallPreview) -> String {
         switch p.trust {
-        case .builtIn: "Part of Luxtable."
-        case let .signed(signer, _, fingerprint): "Signed with key \(fingerprint), which you trust (it claims to be “\(signer)”)."
+        case .builtIn: String(localized: "Part of Luxtable.")
+        case let .signed(signer, _, fingerprint):
+            String(localized: "Signed with key \(fingerprint), which you trust (it claims to be “\(signer)”).")
         case let .untrusted(signer, _, fingerprint):
-            "Signed with key \(fingerprint) (it claims to be “\(signer)”). You'll be asked whether to trust that key."
-        case .unsigned: p.hasCode ? "Not signed. It runs code: only install it if you know where it came from."
-            : "Not signed. It holds only data (no code)."
+            String(localized: "Signed with key \(fingerprint) (it claims to be “\(signer)”). You'll be asked whether to trust that key.")
+        case .unsigned: p.hasCode ? String(localized: "Not signed. It runs code: only install it if you know where it came from.")
+            : String(localized: "Not signed. It holds only data (no code).")
         }
     }
 
     public static func adds(_ p: PluginInstallPreview) -> String {
-        "Adds: " + (p.contributions.isEmpty ? "nothing this Luxtable supports"
-            : p.contributions.map(\.name).joined(separator: ", "))
+        let list = p.contributions.isEmpty ? String(localized: "nothing this Luxtable supports")
+            : p.contributions.map(\.name).joined(separator: ", ")
+        return String(localized: "Adds: \(list)")
     }
 
     public static func replaces(_ p: PluginInstallPreview) -> String? {
         guard let old = p.replaces else { return nil }
-        return p.downgrade ? "Version \(old) is installed: this is older and replaces it."
-            : "Replaces version \(old)."
+        return p.downgrade ? String(localized: "Version \(old) is installed: this is older and replaces it.")
+            : String(localized: "Replaces version \(old).")
     }
 }

@@ -15,7 +15,7 @@ struct AmazonPhotosSettingsView: View {
                 LabeledContent("Backed-up folder", value: settings.amazonPhotosFolder?.path ?? "Off")
                 HStack {
                     Button("Choose…") {
-                        if let url = pickFolder("Choose the folder the Amazon Photos app backs up") {
+                        if let url = pickFolder(String(localized: "Choose the folder the Amazon Photos app backs up")) {
                             settings.chooseAmazonFolder(url)
                             Task { await model.refresh() }
                         }

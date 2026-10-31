@@ -24,7 +24,7 @@ struct ArchivePopover: View {
                     .accessibilityHint("Archive every open session now")
             }
             LabeledContent("Target") {
-                Text(status.target.isEmpty ? "Not set" : status.target).lineLimit(1).truncationMode(.middle)
+                Text(status.target.isEmpty ? String(localized: "Not set") : status.target).lineLimit(1).truncationMode(.middle)
             }
             .help(status.target)
             if let why = status.detail?.targetReason, state == .offline {

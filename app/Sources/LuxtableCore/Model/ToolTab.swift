@@ -48,19 +48,19 @@ public struct ToolTab: RawRepresentable, Hashable, Identifiable, Codable, Sendab
     /// Built-in name (custom tabs are named in the workspace).
     public var title: String {
         switch rawValue {
-        case "favorites": "Favorites"
-        case "library": "Library"
-        case "importArchive": "Import & Archive"
-        case "color": "Color"
-        case "exposure": "Exposure"
-        case "lens": "Lens"
-        case "composition": "Composition"
-        case "details": "Details"
-        case "layers": "Layers"
-        case "metadata": "Metadata"
-        case "output": "Output"
-        case "allTools": "All Tools"
-        default: "Custom"
+        case "favorites": String(localized: "Favorites")
+        case "library": String(localized: "Library")
+        case "importArchive": String(localized: "Import & Archive")
+        case "color": String(localized: "Color")
+        case "exposure": String(localized: "Exposure")
+        case "lens": String(localized: "Lens")
+        case "composition": String(localized: "Composition")
+        case "details": String(localized: "Details")
+        case "layers": String(localized: "Layers")
+        case "metadata": String(localized: "Metadata")
+        case "output": String(localized: "Output")
+        case "allTools": String(localized: "All Tools")
+        default: String(localized: "Custom")
         }
     }
 
@@ -132,36 +132,36 @@ public enum ToolPanelID: String, CaseIterable, Identifiable, Sendable {
 
     public var title: String {
         switch self {
-        case .smartFolders: "Smart Folders"
-        case .sessions: "Sessions"
-        case .albums: "Albums"
-        case .filters: "Filters"
-        case .importCard: "Memory Card"
-        case .archive: "Archive"
-        case .styles: "Styles & Presets"
-        case .whiteBalance: "White Balance"
-        case .colorBalance: "Color Balance"
-        case .colorEditor: "Color Editor"
-        case .exposure: "Exposure"
-        case .hdr: "High Dynamic Range"
-        case .levels: "Levels"
-        case .curve: "Curve"
-        case .lensCorrection: "Lens Correction"
-        case .vignette: "Vignetting"
-        case .effects: "Effects"
-        case .crop: "Crop & Straighten"
-        case .sharpening: "Sharpening"
-        case .noise: "Noise Reduction"
-        case .clarity: "Clarity"
-        case .layers: "Layers"
-        case .presence: "Presence"
-        case .spots: "Heal & Clone"
-        case .metadata: "Metadata"
-        case .keywords: "Keywords"
-        case .export: "Export"
-        case .amazonPhotos: "Amazon Photos"
-        case .people: "People"
-        case .history: "History"
+        case .smartFolders: String(localized: "Smart Folders")
+        case .sessions: String(localized: "Sessions")
+        case .albums: String(localized: "Albums")
+        case .filters: String(localized: "Filters")
+        case .importCard: String(localized: "Memory Card")
+        case .archive: String(localized: "Archive")
+        case .styles: String(localized: "Styles & Presets")
+        case .whiteBalance: String(localized: "White Balance")
+        case .colorBalance: String(localized: "Color Balance")
+        case .colorEditor: String(localized: "Color Editor")
+        case .exposure: String(localized: "Exposure")
+        case .hdr: String(localized: "High Dynamic Range")
+        case .levels: String(localized: "Levels")
+        case .curve: String(localized: "Curve")
+        case .lensCorrection: String(localized: "Lens Correction")
+        case .vignette: String(localized: "Vignetting")
+        case .effects: String(localized: "Effects")
+        case .crop: String(localized: "Crop & Straighten")
+        case .sharpening: String(localized: "Sharpening")
+        case .noise: String(localized: "Noise Reduction")
+        case .clarity: String(localized: "Clarity")
+        case .layers: String(localized: "Layers")
+        case .presence: String(localized: "Presence")
+        case .spots: String(localized: "Heal & Clone")
+        case .metadata: String(localized: "Metadata")
+        case .keywords: String(localized: "Keywords")
+        case .export: String(localized: "Export")
+        case .amazonPhotos: String(localized: "Amazon Photos")
+        case .people: String(localized: "People")
+        case .history: String(localized: "History")
         }
     }
 

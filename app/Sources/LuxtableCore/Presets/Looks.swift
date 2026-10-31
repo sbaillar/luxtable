@@ -185,7 +185,7 @@ extension AppModel {
     /// Apply a look to the focused image (or all selected with Edit All Selected): one undo
     /// step. It replaces each photo's look, or with `stacking` goes on top of it.
     public func applyLook(_ look: Look, stacking: Bool = false) {
-        updateEdit(label: "Look \(look.name)") { e in e = look.apply(to: e, stacking: stacking) }
+        updateEdit(label: String(localized: "Look \(look.name)")) { e in e = look.apply(to: e, stacking: stacking) }
     }
 
     /// The focused edit with `look` applied (hover preview).
@@ -197,7 +197,7 @@ extension AppModel {
     /// selected photo's own look): a drag is one undo step.
     public func setLookIntensity(_ t: Double) {
         guard let id = focusedID, edit(for: id).look != nil else { return }
-        updateEdit(label: "Look Intensity", coalesceKey: "look-intensity") { e in
+        updateEdit(label: String(localized: "Look Intensity"), coalesceKey: "look-intensity") { e in
             e = LookIntensity.set(t, on: e)
         }
     }

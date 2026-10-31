@@ -28,7 +28,7 @@ public final class C1SettingsStores: C1SettingsTargets {
     enum Failure: LocalizedError {
         case unwritable(String)
         var errorDescription: String? {
-            if case .unwritable(let what) = self { return "\u{201c}\(what)\u{201d} couldn't be saved" }
+            if case .unwritable(let what) = self { return String(localized: "\u{201c}\(what)\u{201d} couldn't be saved") }
             return nil
         }
     }

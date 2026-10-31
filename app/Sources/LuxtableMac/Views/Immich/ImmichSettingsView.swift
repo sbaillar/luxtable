@@ -42,8 +42,7 @@ struct ImmichSettingsView: View {
                     if model.busy { ProgressView().controlSize(.small) }
                 }
                 if let m = model.message { Text(m).font(DS.Font.caption).foregroundStyle(DS.textSecondary) }
-                Text("Create the key in Immich under Account Settings ▸ API Keys. Luxtable only creates albums, changes "
-                    + "their photos and asks for library scans; it never uploads or deletes anything.")
+                Text("Create the key in Immich under Account Settings ▸ API Keys. Luxtable only creates albums, changes their photos and asks for library scans; it never uploads or deletes anything.")
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
             }
             Section("Where Immich sees the archive") {
@@ -58,8 +57,7 @@ struct ImmichSettingsView: View {
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
             }
             Section("Developed copies and sidecars") {
-                Text("Choose photos in the browser, then Photo ▸ Keep a Developed Copy for Immich: a JPEG with every "
-                    + "edit goes to the session's Developed folder and is kept up to date.")
+                Text("Choose photos in the browser, then Photo ▸ Keep a Developed Copy for Immich: a JPEG with every edit goes to the session's Developed folder and is kept up to date.")
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
                 Stepper("JPEG quality: \(quality)", value: $quality, in: 50...100)
                     .onChange(of: quality) { model.settings.quality = quality; model.settingsChanged() }
@@ -71,8 +69,7 @@ struct ImmichSettingsView: View {
                 .onChange(of: longEdge) { model.settings.longEdge = longEdge; model.settingsChanged() }
                 Toggle("XMP sidecars next to the originals", isOn: $xmpSidecars)
                     .onChange(of: xmpSidecars) { model.settings.xmpSidecars = xmpSidecars; model.settingsChanged() }
-                Text("IMG_0001.ARW.xmp with stars, title, caption, keywords and position, so RAWs show them in Immich "
-                    + "too. Sidecars from Lightroom or Capture One are never touched.")
+                Text("IMG_0001.ARW.xmp with stars, title, caption, keywords and position, so RAWs show them in Immich too. Sidecars from Lightroom or Capture One are never touched.")
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
                 Toggle("Colour label and pick as tags", isOn: $labelTags)
                     .onChange(of: labelTags) { model.settings.labelTags = labelTags; model.settingsChanged() }
@@ -96,8 +93,7 @@ struct ImmichSettingsView: View {
                     Text(s).font(DS.Font.caption)
                         .foregroundStyle(model.lastSyncFailed ? DS.reject : DS.textSecondary)
                 }
-                Text("Albums follow every archived session and are synced after each archive run. Luxtable adds the "
-                    + "developed copy when there is one, else the original, and only removes photos it added itself.")
+                Text("Albums follow every archived session and are synced after each archive run. Luxtable adds the developed copy when there is one, else the original, and only removes photos it added itself.")
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
             }
         }
@@ -135,7 +131,7 @@ struct ImmichRuleRow: View {
                 Toggle("Picked", isOn: $rule.pickedOnly)
                 Picker("Label", selection: $rule.label) {
                     Text("Any").tag(ColorTag?.none)
-                    ForEach(ColorTag.allCases.filter { $0 != .none }, id: \.self) { Text($0.name).tag(ColorTag?.some($0)) }
+                    ForEach(ColorTag.allCases.filter { $0 != .none }, id: \.self) { Text($0.title).tag(ColorTag?.some($0)) }
                 }
                 TextField("Keyword", text: $rule.keyword)
             }
@@ -149,7 +145,7 @@ struct ImmichStatusLabel: View {
     let immich: ImmichModel
 
     var body: some View {
-        if immich.isSetUp, let s = immich.syncing ? "Immich: syncing albums…" : immich.lastSync {
+        if immich.isSetUp, let s = immich.syncing ? String(localized: "Immich: syncing albums…") : immich.lastSync {
             Label(s, systemImage: "photo.stack")
                 .foregroundStyle(immich.lastSyncFailed ? DS.reject : DS.textSecondary)
                 .help("Albums in Immich (Settings ▸ Immich)")
