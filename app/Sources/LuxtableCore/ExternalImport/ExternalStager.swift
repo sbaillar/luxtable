@@ -60,7 +60,7 @@ public struct ExternalStager: Sendable {
         let partial = folder.appendingPathComponent(".\(name).partial")
         let final = folder.appendingPathComponent(name)
         guard fm.createFile(atPath: partial.path, contents: nil) else {
-            throw ExternalSourceError.readFailed("Couldn’t create a file in the staging folder.")
+            throw ExternalSourceError.readFailed(String(localized: "Couldn’t create a file in the staging folder."))
         }
         do {
             let handle = try FileHandle(forWritingTo: partial)
@@ -74,11 +74,11 @@ public struct ExternalStager: Sendable {
             }
             let (digest, count) = writer.result
             if let size = item.size, size != count {
-                throw ExternalSourceError.readFailed("Only \(count) of \(size) bytes arrived.")
+                throw ExternalSourceError.readFailed(String(localized: "Only \(count) of \(size) bytes arrived."))
             }
-            guard count > 0 else { throw ExternalSourceError.readFailed("The original is empty.") }
+            guard count > 0 else { throw ExternalSourceError.readFailed(String(localized: "The original is empty.")) }
             guard try Self.sha256(of: partial) == digest else {
-                throw ExternalSourceError.readFailed("The copy didn’t read back the same as the original.")
+                throw ExternalSourceError.readFailed(String(localized: "The copy didn’t read back the same as the original."))
             }
             try fm.setAttributes([.modificationDate: item.date], ofItemAtPath: partial.path)
             try fm.moveItem(at: partial, to: final)

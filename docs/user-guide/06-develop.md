@@ -12,11 +12,11 @@ New to photo editing? **Simple mode** swaps the tool tabs for one panel with jus
 
 - **Auto** fixes brightness, contrast and colour in one click (the same as Auto Adjust, `⇧A`).
 - **Looks** shows your photo in each look. Hover a look to see it on the photo; click to use it. **Original** goes back to the photo as shot. An **Intensity** slider appears under the strip so you can make a look stronger or softer.
-- Six sliders: **Light** (brighter or darker), **Contrast**, **Color** (stronger or softer colours; all the way left is black and white), **Warmth** (cooler or warmer light; 0 is the camera's own), **Highlights** (bring back a bright sky) and **Shadows** (show detail in dark areas). Double-click a slider to put it back to 0.
+- Six sliders: **Brightness** (brighter or darker), **Contrast**, **Color** (stronger or softer colours; all the way left is black and white), **Warmth** (cooler or warmer light; 0 is the camera's own), **Highlights** (bring back a bright sky) and **Shadows** (show detail in dark areas). Double-click a slider to put it back to 0.
 - **Crop**, **Straighten** and **Rotate Left**, and **Before / After** to compare with the original (or press `Y`).
 - **Start Over** takes the photo back to how it was shot. `⌘Z` undoes any step.
 
-Simple mode is not a separate kind of edit. Each slider is one of the regular tools under a plainer name (Light is Exposure, Color is Saturation, Warmth is the white balance temperature), so when you switch to **Full** your changes are there, and anything you change in Full mode shows in Simple mode too. Choosing a tool from the **Tools** menu or **View ▸ Show History** switches to Full.
+Simple mode is not a separate kind of edit. Each slider is one of the regular tools under a plainer name (Brightness is Exposure, Color is Saturation, Warmth is the white balance temperature), so when you switch to **Full** your changes are there, and anything you change in Full mode shows in Simple mode too. Choosing a tool from the **Tools** menu or **View ▸ Show History** switches to Full.
 
 ## Tool tabs
 

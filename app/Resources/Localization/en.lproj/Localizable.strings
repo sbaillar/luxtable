@@ -172,6 +172,9 @@
 /* LuxtableCore/AI/Optimize/OptimizeService.swift, LuxtableCore/Live/RustPhotoMerger.swift, LuxtableCore/Tools/RustDevelopTools.swift */
 "%@ has no file" = "%@ has no file";
 
+/* LuxtableCore/Platform/PhotoKitLibrary.swift */
+"%@ has no original in your Photos library." = "%@ has no original in your Photos library.";
+
 /* LuxtableCore/CopyApply/CopyOptions.swift */
 "%@ has only per-photo edits (%@): tick them in Copy’s Custom options to copy them" = "%@ has only per-photo edits (%@): tick them in Copy’s Custom options to copy them";
 
@@ -187,6 +190,9 @@
 /* LuxtableCore/Keyboard/KeyBindings.swift */
 "%@ is a fixed navigation key and can't be rebound." = "%@ is a fixed navigation key and can't be rebound.";
 
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"%@ is connected" = "%@ is connected";
+
 /* LuxtableCore/App/AppModel+Edits.swift */
 "%@ is for another camera: %@ shown with Luxtable Standard" = "%@ is for another camera: %@ shown with Luxtable Standard";
 
@@ -195,6 +201,12 @@
 
 /* LuxtableCore/App/Acknowledgements.swift */
 "%@ is missing from this build.\n" = "%@ is missing from this build.\n";
+
+/* LuxtableCore/Platform/PhotoKitLibrary.swift */
+"%@ is no longer in your Photos library." = "%@ is no longer in your Photos library.";
+
+/* LuxtableCore/ExternalImport/ImageCaptureDevice.swift */
+"%@ is no longer on the device." = "%@ is no longer on the device.";
 
 /* LuxtableMac/Views/Library/LibraryBrowser.swift */
 "%@ is offline: its photos are listed, not shown" = "%@ is offline: its photos are listed, not shown";
@@ -319,7 +331,7 @@
 /* LuxtableCore/Import/ImportReport.swift */
 "%@ to copy into “%@” (demo: not verified)" = "%@ to copy into “%@” (demo: not verified)";
 
-/* LuxtableUI/Views/Tools/PresenceSpotsPanels.swift, LuxtableUI/Views/Viewer/CropRatioMenu.swift, LuxtableUI/Views/Viewer/StageBar.swift */
+/* LuxtableUI/Views/Tools/PresenceSpotsPanels.swift, LuxtableUI/Views/Tools/SimplePanel.swift, LuxtableUI/Views/Viewer/CropRatioMenu.swift, LuxtableUI/Views/Viewer/StageBar.swift */
 "%@ tool" = "%@ tool";
 
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
@@ -327,6 +339,9 @@
 
 /* LuxtableUI/Views/Controls/ScrubField.swift */
 "%@ value" = "%@ value";
+
+/* LuxtableCore/ExternalImport/ImageCaptureDevice.swift */
+"%@ was disconnected." = "%@ was disconnected.";
 
 /* LuxtableCore/Import/CardCoordinator.swift */
 "%@ was removed" = "%@ was removed";
@@ -405,6 +420,12 @@
 
 /* LuxtableCore/Tools/PanelChrome.swift */
 "%@, expanded" = "%@, expanded";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"%@, not selected" = "%@, not selected";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"%@, selected" = "%@, selected";
 
 /* LuxtableMac/Views/FamiliarSettingsView.swift */
 "%@. Keys: %@." = "%@. Keys: %@.";
@@ -502,9 +523,6 @@
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
 "%lld change waiting" = "%lld change waiting";
 
-/* LuxtableMac/Views/MainWindow.swift */
-"%lld change%@ not saved" = "%lld change%@ not saved";
-
 /* LuxtableCore/CaptureOne/C1Settings.swift */
 "%lld changed since and kept" = "%lld changed since and kept";
 
@@ -513,6 +531,9 @@
 
 /* LuxtableCore/App/SaveCoordinator.swift */
 "%lld changes couldn’t be saved: the session they belong to is closed." = "%lld changes couldn’t be saved: the session they belong to is closed.";
+
+/* LuxtableMac/Views/MainWindow.swift */
+"%lld changes not saved" = "%lld changes not saved";
 
 /* LuxtableCore/Tools/Announcer.swift */
 "%lld changes not saved. %@" = "%lld changes not saved. %@";
@@ -565,14 +586,17 @@
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
 "%lld file waiting" = "%lld file waiting";
 
-/* LuxtableMac/Views/Import/ImportSheet.swift */
-"%lld file%@ need attention" = "%lld file%@ need attention";
-
 /* LuxtableCore/Import/ImportReport.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift */
 "%lld files" = "%lld files";
 
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"%lld files in other formats not imported" = "%lld files in other formats not imported";
+
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "%lld files into %@" = "%lld files into %@";
+
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"%lld files need attention" = "%lld files need attention";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "%lld files on the card were not imported" = "%lld files on the card were not imported";
@@ -676,7 +700,10 @@
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "%lld of %lld files" = "%lld of %lld files";
 
-/* LuxtableMac/Views/Import/ImportSheet.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"%lld of %lld originals couldn’t be copied" = "%lld of %lld originals couldn’t be copied";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift */
 "%lld of %lld selected" = "%lld of %lld selected";
 
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
@@ -696,6 +723,9 @@
 
 /* LuxtableCore/AI/Find/FindModel.swift, LuxtableCore/Browser/CullFinishing.swift, LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Import/ImportReport.swift, LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Tools/MatchSet.swift, LuxtableCore/Voice/AppModel+Voice.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableUI/Views/Map/MapBrowser.swift, LuxtableUI/Views/Search/SearchViews.swift */
 "%lld photos" = "%lld photos";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"%lld photos couldn't be prepared and aren't shared." = "%lld photos couldn't be prepared and aren't shared.";
 
 /* LuxtableCore/Plugins/PluginStore.swift */
 "%lld phrase packs" = "%lld phrase packs";
@@ -732,6 +762,9 @@
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "%lld problems" = "%lld problems";
+
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"%lld px" = "%lld px";
 
 /* LuxtableCore/Keyboard/TerminationFlow.swift */
 "%lld ratings and edits will be lost" = "%lld ratings and edits will be lost";
@@ -793,11 +826,11 @@
 /* LuxtableCore/Import/ImportReport.swift */
 "%lld unreadable, %lld not imported" = "%lld unreadable, %lld not imported";
 
-/* LuxtableMac/Views/MainWindow.swift */
-"%lld unsaved change%@" = "%lld unsaved change%@";
-
 /* LuxtableCore/Tools/Announcer.swift */
 "%lld unsaved change. Saving failed: %@" = "%lld unsaved change. Saving failed: %@";
+
+/* LuxtableMac/Views/MainWindow.swift */
+"%lld unsaved changes" = "%lld unsaved changes";
 
 /* LuxtableCore/Tools/Announcer.swift */
 "%lld unsaved changes. Saving failed: %@" = "%lld unsaved changes. Saving failed: %@";
@@ -816,6 +849,9 @@
 
 /* LuxtableCore/Export/ExportModel.swift */
 "%lld videos aren't exported (videos stay as they are)." = "%lld videos aren't exported (videos stay as they are).";
+
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"%lld videos not imported" = "%lld videos not imported";
 
 /* LuxtableCore/Lightroom/LightroomImport.swift */
 "%lld virtual copies were added as new variants" = "%lld virtual copies were added as new variants";
@@ -898,6 +934,9 @@
 /* LuxtableCore/App/SaveCoordinator.swift */
 "1 change couldn’t be saved: the session it belongs to is closed." = "1 change couldn’t be saved: the session it belongs to is closed.";
 
+/* LuxtableMac/Views/MainWindow.swift */
+"1 change not saved" = "1 change not saved";
+
 /* LuxtableCore/Lightroom/LightroomImport.swift */
 "1 collection" = "1 collection";
 
@@ -916,11 +955,17 @@
 /* LuxtableCore/Import/ImportReport.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift */
 "1 file" = "1 file";
 
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"1 file in other formats not imported" = "1 file in other formats not imported";
+
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "1 file into %@" = "1 file into %@";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "1 file is only on the card" = "1 file is only on the card";
+
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"1 file needs attention" = "1 file needs attention";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "1 file on the card was not imported" = "1 file on the card was not imported";
@@ -963,6 +1008,9 @@
 
 /* LuxtableCore/AI/Find/FindModel.swift, LuxtableCore/Browser/CullFinishing.swift, LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Import/ImportReport.swift, LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Tools/MatchSet.swift, LuxtableMac/Views/MainWindow.swift, LuxtableUI/Views/Map/MapBrowser.swift, LuxtableUI/Views/Search/SearchViews.swift */
 "1 photo" = "1 photo";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"1 photo couldn't be prepared and isn't shared." = "1 photo couldn't be prepared and isn't shared.";
 
 /* LuxtableCore/Plugins/PluginStore.swift */
 "1 phrase pack" = "1 phrase pack";
@@ -1018,6 +1066,9 @@
 /* LuxtableCore/Plugins/PluginStore.swift */
 "1 style pack" = "1 style pack";
 
+/* LuxtableMac/Views/MainWindow.swift */
+"1 unsaved change" = "1 unsaved change";
+
 /* LuxtableCore/Browser/CullFinishing.swift */
 "1 variant" = "1 variant";
 
@@ -1029,6 +1080,9 @@
 
 /* LuxtableCore/Export/ExportModel.swift */
 "1 video isn't exported (videos stay as they are)." = "1 video isn't exported (videos stay as they are).";
+
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"1 video not imported" = "1 video not imported";
 
 /* LuxtableCore/Lightroom/LightroomImport.swift */
 "1 virtual copy was added as new variants" = "1 virtual copy was added as new variants";
@@ -1047,6 +1101,9 @@
 
 /* LuxtableCore/Voice/VoiceCatalog.swift */
 "2 stars" = "2 stars";
+
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"2048 px suits Messages and Mail; 4096 px fills a 4K screen" = "2048 px suits Messages and Mail; 4096 px fills a 4K screen";
 
 /* LuxtableCore/Voice/VoiceCatalog.swift */
 "3 stars" = "3 stars";
@@ -1387,6 +1444,9 @@
 /* LuxtableCore/Plugins/PluginStore.swift */
 "Adds: %@" = "Adds: %@";
 
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Adjust" = "Adjust";
+
 /* LuxtableUI/Views/Browser/BrowserViews.swift, LuxtableUI/Views/ToolSidebar.swift */
 "Adjusted" = "Adjusted";
 
@@ -1399,7 +1459,7 @@
 /* LuxtableUI/Views/Viewer/ViewerContainer.swift */
 "After" = "After";
 
-/* LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Immich/ImmichSettingsView.swift */
+/* LuxtableCore/Platform/PhotoKitLibrary.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Immich/ImmichSettingsView.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift */
 "Album" = "Album";
 
 /* LuxtableMac/Views/Export/ExportSheet.swift */
@@ -1426,7 +1486,7 @@
 /* LuxtableCore/Library/LibraryModel.swift, LuxtableMac/Views/Library/LibraryBrowser.swift */
 "All Photographs" = "All Photographs";
 
-/* LuxtableUI/Views/SmartFolders/SmartFoldersPanel.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableUI/Views/SmartFolders/SmartFoldersPanel.swift */
 "All Photos" = "All Photos";
 
 /* LuxtableCore/AI/Search/PhotoSearch.swift, LuxtableCore/Map/MapModel.swift */
@@ -1582,7 +1642,7 @@
 /* LuxtableCore/Voice/VoiceCatalog.swift */
 "Apply copied adjustments" = "Apply copied adjustments";
 
-/* LuxtableUI/Views/Presets/StylesPanel.swift */
+/* LuxtableUI/Views/Presets/StylesPanel.swift, LuxtableUI/Views/Tools/SimplePanel.swift */
 "Apply look %@" = "Apply look %@";
 
 /* LuxtableCore/Voice/AppModel+Voice.swift */
@@ -1747,7 +1807,7 @@
 /* LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
 "At most" = "At most";
 
-/* LuxtableCore/Merge/PhotoMerge.swift, LuxtableMac/Views/MainToolbar.swift */
+/* LuxtableCore/Merge/PhotoMerge.swift, LuxtableCore/Tools/SimpleMode.swift, LuxtableMac/Views/MainToolbar.swift */
 "Auto" = "Auto";
 
 /* LuxtableCore/Merge/PhotoMerge.swift */
@@ -1807,7 +1867,7 @@
 /* LuxtableCore/Keyboard/KeyboardRouter.swift */
 "Back / close" = "Back / close";
 
-/* LuxtableUI/Views/Presets/StylesPanel.swift */
+/* LuxtableUI/Views/Presets/StylesPanel.swift, LuxtableUI/Views/Tools/SimplePanel.swift */
 "Back to the original" = "Back to the original";
 
 /* LuxtableUI/Views/Presets/StylesPanel.swift */
@@ -1833,6 +1893,9 @@
 
 /* LuxtableUI/Views/Viewer/ViewerContainer.swift */
 "Before" = "Before";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Before / After" = "Before / After";
 
 /* LuxtableCore/Keyboard/KeyBindings.swift, LuxtableCore/Keyboard/KeyboardRouter.swift, LuxtableCore/Voice/VoiceCatalog.swift, LuxtableCore/Voice/VoiceCommandParser.swift */
 "Before / after" = "Before / after";
@@ -1909,11 +1972,14 @@
 /* LuxtableCore/Tools/LayerToolSpecs.swift */
 "Brightest" = "Brightest";
 
-/* LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Tools/SliderSpec.swift */
+/* LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Tools/SimpleMode.swift, LuxtableCore/Tools/SliderSpec.swift */
 "Brightness" = "Brightness";
 
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Brightness in stops (EV)." = "Brightness in stops (EV).";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Bring back detail in bright areas such as sky (–), or brighten them (+)." = "Bring back detail in bright areas such as sky (–), or brighten them (+).";
 
 /* LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift */
 "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed." = "Bring its ratings, colour tags, keywords, Selects and edits into Luxtable? The Capture One folder is never changed.";
@@ -1996,7 +2062,7 @@
 /* LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
 "Can't be imported: %@" = "Can't be imported: %@";
 
-/* LuxtableCore/Keyboard/TerminationFlow.swift, LuxtableMac/App/LuxtableApp.swift, LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift, LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift, LuxtableMac/Views/DevicesSettingsView.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableMac/Views/Library/LibraryBrowser.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift, LuxtableMac/Views/MainWindow.swift, LuxtableMac/Views/Merge/MergeSheet.swift, LuxtableMac/Views/NewSessionSheet.swift, LuxtableMac/Views/OpenSessionSheet.swift, LuxtableMac/Views/Plugins/PluginsSettingsView.swift, LuxtableMac/Views/RawSettingsView.swift, LuxtableMac/Views/UpdateViews.swift, LuxtableUI/Views/Browser/CullViews.swift, LuxtableUI/Views/Optimize/OptimizePanelView.swift, LuxtableUI/Views/Platform/PlatformPanels.swift, LuxtableUI/Views/Presets/StylesPanel.swift, LuxtableUI/Views/Search/SearchViews.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift, LuxtableUI/Views/Tools/AIDenoiseSection.swift, LuxtableUI/Views/Tools/EffectsPanel.swift, LuxtableUI/Views/Tools/IPTCFieldsView.swift, LuxtableUI/Views/Tools/LayersPanel.swift, LuxtableUI/Views/Tools/PeopleMaskMenu.swift, LuxtableUI/Views/Tools/RemoveToolSection.swift */
+/* LuxtableCore/Keyboard/TerminationFlow.swift, LuxtableMac/App/LuxtableApp.swift, LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift, LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift, LuxtableMac/Views/DevicesSettingsView.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Export/ShareViews.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableMac/Views/Library/LibraryBrowser.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift, LuxtableMac/Views/MainWindow.swift, LuxtableMac/Views/Merge/MergeSheet.swift, LuxtableMac/Views/NewSessionSheet.swift, LuxtableMac/Views/OpenSessionSheet.swift, LuxtableMac/Views/Plugins/PluginsSettingsView.swift, LuxtableMac/Views/RawSettingsView.swift, LuxtableMac/Views/UpdateViews.swift, LuxtableUI/Views/Browser/CullViews.swift, LuxtableUI/Views/Optimize/OptimizePanelView.swift, LuxtableUI/Views/Platform/PlatformPanels.swift, LuxtableUI/Views/Presets/StylesPanel.swift, LuxtableUI/Views/Search/SearchViews.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift, LuxtableUI/Views/Tools/AIDenoiseSection.swift, LuxtableUI/Views/Tools/EffectsPanel.swift, LuxtableUI/Views/Tools/IPTCFieldsView.swift, LuxtableUI/Views/Tools/LayersPanel.swift, LuxtableUI/Views/Tools/PeopleMaskMenu.swift, LuxtableUI/Views/Tools/RemoveToolSection.swift */
 "Cancel" = "Cancel";
 
 /* LuxtableCore/AI/Upscale/UpscaleService.swift */
@@ -2034,6 +2100,12 @@
 
 /* LuxtableCore/Plugins/PluginStore.swift */
 "Cancelled." = "Cancelled.";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Can’t read %@" = "Can’t read %@";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Can’t read Photos" = "Can’t read Photos";
 
 /* LuxtableCore/Model/IPTCMetadata.swift */
 "Caption" = "Caption";
@@ -2148,6 +2220,9 @@
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Choose a memory card or a folder with photos" = "Choose a memory card or a folder with photos";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Choose a photo to edit it." = "Choose a photo to edit it.";
 
 /* LuxtableUI/Views/Tools/CameraProfilePicker.swift */
 "Choose an Adobe camera profile (.dcp), e.g. from Adobe DNG Converter." = "Choose an Adobe camera profile (.dcp), e.g. from Adobe DNG Converter.";
@@ -2425,7 +2500,7 @@
 /* LuxtableCore/Lightroom/LightroomImport.swift, LuxtableMac/Views/Library/LibraryBrowser.swift */
 "Collections" = "Collections";
 
-/* LuxtableCore/Model/ToolTab.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableUI/Views/Viewer/SoftProofControls.swift */
+/* LuxtableCore/Model/ToolTab.swift, LuxtableCore/Tools/SimpleMode.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableUI/Views/Viewer/SoftProofControls.swift */
 "Color" = "Color";
 
 /* LuxtableCore/Model/AdjustGroup.swift, LuxtableCore/Model/ToolTab.swift, LuxtableUI/Views/Tools/ColorPanels.swift */
@@ -2512,17 +2587,23 @@
 /* LuxtableCore/AI/AIHighlights.swift */
 "Contains settings changed by AI (click to list them)" = "Contains settings changed by AI (click to list them)";
 
-/* LuxtableMac/Views/OnboardingView.swift, LuxtableMac/Views/UpdateViews.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/OnboardingView.swift, LuxtableMac/Views/UpdateViews.swift */
 "Continue" = "Continue";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Continue with %@…" = "Continue with %@…";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Continuing the unfinished import into “%@”: %@ left." = "Continuing the unfinished import into “%@”: %@ left.";
 
-/* LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Tools/SliderSpec.swift */
+/* LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Tools/SimpleMode.swift, LuxtableCore/Tools/SliderSpec.swift */
 "Contrast" = "Contrast";
 
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "Convert to the soft proof's profile, with its intent, and embed it" = "Convert to the soft proof's profile, with its intent, and embed it";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Cooler (bluer) or warmer (more golden) light (White Balance). 0 is as shot." = "Cooler (bluer) or warmer (more golden) light (White Balance). 0 is as shot.";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Copied %@ (not verified)" = "Copied %@ (not verified)";
@@ -2611,6 +2692,9 @@
 /* LuxtableUI/Views/CopyApplyButtons.swift */
 "Copy will take these from %@." = "Copy will take these from %@.";
 
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Copying %lld of %lld originals (%@)…" = "Copying %lld of %lld originals (%@)…";
+
 /* LuxtableCore/Model/IPTCMetadata.swift, LuxtableMac/Views/OnboardingView.swift */
 "Copyright" = "Copyright";
 
@@ -2650,11 +2734,20 @@
 /* LuxtableCore/AI/Search/ClipModel.swift */
 "Couldn't load the search model: %@" = "Couldn't load the search model: %@";
 
+/* LuxtableCore/Export/ShareModel.swift */
+"Couldn't make a temporary folder to share from: %@" = "Couldn't make a temporary folder to share from: %@";
+
 /* LuxtableCore/AI/Models/DownloadableModel.swift */
 "Couldn't prepare the %@: %@" = "Couldn't prepare the %@: %@";
 
 /* LuxtableCore/AI/Denoise/DenoiseModel.swift */
 "Couldn't prepare the AI Denoise model: %@" = "Couldn't prepare the AI Denoise model: %@";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"Couldn't prepare the photos to share." = "Couldn't prepare the photos to share.";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"Couldn't prepare the photos to share. %@" = "Couldn't prepare the photos to share. %@";
 
 /* LuxtableCore/AI/Search/ClipModel.swift */
 "Couldn't prepare the search model: %@" = "Couldn't prepare the search model: %@";
@@ -2668,11 +2761,17 @@
 /* LuxtableCore/Library/LibraryModel.swift */
 "Couldn’t change %@" = "Couldn’t change %@";
 
+/* LuxtableCore/ExternalImport/ExternalStager.swift */
+"Couldn’t create a file in the staging folder." = "Couldn’t create a file in the staging folder.";
+
 /* LuxtableCore/Import/ImportReport.swift */
 "Couldn’t eject the card: %@" = "Couldn’t eject the card: %@";
 
 /* LuxtableUI/Views/Browser/BrowserViews.swift */
 "Couldn’t load a preview" = "Couldn’t load a preview";
+
+/* LuxtableCore/ExternalImport/ImageCaptureDevice.swift */
+"Couldn’t open %@: %@" = "Couldn’t open %@: %@";
 
 /* LuxtableCore/Browser/OpenFailures.swift */
 "Couldn’t read %@%@: damaged, incomplete or unreadable. Copy it from the card again." = "Couldn’t read %@%@: damaged, incomplete or unreadable. Copy it from the card again.";
@@ -2755,7 +2854,7 @@
 /* LuxtableCore/Viewer/CropRatios.swift, LuxtableCore/Viewer/CropTools.swift */
 "Crop %@" = "Crop %@";
 
-/* LuxtableCore/Model/AdjustGroup.swift, LuxtableCore/Model/ToolTab.swift */
+/* LuxtableCore/Model/AdjustGroup.swift, LuxtableCore/Model/ToolTab.swift, LuxtableCore/Tools/SimpleMode.swift */
 "Crop & Straighten" = "Crop & Straighten";
 
 /* LuxtableCore/Lightroom/LightroomImport.swift */
@@ -2853,6 +2952,9 @@
 
 /* LuxtableCore/Tools/LayerToolSpecs.swift */
 "Darkest" = "Darkest";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Date Range" = "Date Range";
 
 /* LuxtableMac/Views/Library/LibraryBrowser.swift */
 "Dates" = "Dates";
@@ -3114,6 +3216,9 @@
 
 /* LuxtableUI/Views/Presets/StylesPanel.swift */
 "Duplicate to My Presets" = "Duplicate to My Presets";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Each copy is checked before the import goes on. Nothing in %@ is changed." = "Each copy is checked before the import goes on. Nothing in %@ is changed.";
 
 /* LuxtableMac/Views/OnboardingView.swift */
 "Each import becomes a session: a plain folder with your originals and edits. Keep it on your fastest disk." = "Each import becomes a session: a plain folder with your originals and edits. Keep it on your fastest disk.";
@@ -3571,7 +3676,7 @@
 /* LuxtableCore/Viewer/CropTools.swift */
 "Freeform" = "Freeform";
 
-/* LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
 "From" = "From";
 
 /* LuxtableCore/CopyApply/CopyOptions.swift */
@@ -3582,6 +3687,12 @@
 
 /* LuxtableMac/Views/Library/LibraryBrowser.swift */
 "From Selection…" = "From Selection…";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Full" = "Full";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Full mode: every tool (⌃⌘S for Simple)" = "Full mode: every tool (⌃⌘S for Simple)";
 
 /* LuxtableCore/Keyboard/KeyboardRouter.swift, LuxtableCore/Voice/VoiceCatalog.swift, LuxtableCore/Voice/VoiceCommandParser.swift */
 "Full screen" = "Full screen";
@@ -3772,7 +3883,7 @@
 /* LuxtableUI/Views/ToolSidebar.swift */
 "Highlight in-focus edges on the image" = "Highlight in-focus edges on the image";
 
-/* LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableUI/Views/Tools/ColorPanels.swift */
+/* LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Tools/SimpleMode.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableUI/Views/Tools/ColorPanels.swift */
 "Highlights" = "Highlights";
 
 /* LuxtableCore/Tools/PanelChrome.swift */
@@ -3905,7 +4016,7 @@
 "Import %lld Photos" = "Import %lld Photos";
 
 /* LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
-"Import %lld Preset%@" = "Import %lld Preset%@";
+"Import %lld Presets" = "Import %lld Presets";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Import %lld Videos" = "Import %lld Videos";
@@ -3918,6 +4029,9 @@
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Import 1 Photo" = "Import 1 Photo";
+
+/* LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
+"Import 1 Preset" = "Import 1 Preset";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Import 1 Video" = "Import 1 Video";
@@ -3955,8 +4069,11 @@
 /* LuxtableCore/Live/C1SettingsReader.swift */
 "Import file names: %@" = "Import file names: %@";
 
-/* LuxtableMac/Views/Import/ImportSheet.swift */
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift, LuxtableMac/Views/Import/ImportSheet.swift */
 "Import from %@" = "Import from %@";
+
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"Import from %@…" = "Import from %@…";
 
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Import from Card (Coming Soon)…" = "Import from Card (Coming Soon)…";
@@ -3964,11 +4081,20 @@
 /* LuxtableCore/Browser/EmptyStates.swift, LuxtableCore/Keyboard/CommandCatalog.swift, LuxtableUI/Views/Tools/LibraryPanels.swift */
 "Import from Card…" = "Import from Card…";
 
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"Import from Photos Library" = "Import from Photos Library";
+
+/* LuxtableMac/App/LuxtableApp.swift */
+"Import from Photos Library…" = "Import from Photos Library…";
+
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Import from a memory card or folder (⇧⌘I). Demo: copies are simulated and not verified." = "Import from a memory card or folder (⇧⌘I). Demo: copies are simulated and not verified.";
 
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Import from a memory card or folder (⇧⌘I). Every file is copied, verified byte for byte, and never deleted from the card." = "Import from a memory card or folder (⇧⌘I). Every file is copied, verified byte for byte, and never deleted from the card.";
+
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"Import from an iPhone or iPad on USB, or from your Photos library" = "Import from an iPhone or iPad on USB, or from your Photos library";
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Import from any folder instead of a card" = "Import from any folder instead of a card";
@@ -3984,6 +4110,9 @@
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Import isn’t available yet" = "Import isn’t available yet";
+
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"Import its photos, or insert a memory card or choose a folder instead." = "Import its photos, or insert a memory card or choose a folder instead.";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Import stopped after %lld of %@. The verified copies are kept; import again to continue." = "Import stopped after %lld of %@. The verified copies are kept; import again to continue.";
@@ -4033,6 +4162,9 @@
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "Include metadata (EXIF)" = "Include metadata (EXIF)";
 
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"Include the location (GPS)" = "Include the location (GPS)";
+
 /* LuxtableCore/CopyApply/CopyOptions.swift */
 "Includes per-photo groups: %@%@" = "Includes per-photo groups: %@%@";
 
@@ -4051,14 +4183,14 @@
 /* LuxtableCore/Import/ImportReport.swift */
 "Insert a memory card and Luxtable opens the import automatically. Files are copied, verified, and never deleted from the card." = "Insert a memory card and Luxtable opens the import automatically. Files are copied, verified, and never deleted from the card.";
 
-/* LuxtableMac/Views/Import/ImportSheet.swift */
-"Insert a memory card and it will appear here, or choose any folder that contains photos." = "Insert a memory card and it will appear here, or choose any folder that contains photos.";
-
 /* LuxtableCore/Browser/EmptyStates.swift */
 "Insert a memory card and the import sheet opens by itself. Or open any folder of RAW files: Luxtable browses it in place and never moves your originals." = "Insert a memory card and the import sheet opens by itself. Or open any folder of RAW files: Luxtable browses it in place and never moves your originals.";
 
 /* LuxtableCore/Browser/EmptyStates.swift */
 "Insert a memory card to import, or open a folder of RAW files. You can also drag photos into the window." = "Insert a memory card to import, or open a folder of RAW files. You can also drag photos into the window.";
+
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"Insert a memory card, plug in an iPhone or iPad, or choose any folder that contains photos." = "Insert a memory card, plug in an iPhone or iPad, or choose any folder that contains photos.";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Insert the card and import again to resume, or discard the unfinished copies." = "Insert the card and import again to resume, or discard the unfinished copies.";
@@ -4134,6 +4266,15 @@
 
 /* LuxtableCore/AI/AIChanges.swift */
 "Its value before AI isn't known, so it can't be undone here. Set it by hand, or use ⌘Z." = "Its value before AI isn't known, so it can't be undone here. Set it by hand, or use ⌘Z.";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"JPEG %lld · %@ px · no location" = "JPEG %lld · %@ px · no location";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"JPEG %lld · %@ px · with location" = "JPEG %lld · %@ px · with location";
+
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"JPEG quality" = "JPEG quality";
 
 /* LuxtableMac/Views/Immich/ImmichSettingsView.swift */
 "JPEG quality: %lld" = "JPEG quality: %lld";
@@ -4345,6 +4486,9 @@
 /* LuxtableMac/Views/OnboardingView.swift */
 "Let AI do the first pass" = "Let AI do the first pass";
 
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Let Luxtable fix brightness, contrast and color in one click (⇧A). ⌘Z undoes it." = "Let Luxtable fix brightness, contrast and color in one click (⇧A). ⌘Z undoes it.";
+
 /* LuxtableUI/Views/Tools/DetailPanels.swift */
 "Level the horizon Vision finds in the photo (nothing changes when no clear horizon is found)" = "Level the horizon Vision finds in the photo (nothing changes when no clear horizon is found)";
 
@@ -4359,6 +4503,9 @@
 
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Lift (+) or deepen (–) dark areas." = "Lift (+) or deepen (–) dark areas.";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Lift dark areas to show detail (+), or deepen them (–)." = "Lift dark areas to show detail (+), or deepen them (–).";
 
 /* LuxtableMac/App/LuxtableApp.swift */
 "Light" = "Light";
@@ -4468,6 +4615,9 @@
 /* LuxtableCore/Merge/PhotoMerge.swift */
 "Looking for faces…" = "Looking for faces…";
 
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Looks" = "Looks";
+
 /* LuxtableMac/App/LuxtableApp.swift */
 "Loupe" = "Loupe";
 
@@ -4495,10 +4645,13 @@
 /* LuxtableMac/App/LuxtableApp.swift */
 "Luxtable" = "Luxtable";
 
+/* LuxtableMac/Views/UpdateViews.swift */
+"Luxtable %@ beta is available" = "Luxtable %@ beta is available";
+
 /* LuxtableMac/Updates/Updater.swift */
 "Luxtable %@ installs when you quit." = "Luxtable %@ installs when you quit.";
 
-/* LuxtableMac/Updates/Updater.swift */
+/* LuxtableMac/Updates/Updater.swift, LuxtableMac/Views/UpdateViews.swift */
 "Luxtable %@ is available" = "Luxtable %@ is available";
 
 /* LuxtableMac/Updates/Updater.swift */
@@ -4518,9 +4671,6 @@
 
 /* LuxtableMac/Updates/Updater.swift */
 "Luxtable %@ is waiting to be installed by hand." = "Luxtable %@ is waiting to be installed by hand.";
-
-/* LuxtableMac/Views/UpdateViews.swift */
-"Luxtable %@%@ is available" = "Luxtable %@%@ is available";
 
 /* LuxtableCore/Model/CameraProfile.swift */
 "Luxtable Neutral" = "Luxtable Neutral";
@@ -4561,6 +4711,9 @@
 /* LuxtableMac/App/InstanceLock.swift */
 "Luxtable is already running or still closing" = "Luxtable is already running or still closing";
 
+/* LuxtableCore/Platform/PhotoKitLibrary.swift */
+"Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again." = "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again.";
+
 /* LuxtableMac/Views/OnboardingView.swift */
 "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar.";
 
@@ -4590,6 +4743,9 @@
 
 /* LuxtableCore/AI/Upscale/UpscaleService.swift */
 "Make a new photo twice the size of each selected photo with on-device AI" = "Make a new photo twice the size of each selected photo with on-device AI";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Make the whole photo brighter or darker (Exposure)." = "Make the whole photo brighter or darker (Exposure).";
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "Making a developed copy for Immich…" = "Making a developed copy for Immich…";
@@ -4753,6 +4909,9 @@
 /* LuxtableUI/Views/Tools/ColorPanels.swift, LuxtableUI/Views/Tools/EffectsPanel.swift */
 "Mode" = "Mode";
 
+/* LuxtableCore/Tools/SimpleMode.swift */
+"More or less difference between darks and lights." = "More or less difference between darks and lights.";
+
 /* LuxtableUI/Views/Controls/ColorWheelView.swift */
 "More saturation" = "More saturation";
 
@@ -4900,6 +5059,9 @@
 /* LuxtableCore/Viewer/PickerLoupe.swift */
 "Nearly neutral, slightly %@" = "Nearly neutral, slightly %@";
 
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Need more? Switch to Full for every tool. Edits made here show there too." = "Need more? Switch to Full for every tool. Edits made here show there too.";
+
 /* LuxtableMac/Views/OnboardingView.swift */
 "Neither this folder nor the folder it's in exists, or it can't be written. Choose another folder." = "Neither this folder nor the folder it's in exists, or it can't be written. Choose another folder.";
 
@@ -4989,6 +5151,9 @@
 
 /* LuxtableCore/Voice/VoiceCatalog.swift */
 "Next unrated" = "Next unrated";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Next: choose the session. Photos already in your library are found and skipped." = "Next: choose the session. Photos already in your library are found and skipped.";
 
 /* LuxtableUI/Views/People/PeopleViews.swift */
 "No" = "No";
@@ -5101,6 +5266,9 @@
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "No photos found" = "No photos found";
 
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"No photos here" = "No photos here";
+
 /* LuxtableMac/Views/Library/LibraryBrowser.swift */
 "No photos match" = "No photos match";
 
@@ -5149,8 +5317,11 @@
 /* LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Lightroom/LightroomImport.swift */
 "Noise reduction" = "Noise reduction";
 
-/* LuxtableCore/Model/Photo.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableUI/Views/CopyApplyButtons.swift, LuxtableUI/Views/Tools/IPTCFieldsView.swift */
+/* LuxtableCore/Model/Photo.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableUI/Views/CopyApplyButtons.swift, LuxtableUI/Views/Tools/IPTCFieldsView.swift */
 "None" = "None";
+
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"None of the photos could be copied from %@. %@" = "None of the photos could be copied from %@. %@";
 
 /* LuxtableMac/Views/DevicesSettingsView.swift */
 "None yet" = "None yet";
@@ -5278,6 +5449,9 @@
 /* LuxtableUI/Views/Optimize/OptimizePanelView.swift */
 "Nothing to change: this photo already looks balanced." = "Nothing to change: this photo already looks balanced.";
 
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Nothing to import in this selection. %@" = "Nothing to import in this selection. %@";
+
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Nothing to redo" = "Nothing to redo";
 
@@ -5290,8 +5464,14 @@
 /* LuxtableMac/Views/MainToolbar.swift */
 "Nothing to undo (⌘Z)" = "Nothing to undo (⌘Z)";
 
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"Nothing was copied." = "Nothing was copied.";
+
 /* LuxtableCore/Import/ImportReport.swift */
 "Nothing was imported" = "Nothing was imported";
+
+/* LuxtableMac/Views/FamiliarSettingsView.swift */
+"Nothing yet: I'm new to photo editing" = "Nothing yet: I'm new to photo editing";
 
 /* LuxtableMac/Views/Library/LibraryBrowser.swift, LuxtableMac/Views/UpdateViews.swift, LuxtableMac/Views/VoiceViews.swift, LuxtableUI/Views/Tools/CameraProfilePicker.swift */
 "OK" = "OK";
@@ -5316,6 +5496,9 @@
 
 /* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift */
 "Off: photos you rejected aren't handed to Amazon Photos" = "Off: photos you rejected aren't handed to Amazon Photos";
+
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"Off: where the photo was taken stays private. Your name, copyright, caption and keywords go in either way" = "Off: where the photo was taken stays private. Your name, copyright, caption and keywords go in either way";
 
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
 "Offline" = "Offline";
@@ -5343,6 +5526,9 @@
 
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Only %@-tagged photos" = "Only %@-tagged photos";
+
+/* LuxtableCore/ExternalImport/ExternalStager.swift */
+"Only %lld of %lld bytes arrived." = "Only %lld of %lld bytes arrived.";
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Only local removable volumes can be ejected." = "Only local removable volumes can be ejected.";
@@ -5458,7 +5644,7 @@
 /* LuxtableMac/Views/CommandBar/AISettingsView.swift */
 "Order" = "Order";
 
-/* LuxtableCore/Export/ExportRecipe.swift, LuxtableCore/Model/PhotoHistory.swift, LuxtableCore/Tools/PanelActions.swift, LuxtableCore/Viewer/CropTools.swift, LuxtableUI/Views/Presets/StylesPanel.swift */
+/* LuxtableCore/Export/ExportRecipe.swift, LuxtableCore/Model/PhotoHistory.swift, LuxtableCore/Tools/PanelActions.swift, LuxtableCore/Viewer/CropTools.swift, LuxtableUI/Views/Presets/StylesPanel.swift, LuxtableUI/Views/Tools/SimplePanel.swift */
 "Original" = "Original";
 
 /* LuxtableCore/Viewer/ViewerProblem.swift */
@@ -5467,11 +5653,17 @@
 /* LuxtableCore/Viewer/ViewerProblem.swift */
 "Original file missing (%@): edits are saved but can’t be previewed or exported." = "Original file missing (%@): edits are saved but can’t be previewed or exported.";
 
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Originals are copied; %@ is never changed." = "Originals are copied; %@ is never changed.";
+
 /* LuxtableCore/Tools/ArchiveSettingsModel.swift */
 "Originals are handed to Amazon Photos after each import." = "Originals are handed to Amazon Photos after each import.";
 
 /* LuxtableCore/Tools/ArchiveSettingsModel.swift */
 "Originals are handed to the folder the Amazon Photos app backs up." = "Originals are handed to the folder the Amazon Photos app backs up.";
+
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"Other Sources" = "Other Sources";
 
 /* LuxtableUI/Views/Tools/CameraProfilePicker.swift */
 "Other cameras" = "Other cameras";
@@ -5608,6 +5800,12 @@
 /* LuxtableCore/Browser/EmptyStates.swift */
 "Photos %@ appear here as soon as there are any." = "Photos %@ appear here as soon as there are any.";
 
+/* LuxtableCore/Platform/PhotoKitLibrary.swift */
+"Photos Library" = "Photos Library";
+
+/* LuxtableMac/Views/Import/ImportSheet.swift */
+"Photos Library…" = "Photos Library…";
+
 /* LuxtableUI/Views/Map/MapBrowser.swift */
 "Photos of this session, or of every session" = "Photos of this session, or of every session";
 
@@ -5724,6 +5922,12 @@
 
 /* LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift */
 "Preferences not carried over" = "Preferences not carried over";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"Preparing %lld of %lld photos to share…" = "Preparing %lld of %lld photos to share…";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"Preparing the photo to share…" = "Preparing the photo to share…";
 
 /* LuxtableCore/AI/Remove/RemovalModel.swift */
 "Preparing the removal model…" = "Preparing the removal model…";
@@ -5857,7 +6061,7 @@
 /* LuxtableUI/Views/Viewer/PickerLoupeView.swift */
 "R %lld" = "R %lld";
 
-/* LuxtableMac/Views/PreferencesView.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/PreferencesView.swift */
 "RAW" = "RAW";
 
 /* LuxtableMac/Views/RawSettingsView.swift */
@@ -5956,6 +6160,9 @@
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Re-read the card after copying" = "Re-read the card after copying";
 
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Reading %@…" = "Reading %@…";
+
 /* LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift */
 "Reading Capture One's settings (nothing is changed)…" = "Reading Capture One's settings (nothing is changed)…";
 
@@ -5970,6 +6177,9 @@
 
 /* LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift */
 "Reading the library… Its database is copied first (the library isn't touched)." = "Reading the library… Its database is copied first (the library isn't touched).";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"Reading your Photos library…" = "Reading your Photos library…";
 
 /* LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
 "Reading… A large catalog is copied first (the original isn't touched)." = "Reading… A large catalog is copied first (the original isn't touched).";
@@ -6361,6 +6571,9 @@
 /* LuxtableCore/Voice/VoiceCatalog.swift, LuxtableCore/Voice/VoiceCommandParser.swift */
 "Rotate left" = "Rotate left";
 
+/* LuxtableUI/Views/Tools/SimplePanel.swift */
+"Rotate left (⌘[)" = "Rotate left (⌘[)";
+
 /* LuxtableCore/Voice/VoiceCatalog.swift, LuxtableCore/Voice/VoiceCommandParser.swift */
 "Rotate right" = "Rotate right";
 
@@ -6490,7 +6703,7 @@
 /* LuxtableCore/Voice/VoiceCommandParser.swift */
 "Select" = "Select";
 
-/* LuxtableMac/Views/Import/ImportSheet.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift */
 "Select All" = "Select All";
 
 /* LuxtableMac/App/LuxtableApp.swift */
@@ -6519,6 +6732,12 @@
 
 /* LuxtableCore/Export/ExportModel.swift */
 "Select photos to export." = "Select photos to export.";
+
+/* LuxtableCore/App/AppModel+Share.swift */
+"Select photos to share" = "Select photos to share";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"Select photos to share." = "Select photos to share.";
 
 /* LuxtableCore/Voice/VoiceCatalog.swift */
 "Select several" = "Select several";
@@ -6555,6 +6774,9 @@
 
 /* LuxtableCore/Voice/VoiceCatalog.swift */
 "Selects exactly those photos (“the next 3” are three, not counting this one) and moves to the first; keys then act on them." = "Selects exactly those photos (“the next 3” are three, not counting this one) and moves to the first; keys then act on them.";
+
+/* LuxtableCore/Keyboard/CommandCatalog.swift */
+"Send JPEGs of the selection with Messages, Mail, AirDrop and more (⌥⌘E). Size and quality: Settings ▸ Sharing" = "Send JPEGs of the selection with Messages, Mail, AirDrop and more (⌥⌘E). Size and quality: Settings ▸ Sharing";
 
 /* LuxtableMac/Views/AmazonPhotos/AmazonPhotosSettingsView.swift */
 "Send rejected photos to Amazon Photos" = "Send rejected photos to Amazon Photos";
@@ -6640,7 +6862,7 @@
 /* LuxtableUI/Views/Controls/HistogramView.swift */
 "Shadow clipping: %@%% of pixels are pure black in a channel" = "Shadow clipping: %@%% of pixels are pure black in a channel";
 
-/* LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableUI/Views/Tools/ColorPanels.swift */
+/* LuxtableCore/Lightroom/LightroomImport.swift, LuxtableCore/Tools/SimpleMode.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableUI/Views/Tools/ColorPanels.swift */
 "Shadows" = "Shadows";
 
 /* LuxtableUI/Views/Tools/EffectsPanel.swift */
@@ -6648,6 +6870,21 @@
 
 /* LuxtableUI/Views/Tools/EffectsPanel.swift */
 "Shape of the out-of-focus highlights: round, six-bladed, or cat's eyes swirling toward the corners" = "Shape of the out-of-focus highlights: round, six-bladed, or cat's eyes swirling toward the corners";
+
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"Share" = "Share";
+
+/* LuxtableCore/Keyboard/CommandCatalog.swift */
+"Share %lld Photos…" = "Share %lld Photos…";
+
+/* LuxtableCore/Keyboard/CommandCatalog.swift */
+"Share…" = "Share…";
+
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"Share… (⌥⌘E) sends developed sRGB JPEGs of the selected photos: %@. For other formats and sizes, use File ▸ Export… (⌘E)." = "Share… (⌥⌘E) sends developed sRGB JPEGs of the selected photos: %@. For other formats and sizes, use File ▸ Export… (⌘E).";
+
+/* LuxtableMac/Views/PreferencesView.swift */
+"Sharing" = "Sharing";
 
 /* LuxtableCore/Tools/LayerToolSpecs.swift */
 "Sharpen" = "Sharpen";
@@ -6676,7 +6913,7 @@
 /* LuxtableCore/Presets/LookSuggester.swift */
 "Shot in low light (a slow shutter)" = "Shot in low light (a slow shutter)";
 
-/* LuxtableUI/Views/Map/MapBrowser.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableUI/Views/Map/MapBrowser.swift */
 "Show" = "Show";
 
 /* LuxtableUI/Views/SmartFolders/SmartFoldersPanel.swift, LuxtableUI/Views/Tools/LayersPanel.swift, LuxtableUI/Views/Tools/ToolCustomizeView.swift */
@@ -6871,8 +7108,23 @@
 /* LuxtableUI/Views/Search/SearchViews.swift */
 "Similar photos" = "Similar photos";
 
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Simple" = "Simple";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Simple Mode" = "Simple Mode";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Simple mode: a few easy controls (⌃⌘S for every tool)" = "Simple mode: a few easy controls (⌃⌘S for every tool)";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both." = "Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both.";
+
 /* LuxtableCore/Tools/LayerToolSpecs.swift, LuxtableCore/Tools/SliderSpec.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Immich/ImmichSettingsView.swift, LuxtableUI/Views/Tools/LibraryPanels.swift, LuxtableUI/Views/Tools/RemoveToolSection.swift */
 "Size" = "Size";
+
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"Size (long edge)" = "Size (long edge)";
 
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Size of the edges sharpened, in pixels." = "Size of the edges sharpened, in pixels.";
@@ -6997,8 +7249,14 @@
 /* LuxtableCore/Model/PhotoHistory.swift */
 "Start" = "Start";
 
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Start Over" = "Start Over";
+
 /* LuxtableMac/Views/OnboardingView.swift */
 "Start Using Luxtable" = "Start Using Luxtable";
+
+/* LuxtableMac/Views/FamiliarSettingsView.swift */
+"Start in Simple mode: an Auto button, looks and a few easy sliders. Every tool is one switch away (View ▸ Simple Mode)." = "Start in Simple mode: an Auto button, looks and a few easy sliders. Every tool is one switch away (View ▸ Simple Mode).";
 
 /* LuxtableCore/Voice/VoiceController.swift */
 "Starting voice commands…" = "Starting voice commands…";
@@ -7024,7 +7282,7 @@
 /* LuxtableCore/App/AppModel.swift */
 "Still opening “%@”: that change wasn’t applied." = "Still opening “%@”: that change wasn’t applied.";
 
-/* LuxtableMac/Views/Export/ExportSheet.swift */
+/* LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift */
 "Stop" = "Stop";
 
 /* LuxtableUI/Views/Tools/ColorPanels.swift */
@@ -7071,6 +7329,9 @@
 
 /* LuxtableUI/Views/Tools/EffectsPanel.swift */
 "Stop picking the focus" = "Stop picking the focus";
+
+/* LuxtableMac/Views/Export/ShareViews.swift */
+"Stop preparing; nothing is shared" = "Stop preparing; nothing is shared";
 
 /* LuxtableUI/Views/Tools/RemoveToolSection.swift */
 "Stop remove tool" = "Stop remove tool";
@@ -7134,6 +7395,9 @@
 
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Strength of the lens-profile distortion correction." = "Strength of the lens-profile distortion correction.";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Stronger or softer colors (Saturation). All the way left is black and white." = "Stronger or softer colors (Saturation). All the way left is black and white.";
 
 /* LuxtableCore/CaptureOne/CaptureOneImport.swift, LuxtableCore/Tools/SliderSpec.swift */
 "Structure" = "Structure";
@@ -7255,6 +7519,9 @@
 /* LuxtableCore/Live/C1SettingsReader.swift */
 "Tabs left out (no Luxtable tools in them): %@" = "Tabs left out (no Luxtable tools in them): %@";
 
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Take this photo back to how it was shot (⇧⌘R). ⌘Z brings your edit back." = "Take this photo back to how it was shot (⇧⌘R). ⌘Z brings your edit back.";
+
 /* LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift */
 "Takes back every Aperture and iPhoto import since the last revert. Changes you made in Luxtable afterwards are kept." = "Takes back every Aperture and iPhoto import since the last revert. Changes you made in Luxtable afterwards are kept.";
 
@@ -7296,6 +7563,9 @@
 
 /* LuxtableCore/Tools/LayerToolSpecs.swift */
 "Texture" = "Texture";
+
+/* LuxtableCore/Platform/PhotoKitLibrary.swift */
+"That album is no longer in your Photos library." = "That album is no longer in your Photos library.";
 
 /* LuxtableCore/App/SessionLifecycle.swift */
 "That folder is inside the session “%@”. Choose a folder outside any session." = "That folder is inside the session “%@”. Choose a folder outside any session.";
@@ -7365,6 +7635,15 @@
 
 /* LuxtableMac/Views/DevicesSettingsView.swift */
 "The code works once, for five minutes." = "The code works once, for five minutes.";
+
+/* LuxtableCore/ExternalImport/ExternalStager.swift */
+"The copy didn’t read back the same as the original." = "The copy didn’t read back the same as the original.";
+
+/* LuxtableCore/ExternalImport/ImageCaptureDevice.swift */
+"The device didn’t send %@." = "The device didn’t send %@.";
+
+/* LuxtableCore/ExternalImport/ExternalSource.swift */
+"The device stopped sending data after %lld of %lld bytes." = "The device stopped sending data after %lld of %lld bytes.";
 
 /* LuxtableMac/Updates/UpdateTools.swift */
 "The download couldn’t be unpacked: %@" = "The download couldn’t be unpacked: %@";
@@ -7462,8 +7741,14 @@
 /* LuxtableMac/Updates/Updater.swift */
 "The new version is shown in Finder: quit Luxtable and drag it to your Applications folder." = "The new version is shown in Finder: quit Luxtable and drag it to your Applications folder.";
 
+/* LuxtableCore/ExternalImport/ExternalStager.swift */
+"The original is empty." = "The original is empty.";
+
 /* LuxtableMac/Views/Library/LibraryBrowser.swift */
 "The original isn’t reachable (offline or moved)" = "The original isn’t reachable (offline or moved)";
+
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"The originals are still in Photos or on your device; nothing there was changed. Luxtable's temporary copies are removed when you close this sheet." = "The originals are still in Photos or on your device; nothing there was changed. Luxtable's temporary copies are removed when you close this sheet.";
 
 /* LuxtableCore/Viewer/ViewerProblem.swift */
 "The originals of “%@” aren’t there (a removed card, an unmounted drive or a deleted folder): edits are saved but can’t be previewed or exported." = "The originals of “%@” aren’t there (a removed card, an unmounted drive or a deleted folder): edits are saved but can’t be previewed or exported.";
@@ -7500,6 +7785,9 @@
 
 /* LuxtableMac/Views/Library/LibraryBrowser.swift */
 "The sessions you have opened (File ▸ Open Recent), as one" = "The sessions you have opened (File ▸ Open Recent), as one";
+
+/* LuxtableCore/Export/ShareModel.swift */
+"The share menu couldn't open. Show the Luxtable window and try again." = "The share menu couldn't open. Show the Luxtable window and try again.";
 
 /* LuxtableCore/GooglePhotos/GooglePhotosSettingsModel.swift */
 "The sign-in couldn't be removed from your Keychain." = "The sign-in couldn't be removed from your Keychain.";
@@ -7560,6 +7848,9 @@
 
 /* LuxtableCore/Import/ImportReport.swift */
 "These files stay only on the card. Copy them yourself if you need them before formatting it." = "These files stay only on the card. Copy them yourself if you need them before formatting it.";
+
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift */
+"They stay in %@. Continue to import the %lld that were copied." = "They stay in %@. Continue to import the %lld that were copied.";
 
 /* LuxtableUI/Views/People/PeopleViews.swift */
 "They're the same person" = "They're the same person";
@@ -7660,7 +7951,7 @@
 /* LuxtableCore/AppleLibrary/AppleLibraryImport.swift */
 "Title, caption and place" = "Title, caption and place";
 
-/* LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
 "To" = "To";
 
 /* LuxtableCore/Immich/ImmichModel.swift */
@@ -7747,8 +8038,11 @@
 /* LuxtableCore/Plugins/PluginStore.swift */
 "Trust Signer" = "Trust Signer";
 
-/* LuxtableCore/Keyboard/TerminationFlow.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableUI/Views/Tools/RemoveToolSection.swift */
+/* LuxtableCore/Keyboard/TerminationFlow.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableUI/Views/Tools/RemoveToolSection.swift */
 "Try Again" = "Try Again";
+
+/* LuxtableCore/Browser/EmptyStates.swift */
+"Try with Sample Photos" = "Try with Sample Photos";
 
 /* LuxtableCore/Tools/WhiteBalance.swift */
 "Tungsten" = "Tungsten";
@@ -7869,6 +8163,9 @@
 
 /* LuxtableMac/Views/Plugins/PluginsSettingsView.swift */
 "Unlink" = "Unlink";
+
+/* LuxtableCore/ExternalImport/ImageCaptureDevice.swift */
+"Unlock the device and tap Trust if it asks whether to trust this Mac, then try again." = "Unlock the device and tap Trust if it asks whether to trust this Mac, then try again.";
 
 /* LuxtableCore/AI/Find/FindModel.swift, LuxtableCore/Browser/OpenFailures.swift, LuxtableCore/Keyboard/AccessibilityCatalog.swift, LuxtableCore/SmartFolders/SmartFolder.swift, LuxtableUI/Views/Browser/FilterBar.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
 "Unrated" = "Unrated";
@@ -8005,6 +8302,9 @@
 /* LuxtableCore/Export/ExportModel.swift */
 "Videos aren't exported. Select photos to export." = "Videos aren't exported. Select photos to export.";
 
+/* LuxtableCore/App/AppModel+Share.swift */
+"Videos aren't shared. Select photos to share" = "Videos aren't shared. Select photos to share";
+
 /* LuxtableCore/Keyboard/KeyboardRouter.swift, LuxtableCore/Voice/VoiceCatalog.swift, LuxtableMac/App/LuxtableApp.swift, LuxtableMac/Views/UpdateViews.swift */
 "View" = "View";
 
@@ -8109,6 +8409,9 @@
 
 /* LuxtableCore/Tools/LayerToolSpecs.swift */
 "Warm (+) or cool (–) this layer, in Kelvin." = "Warm (+) or cool (–) this layer, in Kelvin.";
+
+/* LuxtableCore/Tools/SimpleMode.swift */
+"Warmth" = "Warmth";
 
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "Watermark" = "Watermark";
@@ -8851,6 +9154,9 @@
 /* LuxtableCore/Export/ExportWatermark.swift */
 "text watermark" = "text watermark";
 
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"the %@" = "the %@";
+
 /* LuxtableCore/Lightroom/LightroomImportModel.swift */
 "the Lightroom catalog or sidecar folder again. Edits are imported into the open session." = "the Lightroom catalog or sidecar folder again. Edits are imported into the open session.";
 
@@ -8923,7 +9229,7 @@
 /* LuxtableCore/AI/Find/FindModel.swift */
 "titled “%@”" = "titled “%@”";
 
-/* LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
+/* LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift */
 "to" = "to";
 
 /* LuxtableCore/AppleLibrary/AppleLibraryImport.swift */
@@ -8979,6 +9285,9 @@
 
 /* LuxtableCore/Browser/EmptyStates.swift */
 "with the keywords " = "with the keywords ";
+
+/* LuxtableCore/ExternalImport/ExternalImportModel.swift */
+"your Photos library" = "your Photos library";
 
 /* LuxtableUI/Views/Viewer/ViewerContainer.swift */
 "zoom %@" = "zoom %@";

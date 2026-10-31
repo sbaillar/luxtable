@@ -73,7 +73,7 @@ public final class ImageCaptureDevice: NSObject, ExternalPhotoSource, ICCameraDe
     public var name: String { camera.name ?? "iPhone" }
     public var isPhotosLibrary: Bool { false }
 
-    static let lockedMessage = "Unlock the device and tap Trust if it asks whether to trust this Mac, then try again."
+    static let lockedMessage = String(localized: "Unlock the device and tap Trust if it asks whether to trust this Mac, then try again.")
 
     public func prepare() async throws {
         if lock.withLock({ isReady }) { return }
@@ -135,7 +135,7 @@ public final class ImageCaptureDevice: NSObject, ExternalPhotoSource, ICCameraDe
 
     private func file(_ item: ExternalItem) throws -> ICCameraFile {
         guard let f = lock.withLock({ files[item.id] }) else {
-            throw ExternalSourceError.unavailable("\(item.filename) is no longer on the device.")
+            throw ExternalSourceError.unavailable(String(localized: "\(item.filename) is no longer on the device."))
         }
         return f
     }
@@ -161,7 +161,7 @@ public final class ImageCaptureDevice: NSObject, ExternalPhotoSource, ICCameraDe
             try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Data, Error>) in
                 box.value.requestReadData(atOffset: off_t(offset), length: off_t(length)) { data, error in
                     if let data { cont.resume(returning: data) } else {
-                        cont.resume(throwing: error ?? ExternalSourceError.readFailed("The device didn’t send \(item.filename)."))
+                        cont.resume(throwing: error ?? ExternalSourceError.readFailed(String(localized: "The device didn’t send \(item.filename).")))
                     }
                 }
             }
@@ -173,12 +173,12 @@ public final class ImageCaptureDevice: NSObject, ExternalPhotoSource, ICCameraDe
     public func deviceDidBecomeReady(withCompleteContentCatalog device: ICCameraDevice) { resumeReady(nil) }
 
     public func device(_ device: ICDevice, didOpenSessionWithError error: Error?) {
-        if let error { resumeReady(ExternalSourceError.unavailable("Couldn’t open \(name): \(error.localizedDescription)")) }
+        if let error { resumeReady(ExternalSourceError.unavailable(String(localized: "Couldn’t open \(name): \(error.localizedDescription)"))) }
     }
 
     public func didRemove(_ device: ICDevice) {
         lock.withLock { isReady = false }
-        resumeReady(ExternalSourceError.unavailable("\(name) was disconnected."))
+        resumeReady(ExternalSourceError.unavailable(String(localized: "\(name) was disconnected.")))
     }
 
     public func device(_ device: ICDevice, didCloseSessionWithError error: Error?) { lock.withLock { isReady = false } }

@@ -174,7 +174,9 @@ struct UpdateNotice: View {
     var body: some View {
         if let r = updater.notice {
             HStack(spacing: DS.Space.s) {
-                Label("Luxtable \(r.version.description)\(r.isPrerelease ? " beta" : "") is available", systemImage: "arrow.down.circle")
+                Label(r.isPrerelease ? String(localized: "Luxtable \(r.version.description) beta is available")
+                                      : String(localized: "Luxtable \(r.version.description) is available"),
+                      systemImage: "arrow.down.circle")
                 Button("View") { updater.showSheet() }.buttonStyle(.borderless).foregroundStyle(DS.accent)
                 Button { updater.later() } label: { Image(systemName: "xmark") }
                     .buttonStyle(.borderless)

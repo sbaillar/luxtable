@@ -84,8 +84,7 @@ struct ShareSettingsView: View {
                 Toggle("Include the location (GPS)", isOn: $value.includeLocation)
                     .help("Off: where the photo was taken stays private. Your name, copyright, caption and keywords go in either way")
             } footer: {
-                Text("Share… (⌥⌘E) sends developed sRGB JPEGs of the selected photos: \(value.summary). "
-                     + "For other formats and sizes, use File ▸ Export… (⌘E).")
+                Text("Share… (⌥⌘E) sends developed sRGB JPEGs of the selected photos: \(value.summary). For other formats and sizes, use File ▸ Export… (⌘E).")
                     .foregroundStyle(DS.textSecondary)
             }
         }

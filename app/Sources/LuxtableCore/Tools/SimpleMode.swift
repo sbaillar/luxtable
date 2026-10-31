@@ -16,12 +16,18 @@ public enum SimpleAdjustment: String, CaseIterable, Identifiable, Sendable {
 
     public var spec: SliderSpec {
         switch self {
-        case .light: SliderSpec("Light", -100...100, help: "Make the whole photo brighter or darker (Exposure).")
-        case .contrast: SliderSpec("Contrast", -100...100, help: "More or less difference between darks and lights.")
-        case .color: SliderSpec("Color", -100...100, help: "Stronger or softer colors (Saturation). All the way left is black and white.")
-        case .warmth: SliderSpec("Warmth", -100...100, help: "Cooler (bluer) or warmer (more golden) light (White Balance). 0 is as shot.")
-        case .highlights: SliderSpec("Highlights", -100...100, help: "Bring back detail in bright areas such as sky (–), or brighten them (+).")
-        case .shadows: SliderSpec("Shadows", -100...100, help: "Lift dark areas to show detail (+), or deepen them (–).")
+        case .light: SliderSpec(String(localized: "Brightness"), -100...100,
+                help: String(localized: "Make the whole photo brighter or darker (Exposure)."))
+        case .contrast: SliderSpec(String(localized: "Contrast"), -100...100,
+                help: String(localized: "More or less difference between darks and lights."))
+        case .color: SliderSpec(String(localized: "Color"), -100...100,
+                help: String(localized: "Stronger or softer colors (Saturation). All the way left is black and white."))
+        case .warmth: SliderSpec(String(localized: "Warmth"), -100...100,
+                help: String(localized: "Cooler (bluer) or warmer (more golden) light (White Balance). 0 is as shot."))
+        case .highlights: SliderSpec(String(localized: "Highlights"), -100...100,
+                help: String(localized: "Bring back detail in bright areas such as sky (–), or brighten them (+)."))
+        case .shadows: SliderSpec(String(localized: "Shadows"), -100...100,
+                help: String(localized: "Lift dark areas to show detail (+), or deepen them (–)."))
         }
     }
 
@@ -80,24 +86,24 @@ public enum SimpleAdjustment: String, CaseIterable, Identifiable, Sendable {
 
 /// Simple mode's wording (kept out of the view, unit-tested).
 public enum SimpleModeText {
-    public static let menuTitle = "Simple Mode"
-    public static let simple = "Simple"
-    public static let full = "Full"
-    public static let switchHelp = "Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both."
-    public static let autoTitle = "Auto"
-    public static let autoHelp = "Let Luxtable fix brightness, contrast and color in one click (⇧A). ⌘Z undoes it."
-    public static let looks = "Looks"
-    public static let adjust = "Adjust"
-    public static let cropTitle = "Crop & Straighten"
-    public static let beforeAfter = "Before / After"
-    public static let resetTitle = "Start Over"
-    public static let resetHelp = "Take this photo back to how it was shot (⇧⌘R). ⌘Z brings your edit back."
-    public static let noPhoto = "Choose a photo to edit it."
-    public static let moreTools = "Need more? Switch to Full for every tool. Edits made here show there too."
+    public static let menuTitle = String(localized: "Simple Mode")
+    public static let simple = String(localized: "Simple")
+    public static let full = String(localized: "Full")
+    public static let switchHelp = String(localized: "Simple shows a few easy controls; Full shows every tool (⌃⌘S). Your edits are the same in both.")
+    public static let autoTitle = String(localized: "Auto")
+    public static let autoHelp = String(localized: "Let Luxtable fix brightness, contrast and color in one click (⇧A). ⌘Z undoes it.")
+    public static let looks = String(localized: "Looks")
+    public static let adjust = String(localized: "Adjust")
+    public static let cropTitle = String(localized: "Crop & Straighten")
+    public static let beforeAfter = String(localized: "Before / After")
+    public static let resetTitle = String(localized: "Start Over")
+    public static let resetHelp = String(localized: "Take this photo back to how it was shot (⇧⌘R). ⌘Z brings your edit back.")
+    public static let noPhoto = String(localized: "Choose a photo to edit it.")
+    public static let moreTools = String(localized: "Need more? Switch to Full for every tool. Edits made here show there too.")
 
     /// The toast after switching.
     public static func switched(toSimple: Bool) -> String {
-        toSimple ? "Simple mode: a few easy controls (⌃⌘S for every tool)" : "Full mode: every tool (⌃⌘S for Simple)"
+        toSimple ? String(localized: "Simple mode: a few easy controls (⌃⌘S for every tool)") : String(localized: "Full mode: every tool (⌃⌘S for Simple)")
     }
 }
 

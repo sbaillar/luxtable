@@ -85,7 +85,7 @@ struct SimplePanel: View {
             ScrollView(.horizontal) {
                 HStack(spacing: DS.Space.s) {
                     let original = StyleThumbnails.originalID
-                    tile(id: original, title: "Original", applied: model.focusedEdit == EditState(),
+                    tile(id: original, title: String(localized: "Original"), applied: model.focusedEdit == EditState(),
                          preview: EditState()) { model.resetToOriginal() }
                         .accessibilityLabel("Back to the original")
                     ForEach(LookPack.all, id: \.id) { look in

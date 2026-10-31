@@ -48,10 +48,10 @@ public final class ExternalImportModel: Identifiable {
         thumbs.totalCostLimit = 64 << 20
     }
 
-    public var title: String { source.isPhotosLibrary ? "Import from Photos Library" : "Import from \(source.name)" }
+    public var title: String { source.isPhotosLibrary ? String(localized: "Import from Photos Library") : String(localized: "Import from \(source.name)") }
 
     /// Where the originals stay, for "they stay in …".
-    public var origin: String { source.isPhotosLibrary ? "your Photos library" : "the \(source.name)" }
+    public var origin: String { source.isPhotosLibrary ? String(localized: "your Photos library") : String(localized: "the \(source.name)") }
 
     public var items: [ExternalItem] { listing.items }
 
@@ -111,10 +111,14 @@ public final class ExternalImportModel: Identifiable {
     /// "212 photos · 3 videos not imported · 2 PNG files not imported".
     public var summaryLine: String {
         var parts = [ImportWording.items(photos: items.count, videos: 0)]
-        if listing.videos > 0 { parts.append("\(listing.videos) video\(listing.videos == 1 ? "" : "s") not imported") }
+        if listing.videos > 0 {
+            parts.append(listing.videos == 1 ? String(localized: "1 video not imported")
+                         : String(localized: "\(listing.videos) videos not imported"))
+        }
         if !listing.unsupported.isEmpty {
             let n = listing.unsupported.count
-            parts.append("\(n) file\(n == 1 ? "" : "s") in other formats not imported")
+            parts.append(n == 1 ? String(localized: "1 file in other formats not imported")
+                         : String(localized: "\(n) files in other formats not imported"))
         }
         return parts.joined(separator: " · ")
     }
@@ -154,8 +158,8 @@ public final class ExternalImportModel: Identifiable {
     private func finish(_ r: StageResult) {
         if r.staged.isEmpty {
             try? FileManager.default.removeItem(at: r.folder.deletingLastPathComponent())
-            let why = r.failed.first?.reason ?? "Nothing was copied."
-            phase = .failed("None of the photos could be copied from \(origin). \(why)")
+            let why = r.failed.first?.reason ?? String(localized: "Nothing was copied.")
+            phase = .failed(String(localized: "None of the photos could be copied from \(origin). \(why)"))
         } else if r.failed.isEmpty {
             phase = .ready
             onStaged(r.folder)
@@ -191,8 +195,10 @@ public final class ExternalImportModel: Identifiable {
 
 extension ImportWording {
     /// The import's last line when it came from Photos or a device (instead of the card's).
-    public static let stagedLine = "The originals are still in Photos or on your device; nothing there was changed. "
-        + "Luxtable's temporary copies are removed when you close this sheet."
+    public static let stagedLine = String(localized: """
+        The originals are still in Photos or on your device; nothing there was changed. \
+        Luxtable's temporary copies are removed when you close this sheet.
+        """)
 }
 
 final class CGImageBox {

@@ -489,7 +489,8 @@ private struct ImportDoneView: View {
         let failed = summary.failed + summary.registerErrors
         if !failed.isEmpty {
             VStack(alignment: .leading, spacing: DS.Space.xs) {
-                Label("\(failed.count) file\(failed.count == 1 ? "" : "s") need attention", systemImage: "xmark.octagon")
+                Label(failed.count == 1 ? String(localized: "1 file needs attention")
+                                         : String(localized: "\(failed.count) files need attention"), systemImage: "xmark.octagon")
                     .font(.system(size: 12, weight: .semibold)).foregroundStyle(DS.reject)
                 ForEach(failed.prefix(6), id: \.self) { i in
                     Text("\(i.url.lastPathComponent): \(i.reason)").font(DS.Font.caption).foregroundStyle(DS.textSecondary)

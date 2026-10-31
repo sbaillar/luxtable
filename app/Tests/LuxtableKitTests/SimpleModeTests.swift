@@ -15,7 +15,7 @@ import Testing
             #expect(!a.isAdjusted(EditState(), asShot: camera))
             #expect(a.id == a.rawValue)
         }
-        #expect(SimpleAdjustment.allCases.map(\.spec.label) == ["Light", "Contrast", "Color", "Warmth", "Highlights", "Shadows"])
+        #expect(SimpleAdjustment.allCases.map(\.spec.label) == ["Brightness", "Contrast", "Color", "Warmth", "Highlights", "Shadows"])
     }
 
     @Test func slidersAreTheOrdinaryAdjustments() {
@@ -91,7 +91,7 @@ import Testing
         m.endEditGesture()
         #expect(m.edit(for: f).exposure.ev == 1)
         #expect(m.simpleValue(.light) == 50)
-        #expect(m.history.undoLabel == "Light")
+        #expect(m.history.undoLabel == "Brightness")
         m.setSimple(.warmth, 30)
         #expect(!m.edit(for: f).whiteBalance.asShot)
         m.undo()

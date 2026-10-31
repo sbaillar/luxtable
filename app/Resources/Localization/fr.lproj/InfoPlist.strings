@@ -6,3 +6,4 @@
 "NSLocalNetworkUsageDescription" = "Luxtable archive les sessions sur un NAS de votre réseau local et tient à jour les albums de votre serveur Immich.";
 "NSMicrophoneUsageDescription" = "Les commandes vocales écoutent les commandes de tri comme « suivante » et « cinq ». L’audio reste sur ce Mac.";
 "NSSpeechRecognitionUsageDescription" = "Les commandes vocales sont reconnues sur ce Mac par le modèle vocal intégré d’Apple. Rien n’est envoyé à un serveur.";
+"NSPhotoLibraryUsageDescription" = "Luxtable copie dans une session les originaux des photos que vous choisissez dans votre photothèque Photos. Rien n’est jamais modifié ni supprimé dans Photos.";

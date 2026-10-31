@@ -35,7 +35,8 @@ struct ExternalImportSheet: View {
                 .background(DS.accent.opacity(0.14), in: .rect(cornerRadius: DS.Radius.l))
             VStack(alignment: .leading, spacing: DS.Space.xxs) {
                 Text(model.title).font(.system(size: 15, weight: .semibold))
-                Text(model.phase == .ready ? model.summaryLine : "Originals are copied; \(model.origin) is never changed.")
+                Text(model.phase == .ready ? model.summaryLine
+                     : String(localized: "Originals are copied; \(model.origin) is never changed."))
                     .font(DS.Font.label).foregroundStyle(DS.textSecondary)
             }
             Spacer()
@@ -88,8 +89,9 @@ struct ExternalImportSheet: View {
             ProgressView(model.source.isPhotosLibrary ? "Reading your Photos library…" : "Reading \(model.source.name)…")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .unavailable(let why), .failed(let why):
-            message(title: "Can’t read \(model.source.isPhotosLibrary ? "Photos" : model.source.name)", text: why,
-                    symbol: "exclamationmark.triangle", action: ("Try Again", { Task { await model.load() } }))
+            message(title: model.source.isPhotosLibrary ? String(localized: "Can’t read Photos")
+                        : String(localized: "Can’t read \(model.source.name)"), text: why,
+                    symbol: "exclamationmark.triangle", action: (String(localized: "Try Again"), { Task { await model.load() } }))
         case .staging:
             VStack(spacing: DS.Space.m) {
                 ProgressView(value: Double(model.done), total: Double(max(model.total, 1))).frame(width: 360)
@@ -111,7 +113,8 @@ struct ExternalImportSheet: View {
             }
             .frame(maxWidth: 560).frame(maxWidth: .infinity, maxHeight: .infinity)
         case .ready where model.items.isEmpty:
-            message(title: "No photos here", text: "Nothing to import in this selection. " + model.summaryLine,
+            message(title: String(localized: "No photos here"),
+                    text: String(localized: "Nothing to import in this selection. \(model.summaryLine)"),
                     symbol: "photo.on.rectangle.angled", action: nil)
         case .ready:
             grid
@@ -136,7 +139,8 @@ struct ExternalImportSheet: View {
                             ExternalTile(model: model, item: item, selected: model.isSelected(item))
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("\(item.filename), \(model.isSelected(item) ? "selected" : "not selected")")
+                        .accessibilityLabel(model.isSelected(item) ? String(localized: "\(item.filename), selected")
+                                            : String(localized: "\(item.filename), not selected"))
                         .accessibilityAddTraits(model.isSelected(item) ? .isSelected : [])
                     }
                 }

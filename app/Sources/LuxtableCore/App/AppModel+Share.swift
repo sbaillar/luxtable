@@ -9,7 +9,8 @@ extension AppModel {
         if share?.isBusy == true { return }
         let items = exportItems
         guard !items.isEmpty else {
-            show(Toast(exportSkippedVideos > 0 ? "Videos aren't shared. Select photos to share" : "Select photos to share",
+            show(Toast(exportSkippedVideos > 0 ? String(localized: "Videos aren't shared. Select photos to share")
+                                               : String(localized: "Select photos to share"),
                        symbol: "square.and.arrow.up", isError: true))
             return
         }

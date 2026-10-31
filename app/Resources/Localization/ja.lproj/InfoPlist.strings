@@ -6,3 +6,4 @@
 "NSLocalNetworkUsageDescription" = "Luxtable は、ローカルネットワーク上の NAS にセッションをアーカイブし、Immich サーバのアルバムを最新の状態に保ちます。";
 "NSMicrophoneUsageDescription" = "音声コマンドは「次」や「5」などの選別用コマンドを聞き取ります。音声はこの Mac から外に出ません。";
 "NSSpeechRecognitionUsageDescription" = "音声コマンドは、Apple のオンデバイス音声モデルによってこの Mac 上で認識されます。サーバには何も送信されません。";
+"NSPhotoLibraryUsageDescription" = "Luxtable は、写真ライブラリから選択した写真のオリジナルをセッションにコピーします。写真アプリ内のものを変更したり削除したりすることはありません。";

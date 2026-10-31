@@ -6,3 +6,4 @@
 "NSLocalNetworkUsageDescription" = "Luxtable archiviert Sessions auf einem NAS in deinem lokalen Netzwerk und hält Alben auf deinem Immich-Server aktuell.";
 "NSMicrophoneUsageDescription" = "Sprachbefehle hören auf Befehle zum Aussortieren wie „weiter“ und „fünf“. Die Audiodaten bleiben auf diesem Mac.";
 "NSSpeechRecognitionUsageDescription" = "Sprachbefehle werden auf diesem Mac von Apples Spracherkennung auf dem Gerät erkannt. Nichts wird an einen Server gesendet.";
+"NSPhotoLibraryUsageDescription" = "Luxtable kopiert die Originale der Fotos, die du aus deiner Fotos-Mediathek auswählst, in eine Session. In Fotos wird nie etwas verändert oder gelöscht.";

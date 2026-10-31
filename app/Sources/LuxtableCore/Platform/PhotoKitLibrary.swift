@@ -15,11 +15,13 @@ import UIKit
 public final class PhotoKitLibrary: ExternalPhotoSource {
     public init() {}
 
-    public var name: String { "Photos Library" }
+    public var name: String { String(localized: "Photos Library") }
     public var isPhotosLibrary: Bool { true }
 
-    public static let deniedMessage = "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings "
-        + "\u{25B8} Privacy & Security \u{25B8} Photos, then try again."
+    public static let deniedMessage = String(localized: """
+        Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings \
+        \u{25B8} Privacy & Security \u{25B8} Photos, then try again.
+        """)
 
     public func prepare() async throws {
         var status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -36,7 +38,7 @@ public final class PhotoKitLibrary: ExternalPhotoSource {
                 var out: [ExternalAlbum] = []
                 result.enumerateObjects { c, _, _ in
                     let n = PHAsset.fetchAssets(in: c, options: nil).count
-                    if n > 0 { out.append(ExternalAlbum(id: c.localIdentifier, title: c.localizedTitle ?? "Album", count: n)) }
+                    if n > 0 { out.append(ExternalAlbum(id: c.localIdentifier, title: c.localizedTitle ?? String(localized: "Album"), count: n)) }
                 }
                 return out
             }
@@ -58,7 +60,7 @@ public final class PhotoKitLibrary: ExternalPhotoSource {
                 assets = PHAsset.fetchAssets(with: opts)
             case .album(let id):
                 guard let c = PHAssetCollection.fetchAssetCollections(withLocalIdentifiers: [id], options: nil).firstObject
-                else { throw ExternalSourceError.unavailable("That album is no longer in your Photos library.") }
+                else { throw ExternalSourceError.unavailable(String(localized: "That album is no longer in your Photos library.")) }
                 assets = PHAsset.fetchAssets(in: c, options: opts)
             case .dates:
                 let i = scope.interval()!
@@ -124,11 +126,11 @@ public final class PhotoKitLibrary: ExternalPhotoSource {
 
     public func read(_ item: ExternalItem, into sink: @escaping @Sendable (Data) throws -> Void) async throws {
         guard let asset = Self.asset(item.id) else {
-            throw ExternalSourceError.unavailable("\(item.filename) is no longer in your Photos library.")
+            throw ExternalSourceError.unavailable(String(localized: "\(item.filename) is no longer in your Photos library."))
         }
         let all = Self.resources(asset)
         guard let chosen = PhotoResourceChoice.pick(all.map(\.1)), let resource = all.first(where: { $0.1 == chosen })?.0
-        else { throw ExternalSourceError.unavailable("\(item.filename) has no original in your Photos library.") }
+        else { throw ExternalSourceError.unavailable(String(localized: "\(item.filename) has no original in your Photos library.")) }
         let opts = PHAssetResourceRequestOptions()
         opts.isNetworkAccessAllowed = true // an optimized library keeps the original in iCloud
         let manager = PHAssetResourceManager.default()

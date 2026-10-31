@@ -50,7 +50,8 @@ public struct ShareSettings: Equatable, Sendable {
 
     /// "JPEG 85 · 2048 px · no location", for Settings.
     public var summary: String {
-        "JPEG \(quality) · \(longEdge) px · " + (includeLocation ? "with location" : "no location")
+        includeLocation ? String(localized: "JPEG \(quality) · \(String(longEdge)) px · with location")
+            : String(localized: "JPEG \(quality) · \(String(longEdge)) px · no location")
     }
 }
 
@@ -170,7 +171,8 @@ public final class ShareModel {
     /// "Preparing 2 of 5 photos to share…" while rendering.
     public var progressText: String? {
         guard case .rendering(let done, let total) = phase else { return nil }
-        return total == 1 ? "Preparing the photo to share…" : "Preparing \(min(done + 1, total)) of \(total) photos to share…"
+        return total == 1 ? String(localized: "Preparing the photo to share…")
+            : String(localized: "Preparing \(min(done + 1, total)) of \(total) photos to share…")
     }
 
     /// 0...1 while rendering.
@@ -181,14 +183,14 @@ public final class ShareModel {
 
     public func start() {
         guard phase == .idle else { return }
-        guard !items.isEmpty else { return fail("Select photos to share.") }
+        guard !items.isEmpty else { return fail(String(localized: "Select photos to share.")) }
         let recipe = settings.recipe
         if let problem = service.validate([recipe], defaultFolder: folders.root) { return fail(problem) }
         let folder: URL
         do {
             folder = try folders.make()
         } catch {
-            return fail("Couldn't make a temporary folder to share from: \(error.localizedDescription)")
+            return fail(String(localized: "Couldn't make a temporary folder to share from: \(error.localizedDescription)"))
         }
         self.folder = folder
         phase = .rendering(done: 0, total: items.count)
@@ -243,12 +245,13 @@ public final class ShareModel {
         files = outcome.written.sorted { (order[$0.photoID] ?? 0) < (order[$1.photoID] ?? 0) }.map(\.url)
         guard !files.isEmpty else {
             removeFolder()
-            return fail(failures.first.map { "Couldn't prepare the photos to share. \($0)" }
-                        ?? "Couldn't prepare the photos to share.")
+            return fail(failures.first.map { String(localized: "Couldn't prepare the photos to share. \($0)") }
+                        ?? String(localized: "Couldn't prepare the photos to share."))
         }
         if !failures.isEmpty {
             let n = failures.count
-            report("\(n) photo\(n == 1 ? "" : "s") couldn't be prepared and \(n == 1 ? "isn't" : "aren't") shared.", true)
+            report(n == 1 ? String(localized: "1 photo couldn't be prepared and isn't shared.")
+                   : String(localized: "\(n) photos couldn't be prepared and aren't shared."), true)
         }
         phase = .picking
         presenter.present(files) { [weak self] choice in self?.picked(choice) }
@@ -271,7 +274,7 @@ public final class ShareModel {
             phase = .dismissed
         case .unavailable:
             removeFolder()
-            fail("The share menu couldn't open. Show the Luxtable window and try again.")
+            fail(String(localized: "The share menu couldn't open. Show the Luxtable window and try again."))
         }
     }
 

@@ -163,7 +163,7 @@ public enum ChunkedRead {
             let want = min(chunk, size - offset)
             let data = try await fetch(offset, want)
             guard !data.isEmpty else {
-                throw ExternalSourceError.readFailed("The device stopped sending data after \(offset) of \(size) bytes.")
+                throw ExternalSourceError.readFailed(String(localized: "The device stopped sending data after \(offset) of \(size) bytes."))
             }
             try sink(data)
             offset += Int64(data.count)

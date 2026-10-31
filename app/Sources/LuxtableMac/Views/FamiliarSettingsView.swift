@@ -70,7 +70,7 @@ struct FamiliarChoiceList: View {
             }
             ForEach(LayoutPreset.allCases) { l in
                 row(title: FamiliarText.choiceTitle(l, offersNewcomer: newToEditing != nil),
-                    detail: "\(l.summary). Keys: \(KeyPreset(layout: l).summary).",
+                    detail: String(localized: "\(l.summary). Keys: \(KeyPreset(layout: l).summary)."),
                     selected: selection == l && !newcomer) { selection = l }
             }
         }

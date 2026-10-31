@@ -304,7 +304,8 @@ struct SaveStatusView: View {
             }
         case .failed(let message, let pending):
             HStack(spacing: DS.Space.xs) {
-                Label("\(pending) unsaved change\(pending == 1 ? "" : "s")", systemImage: "exclamationmark.triangle.fill")
+                Label(pending == 1 ? String(localized: "1 unsaved change") : String(localized: "\(pending) unsaved changes"),
+                      systemImage: "exclamationmark.triangle.fill")
                     .foregroundStyle(DS.reject)
                     .help(message)
                 Button("Retry") { Task { await model.saver.retry() } }
@@ -312,7 +313,8 @@ struct SaveStatusView: View {
             }
         case .dropped(let message, let count):
             HStack(spacing: DS.Space.xs) {
-                Label("\(count) change\(count == 1 ? "" : "s") not saved", systemImage: "exclamationmark.triangle.fill")
+                Label(count == 1 ? String(localized: "1 change not saved") : String(localized: "\(count) changes not saved"),
+                      systemImage: "exclamationmark.triangle.fill")
                     .foregroundStyle(DS.reject)
                     .help(message)
                 Button("Dismiss") { model.saver.dismissDropped() }

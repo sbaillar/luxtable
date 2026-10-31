@@ -164,7 +164,7 @@ struct LightroomImportSheet: View {
             case .presets:
                 let n = model.importablePresets.count
                 Button("Cancel", role: .cancel) { close() }.keyboardShortcut(.cancelAction)
-                Button("Import \(n) Preset\(n == 1 ? "" : "s")") { model.importPresets() }
+                Button(n == 1 ? String(localized: "Import 1 Preset") : String(localized: "Import \(n) Presets")) { model.importPresets() }
                     .keyboardShortcut(.defaultAction)
                     .disabled(n == 0)
             case .loading, .previewing, .importing, .reverting:
