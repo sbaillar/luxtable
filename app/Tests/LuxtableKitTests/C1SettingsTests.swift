@@ -400,6 +400,7 @@ struct C1SettingsTargetTests {
         let box = m.viewer.cropBox(for: m.edit(for: id))
         #expect(abs((box.rect.width * size.width) / (box.rect.height * size.height) - 3) < 1e-3, "\(box.rect)")
         #expect(m.edit(for: id).crop.aspect == .free && m.history.undoStack.count == steps + 1)
+        #expect(m.viewer.canvasTool == .crop, "in the crop tool, the box to move")
         m.applyCropRatio(CustomCropRatio(name: "Bad", width: 0, height: 0))
         #expect(m.history.undoStack.count == steps + 1)
     }

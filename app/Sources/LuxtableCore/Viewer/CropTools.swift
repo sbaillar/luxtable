@@ -309,6 +309,7 @@ extension AppModel {
     public func chooseCropRatio(_ r: CropRatio) {
         settings.cropRatio = r
         guard let id = focusedID, photo(id)?.isVideo != true else { return }
+        showCropBox()
         let box = viewer.cropBox(for: edit(for: id))
         let preset = r.preset(portrait: CropGeometry.isPortrait(box.rect, size: box.size))
         let v = viewer
@@ -321,6 +322,13 @@ extension AppModel {
             v.setCropBox(CropGeometry.fit(b.rect, ratio: ratio, size: b.size), in: &e, photo: id)
         }
         endEditGesture()
+    }
+
+    /// Enter the crop tool if not in it: a ratio picked from the panel then shows the whole
+    /// photo with the box to move, not the cropped result (Esc still puts the crop back).
+    func showCropBox() {
+        if browserMode != .filmstrip { browserMode = .filmstrip }
+        if viewer.canvasTool != .crop { viewer.canvasTool = .crop }
     }
 
     /// `setCropAspect`'s change to one edit (⌘K folds it into its own undo step, N7).

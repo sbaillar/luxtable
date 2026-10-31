@@ -60,9 +60,11 @@ public final class CropRatioStore {
 
 extension AppModel {
     /// Crop the focused photo to a custom ratio: the largest centred box of that ratio
-    /// inside the current crop, in one undo step. The aspect stays free.
+    /// inside the current crop, in one undo step, in the crop tool to move it. The aspect
+    /// stays free.
     public func applyCropRatio(_ r: CustomCropRatio) {
         guard let id = focusedID, photo(id)?.isVideo != true, let ratio = r.ratio else { return }
+        showCropBox()
         let v = viewer
         updateEdits([id], label: String(localized: "Crop \(r.name)")) { id, e in
             e.crop.aspect = .free

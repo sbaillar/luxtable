@@ -350,13 +350,15 @@ extension CanvasDrag {
         let fourThree: CGFloat = size.height > size.width ? 3.0 / 4 : 4.0 / 3
         #expect(abs(pixelRatio(m.viewer.cropBox(for: m.edit(for: first)).rect, size) - fourThree) < 1e-3)
         #expect(m.edit(for: first).crop.aspect == .r4x3)
+        // The whole photo with the box to move, not the cropped result.
+        #expect(m.viewer.canvasTool == .crop && !m.viewer.developedGeometry)
         // Remembered across launches.
         #expect(AppSettings(defaults: m.settings.userDefaults).cropRatio == .r4x3)
         // On the next photo, a crop drawn by dragging holds 4:3 too, in the drag's orientation.
         let second = try #require(m.photos.first { $0.id != first }?.id)
         m.focus(second, extend: false)
         _ = await waitUntil { m.viewer.frame != nil && m.focusedID == second }
-        m.viewer.toggleTool(.crop)
+        #expect(m.viewer.canvasTool == .crop, "still cropping")
         let img = try #require(m.viewer.layout.main?.image)
         m.viewer.beginCanvasDrag(at: CGPoint(x: img.minX + img.width * 0.1, y: img.minY + img.height * 0.1))
         m.viewer.updateCanvasDrag(to: CGPoint(x: img.minX + img.width * 0.4, y: img.minY + img.height * 0.9))
