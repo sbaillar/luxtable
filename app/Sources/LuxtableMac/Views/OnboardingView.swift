@@ -51,7 +51,7 @@ struct OnboardingView: View {
             }
             .padding(DS.Space.m)
         }
-        .frame(width: 600, height: 460)
+        .frame(width: 600, height: 500)
         .task { await onboarding.suggestArchiveTarget() }
         .background(DS.panelBackground)
     }
@@ -76,7 +76,9 @@ struct OnboardingView: View {
                 Text("Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar.")
                     .foregroundStyle(DS.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
-                FamiliarChoiceList(selection: $onboarding.familiar)
+                FamiliarChoiceList(selection: Binding(get: { onboarding.familiar }, set: { onboarding.choose($0) }),
+                                   newToEditing: Binding(get: { onboarding.newToEditing },
+                                                         set: { if $0 { onboarding.chooseNewToEditing() } }))
             }
         case .sessions:
             VStack(alignment: .leading, spacing: DS.Space.m) {
