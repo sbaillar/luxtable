@@ -62,8 +62,9 @@ Open **Settings ▸ RAW ▸ Download RAW Helper**, or click **Get RAW Helper** o
 
 Luxtable looks for a new version shortly after it starts and then about once a day. When there is one, a small notice says so; it never interrupts you with a dialog in the middle of culling. **Luxtable ▸ Check for Updates…** checks straight away.
 
-- The update sheet shows what's new. **Download & Restart** downloads the update, checks it, quits the normal way (pending changes are saved first) and reopens on the session and photo you were on, with the same selection, view and tool tab.
+- The update sheet shows what's new, version by version when you skipped some. **Download & Restart** downloads the update, checks it, quits the normal way (pending changes are saved first) and reopens on the session and photo you were on, with the same selection, view and tool tab.
 - **Download** installs it the next time you quit, **Later** reminds you another time, and **Skip This Version** stops the reminders for that version.
 - The version it replaces is kept in Luxtable's Application Support folder, in **Previous Version** (only the last one), so you can go back by dragging it to Applications.
+- The first time a new version opens, it says what changed since the version you last ran, whether you updated in Luxtable or installed the new version yourself. **Help ▸ What's New…** shows the notes of your version and the few before it at any time.
 
-**Settings ▸ Updates** turns **Check for updates automatically** off, and has **Include beta versions**: betas are early builds of the next version, for trying new features before they're released, and may have bugs. Once that version is released, you are offered the release. The check sends only the app's version to GitHub.
+**Settings ▸ Updates** turns **Check for updates automatically** off, and has **Include beta versions**: betas are early builds of the next version, for trying new features before they're released, and may have bugs. Once that version is released, you are offered the release. The check sends only the app's version to GitHub. With automatic checks off, Luxtable doesn't ask GitHub when it opens either, so after a version you installed yourself it doesn't say what changed: use **Help ▸ What's New…**.

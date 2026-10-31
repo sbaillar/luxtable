@@ -66,8 +66,8 @@ struct UpdateSheet: View {
             default:
                 EmptyView()
             }
-            if let r = release, case .available = updater.state, !r.notes.isEmpty {
-                ReleaseNotesList(title: "What’s new", notes: r.notes)
+            if let r = release, case .available = updater.state, !updater.changes.isEmpty {
+                ReleaseNotesList(title: "What’s new", releases: updater.changes)
                 if r.version.description == updater.skipped {
                     Text("You skipped this version.").font(DS.Font.label).foregroundStyle(DS.textSecondary)
                 }
@@ -120,18 +120,30 @@ struct UpdateSheet: View {
     }
 }
 
-/// "Updated to X": shown once after an update.
+/// "Updated to X", once after an update, or Help ▸ What's New….
 struct WhatsNewSheet: View {
     let whatsNew: Updater.WhatsNew
     let done: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.m) {
-            Text("Updated to Luxtable \(whatsNew.version)").font(.headline)
-            if whatsNew.notes.isEmpty {
-                Text("You’re back where you left off.").foregroundStyle(DS.textSecondary)
-            } else {
-                ReleaseNotesList(title: "What’s new", notes: whatsNew.notes)
+            switch whatsNew.reason {
+            case .updated: Text("Updated to Luxtable \(whatsNew.version)").font(.headline)
+            case .help: Text("What’s New in Luxtable").font(.headline)
+            }
+            switch whatsNew.notes {
+            case .loading:
+                ProgressView().progressViewStyle(.linear)
+            case .loaded(let releases) where releases.isEmpty:
+                switch whatsNew.reason {
+                case .updated: Text("You’re back where you left off.").foregroundStyle(DS.textSecondary)
+                case .help: Text("No release notes for this version.").foregroundStyle(DS.textSecondary)
+                }
+            case .loaded(let releases):
+                ReleaseNotesList(title: "What’s new", releases: releases)
+            case .failed(let message):
+                Text(message).foregroundStyle(DS.textSecondary).fixedSize(horizontal: false, vertical: true)
+                Link("View on GitHub", destination: ReleaseFeed.page)
             }
             HStack {
                 Spacer()
@@ -143,20 +155,26 @@ struct WhatsNewSheet: View {
     }
 }
 
-/// The short release notes as bullets, scrolling when long.
+/// The short release notes as bullets under each version, newest first, scrolling when long.
 struct ReleaseNotesList: View {
     let title: LocalizedStringKey
-    let notes: [String]
+    let releases: [VersionNotes]
 
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.s) {
             Text(title).font(.subheadline.weight(.semibold))
             ScrollView {
-                VStack(alignment: .leading, spacing: DS.Space.s) {
-                    ForEach(Array(notes.enumerated()), id: \.offset) { _, note in
-                        HStack(alignment: .firstTextBaseline, spacing: DS.Space.s) {
-                            Text("•")
-                            Text(note).fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .leading, spacing: DS.Space.m) {
+                    ForEach(releases) { r in
+                        VStack(alignment: .leading, spacing: DS.Space.s) {
+                            Text(verbatim: r.version.description).font(DS.Font.label.weight(.semibold))
+                                .foregroundStyle(DS.textSecondary)
+                            ForEach(Array(r.notes.enumerated()), id: \.offset) { _, note in
+                                HStack(alignment: .firstTextBaseline, spacing: DS.Space.s) {
+                                    Text("•")
+                                    Text(note).fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
                         }
                     }
                 }
@@ -206,7 +224,8 @@ struct UpdatePresentation: ViewModifier {
             }
             .background {
                 Color.clear
-                    .sheet(item: $updater.whatsNew) { w in WhatsNewSheet(whatsNew: w) { updater.whatsNew = nil } }
+                    // The live value: Help's notes arrive while the sheet is up.
+                    .sheet(item: $updater.whatsNew) { w in WhatsNewSheet(whatsNew: updater.whatsNew ?? w) { updater.whatsNew = nil } }
             }
     }
 }

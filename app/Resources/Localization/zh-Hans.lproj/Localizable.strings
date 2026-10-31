@@ -1566,6 +1566,7 @@
 "Luxtable can’t develop this file yet (%@). You’re seeing its embedded preview: you can still rate, tag and compare it." = "Luxtable 尚无法冲印此文件（%@）。你看到的是其内嵌预览：仍可以为它评星级、添加标签和比较。";
 "Luxtable can’t replace itself in “%@” (no permission there). " = "Luxtable 无法在“%@”中替换自身（没有权限）。 ";
 "Luxtable couldn’t check for updates: %@" = "Luxtable 无法检查更新：%@";
+"Luxtable couldn’t get the release notes: %@" = "Luxtable 无法获取发行说明：%@";
 "Luxtable develops DNG files (including iPhone ProRAW) with its own decoders. Other RAW formats, and the colour data of most cameras, come from the free RAW helper: a separate program that runs the open-source rawler decoder. It isn’t part of Luxtable because it’s under another licence (LGPL-2.1)." = "Luxtable 使用自己的解码器冲印 DNG 文件（包括 iPhone ProRAW）。其他 RAW 格式以及大多数相机的颜色数据来自免费的 RAW 助手：一个运行开源 rawler 解码器的独立程序。它不属于 Luxtable，因为它采用另一种许可证（LGPL-2.1）。";
 "Luxtable has no correction profile for this lens, so distortion and corner shading aren't corrected. Pick a matching profile below if one fits, or use Vignette and Perspective by hand." = "Luxtable 没有此镜头的校正配置文件，因此不会校正畸变和边角暗影。如有合适的配置文件，请在下方选择，或手动使用“暗角”和“透视”。";
 "Luxtable is already running or still closing" = "Luxtable 已在运行或仍在关闭";
@@ -1761,6 +1762,7 @@
 "No preview available for this photo." = "此照片没有可用的预览。";
 "No profile chosen" = "未选择描述文件";
 "No profile for %@" = "没有适用于%@的配置文件";
+"No release notes for this version." = "此版本没有发行说明。";
 "No saved workspaces" = "没有存储的工作区";
 "No session is open" = "未打开任何会话";
 "No session is open to import into. Open the library's originals as a session below, " = "没有打开可导入的会话。请在下方将图库的原片作为会话打开，";
@@ -2769,6 +2771,7 @@
 "Videos aren't shared. Select photos to share" = "视频不会共享。请选择要共享的照片";
 "View" = "显示";
 "View Update…" = "查看更新…";
+"View on GitHub" = "在 GitHub 上查看";
 "Viewer" = "查看器";
 "Viewer %@ or Grid %@" = "查看器 %@ 或网格 %@";
 "Vignette" = "暗角";
@@ -2809,6 +2812,8 @@
 "What Can I Say?" = "我可以说什么？";
 "What can I say?" = "我可以说什么？";
 "What did you use before?" = "你之前使用什么？";
+"What’s New in Luxtable" = "Luxtable 新功能";
+"What’s New…" = "新功能…";
 "What’s new" = "新功能";
 "Where Immich sees the archive" = "Immich 看到的归档位置";
 "Where is %@ now?" = "“%@”现在在哪里？";

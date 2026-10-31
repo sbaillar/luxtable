@@ -4702,6 +4702,9 @@
 /* LuxtableMac/Updates/Updater.swift */
 "Luxtable couldn’t check for updates: %@" = "Luxtable couldn’t check for updates: %@";
 
+/* LuxtableMac/Updates/Updater.swift */
+"Luxtable couldn’t get the release notes: %@" = "Luxtable couldn’t get the release notes: %@";
+
 /* LuxtableMac/Views/RawSettingsView.swift */
 "Luxtable develops DNG files (including iPhone ProRAW) with its own decoders. Other RAW formats, and the colour data of most cameras, come from the free RAW helper: a separate program that runs the open-source rawler decoder. It isn’t part of Luxtable because it’s under another licence (LGPL-2.1)." = "Luxtable develops DNG files (including iPhone ProRAW) with its own decoders. Other RAW formats, and the colour data of most cameras, come from the free RAW helper: a separate program that runs the open-source rawler decoder. It isn’t part of Luxtable because it’s under another licence (LGPL-2.1).";
 
@@ -5286,6 +5289,9 @@
 
 /* LuxtableCore/Tools/DevelopTools.swift */
 "No profile for %@" = "No profile for %@";
+
+/* LuxtableMac/Views/UpdateViews.swift */
+"No release notes for this version." = "No release notes for this version.";
 
 /* LuxtableUI/Views/Tools/ToolCustomizeView.swift */
 "No saved workspaces" = "No saved workspaces";
@@ -8311,6 +8317,9 @@
 /* LuxtableMac/Views/UpdateViews.swift */
 "View Update…" = "View Update…";
 
+/* LuxtableMac/Views/UpdateViews.swift */
+"View on GitHub" = "View on GitHub";
+
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift, LuxtableCore/Keyboard/KeyBindings.swift, LuxtableCore/Voice/VoiceCatalog.swift, LuxtableCore/Voice/VoiceCommandParser.swift, LuxtableMac/Views/MainToolbar.swift, LuxtableUI/Views/Viewer/ViewerArea.swift */
 "Viewer" = "Viewer";
 
@@ -8430,6 +8439,12 @@
 
 /* LuxtableCore/Onboarding/OnboardingModel.swift */
 "What did you use before?" = "What did you use before?";
+
+/* LuxtableMac/Views/UpdateViews.swift */
+"What’s New in Luxtable" = "What’s New in Luxtable";
+
+/* LuxtableMac/App/LuxtableApp.swift */
+"What’s New…" = "What’s New…";
 
 /* LuxtableMac/Views/UpdateViews.swift */
 "What’s new" = "What’s new";
