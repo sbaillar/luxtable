@@ -11,19 +11,19 @@ enum SettingsPane: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .general: "General"
-        case .familiar: "Familiar"
-        case .shortcuts: "Shortcuts"
-        case .raw: "RAW"
-        case .archive: "Archive"
-        case .amazonPhotos: "Amazon Photos"
-        case .googlePhotos: "Google Photos"
-        case .immich: "Immich"
-        case .ai: "AI"
-        case .voice: "Voice"
-        case .devices: "Devices"
-        case .plugins: "Plugins"
-        case .updates: "Updates"
+        case .general: String(localized: "General")
+        case .familiar: String(localized: "Familiar")
+        case .shortcuts: String(localized: "Shortcuts")
+        case .raw: String(localized: "RAW")
+        case .archive: String(localized: "Archive")
+        case .amazonPhotos: String(localized: "Amazon Photos")
+        case .googlePhotos: String(localized: "Google Photos")
+        case .immich: String(localized: "Immich")
+        case .ai: String(localized: "AI")
+        case .voice: String(localized: "Voice")
+        case .devices: String(localized: "Devices")
+        case .plugins: String(localized: "Plugins")
+        case .updates: String(localized: "Updates")
         }
     }
 
@@ -135,7 +135,7 @@ struct ShortcutsSettingsView: View {
                 HStack {
                     Text(cmd.title)
                     Spacer()
-                    Button(recording == cmd ? "Press a key…" : ShortcutRecorder.keyTitle(cmd, in: settings.keyBindings)) {
+                    Button(recording == cmd ? String(localized: "Press a key…") : ShortcutRecorder.keyTitle(cmd, in: settings.keyBindings)) {
                         recording = recording == cmd ? nil : cmd
                     }
                     .frame(minWidth: 90)

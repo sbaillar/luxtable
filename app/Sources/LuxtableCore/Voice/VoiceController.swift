@@ -78,18 +78,18 @@ public enum VoiceProblem: Equatable, Sendable, Identifiable {
 
     public var title: String {
         switch self {
-        case .microphoneDenied: "Luxtable can't use the microphone"
-        case .speechDenied: "Speech recognition is turned off for Luxtable"
-        case .unavailable: "Voice commands aren't available"
+        case .microphoneDenied: String(localized: "Luxtable can't use the microphone")
+        case .speechDenied: String(localized: "Speech recognition is turned off for Luxtable")
+        case .unavailable: String(localized: "Voice commands aren't available")
         }
     }
 
     public var message: String {
         switch self {
         case .microphoneDenied:
-            "Voice commands need the microphone. Allow Luxtable in System Settings ▸ Privacy & Security ▸ Microphone, then turn voice commands on again."
+            String(localized: "Voice commands need the microphone. Allow Luxtable in System Settings ▸ Privacy & Security ▸ Microphone, then turn voice commands on again.")
         case .speechDenied:
-            "Voice commands need speech recognition. Allow Luxtable in System Settings ▸ Privacy & Security ▸ Speech Recognition, then turn voice commands on again."
+            String(localized: "Voice commands need speech recognition. Allow Luxtable in System Settings ▸ Privacy & Security ▸ Speech Recognition, then turn voice commands on again.")
         case .unavailable(let why): why
         }
     }
@@ -362,8 +362,8 @@ public final class VoiceController {
                 if t.isFinal {
                     r.chain = VoiceChain()
                     if let heard = r.tracker.takeContradiction() {
-                        show(r.tracker.contradictionUndoable ? "Heard “\(heard)”: say “undo” to take it back"
-                            : "Heard “\(heard)”: nothing more was run")
+                        show(r.tracker.contradictionUndoable ? String(localized: "Heard “\(heard)”: say “undo” to take it back")
+                            : String(localized: "Heard “\(heard)”: nothing more was run"))
                     }
                 }
             case .failed(let why):
@@ -387,7 +387,7 @@ public final class VoiceController {
         engineStarted = false
         if quickEnds >= 3 {
             quickEnds = 0
-            fail(with: "Voice commands stopped: the microphone keeps dropping out.")
+            fail(with: String(localized: "Voice commands stopped: the microphone keeps dropping out."))
         } else {
             reconcile()
         }
@@ -429,7 +429,7 @@ public final class VoiceController {
         // A late final from an older run after a newer run ran something: running it now
         // would act out of spoken order (on the photo the newer commands moved to).
         guard r.generation >= lastRanGeneration else {
-            return show("“\(actions.map(\.label).joined(separator: " · "))” not applied — say it again")
+            return show(String(localized: "“\(actions.map(\.label).joined(separator: " · "))” not applied — say it again"))
         }
         let t = now()
         if t - lastRunAt > chainTimeout { r.chain = VoiceChain() }
@@ -471,8 +471,8 @@ public enum PushToTalkKey: String, CaseIterable, Sendable, Identifiable {
 
     public var title: String {
         switch self {
-        case .rightOption: "Right ⌥ Option"
-        case .backquote: "` (left of 1)"
+        case .rightOption: String(localized: "Right ⌥ Option")
+        case .backquote: String(localized: "` (left of 1)")
         }
     }
 }
@@ -481,7 +481,7 @@ public enum PushToTalkKey: String, CaseIterable, Sendable, Identifiable {
 public struct UnavailableVoiceEngine: VoiceEngine {
     public init() {}
     public func start(vocabulary: [String]) async throws -> VoiceSession {
-        throw VoiceEngineError.unavailable("Voice commands aren't available in this build.")
+        throw VoiceEngineError.unavailable(String(localized: "Voice commands aren't available in this build."))
     }
     public func finish(_ session: Int) async {}
     public func stop(_ session: Int) async {}
@@ -500,34 +500,34 @@ public struct NoVoicePermissions: VoicePermissions {
 public enum VoiceText {
     public static func help(_ status: VoiceController.Status) -> String {
         switch status {
-        case .off: "Voice commands (⌃⌘V): say “next”, “five”, “pick”, or “what can I say?”. Recognition stays on this Mac."
-        case .starting: "Voice commands are starting (⌃⌘V turns them off)"
-        case .listening: "Listening for voice commands (⌃⌘V turns them off)"
-        case .paused(let why): "\(pauseNote(.paused(why)) ?? "Paused") (⌃⌘V turns voice commands off)"
+        case .off: String(localized: "Voice commands (⌃⌘V): say “next”, “five”, “pick”, or “what can I say?”. Recognition stays on this Mac.")
+        case .starting: String(localized: "Voice commands are starting (⌃⌘V turns them off)")
+        case .listening: String(localized: "Listening for voice commands (⌃⌘V turns them off)")
+        case .paused(let why): String(localized: "\(pauseNote(.paused(why)) ?? String(localized: "Paused")) (⌃⌘V turns voice commands off)")
         }
     }
 
     public static func accessibilityLabel(_ status: VoiceController.Status) -> String {
         switch status {
-        case .off: "Voice commands off"
-        case .starting: "Voice commands starting"
-        case .listening: "Voice commands listening"
-        case .paused: "Voice commands paused"
+        case .off: String(localized: "Voice commands off")
+        case .starting: String(localized: "Voice commands starting")
+        case .listening: String(localized: "Voice commands listening")
+        case .paused: String(localized: "Voice commands paused")
         }
     }
 
     /// Why voice commands aren't listening although they're on (`nil`: they are, or they're off).
     public static func pauseNote(_ status: VoiceController.Status) -> String? {
         switch status {
-        case .paused(.inactive): "Voice paused while Luxtable is in the background"
-        case .paused(.typing): "Voice paused while you type"
-        case .starting: "Starting voice commands…"
+        case .paused(.inactive): String(localized: "Voice paused while Luxtable is in the background")
+        case .paused(.typing): String(localized: "Voice paused while you type")
+        case .starting: String(localized: "Starting voice commands…")
         case .off, .listening, .paused(.waitingForKey): nil
         }
     }
 
     /// A push-to-talk command that never got its final.
-    public static let notCaught = "Didn’t catch that — say it again"
+    public static let notCaught = String(localized: "Didn’t catch that — say it again")
 
     public static let languageNote = """
         Voice commands understand English: “next”, “five”, “five next”, “pick”, “red”, “zoom in”, “next 3”, \

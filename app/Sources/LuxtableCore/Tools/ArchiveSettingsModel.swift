@@ -103,12 +103,12 @@ public final class ArchiveSettingsModel {
 
     /// L1: what the Amazon hand-off takes.
     public nonisolated static let amazonVideosNote =
-        "Photos only: videos are archived with the session but aren't handed to Amazon Photos."
+        String(localized: "Photos only: videos are archived with the session but aren't handed to Amazon Photos.")
 
     /// FFI check (the Rust side bounds the file-system call to 2 s).
     public nonisolated static let ffiCheck: Checker = { path in
         guard let r = try? await checkArchiveTarget(path: path, timeoutMs: 2000, token: CancelToken()) else {
-            return .unavailable("could not check")
+            return .unavailable(String(localized: "could not check"))
         }
         return state(r)
     }
@@ -116,7 +116,7 @@ public final class ArchiveSettingsModel {
     nonisolated static func state(_ r: TargetCheck) -> TargetState {
         if r.available { return .ready(fsType: r.fsType) }
         if r.timedOut { return .notResponding }
-        return .unavailable(r.reason ?? "unavailable")
+        return .unavailable(r.reason ?? String(localized: "unavailable"))
     }
 
     /// Launch Services by bundle id, then `/Applications/Amazon Photos.app`.
@@ -205,7 +205,7 @@ public final class ArchiveSettingsModel {
             }
         }
         switch outcome {
-        case .none: createError = "The volume didn't answer. Try again when it's back."
+        case .none: createError = String(localized: "The volume didn't answer. Try again when it's back.")
         case .some(let message): createError = message
         }
         await checkTarget()
@@ -243,29 +243,28 @@ public final class ArchiveSettingsModel {
 
     public var targetText: String {
         switch targetState {
-        case .notSet: "No archive target: nothing is archived."
-        case .checking: "Checking…"
+        case .notSet: String(localized: "No archive target: nothing is archived.")
+        case .checking: String(localized: "Checking…")
         case .ready(let fs) where targetExists == false:
-            "Ready: the folder is created on the first sync" + (fs.map { " (\($0))" } ?? "") + "."
-        case .ready(let fs): "Ready" + (fs.map { " (\($0))" } ?? "")
+            String(localized: "Ready: the folder is created on the first sync") + (fs.map { " (\($0))" } ?? "") + "."
+        case .ready(let fs): String(localized: "Ready") + (fs.map { " (\($0))" } ?? "")
         case .unavailable(let why) where canCreateTarget:
-            "This folder doesn't exist yet (\(why)). Create it to start archiving."
-        case .unavailable(let why): "Not available: \(why). Changes are queued until it is."
-        case .notResponding: "The volume isn't responding. Changes are queued; the app keeps working."
+            String(localized: "This folder doesn't exist yet (\(why)). Create it to start archiving.")
+        case .unavailable(let why): String(localized: "Not available: \(why). Changes are queued until it is.")
+        case .notResponding: String(localized: "The volume isn't responding. Changes are queued; the app keeps working.")
         }
     }
 
     public var amazonText: String {
         if amazonFolderMissing, let f = settings.amazonPhotosFolder {
-            return "Folder missing: \(f.path). It was moved or deleted, or its disk isn't connected. "
-                + "Luxtable never recreates it: choose it again."
+            return String(localized: "Folder missing: \(f.path). It was moved or deleted, or its disk isn't connected. Luxtable never recreates it: choose it again.")
         }
         return switch amazonAppInstalled {
-        case nil: "Originals are handed to the folder the Amazon Photos app backs up."
+        case nil: String(localized: "Originals are handed to the folder the Amazon Photos app backs up.")
         case true?: settings.amazonPhotosFolder == nil
-            ? "Amazon Photos is installed. Choose the folder it backs up."
-            : "Originals are handed to Amazon Photos after each import."
-        case false?: "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it."
+            ? String(localized: "Amazon Photos is installed. Choose the folder it backs up.")
+            : String(localized: "Originals are handed to Amazon Photos after each import.")
+        case false?: String(localized: "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it.")
         }
     }
 
@@ -273,11 +272,10 @@ public final class ArchiveSettingsModel {
 
     /// Shown under the destination picker.
     public nonisolated static let switchNote =
-        "Switching destinations never moves or deletes what's already archived."
+        String(localized: "Switching destinations never moves or deletes what's already archived.")
     /// Shown with the object storage settings.
     public nonisolated static let objectNote =
-        "Nothing is ever deleted from the bucket: before a changed file is replaced, its previous version is copied "
-        + "to .lt-archive-trash/ under the path. The keys are kept in your Keychain."
+        String(localized: "Nothing is ever deleted from the bucket: before a changed file is replaced, its previous version is copied to .lt-archive-trash/ under the path. The keys are kept in your Keychain.")
 
     /// FFI Test Connection over `URLSession`.
     public nonisolated static let ffiObjectTest: ObjectTester = { settings, keys in
@@ -297,8 +295,8 @@ public final class ArchiveSettingsModel {
         let target = settings.archiveTarget.trimmingCharacters(in: .whitespaces)
         let network = ["smbfs", "nfs", "afpfs", "webdav"].contains(fs ?? "")
         return target.lowercased().hasPrefix("/volumes/") || network
-            ? "Mounted volume: archiving waits while it isn't mounted."
-            : "Local folder on this Mac."
+            ? String(localized: "Mounted volume: archiving waits while it isn't mounted.")
+            : String(localized: "Local folder on this Mac.")
     }
 
     /// What is wrong with the typed object storage settings (nil: fine).
@@ -307,7 +305,7 @@ public final class ArchiveSettingsModel {
     /// Where sessions land, e.g. "Sessions go to s3://photos/luxtable/<session>/…".
     public var objectLayoutText: String {
         let bucket = objectDraft.bucket.trimmingCharacters(in: .whitespaces)
-        return bucket.isEmpty ? "Enter the bucket and its path." : "Sessions go to \(objectDraft.layout)<session name>/…"
+        return bucket.isEmpty ? String(localized: "Enter the bucket and its path.") : String(localized: "Sessions go to \(objectDraft.layout)<session name>/…")
     }
 
     public var hasSavedSecret: Bool { objectKeys.hasSecret }
@@ -330,24 +328,24 @@ public final class ArchiveSettingsModel {
     public func saveObjectStore() {
         if let problem = objectProblem { return report(problem.prefix(1).uppercased() + problem.dropFirst() + ".", failed: true) }
         guard draftCredentials != nil else {
-            return report("Enter the access key ID and the secret access key.", failed: true)
+            return report(String(localized: "Enter the access key ID and the secret access key."), failed: true)
         }
         settings.archiveObjectStore = objectDraft
         guard objectKeys.save(accessKeyID: accessKeyIDDraft, secret: secretDraft) else {
-            return report("The keys couldn't be saved in the Keychain.", failed: true)
+            return report(String(localized: "The keys couldn't be saved in the Keychain."), failed: true)
         }
         secretDraft = ""
-        report("Saved. The keys are in your Keychain.", failed: false)
+        report(String(localized: "Saved. The keys are in your Keychain."), failed: false)
     }
 
     /// Forget both keys (the archive then waits for new ones).
     public func removeKeys() {
         guard objectKeys.remove() else {
-            return report("The keys couldn't be removed from your Keychain.", failed: true)
+            return report(String(localized: "The keys couldn't be removed from your Keychain."), failed: true)
         }
         accessKeyIDDraft = ""
         secretDraft = ""
-        report("The keys were removed from your Keychain.", failed: false)
+        report(String(localized: "The keys were removed from your Keychain."), failed: false)
     }
 
     /// HeadBucket, then a small test object under the path (it stays: the next test
@@ -355,24 +353,24 @@ public final class ArchiveSettingsModel {
     public func testConnection() async {
         if let problem = objectProblem { return report(problem.prefix(1).uppercased() + problem.dropFirst() + ".", failed: true) }
         guard let keys = draftCredentials else {
-            return report("Enter the access key ID and the secret access key.", failed: true)
+            return report(String(localized: "Enter the access key ID and the secret access key."), failed: true)
         }
         testingConnection = true
         defer { testingConnection = false }
         do {
             let r = try await objectTester(objectDraft, keys)
-            report("Connected. A small test object was left at \(r.testKey); the next test overwrites it.", failed: false)
+            report(String(localized: "Connected. A small test object was left at \(r.testKey); the next test overwrites it."), failed: false)
         } catch let e as DsError {
             report(Self.words(e), failed: true)
         } catch {
-            report("The test didn't finish: \(error.localizedDescription)", failed: true)
+            report(String(localized: "The test didn't finish: \(error.localizedDescription)"), failed: true)
         }
     }
 
     nonisolated static func words(_ e: DsError) -> String {
         switch e {
         case .InvalidArgument(let m), .Io(let m): m.prefix(1).uppercased() + m.dropFirst()
-        case .Cancelled: "The test was cancelled."
+        case .Cancelled: String(localized: "The test was cancelled.")
         default: "\(e)"
         }
     }

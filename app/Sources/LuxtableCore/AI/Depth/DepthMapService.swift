@@ -274,9 +274,10 @@ public final class DepthMapService {
     /// What the Lens Blur panel says about depth.
     public var status: String {
         switch model.state {
-        case .ready: "Depth from the AI depth model on this Mac."
-        case .notDownloaded: "Depth from the subject only. Download the 50 MB depth model for real depth."
-        case .downloading(let f): "Downloading the depth model… \(Int((f * 100).rounded())) %"
+        case .ready: String(localized: "Depth from the AI depth model on this Mac.")
+        case .notDownloaded: String(localized: "Depth from the subject only. Download the 50 MB depth model for real depth.")
+        case .downloading(let f): String(localized: "Downloading the depth model… \(Int((f * 100).rounded())) %")
+
         case .failed(let m): m
         }
     }
@@ -457,13 +458,13 @@ struct CoreMLDepthEstimator: DepthEstimator, @unchecked Sendable {
 
     func estimate(_ image: CGImage) throws -> DepthField {
         guard let input = model.modelDescription.inputDescriptionsByName["image"]?.imageConstraint else {
-            throw ModelDownloadError.compile("depth model", "no image input")
+            throw ModelDownloadError.compile(String(localized: "depth model"), "no image input")
         }
         let value = try MLFeatureValue(cgImage: image, constraint: input,
                                        options: [.cropAndScale: VNImageCropAndScaleOption.scaleFill.rawValue])
         let out = try model.prediction(from: MLDictionaryFeatureProvider(dictionary: ["image": value]))
         guard let buffer = out.featureValue(for: "depth")?.imageBufferValue, let field = Self.field(buffer) else {
-            throw ModelDownloadError.compile("depth model", "no depth output")
+            throw ModelDownloadError.compile(String(localized: "depth model"), "no depth output")
         }
         return field
     }

@@ -4,7 +4,7 @@ import Foundation
 public enum LayerOps {
     /// A new layer with the next free id and a unique "Layer N" name.
     public static func newLayer(after layers: [LayerEdit], name: String? = nil) -> LayerEdit {
-        LayerEdit(id: nextID(layers), name: uniqueName(name ?? "Layer", in: layers, numberFirst: name == nil))
+        LayerEdit(id: nextID(layers), name: uniqueName(name ?? String(localized: "Layer"), in: layers, numberFirst: name == nil))
     }
 
     static func nextID(_ layers: [LayerEdit]) -> Int { (layers.map(\.id).max() ?? -1) + 1 }
@@ -29,7 +29,7 @@ public enum LayerOps {
         guard let src = layers.first(where: { $0.id == id }) else { return nil }
         var copy = src
         copy.id = nextID(layers)
-        copy.name = uniqueName("\(src.name) copy", in: layers, numberFirst: false)
+        copy.name = uniqueName(String(localized: "\(src.name) copy"), in: layers, numberFirst: false)
         layers.append(copy)
         return copy.id
     }
@@ -62,17 +62,17 @@ public enum LayerOps {
 
     /// Short description of a mask for the layer row ("Subject + Brush").
     public static func maskSummary(_ mask: MaskEdit) -> String {
-        guard !mask.shapes.isEmpty else { return "No mask (whole image)" }
+        guard !mask.shapes.isEmpty else { return String(localized: "No mask (whole image)") }
         let parts = mask.shapes.map { shape -> String in
             switch shape {
-            case .fill: "Fill"
-            case .brush(_, let strokes): "Brush (\(strokes.count))"
-            case .linear: "Linear"
-            case .radial: "Radial"
-            case .ai(_, let t): t.rawValue.capitalized
+            case .fill: String(localized: "Fill")
+            case .brush(_, let strokes): String(localized: "Brush (\(strokes.count))")
+            case .linear: String(localized: "Linear")
+            case .radial: String(localized: "Radial")
+            case .ai(_, let t): t.maskNoun.localizedCapitalized
             case .aiPerson(_, let t, let p): PeopleTargets.label(t, person: p)
             }
         }
-        return parts.joined(separator: " + ") + (mask.invert ? ", inverted" : "")
+        return parts.joined(separator: " + ") + (mask.invert ? ", " + String(localized: "inverted") : "")
     }
 }

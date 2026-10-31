@@ -14,11 +14,11 @@ public final class OnboardingModel {
 
         public var title: String {
             switch self {
-            case .welcome: "Welcome to Luxtable"
-            case .familiar: "What did you use before?"
-            case .sessions: "Where should sessions live?"
-            case .archive: "Archive"
-            case .amazon: "Amazon Photos (optional)"
+            case .welcome: String(localized: "Welcome to Luxtable")
+            case .familiar: String(localized: "What did you use before?")
+            case .sessions: String(localized: "Where should sessions live?")
+            case .archive: String(localized: "Archive")
+            case .amazon: String(localized: "Amazon Photos (optional)")
             }
         }
     }
@@ -144,11 +144,11 @@ public final class OnboardingModel {
                                           isWritable: (String) -> Bool = { _ in true }) -> TargetStatus {
         let path = normalized(target)
         guard !path.isEmpty else { return .empty }
-        guard path.hasPrefix("/") else { return .invalid("Use a full path, like /Volumes/NAS/Photos.") }
+        guard path.hasPrefix("/") else { return .invalid(String(localized: "Use a full path, like /Volumes/NAS/Photos.")) }
         let url = URL(fileURLWithPath: path).standardizedFileURL
         let comps = url.pathComponents
         let wholeDisk = comps.count <= 1 || (comps[1] == "Volumes" && comps.count <= 3)
-        guard !wholeDisk else { return .invalid("Choose a folder, not a whole disk.") }
+        guard !wholeDisk else { return .invalid(String(localized: "Choose a folder, not a whole disk.")) }
         if comps.count >= 3, comps[1] == "Volumes", !fileExists("/Volumes/\(comps[2])") {
             return .notMounted(comps[2])
         }

@@ -117,7 +117,7 @@ private func model(_ fake: FakeApple, session: SessionInfo? = session,
 
     @Test func infoLineAndCategories() {
         let i = AppleLibraryInfo(origin: "Library.aplibrary", writtenBy: "Aperture 3", photos: 1200, albums: 1)
-        #expect(i.line == "Library.aplibrary (Aperture 3): 1200 photos, 1 album")
+        #expect(i.line == "Library.aplibrary (Aperture 3): \(1200.formatted()) photos, 1 album")
         #expect(AppleLibraryInfo(origin: "iPhoto Library", photos: 1).line == "iPhoto Library: 1 photo")
         #expect(AppleImportCategories.all.count == 11)
         #expect(!AppleImportCategories.all.contains(.lens) && !AppleImportCategories.all.contains(.masks))

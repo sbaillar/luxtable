@@ -51,13 +51,14 @@ extension AppModel {
         let message: String
         if n == 0 {
             let perPhoto = Self.perPhotoTitles(AdjustGroup.changed(in: edit(for: p.id)))
-            message = settings.copyMode == .custom ? "Copied \(p.filename), but no adjustments are ticked: choose them in Copy’s options"
-                : perPhoto.isEmpty ? "\(p.filename) has no edits to copy"
-                : "\(p.filename) has only per-photo edits (\(perPhoto.joined(separator: ", "))): tick them in Copy’s Custom options to copy them"
+            message = settings.copyMode == .custom ? String(localized: "Copied \(p.filename), but no adjustments are ticked: choose them in Copy’s options")
+                : perPhoto.isEmpty ? String(localized: "\(p.filename) has no edits to copy")
+                : String(localized: "\(p.filename) has only per-photo edits (\(perPhoto.joined(separator: ", "))): tick them in Copy’s Custom options to copy them")
         } else {
             let perPhoto = Self.perPhotoTitles(groups)
-            message = "Copied \(n) adjustment\(n == 1 ? "" : "s") from \(p.filename)"
-                + (perPhoto.isEmpty ? "" : ", including \(perPhoto.joined(separator: ", "))")
+            message = (n == 1 ? String(localized: "Copied 1 adjustment from \(p.filename)")
+                : String(localized: "Copied \(n) adjustments from \(p.filename)"))
+                + (perPhoto.isEmpty ? "" : String(localized: ", including \(perPhoto.joined(separator: ", "))"))
         }
         show(Toast(message, symbol: "arrow.up.doc"))
     }
@@ -72,17 +73,17 @@ extension AppModel {
     @discardableResult
     public func applyToSelection() -> Int {
         guard let clipboard else {
-            show(Toast("Copy adjustments first (⇧⌘C)", symbol: "doc.on.clipboard"))
+            show(Toast(String(localized: "Copy adjustments first (⇧⌘C)"), symbol: "doc.on.clipboard"))
             return 0
         }
         let options = pasteOptions
         guard !options.groups.isEmpty else {
-            show(Toast("No adjustments to apply: choose them in Copy’s options", symbol: "doc.on.clipboard"))
+            show(Toast(String(localized: "No adjustments to apply: choose them in Copy’s options"), symbol: "doc.on.clipboard"))
             return 0
         }
         let targets = applyTargets
         guard !targets.isEmpty else {
-            show(Toast("Select the photos to apply to: \(clipboard.sourceName ?? "the copied photo") is never pasted onto itself",
+            show(Toast(String(localized: "Select the photos to apply to: \(clipboard.sourceName ?? String(localized: "the copied photo")) is never pasted onto itself"),
                        symbol: "doc.on.clipboard"))
             return 0
         }
@@ -101,20 +102,20 @@ extension AppModel {
     }
 
     public var clipboardSummary: String {
-        guard let clipboard else { return "Copy adjustments first (⇧⌘C)" }
-        if pendingPaste != nil { return "Loading the as-shot white balance for the last Apply…" }
-        let from = clipboard.sourceName ?? "the copied photo"
+        guard let clipboard else { return String(localized: "Copy adjustments first (⇧⌘C)") }
+        if pendingPaste != nil { return String(localized: "Loading the as-shot white balance for the last Apply…") }
+        let from = clipboard.sourceName ?? String(localized: "the copied photo")
         let n = applyTargetCount
-        guard n > 0 else { return "Select the photos to apply to, then ⇧⌘V (\(from) is the copied photo: Apply never pastes onto it)" }
+        guard n > 0 else { return String(localized: "Select the photos to apply to, then ⇧⌘V (\(from) is the copied photo: Apply never pastes onto it)") }
         let o = pasteOptions
-        let groups = AdjustGroup.allCases.filter(o.groups.contains).map { o.isRelative($0) ? "\($0.title) (relative)" : $0.title }
-        var what = groups.isEmpty ? "nothing to apply" : groups.joined(separator: ", ")
-        if clipboard.onlyGroup != nil { what += " only (copied from its panel)" }
-        var lines = ["Apply to \(MatchSummary.photos(n)) (⇧⌘V)", "From \(from): \(what)"]
+        let groups = AdjustGroup.allCases.filter(o.groups.contains).map { o.isRelative($0) ? String(localized: "\($0.title) (relative)") : $0.title }
+        var what = groups.isEmpty ? String(localized: "nothing to apply") : groups.joined(separator: ", ")
+        if clipboard.onlyGroup != nil { what += String(localized: " only (copied from its panel)") }
+        var lines = [String(localized: "Apply to \(MatchSummary.photos(n)) (⇧⌘V)"), String(localized: "From \(from): \(what)")]
         let perPhoto = Self.perPhotoTitles(o.groups)
         if !perPhoto.isEmpty {
-            let keep = o.groups.contains(.crop) && o.keepStraighten ? " (each photo keeps its straighten)" : ""
-            lines.append("Includes per-photo groups: \(perPhoto.joined(separator: ", "))\(keep)")
+            let keep = o.groups.contains(.crop) && o.keepStraighten ? String(localized: " (each photo keeps its straighten)") : ""
+            lines.append(String(localized: "Includes per-photo groups: \(perPhoto.joined(separator: ", "))\(keep)"))
         }
         return lines.joined(separator: "\n")
     }

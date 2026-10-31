@@ -10,7 +10,7 @@ public enum Acknowledgements {
     public static func text(in bundle: Bundle) -> String {
         files.map { name in
             bundle.resourceURL.flatMap { try? String(contentsOf: $0.appendingPathComponent(name), encoding: .utf8) }
-                ?? "\(name) is missing from this build.\n"
+                ?? String(localized: "\(name) is missing from this build.\n")
         }.joined(separator: "\n\n")
     }
 }

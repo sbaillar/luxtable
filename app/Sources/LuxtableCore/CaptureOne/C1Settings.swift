@@ -26,12 +26,12 @@ public enum C1SettingsCategory: String, CaseIterable, Codable, Sendable {
 
     public var title: String {
         switch self {
-        case .recipes: "Export recipes"
-        case .workspaces: "Tool workspaces"
-        case .cropRatios: "Crop ratios"
-        case .presets: "Styles & presets"
-        case .keywords: "Keyword libraries"
-        case .preferences: "Preferences"
+        case .recipes: String(localized: "Export recipes")
+        case .workspaces: String(localized: "Tool workspaces")
+        case .cropRatios: String(localized: "Crop ratios")
+        case .presets: String(localized: "Styles & presets")
+        case .keywords: String(localized: "Keyword libraries")
+        case .preferences: String(localized: "Preferences")
         }
     }
 
@@ -47,7 +47,16 @@ public enum C1SettingsCategory: String, CaseIterable, Codable, Sendable {
         }
     }
 
-    func count(_ n: Int) -> String { "\(n) \(n == 1 ? noun.0 : noun.1)" }
+    func count(_ n: Int) -> String {
+        switch self {
+        case .recipes: n == 1 ? String(localized: "1 recipe") : String(localized: "\(n) recipes")
+        case .workspaces: n == 1 ? String(localized: "1 workspace") : String(localized: "\(n) workspaces")
+        case .cropRatios: n == 1 ? String(localized: "1 crop ratio") : String(localized: "\(n) crop ratios")
+        case .presets: n == 1 ? String(localized: "1 preset") : String(localized: "\(n) presets")
+        case .keywords: n == 1 ? String(localized: "1 keyword library") : String(localized: "\(n) keyword libraries")
+        case .preferences: n == 1 ? String(localized: "1 preference") : String(localized: "\(n) preferences")
+        }
+    }
 }
 
 /// A preference the import carries over.
@@ -191,12 +200,12 @@ public enum C1SettingsAction: Equatable, Sendable {
 
     public var label: String {
         switch self {
-        case .create: "new"
-        case .update: "updated"
-        case .upToDate: "up to date"
-        case .keptYours: "changed in Luxtable, kept"
-        case .deletedInLuxtable: "deleted in Luxtable, not recreated"
-        case .alreadyInLuxtable: "already in Luxtable"
+        case .create: String(localized: "new")
+        case .update: String(localized: "updated")
+        case .upToDate: String(localized: "up to date")
+        case .keptYours: String(localized: "changed in Luxtable, kept")
+        case .deletedInLuxtable: String(localized: "deleted in Luxtable, not recreated")
+        case .alreadyInLuxtable: String(localized: "already in Luxtable")
         case .unavailable(let why): why
         }
     }
@@ -302,10 +311,10 @@ public struct C1SettingsPlan: Equatable, Sendable {
     /// "3 new, 1 updated, 2 up to date" for a category.
     public func summary(_ c: C1SettingsCategory) -> String {
         let r = rows(in: c)
-        guard !r.isEmpty else { return "none found" }
+        guard !r.isEmpty else { return String(localized: "none found") }
         var counts: [(String, Int)] = []
         for row in r {
-            let label = if case .unavailable = row.action { "not importable" } else { row.action.label }
+            let label = if case .unavailable = row.action { String(localized: "not importable") } else { row.action.label }
             if let i = counts.firstIndex(where: { $0.0 == label }) { counts[i].1 += 1 } else { counts.append((label, 1)) }
         }
         return counts.map { "\($0.1) \($0.0)" }.joined(separator: ", ")
@@ -318,7 +327,7 @@ public enum C1SettingsError: LocalizedError, Equatable {
 
     public var errorDescription: String? {
         switch self {
-        case .notSaved(let what): "\u{201c}\(what)\u{201d} couldn't be saved"
+        case .notSaved(let what): String(localized: "\u{201c}\(what)\u{201d} couldn't be saved")
         }
     }
 }
@@ -331,9 +340,12 @@ public struct C1SettingsRevert: Equatable, Sendable {
     public var kept = 0
 
     public var message: String {
-        var parts = ["Capture One settings import reverted: \(removed) item\(removed == 1 ? "" : "s") removed"]
-        if restored > 0 { parts.append("\(restored) preference\(restored == 1 ? "" : "s") restored") }
-        if kept > 0 { parts.append("\(kept) changed since and kept") }
+        var parts = [removed == 1 ? String(localized: "Capture One settings import reverted: 1 item removed")
+            : String(localized: "Capture One settings import reverted: \(removed) items removed")]
+        if restored > 0 {
+            parts.append(restored == 1 ? String(localized: "1 preference restored") : String(localized: "\(restored) preferences restored"))
+        }
+        if kept > 0 { parts.append(String(localized: "\(kept) changed since and kept")) }
         return parts.joined(separator: ", ")
     }
 }

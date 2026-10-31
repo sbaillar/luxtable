@@ -19,7 +19,7 @@ extension AppModel {
         let shape = PeopleTargets.shape(target, person: person)
         let name = PeopleTargets.label(target, person: person)
         var added = layerID ?? -1
-        updateEdits([photo.id], label: "AI \(name) Mask") { _, e in
+        updateEdits([photo.id], label: String(localized: "AI \(name) Mask")) { _, e in
             if let person, person < people.boxes.count {
                 // The edit's people in today's order first, so `person` means one person only.
                 e.adoptPeopleOrder(people.boxes)
@@ -75,7 +75,7 @@ extension EditState {
 public enum PeopleMenu {
     /// "All People", then "Person 1" … "Person n".
     public static func personChoices(count: Int) -> [(label: String, person: Int?)] {
-        [("All People", nil)] + (0..<max(0, count)).map { ("Person \($0 + 1)", $0) }
+        [(String(localized: "All People"), nil)] + (0..<max(0, count)).map { (String(localized: "Person \($0 + 1)"), $0) }
     }
 
     public static func symbol(_ t: AITarget) -> String {
@@ -94,17 +94,17 @@ public enum PeopleMenu {
     /// Tooltip of a people target button.
     @MainActor
     public static func help(_ t: AITarget, person: Int?) -> String {
-        let who = person.map { "person \($0 + 1)" } ?? "every person"
-        let base = "Mask the \(t.rawValue) of \(who) on this Mac, on the selected layer (or a new one)."
+        let base = person.map { String(localized: "Mask the \(t.maskNoun) of person \($0 + 1) on this Mac, on the selected layer (or a new one).") }
+            ?? String(localized: "Mask the \(t.maskNoun) of every person on this Mac, on the selected layer (or a new one).")
         guard t != .person, FaceParsingModel.shared.state != .ready else { return base }
-        return base + " The first time, a 53 MB face model is downloaded."
+        return base + " " + String(localized: "The first time, a 53 MB face model is downloaded.")
     }
 
     /// The download line under the buttons (nil when there's nothing to show).
     @MainActor
     public static var downloadStatus: (fraction: Double, text: String)? {
         if case .downloading(let f) = FaceParsingModel.shared.state {
-            return (f, "Downloading the face model (BiSeNet face parsing)…")
+            return (f, String(localized: "Downloading the face model (BiSeNet face parsing)…"))
         }
         return nil
     }

@@ -62,14 +62,14 @@ struct OnboardingView: View {
             VStack(alignment: .leading, spacing: DS.Space.m) {
                 let imp = ImportWording.onboardingImport(verifies: model.importer is any ImportVerifying)
                 feature("sdcard", imp.title, imp.text)
-                feature("keyboard", "Cull at the speed of your fingers", "Arrows to move, 1–5 to rate, P/X to pick or reject. Press ? any time.")
-                feature("sparkles", "Let AI do the first pass", "AI Cull flags closed eyes and soft focus on this Mac. Nothing is uploaded.")
-                feature("text.bubble", "Edit with words", "Press ⌘K and type “warmer and a bit brighter”. Only what you name changes.") // [nl9]
-                feature("externaldrive.badge.checkmark", "Archived in the background",
+                feature("keyboard", String(localized: "Cull at the speed of your fingers"), String(localized: "Arrows to move, 1–5 to rate, P/X to pick or reject. Press ? any time."))
+                feature("sparkles", String(localized: "Let AI do the first pass"), String(localized: "AI Cull flags closed eyes and soft focus on this Mac. Nothing is uploaded."))
+                feature("text.bubble", String(localized: "Edit with words"), String(localized: "Press ⌘K and type “warmer and a bit brighter”. Only what you name changes.")) // [nl9]
+                feature("externaldrive.badge.checkmark", String(localized: "Archived in the background"),
                         model.archive is UnavailableArchiveService
-                            ? "Archiving isn't available in this mode."
-                            : model.features.isOn(.archive) ? "Sessions sync to your NAS while you work."
-                            : "If you like, sessions sync to your NAS while you work (next steps).")
+                            ? String(localized: "Archiving isn't available in this mode.")
+                            : model.features.isOn(.archive) ? String(localized: "Sessions sync to your NAS while you work.")
+                            : String(localized: "If you like, sessions sync to your NAS while you work (next steps)."))
             }
         case .familiar:
             VStack(alignment: .leading, spacing: DS.Space.m) {
@@ -85,7 +85,7 @@ struct OnboardingView: View {
                 Text("Each import becomes a session: a plain folder with your originals and edits. Keep it on your fastest disk.")
                     .foregroundStyle(DS.textSecondary)
                 folderRow(onboarding.sessionsFolder.path, symbol: "folder") {
-                    if let url = pickFolder(message: "Choose where Luxtable keeps sessions") { onboarding.sessionsFolder = url }
+                    if let url = pickFolder(message: String(localized: "Choose where Luxtable keeps sessions")) { onboarding.sessionsFolder = url }
                 }
             }
         case .archive:
@@ -99,7 +99,7 @@ struct OnboardingView: View {
                         TextField("Archive folder", text: $onboarding.archiveTarget, prompt: Text("Choose… or type a path"))
                             .textFieldStyle(.roundedBorder)
                         Button("Choose…") {
-                            if let url = pickFolder(message: "Choose the archive folder") { onboarding.archiveTarget = url.path }
+                            if let url = pickFolder(message: String(localized: "Choose the archive folder")) { onboarding.archiveTarget = url.path }
                         }
                     }
                     archiveStatus
@@ -110,8 +110,8 @@ struct OnboardingView: View {
             VStack(alignment: .leading, spacing: DS.Space.m) {
                 Text("Amazon has no public Photos API. Luxtable mirrors your originals into a folder, and the official Amazon Photos app backs that folder up.")
                     .foregroundStyle(DS.textSecondary)
-                folderRow(onboarding.amazonFolder?.path ?? "Off", symbol: "icloud.and.arrow.up") {
-                    onboarding.amazonFolder = pickFolder(message: "Choose the folder the Amazon Photos app backs up")
+                folderRow(onboarding.amazonFolder?.path ?? String(localized: "Off"), symbol: "icloud.and.arrow.up") {
+                    onboarding.amazonFolder = pickFolder(message: String(localized: "Choose the folder the Amazon Photos app backs up"))
                 }
                 if onboarding.amazonFolder != nil {
                     Button("Turn Off") { onboarding.amazonFolder = nil }.buttonStyle(.link)
@@ -201,7 +201,7 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Picker("Appearance", selection: $settings.appearance) {
-                ForEach(AppearancePreference.allCases, id: \.self) { Text($0.rawValue) }
+                ForEach(AppearancePreference.allCases, id: \.self) { Text($0.title) }
             }
             .pickerStyle(.segmented)
             Picker("Open in", selection: $settings.startView) { // [library]

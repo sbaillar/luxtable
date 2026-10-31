@@ -18,7 +18,7 @@ struct LayersPanel: View {
         let selected = layers.selected
         VStack(alignment: .leading, spacing: DS.Space.s) {
             HStack(spacing: DS.Space.s) {
-                Text("\(list.count) layer\(list.count == 1 ? "" : "s") over Background")
+                Text(list.count == 1 ? "1 layer over Background" : "\(list.count) layers over Background")
                     .font(DS.Font.label).foregroundStyle(DS.textSecondary)
                     .aiHighlight(model, AIFieldMap.layers, value: "")
                 Spacer()
@@ -44,10 +44,10 @@ struct LayersPanel: View {
             Text("DRAW MASK").font(DS.Font.caption).tracking(0.5).foregroundStyle(DS.textSecondary)
                 .padding(.top, DS.Space.xs)
             HStack(spacing: DS.Space.xs) {
-                maskTool("paintbrush.pointed", "Brush", .brush)
-                maskTool("eraser", "Erase", .eraser)
-                maskTool("rectangle.lefthalf.inset.filled", "Linear", .linearGradient)
-                maskTool("circle.dashed", "Radial", .radialGradient)
+                maskTool("paintbrush.pointed", String(localized: "Brush"), .brush)
+                maskTool("eraser", String(localized: "Erase"), .eraser)
+                maskTool("rectangle.lefthalf.inset.filled", String(localized: "Linear"), .linearGradient)
+                maskTool("circle.dashed", String(localized: "Radial"), .radialGradient)
             }
             if [.brush, .eraser].contains(model.viewer.canvasTool) {
                 BrushStrip(viewer: model.viewer)
@@ -104,14 +104,25 @@ struct LayersPanel: View {
         } label: {
             HStack(spacing: 3) {
                 if busy == target { ProgressView().controlSize(.mini) } else { Image(systemName: symbol) }
-                Text(target.rawValue.capitalized).font(DS.Font.caption)
+                Text(Self.title(target)).font(DS.Font.caption)
             }
             .frame(maxWidth: .infinity)
         }
         .controlSize(.small)
         .disabled(!AIMasker.isAvailable(target) || busy != nil || model.focusedID == nil)
         .help(AIMasker.help(target))
-        .accessibilityLabel("AI \(target.rawValue) mask")
+        .accessibilityLabel("AI \(Self.title(target).lowercased()) mask")
+    }
+
+    /// The AI mask buttons' names (the subject, person, background and sky targets).
+    private static func title(_ target: AITarget) -> String {
+        switch target {
+        case .subject: String(localized: "Subject")
+        case .person: String(localized: "Person")
+        case .background: String(localized: "Background")
+        case .sky: String(localized: "Sky")
+        default: target.rawValue.capitalized
+        }
     }
 
     private func runAI(_ target: AITarget) async {
@@ -141,7 +152,7 @@ private struct LayerRow: View {
         VStack(alignment: .leading, spacing: DS.Space.xs) {
             HStack {
                 Button {
-                    controller.update(layer.id, label: "Toggle Layer") { $0.enabled.toggle() }
+                    controller.update(layer.id, label: String(localized: "Toggle Layer")) { $0.enabled.toggle() }
                 } label: {
                     Image(systemName: layer.enabled ? "eye" : "eye.slash")
                         .foregroundStyle(layer.enabled ? DS.text : DS.textTertiary)
@@ -185,10 +196,10 @@ private struct LayerRow: View {
             Text(LayerOps.maskSummary(layer.mask)).font(DS.Font.caption).foregroundStyle(DS.textSecondary)
             if selected {
                 ToolSlider(spec: Specs.layerOpacity, value: layer.opacity, onEnd: { model.endEditGesture() }) { v in
-                    controller.update(layer.id, label: "Layer Opacity", key: "opacity-\(layer.id)") { $0.opacity = v }
+                    controller.update(layer.id, label: String(localized: "Layer Opacity"), key: "opacity-\(layer.id)") { $0.opacity = v }
                 }
                 ToolSlider(spec: Specs.layerExposure, value: layer.exposureEV, onEnd: { model.endEditGesture() }) { v in
-                    controller.update(layer.id, label: "Layer Exposure", key: "exposure-\(layer.id)") { $0.exposureEV = v }
+                    controller.update(layer.id, label: String(localized: "Layer Exposure"), key: "exposure-\(layer.id)") { $0.exposureEV = v }
                 }
                 LayerToolsSection(layer: layer, model: model, controller: controller)
                 LayerMaskSection(layer: layer, model: model, controller: controller)
@@ -211,31 +222,31 @@ private struct LayerToolsSection: View {
     let layer: LayerEdit
     @Bindable var model: AppModel
     let controller: LayerController
-    @State private var open: Set<String> = ["Tone"]
+    @State private var open: Set<String> = [String(localized: "Tone")]
 
     var body: some View {
         let t = layer.tools
-        group("Tone") {
+        group(String(localized: "Tone")) {
             slider(Specs.contrast, t.contrast, "contrast") { $0.contrast = $1 }
             slider(Specs.brightness, t.brightness, "brightness") { $0.brightness = $1 }
             slider(Specs.saturation, t.saturation, "saturation") { $0.saturation = $1 }
         }
-        group("White Balance") {
+        group(String(localized: "White Balance")) {
             slider(LayerToolSpecs.temperatureShift, t.temperature, "temp") { $0.temperature = $1 }
             slider(LayerToolSpecs.tintShift, t.tint, "tint") { $0.tint = $1 }
         }
-        group("Presence") {
+        group(String(localized: "Presence")) {
             slider(LayerToolSpecs.vibrance, t.presence.vibrance, "vibrance") { $0.presence.vibrance = $1 }
             slider(LayerToolSpecs.texture, t.presence.texture, "texture") { $0.presence.texture = $1 }
             slider(LayerToolSpecs.dehaze, t.presence.dehaze, "dehaze") { $0.presence.dehaze = $1 }
         }
-        group("High Dynamic Range") {
+        group(String(localized: "High Dynamic Range")) {
             slider(Specs.highlights, t.hdr.highlights, "highlights") { $0.hdr.highlights = $1 }
             slider(Specs.shadows, t.hdr.shadows, "shadows") { $0.hdr.shadows = $1 }
             slider(Specs.whites, t.hdr.whites, "whites") { $0.hdr.whites = $1 }
             slider(Specs.blacks, t.hdr.blacks, "blacks") { $0.hdr.blacks = $1 }
         }
-        group("Detail") {
+        group(String(localized: "Detail")) {
             slider(Specs.clarity, t.clarity, "clarity") { $0.clarity = $1 }
             slider(Specs.structure, t.structure, "structure") { $0.structure = $1 }
             slider(LayerToolSpecs.sharpening, t.sharpening, "sharpening") { $0.sharpening = $1 }
@@ -254,7 +265,7 @@ private struct LayerToolsSection: View {
     private func slider(_ spec: SliderSpec, _ value: Double, _ key: String,
                         _ set: @escaping (inout LayerToolsEdit, Double) -> Void) -> some View {
         ToolSlider(spec: spec, value: value, onEnd: { model.endEditGesture() }) { v in
-            controller.updateTools(label: "Layer \(spec.label)", key: key) { set(&$0, v) }
+            controller.updateTools(label: String(localized: "Layer \(spec.label)"), key: key) { set(&$0, v) }
         }
     }
 }
@@ -270,11 +281,11 @@ private struct LayerMaskSection: View {
         VStack(alignment: .leading, spacing: DS.Space.xs) {
             Text("REFINE MASK").font(DS.Font.caption).tracking(0.5).foregroundStyle(DS.textSecondary)
             Toggle("Invert mask", isOn: Binding(get: { m.invert },
-                                                set: { v in controller.update(layer.id, label: "Invert Mask") { $0.mask.invert = v } }))
+                                                set: { v in controller.update(layer.id, label: String(localized: "Invert Mask")) { $0.mask.invert = v } }))
                 .font(DS.Font.label)
                 .disabled(m.shapes.isEmpty)
             ToolSlider(spec: LayerToolSpecs.maskFeather, value: m.feather, onEnd: { model.endEditGesture() }) { v in
-                controller.update(layer.id, label: "Mask Feather", key: "feather-\(layer.id)") { $0.mask.feather = v }
+                controller.update(layer.id, label: String(localized: "Mask Feather"), key: "feather-\(layer.id)") { $0.mask.feather = v }
             }
             Toggle("Luminance range", isOn: Binding(get: { m.lumaRange != nil }, set: { controller.setLumaRange($0) }))
                 .font(DS.Font.label)
@@ -308,10 +319,10 @@ private struct LayerMaskSection: View {
             }
             if let c = m.colorRange {
                 ToolSlider(spec: ColorToolSpecs.rangeWidth, value: c.width, onEnd: { model.endEditGesture() }) { v in
-                    controller.update(layer.id, label: "Range Width", key: "crw-\(layer.id)") { $0.mask.colorRange?.width = v }
+                    controller.update(layer.id, label: String(localized: "Range Width"), key: "crw-\(layer.id)") { $0.mask.colorRange?.width = v }
                 }
                 ToolSlider(spec: ColorToolSpecs.rangeSmoothness, value: c.smoothness, onEnd: { model.endEditGesture() }) { v in
-                    controller.update(layer.id, label: "Range Softness", key: "crs-\(layer.id)") { $0.mask.colorRange?.smoothness = v }
+                    controller.update(layer.id, label: String(localized: "Range Softness"), key: "crs-\(layer.id)") { $0.mask.colorRange?.smoothness = v }
                 }
             }
         }
@@ -320,7 +331,7 @@ private struct LayerMaskSection: View {
     private func luma(_ spec: SliderSpec, _ value: Double, _ key: String,
                       _ set: @escaping (inout LumaRangeEdit, Double) -> Void) -> some View {
         ToolSlider(spec: spec, value: value, onEnd: { model.endEditGesture() }) { v in
-            controller.update(layer.id, label: "Luma Range", key: "luma-\(key)-\(layer.id)") { l in
+            controller.update(layer.id, label: String(localized: "Luma Range"), key: "luma-\(key)-\(layer.id)") { l in
                 if var r = l.mask.lumaRange {
                     set(&r, v)
                     l.mask.lumaRange = r

@@ -81,9 +81,9 @@ public enum CropRatio: String, CaseIterable, Sendable, Identifiable {
     /// Short name (menu rows, panel chips).
     public var title: String {
         switch self {
-        case .original: "Original"
-        case .free: "Freeform"
-        case .square: "Square"
+        case .original: String(localized: "Original")
+        case .free: String(localized: "Freeform")
+        case .square: String(localized: "Square")
         case .r4x3: "4:3"
         case .r3x2: "3:2"
         case .r16x9: "16:9"
@@ -96,10 +96,10 @@ public enum CropRatio: String, CaseIterable, Sendable, Identifiable {
     /// What it is, where the title alone doesn't say.
     public var detail: String? {
         switch self {
-        case .original: "The photo's own shape"
-        case .free: "Any shape"
-        case .r5x4: "Also 8 × 10"
-        case .r7x5, .r8x5: "Print size"
+        case .original: String(localized: "The photo's own shape")
+        case .free: String(localized: "Any shape")
+        case .r5x4: String(localized: "Also 8 × 10")
+        case .r7x5, .r8x5: String(localized: "Print size")
         default: nil
         }
     }
@@ -247,7 +247,7 @@ extension ViewerModel {
     public func cancelTool() {
         cancelCanvasDrag()
         if let s = cropSession, let app, app.focusedID == s.photo, app.edit(for: s.photo).crop != s.crop {
-            app.updateEdits([s.photo], label: "Cancel Crop") { _, e in e.crop = s.crop }
+            app.updateEdits([s.photo], label: String(localized: "Cancel Crop")) { _, e in e.crop = s.crop }
             app.endEditGesture()
         }
         cropSession = nil
@@ -298,7 +298,7 @@ extension AppModel {
     public func setCropAspect(_ preset: CropPreset, for id: PhotoID? = nil) {
         guard let id = id ?? focusedID, photo(id)?.isVideo != true else { return }
         settings.cropRatio = CropRatio(preset)
-        updateEdits([id], label: "Crop \(preset.rawValue)") { id, e in crop(&e, to: preset, photo: id) }
+        updateEdits([id], label: String(localized: "Crop \(preset.rawValue)")) { id, e in crop(&e, to: preset, photo: id) }
         endEditGesture()
     }
 
@@ -312,7 +312,7 @@ extension AppModel {
         let box = viewer.cropBox(for: edit(for: id))
         let preset = r.preset(portrait: CropGeometry.isPortrait(box.rect, size: box.size))
         let v = viewer
-        updateEdits([id], label: "Crop \(r.title)") { id, e in
+        updateEdits([id], label: String(localized: "Crop \(r.title)")) { id, e in
             guard r == .original else { return crop(&e, to: preset, photo: id) }
             e.crop.aspect = .original
             let b = v.cropBox(for: e, photo: id)
@@ -340,7 +340,7 @@ extension AppModel {
     public func swapCropOrientation() {
         guard let id = focusedID, photo(id)?.isVideo != true else { return }
         let v = viewer
-        updateEdits([id], label: "Swap Crop Orientation") { _, e in
+        updateEdits([id], label: String(localized: "Swap Crop Orientation")) { _, e in
             let box = v.cropBox(for: e)
             var r = CropGeometry.swapOrientation(box.rect, size: box.size)
             // A locked ratio stays exact after the shrink-to-fit.
@@ -369,12 +369,13 @@ extension AppModel {
             return nil
         }
         guard let angle = found else {
-            show(Toast("No clear horizon found; nothing was straightened", symbol: "level"))
+            show(Toast(String(localized: "No clear horizon found; nothing was straightened"), symbol: "level"))
             return nil
         }
-        updateEdits([p.id], label: "Auto Straighten") { _, e in e.crop.angle = angle }
+        updateEdits([p.id], label: String(localized: "Auto Straighten")) { _, e in e.crop.angle = angle }
         endEditGesture()
-        show(Toast(String(format: "Straightened %@%.1f°", angle >= 0 ? "+" : "−", abs(angle)), symbol: "level"))
+        let degrees = (angle >= 0 ? "+" : "−") + String(format: "%.1f", abs(angle))
+        show(Toast(String(localized: "Straightened \(degrees)°"), symbol: "level"))
         return angle
     }
 

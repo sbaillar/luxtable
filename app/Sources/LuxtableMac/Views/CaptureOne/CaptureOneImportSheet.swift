@@ -58,7 +58,7 @@ struct CaptureOneImportSheet: View {
         }
     }
 
-    private func busy(_ text: String) -> some View {
+    private func busy(_ text: LocalizedStringKey) -> some View {
         HStack(spacing: DS.Space.s) {
             ProgressView().controlSize(.small)
             Text(text).font(DS.Font.label).foregroundStyle(DS.text)
@@ -71,10 +71,10 @@ struct CaptureOneImportSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DS.Space.s) {
                 section(nil, s.lines)
-                section("Edits by tool", s.toolLines)
-                section("Conflicts: changed in Luxtable since the last import", s.conflictLines, warning: true)
-                section("Not mapped (no Luxtable equivalent)", s.notMappedLines)
-                section("Left out", s.leftOutLines)
+                section(String(localized: "Edits by tool"), s.toolLines)
+                section(String(localized: "Conflicts: changed in Luxtable since the last import"), s.conflictLines, warning: true)
+                section(String(localized: "Not mapped (no Luxtable equivalent)"), s.notMappedLines)
+                section(String(localized: "Left out"), s.leftOutLines)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

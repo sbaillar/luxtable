@@ -43,7 +43,7 @@ enum PlatformPanels {
         let confirm = alert.addButton(withTitle: button)
         confirm.hasDestructiveAction = true
         confirm.keyEquivalent = "" // Return cancels: the destructive choice is never the default
-        alert.addButton(withTitle: "Cancel").keyEquivalent = "\r"
+        alert.addButton(withTitle: String(localized: "Cancel")).keyEquivalent = "\r"
         return alert.runModal() == .alertFirstButtonReturn
         #else
         return false

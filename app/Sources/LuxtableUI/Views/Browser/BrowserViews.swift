@@ -275,8 +275,8 @@ package struct TagChip: View {
             .fill(DS.tagColor(tag))
             .frame(width: 14, height: 10)
             .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(.black.opacity(0.6), lineWidth: 1))
-            .help("\(tag.name) tag")
-            .accessibilityLabel("\(tag.name) tag")
+            .help("\(tag.title) tag")
+            .accessibilityLabel("\(tag.title) tag")
     }
 }
 
@@ -381,7 +381,7 @@ package struct Filmstrip: View {
             }
             Divider()
             if model.visibleIDs.isEmpty {
-                Text(model.currentSession == nil ? "No session open" : model.emptyState.title)
+                Text(model.currentSession == nil ? String(localized: "No session open") : model.emptyState.title)
                     .font(DS.Font.label).foregroundStyle(DS.textSecondary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contextMenu { FilmstripPositionMenu(model: model) }
@@ -696,7 +696,7 @@ struct GridHeader: View {
     var body: some View {
         let browser = model.browserState
         HStack(spacing: DS.Space.m) {
-            Text(model.currentSession?.name ?? "Library").font(.system(size: 13, weight: .semibold))
+            Text(model.currentSession?.name ?? String(localized: "Library")).font(.system(size: 13, weight: .semibold))
             Spacer()
             Toggle(isOn: Binding(get: { browser.stackBursts }, set: { model.setStackBursts($0) })) {
                 Label("Stack Bursts", systemImage: "square.stack.3d.up")

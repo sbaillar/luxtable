@@ -89,13 +89,13 @@ enum ConfirmRemove {
 @MainActor
 package enum LocatePanel {
     static func folder(for s: SessionInfo) -> URL? {
-        PlatformPanels.chooseItem(files: false, directories: true, prompt: "Locate",
-                                  message: "Where is “\(s.name)” now? Choose the folder that holds its photos.",
+        PlatformPanels.chooseItem(files: false, directories: true, prompt: String(localized: "Locate"),
+                                  message: String(localized: "Where is “\(s.name)” now? Choose the folder that holds its photos."),
                                   directory: existingAncestor(of: s.url))
     }
 
     static func file(for p: Photo) -> URL? {
-        PlatformPanels.chooseItem(prompt: "Locate", message: "Where is \(p.filename) now?",
+        PlatformPanels.chooseItem(prompt: String(localized: "Locate"), message: String(localized: "Where is \(p.filename) now?"),
                                   directory: p.url.map { existingAncestor(of: $0.deletingLastPathComponent()) })
     }
 
@@ -114,10 +114,10 @@ package enum LocatePanel {
     package static func help(_ s: SessionInfo) -> String {
         switch s.unavailable {
         case nil: s.url.path
-        case .notFound: "\(s.url.path): not found. Click to locate it."
-        case .noPhotos: "\(s.url.path): no photos found. Open it to locate them."
+        case .notFound: String(localized: "\(s.url.path): not found. Click to locate it.")
+        case .noPhotos: String(localized: "\(s.url.path): no photos found. Open it to locate them.")
         case .driveNotConnected:
-            "\(s.url.path): its drive isn’t connected. Connect it, or click to locate it (it may be mounted under another name)."
+            String(localized: "\(s.url.path): its drive isn’t connected. Connect it, or click to locate it (it may be mounted under another name).")
         }
     }
 

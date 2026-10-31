@@ -34,114 +34,122 @@ extension VoiceCommandParser {
     /// Every command, by category: the parser's phrase table is built from it, and the
     /// Voice Commands sheet lists it, so the two never drift.
     public static let catalog: [VoiceCommandGroup] = [
-        VoiceCommandGroup(title: "Move", commands: [
-            VoiceCommand("Next photo", ["next", "next photo", "forward", "skip"], hidden: ["next one", "necks", "nex"],
+        VoiceCommandGroup(title: String(localized: "Move"), commands: [
+            VoiceCommand(String(localized: "Next photo"), ["next", "next photo", "forward", "skip"], hidden: ["next one", "necks", "nex"],
                          .key(.move(.right, extend: false))),
-            VoiceCommand("Previous photo", ["previous", "back", "go back"], hidden: ["previous one", "prev"],
+            VoiceCommand(String(localized: "Previous photo"), ["previous", "back", "go back"], hidden: ["previous one", "prev"],
                          .key(.move(.left, extend: false))),
-            VoiceCommand("First photo", ["first", "first photo"], hidden: ["first one"], .jump(.first)),
-            VoiceCommand("Last photo", ["last", "last photo"], .jump(.last)),
-            VoiceCommand("Move several photos", ["next 3", "next three photos", "forward 3", "skip 4", "back 2",
+            VoiceCommand(String(localized: "First photo"), ["first", "first photo"], hidden: ["first one"], .jump(.first)),
+            VoiceCommand(String(localized: "Last photo"), ["last", "last photo"], .jump(.last)),
+            VoiceCommand(String(localized: "Move several photos"), ["next 3", "next three photos", "forward 3", "skip 4", "back 2",
                                                  "previous two"], nil,
-                         note: "A count after “next” moves only at the end of a phrase or before “photos”: “next three stars” is next, then three stars. “next to” and “skip for” do nothing."),
-            VoiceCommand("Go to a photo", ["go to the 4th photo", "fourth photo", "photo 12", "go to number 12", "jump to 30",
+                         note: String(localized: "A count after “next” moves only at the end of a phrase or before “photos”: “next three stars” is next, then three stars. “next to” and “skip for” do nothing.",
+                                       comment: "Keep the quoted phrases in English: voice commands are spoken in English.")),
+            VoiceCommand(String(localized: "Go to a photo"), ["go to the 4th photo", "fourth photo", "photo 12", "go to number 12", "jump to 30",
                                            "go forward to the fourth", "skip to 10"], nil,
-                         note: "Say “go to” or “photo”: “the second one” or “number one” alone does nothing. “forward to the fourth” goes to the 4th photo; “forward four” moves four."),
+                         note: String(localized: "Say “go to” or “photo”: “the second one” or “number one” alone does nothing. “forward to the fourth” goes to the 4th photo; “forward four” moves four.",
+                                       comment: "Keep the quoted phrases in English: voice commands are spoken in English.")),
         ]),
-        VoiceCommandGroup(title: "Find", commands: [
-            VoiceCommand("Next unrated", ["next unrated"], hidden: ["next unrated one", "next not rated"], .jump(.nextUnrated)),
-            VoiceCommand("Previous unrated", ["previous unrated"], hidden: ["prev unrated"], .jump(.seek(.unrated, forward: false))),
-            VoiceCommand("Next pick", ["next pick", "next picked"], hidden: ["next pic"], .jump(.nextPick)),
-            VoiceCommand("Previous pick", ["previous pick", "previous picked"], hidden: ["previous pic", "prev pick"],
+        VoiceCommandGroup(title: String(localized: "Find"), commands: [
+            VoiceCommand(String(localized: "Next unrated"), ["next unrated"], hidden: ["next unrated one", "next not rated"], .jump(.nextUnrated)),
+            VoiceCommand(String(localized: "Previous unrated"), ["previous unrated"], hidden: ["prev unrated"], .jump(.seek(.unrated, forward: false))),
+            VoiceCommand(String(localized: "Next pick"), ["next pick", "next picked"], hidden: ["next pic"], .jump(.nextPick)),
+            VoiceCommand(String(localized: "Previous pick"), ["previous pick", "previous picked"], hidden: ["previous pic", "prev pick"],
                          .jump(.seek(.picked, forward: false))),
-            VoiceCommand("Next reject", ["next reject", "next rejected"], .jump(.seek(.rejected, forward: true))),
-            VoiceCommand("Previous reject", ["previous reject", "previous rejected"], hidden: ["prev reject"],
+            VoiceCommand(String(localized: "Next reject"), ["next reject", "next rejected"], .jump(.seek(.rejected, forward: true))),
+            VoiceCommand(String(localized: "Previous reject"), ["previous reject", "previous rejected"], hidden: ["prev reject"],
                          .jump(.seek(.rejected, forward: false))),
-            VoiceCommand("Next unflagged", ["next unflagged"], .jump(.seek(.unflagged, forward: true))),
-            VoiceCommand("Previous unflagged", ["previous unflagged"], hidden: ["prev unflagged"],
+            VoiceCommand(String(localized: "Next unflagged"), ["next unflagged"], .jump(.seek(.unflagged, forward: true))),
+            VoiceCommand(String(localized: "Previous unflagged"), ["previous unflagged"], hidden: ["prev unflagged"],
                          .jump(.seek(.unflagged, forward: false))),
-            VoiceCommand("Next or previous with that many stars", ["next five star", "previous 3 star"], nil,
-                         note: "Say “star”: “next five stars” is next, then five stars. One star is “next 1 star”."),
+            VoiceCommand(String(localized: "Next or previous with that many stars"), ["next five star", "previous 3 star"], nil,
+                         note: String(localized: "Say “star”: “next five stars” is next, then five stars. One star is “next 1 star”.",
+                                       comment: "Keep the quoted phrases in English: voice commands are spoken in English.")),
         ]),
-        VoiceCommandGroup(title: "Rate and flag", commands: [
-            VoiceCommand("5 stars", ["five", "five stars", "rate it five"], .key(.rate(5))),
-            VoiceCommand("4 stars", ["four", "four stars"], .key(.rate(4))),
-            VoiceCommand("3 stars", ["three", "three stars"], .key(.rate(3))),
-            VoiceCommand("2 stars", ["two", "two stars"], .key(.rate(2))),
-            VoiceCommand("1 star", ["one", "one star"], .key(.rate(1))),
-            VoiceCommand("No stars", ["clear", "no stars", "clear rating"],
+        VoiceCommandGroup(title: String(localized: "Rate and flag"), commands: [
+            VoiceCommand(String(localized: "5 stars"), ["five", "five stars", "rate it five"], .key(.rate(5))),
+            VoiceCommand(String(localized: "4 stars"), ["four", "four stars"], .key(.rate(4))),
+            VoiceCommand(String(localized: "3 stars"), ["three", "three stars"], .key(.rate(3))),
+            VoiceCommand(String(localized: "2 stars"), ["two", "two stars"], .key(.rate(2))),
+            VoiceCommand(String(localized: "1 star"), ["one", "one star"], .key(.rate(1))),
+            VoiceCommand(String(localized: "No stars"), ["clear", "no stars", "clear rating"],
                          hidden: ["clear stars", "no star", "no rating", "unrate", "un rate", "zero stars", "zero star",
                                   "remove rating"], .key(.rate(0))),
-            VoiceCommand("Pick", ["pick"], hidden: ["picked", "pic", "pik"], .key(.pick)),
-            VoiceCommand("Reject", ["reject"], hidden: ["rejected"], .key(.reject)),
-            VoiceCommand("Unflag", ["unflag", "clear flag"],
+            VoiceCommand(String(localized: "Pick"), ["pick"], hidden: ["picked", "pic", "pik"], .key(.pick)),
+            VoiceCommand(String(localized: "Reject"), ["reject"], hidden: ["rejected"], .key(.reject)),
+            VoiceCommand(String(localized: "Unflag"), ["unflag", "clear flag"],
                          hidden: ["un flag", "remove flag", "no flag", "unpick", "un pick"], .key(.unflag)),
         ]),
-        VoiceCommandGroup(title: "Several photos", commands: [
-            VoiceCommand("Flag several", ["reject the next 3", "pick these three", "pick the next two", "unflag the next 4",
+        VoiceCommandGroup(title: String(localized: "Several photos"), commands: [
+            VoiceCommand(String(localized: "Flag several"), ["reject the next 3", "pick these three", "pick the next two", "unflag the next 4",
                                           "reject 3 photos", "pick next 2 photos"], nil,
-                         note: "Two or more, said as “the next 3”, “next 3 photos”, “these 3” or “3 photos”. “The next 3” are the three after this photo; “these 3” and “3 photos” start with it. One undo step. “pick next one” is pick, then next."),
-            VoiceCommand("Rate several", ["rate the next four three stars", "give the next 3 one star"], nil),
-            VoiceCommand("Select several", ["select the next 3", "select these 4"], nil,
-                         note: "Selects exactly those photos (“the next 3” are three, not counting this one) and moves to the first; keys then act on them."),
-            VoiceCommand("Apply copied adjustments", ["apply to the next 3", "apply settings to these 4"], nil,
-                         note: "Pastes what Copy’s options say, never onto the copied photo. One undo step."),
+                         note: String(localized: "Two or more, said as “the next 3”, “next 3 photos”, “these 3” or “3 photos”. “The next 3” are the three after this photo; “these 3” and “3 photos” start with it. One undo step. “pick next one” is pick, then next.",
+                                       comment: "Keep the quoted phrases in English: voice commands are spoken in English.")),
+            VoiceCommand(String(localized: "Rate several"), ["rate the next four three stars", "give the next 3 one star"], nil),
+            VoiceCommand(String(localized: "Select several"), ["select the next 3", "select these 4"], nil,
+                         note: String(localized: "Selects exactly those photos (“the next 3” are three, not counting this one) and moves to the first; keys then act on them.",
+                                       comment: "Keep the quoted phrases in English: voice commands are spoken in English.")),
+            VoiceCommand(String(localized: "Apply copied adjustments"), ["apply to the next 3", "apply settings to these 4"], nil,
+                         note: String(localized: "Pastes what Copy’s options say, never onto the copied photo. One undo step.",
+                                       comment: "Keep the quoted phrases in English: voice commands are spoken in English.")),
         ]),
-        VoiceCommandGroup(title: "Color tags", commands: ColorTag.allCases.filter { $0 != .none }.map { t in
+        VoiceCommandGroup(title: String(localized: "Color tags"), commands: ColorTag.allCases.filter { $0 != .none }.map { t in
             let name = t.name.lowercased()
-            return VoiceCommand("\(t.name) tag", [name, "\(name) tag"],
+            return VoiceCommand(String(localized: "\(t.title) tag"), [name, "\(name) tag"],
                                 hidden: ["tag \(name)", "\(name) label", "label \(name)"] + (t == .red ? ["read", "read tag"] : []),
                                 .key(.tag(t)))
         }),
-        VoiceCommandGroup(title: "Filter", commands: [
-            VoiceCommand("Show picks", ["show picks", "show picked"], hidden: ["show pics", "show only picks"], .showFlags(.picked)),
-            VoiceCommand("Show rejects", ["show rejects", "show rejected"], hidden: ["show only rejects"], .showFlags(.rejected)),
-            VoiceCommand("Show unflagged", ["show unflagged"], .showFlags(.unflagged)),
-            VoiceCommand("Show all (any flag)", ["show all", "show all photos"], hidden: ["show everything"], .showFlags(.all)),
+        VoiceCommandGroup(title: String(localized: "Filter"), commands: [
+            VoiceCommand(String(localized: "Show picks"), ["show picks", "show picked"], hidden: ["show pics", "show only picks"], .showFlags(.picked)),
+            VoiceCommand(String(localized: "Show rejects"), ["show rejects", "show rejected"], hidden: ["show only rejects"], .showFlags(.rejected)),
+            VoiceCommand(String(localized: "Show unflagged"), ["show unflagged"], .showFlags(.unflagged)),
+            VoiceCommand(String(localized: "Show all (any flag)"), ["show all", "show all photos"], hidden: ["show everything"], .showFlags(.all)),
         ]),
-        VoiceCommandGroup(title: "View", commands: [
-            VoiceCommand("Grid", ["grid", "grid view"], hidden: ["show grid"], .key(.gridMode)),
-            VoiceCommand("Viewer", ["viewer", "loupe"], hidden: ["view", "viewer mode", "single", "single view"], .key(.viewerMode)),
-            VoiceCommand("Zoom in", ["zoom in"], hidden: ["closer"], .menu(.zoomIn)),
-            VoiceCommand("Zoom out", ["zoom out"], .menu(.zoomOut)),
-            VoiceCommand("Fit", ["fit", "zoom to fit"],
+        VoiceCommandGroup(title: String(localized: "View"), commands: [
+            VoiceCommand(String(localized: "Grid"), ["grid", "grid view"], hidden: ["show grid"], .key(.gridMode)),
+            VoiceCommand(String(localized: "Viewer"), ["viewer", "loupe"], hidden: ["view", "viewer mode", "single", "single view"], .key(.viewerMode)),
+            VoiceCommand(String(localized: "Zoom in"), ["zoom in"], hidden: ["closer"], .menu(.zoomIn)),
+            VoiceCommand(String(localized: "Zoom out"), ["zoom out"], .menu(.zoomOut)),
+            VoiceCommand(String(localized: "Fit"), ["fit", "zoom to fit"],
                          hidden: ["zoom fit", "fit to screen", "fit screen", "zoom to fit screen"], .menu(.zoomFit)),
             VoiceCommand("100%", ["hundred percent", "actual size"],
                          hidden: ["one hundred percent", "100 percent", "zoom 100", "zoom hundred", "zoom 100 percent",
                                   "zoom to 100 percent", "full size", "actual pixels"], .menu(.zoomActual)),
-            VoiceCommand("Before / after", ["before after", "before and after"], hidden: ["before slash after", "show before"],
+            VoiceCommand(String(localized: "Before / after"), ["before after", "before and after"], hidden: ["before slash after", "show before"],
                          .key(.toggleBeforeAfter)),
-            VoiceCommand("Compare", ["compare"], hidden: ["pin compare", "compare mode"], .key(.togglePinCompare)),
-            VoiceCommand("Full screen", ["full screen"], hidden: ["fullscreen", "toggle full screen"], .key(.toggleFullScreen)),
-            VoiceCommand("Exit full screen", ["exit full screen"],
+            VoiceCommand(String(localized: "Compare"), ["compare"], hidden: ["pin compare", "compare mode"], .key(.togglePinCompare)),
+            VoiceCommand(String(localized: "Full screen"), ["full screen"], hidden: ["fullscreen", "toggle full screen"], .key(.toggleFullScreen)),
+            VoiceCommand(String(localized: "Exit full screen"), ["exit full screen"],
                          hidden: ["leave full screen", "exit fullscreen", "leave fullscreen"], .setFullScreen(false)),
-            VoiceCommand("Hide panels", ["hide panels"], hidden: ["hide panel", "hide tools"], .setPanelsHidden(true)),
-            VoiceCommand("Show panels", ["show panels"], hidden: ["show panel", "show tools"], .setPanelsHidden(false)),
-            VoiceCommand("Toggle panels", ["panels"], hidden: ["toggle panels"], .key(.togglePanels)),
-            VoiceCommand("Rotate left", ["rotate left"], .menu(.rotateLeft)),
-            VoiceCommand("Rotate right", ["rotate right"], .menu(.rotateRight)),
+            VoiceCommand(String(localized: "Hide panels"), ["hide panels"], hidden: ["hide panel", "hide tools"], .setPanelsHidden(true)),
+            VoiceCommand(String(localized: "Show panels"), ["show panels"], hidden: ["show panel", "show tools"], .setPanelsHidden(false)),
+            VoiceCommand(String(localized: "Toggle panels"), ["panels"], hidden: ["toggle panels"], .key(.togglePanels)),
+            VoiceCommand(String(localized: "Rotate left"), ["rotate left"], .menu(.rotateLeft)),
+            VoiceCommand(String(localized: "Rotate right"), ["rotate right"], .menu(.rotateRight)),
         ]),
-        VoiceCommandGroup(title: "Edit", commands: [
-            VoiceCommand("Undo", ["undo", "undo that"], hidden: ["un do", "undo last"], .key(.undo)),
-            VoiceCommand("Redo", ["redo", "redo that"], hidden: ["re do"], .key(.redo)),
-            VoiceCommand("Undo several", ["undo 3 times", "redo 2 steps"], nil,
-                         note: "Say “times” or “steps”: “undo five” is undo, then five stars."),
-            VoiceCommand("Copy adjustments", ["copy settings", "copy adjustments"], hidden: ["copy adjustment", "copy edits"],
+        VoiceCommandGroup(title: String(localized: "Edit"), commands: [
+            VoiceCommand(String(localized: "Undo"), ["undo", "undo that"], hidden: ["un do", "undo last"], .key(.undo)),
+            VoiceCommand(String(localized: "Redo"), ["redo", "redo that"], hidden: ["re do"], .key(.redo)),
+            VoiceCommand(String(localized: "Undo several"), ["undo 3 times", "redo 2 steps"], nil,
+                         note: String(localized: "Say “times” or “steps”: “undo five” is undo, then five stars.",
+                                       comment: "Keep the quoted phrases in English: voice commands are spoken in English.")),
+            VoiceCommand(String(localized: "Copy adjustments"), ["copy settings", "copy adjustments"], hidden: ["copy adjustment", "copy edits"],
                          .menu(.copyAdjustments)),
-            VoiceCommand("Apply adjustments", ["apply settings", "apply adjustments", "paste settings"],
+            VoiceCommand(String(localized: "Apply adjustments"), ["apply settings", "apply adjustments", "paste settings"],
                          hidden: ["apply adjustment", "paste adjustments", "paste adjustment", "paste edits", "apply edits"],
                          .menu(.applyAdjustments)),
-            VoiceCommand("Auto adjust", ["auto", "auto adjust"], hidden: ["auto tone", "autoadjust"], .menu(.autoAdjust)),
-            VoiceCommand("AI changes", ["ai changes", "show ai changes"], hidden: ["what did ai change", "a i changes"],
+            VoiceCommand(String(localized: "Auto adjust"), ["auto", "auto adjust"], hidden: ["auto tone", "autoadjust"], .menu(.autoAdjust)),
+            VoiceCommand(String(localized: "AI changes"), ["ai changes", "show ai changes"], hidden: ["what did ai change", "a i changes"],
                          .menu(.aiChanges)),
-            VoiceCommand("Edit with words", ["edit warmer and a bit brighter"], nil,
-                         note: "Opens Edit with Words with your phrase; press Return to apply it."),
+            VoiceCommand(String(localized: "Edit with words"), ["edit warmer and a bit brighter"], nil,
+                         note: String(localized: "Opens Edit with Words with your phrase; press Return to apply it.",
+                                       comment: "Keep the quoted phrases in English: voice commands are spoken in English.")),
         ]),
-        VoiceCommandGroup(title: "Voice", commands: [
-            VoiceCommand("What can I say?", ["what can I say", "help"], hidden: ["what do I say", "voice help",
+        VoiceCommandGroup(title: String(localized: "Voice"), commands: [
+            VoiceCommand(String(localized: "What can I say?"), ["what can I say", "help"], hidden: ["what do I say", "voice help",
                                                                                "show voice commands"], .help(true)),
-            VoiceCommand("Close this list", ["close help"], hidden: ["hide help", "close voice commands"], .help(false)),
-            VoiceCommand("Stop listening", ["stop listening"], hidden: ["stop voice", "voice off", "stop voice commands"],
+            VoiceCommand(String(localized: "Close this list"), ["close help"], hidden: ["hide help", "close voice commands"], .help(false)),
+            VoiceCommand(String(localized: "Stop listening"), ["stop listening"], hidden: ["stop voice", "voice off", "stop voice commands"],
                          .stopListening),
         ]),
     ]
@@ -173,14 +181,14 @@ public enum VoiceHelp {
         }
         let mine = custom.rows
         if !mine.isEmpty {
-            out.append(Section(title: "Your phrases", rows: mine.map { Row(summary: $0.command.summary, phrases: [quoted($0.phrase)]) }))
+            out.append(Section(title: String(localized: "Your phrases"), rows: mine.map { Row(summary: $0.command.summary, phrases: [quoted($0.phrase)]) }))
         }
         return out
     }
 
     private static func quoted(_ s: String) -> String { "“\(s)”" }
 
-    public static let intro = """
+    public static let intro = String(localized: """
         Say a phrase on its own; anything else said in the room is ignored. Phrases chain: “five next”, “pick next”.
-        """
+        """, comment: "Keep the quoted phrases in English: voice commands are spoken in English.")
 }

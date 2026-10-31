@@ -116,10 +116,10 @@ public final class ExportModel {
     /// Why Export is disabled, or nil.
     public var problem: String? {
         if items.isEmpty {
-            return skippedVideos > 0 ? "Videos aren't exported. Select photos to export." : "Select photos to export."
+            return skippedVideos > 0 ? String(localized: "Videos aren't exported. Select photos to export.") : String(localized: "Select photos to export.")
         }
-        if !destinationReady { return "Checking the export folder…" }
-        if enabledRecipes.isEmpty { return "Turn on at least one recipe." }
+        if !destinationReady { return String(localized: "Checking the export folder…") }
+        if enabledRecipes.isEmpty { return String(localized: "Turn on at least one recipe.") }
         if let p = googlePhotosProblem { return p }
         return service.validate(enabledRecipes, defaultFolder: defaultFolder)
     }
@@ -148,15 +148,15 @@ public final class ExportModel {
 
     /// The recipe's AI Upscale toggle explained.
     public var aiUpscaleHelp: String {
-        let what = "Sizes larger than the photo start from it upscaled 2× by on-device AI."
-        return aiUpscaleUnavailable.map { "\($0) Larger sizes are resampled instead." } ?? what
+        let what = String(localized: "Sizes larger than the photo start from it upscaled 2× by on-device AI.")
+        return aiUpscaleUnavailable.map { String(localized: "\($0) Larger sizes are resampled instead.") } ?? what
     }
 
     /// "N videos aren't exported" (nil when none were selected).
     public var skippedVideosNote: String? {
         guard skippedVideos > 0 else { return nil }
-        return skippedVideos == 1 ? "1 video isn't exported (videos stay as they are)."
-            : "\(skippedVideos) videos aren't exported (videos stay as they are)."
+        return skippedVideos == 1 ? String(localized: "1 video isn't exported (videos stay as they are).")
+            : String(localized: "\(skippedVideos) videos aren't exported (videos stay as they are).")
     }
 
     /// The stored preview for `watermark` (nil while it is drawn, or for another watermark).
@@ -215,7 +215,7 @@ public final class ExportModel {
     }
 
     public func addRecipe() {
-        let r = ExportRecipe(name: uniqueName("New Recipe"))
+        let r = ExportRecipe(name: uniqueName(String(localized: "New Recipe")))
         recipes.append(r)
         selectedRecipeID = r.id
     }
@@ -223,7 +223,7 @@ public final class ExportModel {
     public func duplicateSelected() {
         guard var r = selectedRecipe else { return }
         r.id = UUID()
-        r.name = uniqueName(r.name + " copy")
+        r.name = uniqueName(String(localized: "\(r.name) copy"))
         recipes.append(r)
         selectedRecipeID = r.id
     }
@@ -295,9 +295,10 @@ public final class ExportModel {
     public var runningText: String? {
         guard case .running(let done, let total) = phase else { return nil }
         if let u = uploading {
-            return u.adding ? "Adding to the Google Photos album…" : "Uploading \(min(u.done + 1, u.total)) of \(u.total) to Google Photos…"
+            return u.adding ? String(localized: "Adding to the Google Photos album…")
+                : String(localized: "Uploading \(min(u.done + 1, u.total)) of \(u.total) to Google Photos…")
         }
-        return readingMetadata ? "Reading metadata \(metadataDone) of \(total)…" : "Exporting \(done) of \(total)…"
+        return readingMetadata ? String(localized: "Reading metadata \(metadataDone) of \(total)…") : String(localized: "Exporting \(done) of \(total)…")
     }
 
     public func cancel() { task?.cancel() }
@@ -338,12 +339,12 @@ public final class ExportModel {
     public static func summary(_ o: ExportOutcome) -> String {
         let bytes = o.written.reduce(Int64(0)) { $0 + $1.bytes }
         let size = ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
-        var s = "\(o.written.count) \(o.written.count == 1 ? "file" : "files") · \(size)"
-        if !o.failures.isEmpty { s += " · \(o.failures.count) failed" }
+        var s = o.written.count == 1 ? String(localized: "1 file · \(size)") : String(localized: "\(o.written.count) files · \(size)")
+        if !o.failures.isEmpty { s += String(localized: " · \(o.failures.count) failed") }
         if o.watermarkSkipped > 0 {
-            s += " · \(o.watermarkSkipped) without watermark (blank text)"
+            s += String(localized: " · \(o.watermarkSkipped) without watermark (blank text)")
         }
-        if o.cancelled { s += " · cancelled" }
+        if o.cancelled { s += String(localized: " · cancelled") }
         return s
     }
 
@@ -360,21 +361,21 @@ extension ExportModel {
             // turns the upload off in the recipe.
             guard googlePhotosOn() else { return Self.googlePhotosOffProblem(r.name) }
             guard let googlePhotos, googlePhotos.isSignedIn else {
-                return "Sign in to Google Photos in Settings ▸ Google Photos to upload with “\(r.name)”."
+                return String(localized: "Sign in to Google Photos in Settings ▸ Google Photos to upload with “\(r.name)”.")
             }
-            if !r.format.uploadsToGooglePhotos { return "“\(r.name)” uploads to Google Photos: choose JPEG or HEIC." }
+            if !r.format.uploadsToGooglePhotos { return String(localized: "“\(r.name)” uploads to Google Photos: choose JPEG or HEIC.") }
             if target.albumID == nil && target.albumTitle.trimmingCharacters(in: .whitespaces).isEmpty {
-                return "Name the Google Photos album for “\(r.name)”."
+                return String(localized: "Name the Google Photos album for “\(r.name)”.")
             }
         }
         return nil
     }
 
     /// Shown in place of the upload while Google Photos is off: once, quietly.
-    public static let moreDestinationsHint = "Uploads (Google Photos) can be turned on in Settings ▸ Plugins."
+    public static let moreDestinationsHint = String(localized: "Uploads (Google Photos) can be turned on in Settings ▸ Plugins.")
 
     static func googlePhotosOffProblem(_ recipe: String) -> String {
-        "“\(recipe)” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plugins, or turn the upload off."
+        String(localized: "“\(recipe)” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plugins, or turn the upload off.")
     }
 
     /// Whether the Export sheet offers the Google Photos upload for `recipe`: when the
@@ -427,7 +428,7 @@ extension ExportModel {
             // Turned off since the export started: the files stay exported, nothing is sent.
             guard googlePhotosOn() else {
                 googleUploads.append(GooglePhotosUpload(recipeName: recipe.name, albumTitle: target.albumTitle,
-                                                        error: "turned off in Settings ▸ Plugins; nothing was uploaded"))
+                                                        error: String(localized: "turned off in Settings ▸ Plugins; nothing was uploaded")))
                 continue
             }
             uploading = GooglePhotosProgress(done: 0, total: files.count)

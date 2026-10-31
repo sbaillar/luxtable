@@ -140,13 +140,13 @@ extension ViewerModel {
         case .pickWhiteBalance(let u): pickWhiteBalance(at: u)
         case .pickFocus(let u):
             let o = oriented(u)
-            app.updateEdits([id], label: "Lens Blur Focus") { _, e in
+            app.updateEdits([id], label: String(localized: "Lens Blur Focus")) { _, e in
                 e.effects.lensBlur.focus = LensBlurEdit.focusPoint(o)
             }
         case .straighten(let deg):
             // `deg` is the on-screen clockwise turn that levels the line, measured on the
             // displayed (already straightened) image; lt-core angles are counter-clockwise.
-            app.updateEdits([id], label: "Straighten") { _, e in
+            app.updateEdits([id], label: String(localized: "Straighten")) { _, e in
                 e.crop.angle = min(max(e.crop.angle - deg, -45), 45)
             }
         case .crop(let drawn):
@@ -154,7 +154,7 @@ extension ViewerModel {
             let r = cropImageArea.map { CanvasInteraction.confine(drawn, to: $0) } ?? drawn
             let aspect = displayAspect
             let ratio = app.settings.cropRatio.aspect
-            app.updateEdits([id], label: "Crop") { _, e in
+            app.updateEdits([id], label: String(localized: "Crop")) { _, e in
                 e.crop.rect = ViewTransform(crop: e.crop).canonicalRect(display: r, displayAspect: aspect)
                 e.crop.aspect = ratio // the tool's ratio, which the box was drawn in
             }
@@ -162,12 +162,12 @@ extension ViewerModel {
             let orientedShape = transform.toOriented(shape, displayAspect: displayAspect)
                 .applyingBrush(hardness: brushHardness, flow: brushFlow, autoMask: brushAutoMask)
             var layerID = selectedLayerID
-            app.updateEdits([id], label: "Mask") { _, e in
+            app.updateEdits([id], label: String(localized: "Mask")) { _, e in
                 if let lid = layerID, let i = e.layers.firstIndex(where: { $0.id == lid }) {
                     e.layers[i].mask.shapes.append(orientedShape)
                 } else {
                     let newID = (e.layers.map(\.id).max() ?? -1) + 1
-                    e.layers.append(LayerEdit(id: newID, name: "Layer \(e.layers.count + 1)",
+                    e.layers.append(LayerEdit(id: newID, name: String(localized: "Layer \(e.layers.count + 1)"),
                                               mask: MaskEdit(shapes: [orientedShape])))
                     layerID = newID
                 }
@@ -196,7 +196,7 @@ extension ViewerModel {
     public func rotate(by delta: Int) {
         guard let app, let id = app.focusedID else { return }
         cancelCanvasDrag()
-        app.updateEdits([id], label: delta < 0 ? "Rotate Left" : "Rotate Right") { _, e in
+        app.updateEdits([id], label: delta < 0 ? String(localized: "Rotate Left") : String(localized: "Rotate Right")) { _, e in
             e.crop.quarterTurns = CanvasInteraction.rotate(e.crop.quarterTurns, by: delta)
         }
         app.endEditGesture()
@@ -217,7 +217,7 @@ extension ViewerModel {
         case .straighten:
             // Right/up turns the content clockwise on screen (lt-core angle decreases).
             let step = Double(dx != 0 ? dx : -dy) * 0.1
-            app.updateEdits([id], label: "Straighten", coalesceKey: "straighten-nudge") { _, e in
+            app.updateEdits([id], label: String(localized: "Straighten"), coalesceKey: "straighten-nudge") { _, e in
                 e.crop.angle = min(max(e.crop.angle - step, -45), 45)
             }
             return true
@@ -236,7 +236,7 @@ extension ViewerModel {
         if let area = cropImageArea { moved = CanvasInteraction.confine(moved, to: area) }
         guard moved != r else { return }
         let aspect = displayAspect
-        app.updateEdits([id], label: "Move Crop", coalesceKey: "crop-nudge") { _, e in
+        app.updateEdits([id], label: String(localized: "Move Crop"), coalesceKey: "crop-nudge") { _, e in
             e.crop.rect = ViewTransform(crop: e.crop).canonicalRect(display: moved, displayAspect: aspect)
         }
     }

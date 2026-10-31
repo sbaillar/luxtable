@@ -9,7 +9,7 @@ public struct ExportWatermark: Codable, Equatable, Sendable {
     public enum Kind: String, Codable, CaseIterable, Sendable {
         case text, logo
 
-        public var title: String { self == .text ? "Text" : "Logo" }
+        public var title: String { self == .text ? String(localized: "Text") : String(localized: "Logo") }
     }
 
     /// The 3×3 positions, row by row from the top left.
@@ -18,15 +18,15 @@ public struct ExportWatermark: Codable, Equatable, Sendable {
 
         public var title: String {
             switch self {
-            case .topLeft: "Top Left"
-            case .top: "Top"
-            case .topRight: "Top Right"
-            case .left: "Left"
-            case .center: "Center"
-            case .right: "Right"
-            case .bottomLeft: "Bottom Left"
-            case .bottom: "Bottom"
-            case .bottomRight: "Bottom Right"
+            case .topLeft: String(localized: "Top Left")
+            case .top: String(localized: "Top")
+            case .topRight: String(localized: "Top Right")
+            case .left: String(localized: "Left")
+            case .center: String(localized: "Center")
+            case .right: String(localized: "Right")
+            case .bottomLeft: String(localized: "Bottom Left")
+            case .bottom: String(localized: "Bottom")
+            case .bottomRight: String(localized: "Bottom Right")
             }
         }
     }
@@ -101,7 +101,7 @@ public struct ExportWatermark: Codable, Equatable, Sendable {
 
     /// "text watermark" / "logo watermark", for the recipe list's summary.
     public var summary: String {
-        "\(kind == .text ? "text" : "logo") watermark"
+        kind == .text ? String(localized: "text watermark") : String(localized: "logo watermark")
     }
 }
 

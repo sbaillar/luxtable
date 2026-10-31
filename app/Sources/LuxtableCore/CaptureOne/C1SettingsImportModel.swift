@@ -34,8 +34,8 @@ public final class C1SettingsImportModel {
         canRevert = importer.canRevert
     }
 
-    public static let revertHint = "Revert takes back every Capture One settings import since the last revert. "
-        + "Anything you changed in Luxtable afterwards is kept."
+    public static let revertHint = String(localized: "Revert takes back every Capture One settings import since the last revert. ")
+        + String(localized: "Anything you changed in Luxtable afterwards is kept.")
 
     /// The plan shown before importing.
     public var preview: C1SettingsPlan? {
@@ -55,7 +55,7 @@ public final class C1SettingsImportModel {
             phase = .preview(importer.plan(s))
             categories = Set(C1SettingsCategory.allCases)
         } catch is CancellationError {
-            phase = .failed("Cancelled")
+            phase = .failed(String(localized: "Cancelled"))
         } catch {
             phase = .failed(error.localizedDescription)
         }

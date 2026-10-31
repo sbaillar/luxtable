@@ -164,7 +164,7 @@ private struct MapHeader: View {
     var body: some View {
         HStack(spacing: DS.Space.m) {
             Picker("Show", selection: $map.scope) {
-                ForEach(MapModel.Scope.allCases, id: \.self) { Text($0.rawValue) }
+                ForEach(MapModel.Scope.allCases, id: \.self) { Text($0.title) }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
@@ -247,7 +247,7 @@ private struct MapMarker: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(cluster.count) photo\(cluster.count == 1 ? "" : "s")")
+        .accessibilityLabel(cluster.count == 1 ? "1 photo" : "\(cluster.count) photos")
         .accessibilityAddTraits(.isButton)
         .task(id: photo?.id) {
             guard let photo else { return }

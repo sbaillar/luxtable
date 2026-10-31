@@ -53,7 +53,7 @@ public struct MockImportService: ImportService {
                 cont.yield(ImportProgress(filesDone: 0, filesTotal: files.count, bytesDone: 0, bytesTotal: total))
                 for (i, f) in files.enumerated() {
                     if let failAfter, i >= failAfter {
-                        cont.finish(throwing: MockError.invalid("The card was removed during import"))
+                        cont.finish(throwing: MockError.invalid(String(localized: "The card was removed during import")))
                         return
                     }
                     do {

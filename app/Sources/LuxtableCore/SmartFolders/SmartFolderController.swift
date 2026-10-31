@@ -257,7 +257,7 @@ public final class SmartFolderController {
         }
     }
 
-    nonisolated private static let mirrorErrorPrefix = "Mirror to Finder"
+    nonisolated private static let mirrorErrorPrefix = String(localized: "Mirror to Finder")
 
     /// Runs `work` off the main actor after every earlier mirror job has finished.
     private func serialized<T: Sendable>(_ work: @escaping @Sendable () -> T) async -> T {

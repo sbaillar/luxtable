@@ -31,9 +31,9 @@ public enum KeyPreset: String, CaseIterable, Codable, Sendable, Identifiable {
     /// A few of the set's keys, for Settings and the first-run choice.
     public var summary: String {
         switch self {
-        case .luxtable: "P X U flag, C crop, R straighten, ⇧A auto"
-        case .lightroomClassic: "P X U flag, R crop, C compare, K brush, ⌘U auto"
-        case .captureOne: "C crop, R rotate, B brush, E erase, G gradient"
+        case .luxtable: String(localized: "P X U flag, C crop, R straighten, ⇧A auto")
+        case .lightroomClassic: String(localized: "P X U flag, R crop, C compare, K brush, ⌘U auto")
+        case .captureOne: String(localized: "C crop, R rotate, B brush, E erase, G gradient")
         }
     }
 

@@ -164,7 +164,7 @@ public final class LoopbackReceiver: LoopbackReceiving, @unchecked Sendable {
     static let page = """
         <!doctype html><html><head><meta charset="utf-8"><title>Luxtable</title></head>
         <body style="font: 15px -apple-system, sans-serif; text-align: center; margin-top: 15vh">
-        <h2>Done</h2><p>You can close this window and go back to Luxtable.</p></body></html>
+        <h2>\(String(localized: "Done"))</h2><p>\(String(localized: "You can close this window and go back to Luxtable."))</p></body></html>
         """
 }
 

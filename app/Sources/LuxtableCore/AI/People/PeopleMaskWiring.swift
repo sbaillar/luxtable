@@ -152,8 +152,8 @@ extension ViewerModel {
     func reportLostPeople(_ people: Set<Int>, photo: PhotoID) {
         let new = people.filter { reportedLostPeople.insert("\(photo.raw)/\($0)").inserted }
         guard let app, !new.isEmpty else { return }
-        let who = new.sorted().map { "Person \($0 + 1)" }.joined(separator: " and ")
-        app.show(Toast("\(who) isn't found in this photo any more: those people masks are empty.",
+        let who = new.sorted().map { String(localized: "Person \($0 + 1)") }.joined(separator: String(localized: " and "))
+        app.show(Toast(String(localized: "\(who) isn't found in this photo any more: those people masks are empty."),
                        symbol: "person.crop.circle.badge.questionmark", isError: true))
     }
 

@@ -65,7 +65,7 @@ struct CameraProfilePicker: View {
     private func importProfile() {
         guard let url = PlatformPanels.chooseItem(
             types: [UTType(filenameExtension: "dcp") ?? .data],
-            message: "Choose an Adobe camera profile (.dcp), e.g. from Adobe DNG Converter.") else { return }
+            message: String(localized: "Choose an Adobe camera profile (.dcp), e.g. from Adobe DNG Converter.")) else { return }
         Task {
             do {
                 let o = try await CameraProfileLibrary.importProfile(at: url)

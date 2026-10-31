@@ -10,7 +10,7 @@ extension AppModel {
     public func copyGroup(_ group: AdjustGroup) {
         guard let p = focusedPhoto, !p.isVideo else { return }
         copyAdjustments(only: group)
-        show(Toast("Copied \(group.title) from \(p.filename). Apply pastes just this group", symbol: "doc.on.doc"))
+        show(Toast(String(localized: "Copied \(group.title) from \(p.filename). Apply pastes just this group"), symbol: "doc.on.doc"))
     }
 
     /// Paste only `group` from the clipboard onto the selection but the copied photo (one
@@ -18,7 +18,7 @@ extension AppModel {
     @discardableResult
     public func applyGroup(_ group: AdjustGroup) -> Int {
         guard clipboard != nil else {
-            show(Toast("Copy adjustments first", symbol: "doc.on.clipboard"))
+            show(Toast(String(localized: "Copy adjustments first"), symbol: "doc.on.clipboard"))
             return 0
         }
         let rel = group.supportsRelative ? settings.copyRelativeGroups.intersection([group]) : []
@@ -30,14 +30,14 @@ extension AppModel {
     /// Apply a preset (or a stack) to the focused image, or all selected with Edit All Selected. One undo step.
     public func applyPresets(_ stack: [Preset]) {
         guard !stack.isEmpty else { return }
-        let label = stack.count == 1 ? "Style \(stack[0].name)" : "\(stack.count) Styles"
+        let label = stack.count == 1 ? String(localized: "Style \(stack[0].name)") : String(localized: "\(stack.count) Styles")
         updateEdit(label: label) { e in e = Preset.apply(stack, to: e) }
     }
 
     /// The Styles panel's Original row: the photo back as shot, no adjustments at all
     /// (the focused image, or all selected with Edit All Selected). One undo step.
     public func resetToOriginal() {
-        updateEdit(label: "Original") { $0 = EditState() }
+        updateEdit(label: String(localized: "Original")) { $0 = EditState() }
     }
 
     /// The focused edit as a click on `preset`'s row leaves it (hover preview; a look's row
@@ -81,10 +81,28 @@ public struct AIMasker: Sendable {
         switch target {
         case .sky:
             SkySegmentation.shared.state == .ready
-                ? "Mask the sky on this Mac, on the selected layer (or a new one)"
-                : "Mask the sky on this Mac. The first time, an 86 MB model is downloaded and prepared."
+                ? String(localized: "Mask the sky on this Mac, on the selected layer (or a new one)")
+                : String(localized: "Mask the sky on this Mac. The first time, an 86 MB model is downloaded and prepared.")
         default:
-            "Mask the \(target.rawValue) with Apple Vision on this Mac, on the selected layer (or a new one)"
+            String(localized: "Mask the \(target.maskNoun) with Apple Vision on this Mac, on the selected layer (or a new one)")
+        }
+    }
+}
+
+extension AITarget {
+    /// The target in UI sentences, lowercase ("sky", "hair"); the raw value is its stable ID.
+    var maskNoun: String {
+        switch self {
+        case .subject: String(localized: "subject")
+        case .sky: String(localized: "sky")
+        case .person: String(localized: "person")
+        case .background: String(localized: "background")
+        case .face: String(localized: "face")
+        case .skin: String(localized: "skin")
+        case .eyes: String(localized: "eyes")
+        case .teeth: String(localized: "teeth")
+        case .hair: String(localized: "hair")
+        case .clothes: String(localized: "clothes")
         }
     }
 }
@@ -96,9 +114,9 @@ public enum AIMaskError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .unavailable(let t): "\(t.rawValue.capitalized) masks aren't available on this Mac."
-        case .nothingFound(let t): "No \(t.rawValue) found in this photo."
-        case .noImage: "No preview available for this photo."
+        case .unavailable(let t): String(localized: "\(t.maskNoun.localizedCapitalized) masks aren't available on this Mac.")
+        case .nothingFound(let t): String(localized: "No \(t.maskNoun) found in this photo.")
+        case .noImage: String(localized: "No preview available for this photo.")
         }
     }
 }
@@ -123,8 +141,8 @@ extension AppModel {
             throw AIMaskError.nothingFound(target)
         }
         var added = layerID ?? -1
-        updateEdits([photo.id], label: "AI \(target.rawValue.capitalized) Mask") { _, e in
-            added = LayerOps.addShape(.ai(.add, target), toLayer: layerID, newLayerName: target.rawValue.capitalized,
+        updateEdits([photo.id], label: String(localized: "AI \(target.maskNoun.localizedCapitalized) Mask")) { _, e in
+            added = LayerOps.addShape(.ai(.add, target), toLayer: layerID, newLayerName: target.maskNoun.localizedCapitalized,
                                       in: &e.layers)
         }
         // The viewer's cache: the one its overlay and renders read (not always `.shared`).

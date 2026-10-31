@@ -16,7 +16,8 @@ extension AppModel {
     /// Open the AI Optimize panel and analyze the targets.
     public func beginOptimize() {
         guard let optimizer else {
-            show(Toast("AI Optimize needs RAW files (it isn't available in the demo)", symbol: "sparkles", isError: true))
+            show(Toast(String(localized: "AI Optimize needs RAW files (it isn't available in the demo)"), symbol: "sparkles",
+                       isError: true))
             return
         }
         let ids = optimizeTargets
@@ -39,7 +40,7 @@ extension AppModel {
         optimizePanel = nil
         guard !results.isEmpty else { return }
         let ids = results.keys.sorted { $0.raw < $1.raw }
-        let label = ids.count > 1 ? "AI Optimize \(ids.count) Photos" : "AI Optimize"
+        let label = ids.count > 1 ? String(localized: "AI Optimize \(ids.count) Photos") : String(localized: "AI Optimize")
         // The reports are part of the step: undo restores the ones before (and their
         // sidecars), so a later run doesn't take the optimizer's undone values for the
         // user's resets.
@@ -51,8 +52,10 @@ extension AppModel {
         endEditGesture()
         let changes = results.values.reduce(0) { $0 + $1.report.appliedChanges.count }
         show(Toast(ids.count > 1
-                   ? "AI Optimize: \(changes) change\(changes == 1 ? "" : "s") on \(ids.count) photos"
-                   : "AI Optimize: \(changes) change\(changes == 1 ? "" : "s") applied", symbol: "sparkles"))
+                   ? (changes == 1 ? String(localized: "AI Optimize: \(changes) change on \(ids.count) photos")
+                                   : String(localized: "AI Optimize: \(changes) changes on \(ids.count) photos"))
+                   : (changes == 1 ? String(localized: "AI Optimize: \(changes) change applied")
+                                   : String(localized: "AI Optimize: \(changes) changes applied")), symbol: "sparkles"))
     }
 
     /// Set (or with `nil` clear) photos' reports in memory and, in order, in their
@@ -116,20 +119,21 @@ extension AppModel {
 
 /// Texts of "Why these settings?".
 public enum OptimizeWhy {
-    public static let buttonLabel = "Why these settings?"
-    public static let buttonHelp = "Why these settings? What AI Optimize changed on this photo, and why"
-    public static let caveat = "Only values the photo still has are listed."
+    public static let buttonLabel = String(localized: "Why these settings?")
+    public static let buttonHelp = String(localized: "Why these settings? What AI Optimize changed on this photo, and why")
+    public static let caveat = String(localized: "Only values the photo still has are listed.")
 
     /// The sentence above the explanations: `inEffect` of the report's applied changes
     /// are still the photo's values.
     public static func intro(_ r: OptimizeReport, inEffect: Int) -> String {
         let n = r.appliedChanges.count
-        guard n > 0 else { return "AI Optimize looked at this photo and left its settings as they were." }
+        guard n > 0 else { return String(localized: "AI Optimize looked at this photo and left its settings as they were.") }
         guard inEffect > 0 else {
-            return "The values AI Optimize set have all been changed since (undone, pasted over or adjusted)."
+            return String(localized: "The values AI Optimize set have all been changed since (undone, pasted over or adjusted).")
         }
-        let these = inEffect == 1 ? "this value" : "these \(inEffect) values"
-        let since = inEffect < n ? " (\(n - inEffect) more were changed since)" : ""
-        return "AI Optimize set \(these)\(since), each chosen by a rule from measurements of this photo."
+        let these = inEffect == 1 ? String(localized: "this value") : String(localized: "these \(inEffect) values")
+        let since = inEffect < n ? String(localized: " (\(n - inEffect) more were changed since)") : ""
+        return String(localized: "AI Optimize set \(these)\(since), each chosen by a rule from measurements of this photo.")
+
     }
 }

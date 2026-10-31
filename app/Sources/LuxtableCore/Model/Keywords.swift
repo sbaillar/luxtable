@@ -47,11 +47,11 @@ extension AppModel {
     public func addKeywords(_ text: String) {
         let new = Keywords.parse(text)
         guard !new.isEmpty else { return }
-        updatePhotos(selectedIDs, label: "Add Keywords") { $0.keywords = Keywords.merge($0.keywords, adding: new) }
+        updatePhotos(selectedIDs, label: String(localized: "Add Keywords")) { $0.keywords = Keywords.merge($0.keywords, adding: new) }
     }
 
     /// Remove a keyword from every selected photo (one undo step).
     public func removeKeyword(_ keyword: String) {
-        updatePhotos(selectedIDs, label: "Remove Keyword") { $0.keywords = Keywords.removing(keyword, from: $0.keywords) }
+        updatePhotos(selectedIDs, label: String(localized: "Remove Keyword")) { $0.keywords = Keywords.removing(keyword, from: $0.keywords) }
     }
 }

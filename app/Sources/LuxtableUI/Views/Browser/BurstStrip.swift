@@ -89,7 +89,7 @@ private struct BurstStripContent: View {
                 Spacer(minLength: DS.Space.m)
                 Button("Use as Cover", systemImage: "checkmark.seal") { model.useAsCover() }
                     .disabled(picker.current.map { $0 == cover || !(decision?.candidates.contains($0) ?? false) } ?? true)
-                    .help(picker.current.flatMap { model.coverHint(for: $0) } ?? "Show this frame when the burst is collapsed (⏎)")
+                    .help(picker.current.flatMap { model.coverHint(for: $0) } ?? String(localized: "Show this frame when the burst is collapsed (⏎)"))
                 Button("Close", systemImage: "xmark") { model.closeBurstStrip() }
                     .labelStyle(.iconOnly)
                     .buttonStyle(.borderless)
@@ -147,13 +147,13 @@ private struct BurstStripContent: View {
     /// "Best Shot" for the burst's Best Shot; "Your pick" or "AI pick" when they broke a tie
     /// for the top rating; else "Cover".
     static func label(_ d: CoverDecision?) -> String {
-        guard let d else { return "Cover" }
-        if d.source == .bestShot { return "Best Shot" }
-        guard d.isTie else { return "Cover" }
+        guard let d else { return String(localized: "Cover") }
+        if d.source == .bestShot { return String(localized: "Best Shot") }
+        guard d.isTie else { return String(localized: "Cover") }
         switch d.source {
-        case .user: return "Your pick"
-        case .ai: return "AI pick"
-        case .rule, .bestShot: return "Cover"
+        case .user: return String(localized: "Your pick")
+        case .ai: return String(localized: "AI pick")
+        case .rule, .bestShot: return String(localized: "Cover")
         }
     }
 }
@@ -260,6 +260,6 @@ private struct BurstFrame: View {
             .accessibilityLabel("\(item.photo.filename), \(item.photo.rating) stars, \(index + 1) of \(count)\(isCover ? ", \(coverLabel)" : "")")
             .accessibilityAddTraits(isCurrent ? [.isButton, .isSelected] : .isButton)
             .accessibilityAction { onShow() }
-            .accessibilityAction(named: canBeCover ? "Use as Cover" : (hint ?? "Use as Cover"), onUseAsCover)
+            .accessibilityAction(named: canBeCover ? String(localized: "Use as Cover") : (hint ?? String(localized: "Use as Cover")), onUseAsCover)
     }
 }

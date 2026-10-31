@@ -6,7 +6,7 @@ import SwiftUI
 struct HistogramView: View {
     let histogram: Histogram?
     /// "Histogram", or "Preview histogram" when the viewer shows the embedded JPEG.
-    var title: String = "Histogram"
+    var title: String = PanelChrome.histogramTitle(rendersEdits: true)
     var height: CGFloat = 120
     var showsClipping = true
 
@@ -38,14 +38,14 @@ struct HistogramView: View {
             if showsClipping, let h = histogram {
                 HStack {
                     ClipIndicator(active: h.clipsShadows, color: .blue, pointsLeft: true)
-                        .help(String(format: "Shadow clipping: %.2f%% of pixels are pure black in a channel", h.shadowClipFraction * 100))
+                        .help(String(localized: "Shadow clipping: \(String(format: "%.2f", h.shadowClipFraction * 100))% of pixels are pure black in a channel"))
                     Spacer()
                     ClipIndicator(active: h.clipsHighlights, color: .red, pointsLeft: false)
-                        .help(String(format: "Highlight clipping: %.2f%% of pixels are pure white in a channel", h.highlightClipFraction * 100))
+                        .help(String(localized: "Highlight clipping: \(String(format: "%.2f", h.highlightClipFraction * 100))% of pixels are pure white in a channel"))
                 }
                 .padding(DS.Space.xs)
             }
-            if title != "Histogram" {
+            if title != PanelChrome.histogramTitle(rendersEdits: true) {
                 Text(title.uppercased())
                     .font(.system(size: 8, weight: .semibold))
                     .tracking(0.5)
@@ -64,7 +64,7 @@ struct HistogramView: View {
         .background(DS.plotBackground, in: .rect(cornerRadius: DS.Radius.m))
         .overlay(RoundedRectangle(cornerRadius: DS.Radius.m).strokeBorder(DS.hairline))
         .clipShape(.rect(cornerRadius: DS.Radius.m))
-        .help(title == "Histogram" ? "Histogram of the rendered image (red, green, blue, and luminance)"
+        .help(title == PanelChrome.histogramTitle(rendersEdits: true) ? "Histogram of the rendered image (red, green, blue, and luminance)"
               : "Histogram of the embedded preview (edits aren't rendered yet)")
         .accessibilityLabel(title)
         .accessibilityValue(HistogramText.value(histogram)) // [cul9] L6

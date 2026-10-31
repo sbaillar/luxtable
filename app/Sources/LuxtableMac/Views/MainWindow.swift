@@ -244,8 +244,8 @@ struct StatusBar: View {
     private var countText: String {
         let n = model.visibleIDs.count
         let sel = model.selection.count
-        let base = "\(n.formatted()) photo\(n == 1 ? "" : "s")"
-        return sel > 1 ? "\(base) · \(sel.formatted()) selected" : base
+        let base = n == 1 ? String(localized: "1 photo") : String(localized: "\(n.formatted()) photos")
+        return sel > 1 ? base + " · " + String(localized: "\(sel.formatted()) selected") : base
     }
 }
 

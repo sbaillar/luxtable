@@ -42,7 +42,7 @@ public final class CullFinisher {
 
     /// Why the file commands are off here.
     public static let inPlaceReason =
-        "This folder was opened in place: Luxtable never moves your own files. Import it to organize it."
+        String(localized: "This folder was opened in place: Luxtable never moves your own files. Import it to organize it.")
 
     init() {}
 
@@ -95,9 +95,10 @@ public final class CullFinisher {
         public var message: String {
             let n = ids.count
             let stars = String(repeating: "★", count: minRating)
-            let rated = minRating == 5 ? "rated \(stars)" : "rated \(stars) and up"
-            let place = scope == .selection ? "in the selection" : "in the current view"
-            return "Move \(n) \(n == 1 ? "photo" : "photos") to Selects (Picked, or \(rated), \(place))"
+            let rated = minRating == 5 ? String(localized: "rated \(stars)") : String(localized: "rated \(stars) and up")
+            let place = scope == .selection ? String(localized: "in the selection") : String(localized: "in the current view")
+            return n == 1 ? String(localized: "Move 1 photo to Selects (Picked, or \(rated), \(place))")
+                : String(localized: "Move \(n) photos to Selects (Picked, or \(rated), \(place))")
         }
     }
 
@@ -137,7 +138,7 @@ public final class CullFinisher {
             let did = !done.moves.isEmpty || !done.hidden.isEmpty
             lastMove = did ? FileMove(moves: done.moves, hidden: done.hidden, historyDepth: app.history.undoStack.count) : nil
             if let e = done.error {
-                app.show(Toast("Stopped part-way (⌘Z undoes what was done): \(e)", symbol: "exclamationmark.triangle", isError: true))
+                app.show(Toast(String(localized: "Stopped part-way (⌘Z undoes what was done): \(String(describing: e))"), symbol: "exclamationmark.triangle", isError: true))
             } else if did {
                 app.show(Toast(Self.trashedMessage(files: done.moves.count, variants: done.hidden.count), symbol: "trash"))
             }
@@ -149,12 +150,14 @@ public final class CullFinisher {
 
     static func trashedMessage(files: Int, variants: Int) -> String {
         var parts: [String] = []
-        if files > 0 { parts.append("Moved \(files) rejected \(files == 1 ? "photo" : "photos") to the session Trash") }
+        if files > 0 { parts.append(files == 1 ? String(localized: "Moved 1 rejected photo to the session Trash")
+                                       : String(localized: "Moved \(files) rejected photos to the session Trash")) }
         if variants > 0 {
-            let hid = "\(variants) rejected \(variants == 1 ? "variant" : "variants") of photos you kept"
-            parts.append(parts.isEmpty ? "Hid \(hid)" : "hid \(hid)")
+            let hid = variants == 1 ? String(localized: "1 rejected variant of photos you kept")
+                : String(localized: "\(variants) rejected variants of photos you kept")
+            parts.append(parts.isEmpty ? String(localized: "Hid \(hid)") : String(localized: "hid \(hid)"))
         }
-        return parts.joined(separator: " and ") + " (⌘Z to undo)"
+        return String(localized: "\(parts.joined(separator: String(localized: " and "))) (⌘Z to undo)")
     }
 
     /// Ask before moving to Selects (the view shows the count and the rule).
@@ -178,7 +181,8 @@ public final class CullFinisher {
 
     private func moveToSelects(_ ids: [PhotoID]) async {
         await move(ids, to: .selects,
-                   done: { n in "Moved \(n) \(n == 1 ? "photo" : "photos") to Selects (⌘Z to undo)" })
+                   done: { n in n == 1 ? String(localized: "Moved 1 photo to Selects (⌘Z to undo)")
+                       : String(localized: "Moved \(n) photos to Selects (⌘Z to undo)") })
     }
 
     /// Everything in the session Trash back into Capture, and every variant set
@@ -206,11 +210,11 @@ public final class CullFinisher {
     }
 
     static func restoredMessage(files: Int, variants: Int) -> String {
-        if files == 0 && variants == 0 { return "The session Trash is empty" }
+        if files == 0 && variants == 0 { return String(localized: "The session Trash is empty") }
         var parts: [String] = []
-        if files > 0 { parts.append("\(files) \(files == 1 ? "photo" : "photos")") }
-        if variants > 0 { parts.append("\(variants) \(variants == 1 ? "variant" : "variants")") }
-        return "Restored " + parts.joined(separator: " and ") + " from the session Trash"
+        if files > 0 { parts.append(files == 1 ? String(localized: "1 photo") : String(localized: "\(files) photos")) }
+        if variants > 0 { parts.append(variants == 1 ? String(localized: "1 variant") : String(localized: "\(variants) variants")) }
+        return String(localized: "Restored \(parts.joined(separator: String(localized: " and "))) from the session Trash")
     }
 
     /// Ask before "Delete Rejected…" (the view shows the confirmation).
@@ -221,8 +225,8 @@ public final class CullFinisher {
     }
 
     public static func deleteMessage(_ n: Int, archiveNote: String? = nil) -> String {
-        "\(n) rejected \(n == 1 ? "file goes" : "files go") to the macOS Trash and \(n == 1 ? "leaves" : "leave") this session. "
-            + "You can drag \(n == 1 ? "it" : "them") back out of the Trash in Finder until you empty it."
+        (n == 1 ? String(localized: "1 rejected file goes to the macOS Trash and leaves this session. You can drag it back out of the Trash in Finder until you empty it.")
+            : String(localized: "\(n) rejected files go to the macOS Trash and leave this session. You can drag them back out of the Trash in Finder until you empty it."))
             + (archiveNote.map { "\n\n" + $0 } ?? "")
     }
 
@@ -234,14 +238,14 @@ public final class CullFinisher {
         return Self.archiveNote(settings: app.settings.archiveSnapshot, state: app.archiveStatus.state)
     }
 
-    static let archiveOffNote = "Archiving is off: the Trash holds the only copy."
+    static let archiveOffNote = String(localized: "Archiving is off: the Trash holds the only copy.")
 
     public static func archiveNote(settings: ArchiveSettingsSnapshot, state: ArchiveStatus.State) -> String? {
         if !settings.isActive { return archiveOffNote }
         if !settings.archiveRejected {
-            return "Rejected photos aren't archived (Settings › Archive): the Trash holds the only copy."
+            return String(localized: "Rejected photos aren't archived (Settings › Archive): the Trash holds the only copy.")
         }
-        if state != .idle { return "The archive isn't up to date: some of them may exist only here." }
+        if state != .idle { return String(localized: "The archive isn't up to date: some of them may exist only here.") }
         return nil
     }
 
@@ -260,7 +264,7 @@ public final class CullFinisher {
             let n = try await store.emptyTrash(in: session)
             lastMove = nil
             await app.refreshCurrentSession(keepingHistory: true)
-            app.show(Toast("Moved \(n) rejected \(n == 1 ? "file" : "files") to the Trash", symbol: "trash"))
+            app.show(Toast(n == 1 ? String(localized: "Moved 1 rejected file to the Trash") : String(localized: "Moved \(n) rejected files to the Trash"), symbol: "trash"))
         } catch {
             lastMove = nil
             await app.refreshCurrentSession(keepingHistory: true)
@@ -276,7 +280,7 @@ public final class CullFinisher {
             let v = try await store.newVariant(of: id)
             await app.refreshCurrentSession()
             app.focus(v, extend: false)
-            app.show(Toast("New variant of \(app.photo(v)?.filename ?? "the photo")", symbol: "square.on.square"))
+            app.show(Toast(String(localized: "New variant of \(app.photo(v)?.filename ?? String(localized: "the photo"))"), symbol: "square.on.square"))
         } catch {
             app.show(error)
         }
@@ -331,7 +335,7 @@ public final class CullFinisher {
             try await store.moveBack(m.moves, hidden: m.hidden, in: session)
             await app.refreshCurrentSession(keepingHistory: true)
             let n = m.moves.count + m.hidden.count
-            app.show(Toast("Undo move of \(n) \(n == 1 ? "photo" : "photos")", symbol: "arrow.uturn.backward"))
+            app.show(Toast(n == 1 ? String(localized: "Undo move of 1 photo") : String(localized: "Undo move of \(n) photos"), symbol: "arrow.uturn.backward"))
         } catch {
             await app.refreshCurrentSession(keepingHistory: true)
             app.show(error)

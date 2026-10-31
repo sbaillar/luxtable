@@ -138,7 +138,7 @@ extension ViewerModel {
         let aspect = pane.image.width / max(pane.image.height, 1e-6)
         let u = pane.normalized(p)
         let t = transform
-        app.updateEdits([d.photo], label: "Edit Gradient", coalesceKey: "gradient-handle") { _, e in
+        app.updateEdits([d.photo], label: String(localized: "Edit Gradient"), coalesceKey: "gradient-handle") { _, e in
             guard let li = e.layers.firstIndex(where: { $0.id == d.layer }), d.index < e.layers[li].mask.shapes.count else { return }
             let shown = t.toDisplay(e.layers[li].mask.shapes[d.index], displayAspect: aspect)
             e.layers[li].mask.shapes[d.index] = t.toOriented(MaskHandles.move(shown, handle: d.handle, to: u, aspect: aspect),

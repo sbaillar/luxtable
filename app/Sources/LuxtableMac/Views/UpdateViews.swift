@@ -145,7 +145,7 @@ struct WhatsNewSheet: View {
 
 /// The short release notes as bullets, scrolling when long.
 struct ReleaseNotesList: View {
-    let title: String
+    let title: LocalizedStringKey
     let notes: [String]
 
     var body: some View {

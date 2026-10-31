@@ -121,12 +121,12 @@ public enum ToolWorkspaceCommands {
     /// replaces stays one Undo Workspace Change away (the toast says so).
     public static func loadWorkspace(named name: String, model: AppModel, layout: ToolLayout) {
         guard let collapsed = layout.loadWorkspace(named: name, collapsed: model.collapsedPanels) else { return }
-        apply(collapsed, model: model, layout: layout, message: "Workspace “\(name)”")
+        apply(collapsed, model: model, layout: layout, message: String(localized: "Workspace “\(name)”"))
     }
 
     /// The built-in layout, with the default collapsed panels (undoable).
     public static func resetToDefault(model: AppModel, layout: ToolLayout) {
-        apply(layout.resetToDefault(collapsed: model.collapsedPanels), model: model, layout: layout, message: "Default tools")
+        apply(layout.resetToDefault(collapsed: model.collapsedPanels), model: model, layout: layout, message: String(localized: "Default tools"))
     }
 
     /// Tools ▸ Workspaces ▸ Undo Workspace Change.
@@ -140,7 +140,7 @@ public enum ToolWorkspaceCommands {
         model.collapsedPanels = collapsed
         model.toolTab = selectedTab(model: model, layout: layout)
         if layout.undoWorkspace != nil {
-            model.show(Toast("\(message). Undo with Tools ▸ Workspaces ▸ Undo Workspace Change.", symbol: "slider.horizontal.3"))
+            model.show(Toast(String(localized: "\(message). Undo with Tools ▸ Workspaces ▸ Undo Workspace Change."), symbol: "slider.horizontal.3"))
         }
     }
 }

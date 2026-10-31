@@ -81,25 +81,24 @@ public enum WhiteBalanceReadout {
     public static func asShot(_ v: WhiteBalanceValue) -> String {
         let t = (v.tint * 10).rounded() / 10
         let tint = t == 0 ? "0" : String(format: "%+.1f", t)
-        return "As shot: \(Formatters.kelvin(v.kelvin.rounded())), tint \(tint)"
+        return String(localized: "As shot: \(Formatters.kelvin(v.kelvin.rounded())), tint \(tint)")
     }
 }
 
 public enum LensReadout {
     /// The applied profile ("Sony FE 24-70mm F2.8 GM"), else why none applies.
     public static func profile(info: PhotoDevelopInfo?, exifLens: String?, chosen: String? = nil) -> String {
-        if let chosen { return "\(chosen) (chosen)" }
+        if let chosen { return String(localized: "\(chosen) (chosen)") }
         if let p = info?.lensProfile { return p }
         let lens = exifLens.flatMap { $0.isEmpty ? nil : $0 }
         guard info != nil else { return lens ?? "–" }
-        return lens.map { "No profile for \($0)" } ?? "No lens information"
+        return lens.map { String(localized: "No profile for \($0)") } ?? String(localized: "No lens information")
     }
 
     /// Guidance when no profile applies automatically (e.g. Sigma or Tamron lenses), or nil.
     public static func noMatchHelp(info: PhotoDevelopInfo?, chosen: String?) -> String? {
         guard chosen == nil, let info, info.lensProfile == nil else { return nil }
-        return "Luxtable has no correction profile for this lens, so distortion and corner shading aren't corrected. "
-            + "Pick a matching profile below if one fits, or use Vignette and Perspective by hand."
+        return String(localized: "Luxtable has no correction profile for this lens, so distortion and corner shading aren't corrected. Pick a matching profile below if one fits, or use Vignette and Perspective by hand.")
     }
 }
 

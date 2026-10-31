@@ -100,7 +100,8 @@ extension AppModel {
             target = forward ? nav.dropFirst(current.map { $0 + 1 } ?? 0).first(where: wanted)
                 : nav.prefix(current ?? 0).last(where: wanted)
             if target == nil {
-                show(Toast("No \(forward ? "more" : "earlier") \(match.adjective) photos", symbol: "mic"))
+                show(Toast(forward ? String(localized: "No more \(match.displayAdjective) photos")
+                                   : String(localized: "No earlier \(match.displayAdjective) photos"), symbol: "mic"))
             }
         }
         guard let target else { return false }
@@ -115,7 +116,8 @@ extension AppModel {
         let current = navIndex(of: focusedID, in: nav)
         let target = min(max((current ?? (n > 0 ? -1 : nav.count)) + n, 0), nav.count - 1)
         guard target != current else {
-            show(Toast(n > 0 ? "Already at the last photo" : "Already at the first photo", symbol: "mic"))
+            show(Toast(n > 0 ? String(localized: "Already at the last photo") : String(localized: "Already at the first photo"),
+                       symbol: "mic"))
             return false
         }
         focus(nav[target], extend: false)
@@ -126,7 +128,8 @@ extension AppModel {
     private func voiceGoTo(_ n: Int) -> Bool {
         let nav = voiceNavigation
         guard n <= nav.count else {
-            show(Toast("There is no photo \(n): \(nav.count) \(nav.count == 1 ? "is" : "are") shown", symbol: "mic"))
+            show(Toast(nav.count == 1 ? String(localized: "There is no photo \(n): \(nav.count) is shown")
+                                      : String(localized: "There is no photo \(n): \(nav.count) are shown"), symbol: "mic"))
             return false
         }
         focus(nav[n - 1], extend: false)
@@ -140,54 +143,59 @@ extension AppModel {
         let nav = voiceNavigation
         // Counted from the photo on screen: one a filter hides would start somewhere else.
         guard let focused = focusedID, visibleIndex(of: focused) != nil, let current = navIndex(of: focused, in: nav) else {
-            show(Toast(focusedID == nil ? "No photo is focused" : "The focused photo is hidden by the filter", symbol: "mic"))
+            show(Toast(focusedID == nil ? String(localized: "No photo is focused")
+                                         : String(localized: "The focused photo is hidden by the filter"), symbol: "mic"))
             return nil
         }
         let start = span.includesFocused ? current : current + 1
         let ids = Array(nav[min(start, nav.count)..<min(start + span.count, nav.count)])
         guard !ids.isEmpty else {
-            show(Toast("No photos after this one", symbol: "mic"))
+            show(Toast(String(localized: "No photos after this one"), symbol: "mic"))
             return nil
         }
-        let photos = "\(ids.count) photo\(ids.count == 1 ? "" : "s")"
+        let photos = ids.count == 1 ? String(localized: "\(ids.count) photo") : String(localized: "\(ids.count) photos")
         switch batch {
         case .rate(let r):
-            updatePhotos(ids, label: r == 0 ? "Clear Rating of \(photos)" : "Rate \(photos) \(r)") { $0.rating = r }
-            return r == 0 ? "Cleared the rating of \(photos)" : "Rated \(photos) \(String(repeating: "★", count: r))"
+            updatePhotos(ids, label: r == 0 ? String(localized: "Clear Rating of \(photos)") : String(localized: "Rate \(photos) \(r)")) {
+                $0.rating = r
+            }
+            return r == 0 ? String(localized: "Cleared the rating of \(photos)")
+                : String(localized: "Rated \(photos) \(String(repeating: "★", count: r))")
         case .pick, .reject, .unflag:
             let (state, verb, done): (PickState, String, String) = switch batch {
-            case .pick: (.picked, "Pick", "Picked")
-            case .reject: (.rejected, "Reject", "Rejected")
-            default: (.none, "Unflag", "Unflagged")
+            case .pick: (.picked, String(localized: "Pick \(photos)"), String(localized: "Picked \(photos)"))
+            case .reject: (.rejected, String(localized: "Reject \(photos)"), String(localized: "Rejected \(photos)"))
+            default: (.none, String(localized: "Unflag \(photos)"), String(localized: "Unflagged \(photos)"))
             }
-            updatePhotos(ids, label: "\(verb) \(photos)") { $0.pick = state }
-            return "\(done) \(photos)"
+            updatePhotos(ids, label: verb) { $0.pick = state }
+            return done
         case .select:
             // Exactly the photos named, like "reject the next 3" acts on them, with focus on
             // the first: a plain "pick" then acts on what is on screen too.
             focus(ids[0], extend: false)
             selection = Set(ids)
-            return "Selected \(photos)"
+            return String(localized: "Selected \(photos)")
         case .apply:
             // Apply's own rules (`applyToSelection`): Copy's options, never onto the copied photo.
             guard let clipboard else {
-                show(Toast("Copy adjustments first (“copy settings”)", symbol: "doc.on.clipboard"))
+                show(Toast(String(localized: "Copy adjustments first (“copy settings”)"), symbol: "doc.on.clipboard"))
                 return nil
             }
             let options = pasteOptions
             guard !options.groups.isEmpty else {
-                show(Toast("No adjustments to apply: choose them in Copy’s options", symbol: "doc.on.clipboard"))
+                show(Toast(String(localized: "No adjustments to apply: choose them in Copy’s options"), symbol: "doc.on.clipboard"))
                 return nil
             }
             let targets = ids.filter { $0 != clipboard.sourceID }
             guard !targets.isEmpty else {
-                show(Toast("Apply never pastes onto the copied photo", symbol: "doc.on.clipboard"))
+                show(Toast(String(localized: "Apply never pastes onto the copied photo"), symbol: "doc.on.clipboard"))
                 return nil
             }
             let waiting = pendingPaste != nil // a second paste while one loads is dropped (and says so)
             pasteLoadingAsShotIfNeeded(to: targets, options: options)
             guard !waiting else { return nil }
-            return "Applied adjustments to \(targets.count) photo\(targets.count == 1 ? "" : "s")"
+            return targets.count == 1 ? String(localized: "Applied adjustments to \(targets.count) photo")
+                : String(localized: "Applied adjustments to \(targets.count) photos")
         }
     }
 }

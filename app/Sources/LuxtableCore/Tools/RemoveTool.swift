@@ -53,7 +53,7 @@ extension ViewerModel {
         let tool = app.colorTools.removal
         tool.stroke = nil
         guard s.photo == app.focusedID, let r = tool.removal(points: s.points) else { return true }
-        app.updateEdits([s.photo], label: "Remove") { _, e in e.removals.append(r) }
+        app.updateEdits([s.photo], label: String(localized: "Remove")) { _, e in e.removals.append(r) }
         tool.onRemove()
         return true
     }
@@ -68,6 +68,6 @@ extension ViewerModel {
 extension AppModel {
     /// Undo-able "remove the last removal" of the focused photo.
     public func removeLastRemoval() {
-        updateEdit(label: "Undo Removal") { e in _ = e.removals.popLast() }
+        updateEdit(label: String(localized: "Undo Removal")) { e in _ = e.removals.popLast() }
     }
 }

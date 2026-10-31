@@ -17,3 +17,5 @@ Open Settings with `⌘,`. Its panes are listed in a sidebar on the left; an int
 | **Devices** | The Mac ↔ iPad link and paired devices |
 | **Plugins** | The optional integrations (on or off), installed plug-ins, their permissions, and development folders |
 | **Updates** | Automatic update checks, beta versions and Check Now |
+
+Luxtable has no language setting of its own: it uses the language you choose for it in macOS (see [Language](01-install.md#language)).

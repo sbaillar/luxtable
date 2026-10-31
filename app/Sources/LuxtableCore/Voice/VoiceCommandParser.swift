@@ -29,10 +29,10 @@ public enum VoiceMatch: Equatable, Sendable {
     /// "Next \(label)".
     var label: String {
         switch self {
-        case .unrated: "unrated"
-        case .picked: "pick"
-        case .rejected: "reject"
-        case .unflagged: "unflagged"
+        case .unrated: String(localized: "unrated")
+        case .picked: String(localized: "pick")
+        case .rejected: String(localized: "reject")
+        case .unflagged: String(localized: "unflagged")
         case .stars(let n): String(repeating: "★", count: n)
         }
     }
@@ -45,6 +45,17 @@ public enum VoiceMatch: Equatable, Sendable {
         case .rejected: "rejected"
         case .unflagged: "unflagged"
         case .stars(let n): "\(n)-star"
+        }
+    }
+
+    /// `adjective` as the UI says it (`adjective` itself names custom phrases: never localized).
+    var displayAdjective: String {
+        switch self {
+        case .unrated: String(localized: "unrated")
+        case .picked: String(localized: "picked")
+        case .rejected: String(localized: "rejected")
+        case .unflagged: String(localized: "unflagged")
+        case .stars(let n): String(localized: "\(n)-star")
         }
     }
 }
@@ -104,72 +115,76 @@ public enum VoiceAction: Equatable, Sendable {
     public var label: String {
         switch self {
         case .key(let k): Self.label(k)
-        case .menu(.zoomIn): "Zoom in"
-        case .menu(.zoomOut): "Zoom out"
-        case .menu(.zoomFit): "Fit"
+        case .menu(.zoomIn): String(localized: "Zoom in")
+        case .menu(.zoomOut): String(localized: "Zoom out")
+        case .menu(.zoomFit): String(localized: "Fit")
         case .menu(.zoomActual): "100%"
-        case .menu(.copyAdjustments): "Copy adjustments"
-        case .menu(.applyAdjustments): "Apply adjustments"
-        case .menu(.autoAdjust): "Auto adjust"
-        case .menu(.rotateLeft): "Rotate left"
-        case .menu(.rotateRight): "Rotate right"
+        case .menu(.copyAdjustments): String(localized: "Copy adjustments")
+        case .menu(.applyAdjustments): String(localized: "Apply adjustments")
+        case .menu(.autoAdjust): String(localized: "Auto adjust")
+        case .menu(.rotateLeft): String(localized: "Rotate left")
+        case .menu(.rotateRight): String(localized: "Rotate right")
         case .menu(let m): m.rawValue
-        case .jump(.first): "First"
-        case .jump(.last): "Last"
-        case .jump(.seek(let m, let forward)): "\(forward ? "Next" : "Previous") \(m.label)"
-        case .step(let n): n > 0 ? "Forward \(n)" : "Back \(-n)"
-        case .goTo(let n): "Photo \(n)"
-        case .batch(let b, let s): "\(Self.label(b)) \(s.includesFocused ? "these" : "next") \(s.count)"
+        case .jump(.first): String(localized: "First")
+        case .jump(.last): String(localized: "Last")
+        case .jump(.seek(let m, let forward)):
+            forward ? String(localized: "Next \(m.label)") : String(localized: "Previous \(m.label)")
+        case .step(let n): n > 0 ? String(localized: "Forward \(n)") : String(localized: "Back \(-n)")
+        case .goTo(let n): String(localized: "Photo \(n)")
+        case .batch(let b, let s):
+            s.includesFocused ? String(localized: "\(Self.label(b)) these \(s.count)")
+                : String(localized: "\(Self.label(b)) next \(s.count)")
         case .repeated(let k, let n): "\(Self.label(k)) ×\(n)"
         case .showFlags(let f): Self.label(f)
-        case .help(let shown): shown ? "Voice commands" : "Close voice commands"
-        case .stopListening: "Stop listening"
-        case .setPanelsHidden(let h): h ? "Hide panels" : "Show panels"
-        case .setFullScreen(let f): f ? "Full screen" : "Exit full screen"
-        case .edit(let text): "Edit: “\(text)”, press Return"
+        case .help(let shown): shown ? String(localized: "Voice commands") : String(localized: "Close voice commands")
+        case .stopListening: String(localized: "Stop listening")
+        case .setPanelsHidden(let h): h ? String(localized: "Hide panels") : String(localized: "Show panels")
+        case .setFullScreen(let f): f ? String(localized: "Full screen") : String(localized: "Exit full screen")
+        case .edit(let text): String(localized: "Edit: “\(text)”, press Return")
         }
     }
 
     private static func label(_ k: KeyCommand) -> String {
         switch k {
-        case .rate(0): "No stars"
+        case .rate(0): String(localized: "No stars")
         case .rate(let n): String(repeating: "★", count: n)
-        case .tag(let t): "\(t.name) tag"
-        case .pick: "Pick"
-        case .reject: "Reject"
-        case .unflag: "Unflag"
-        case .move(.right, _): "Next"
-        case .move(.left, _): "Previous"
-        case .gridMode: "Grid"
-        case .viewerMode: "Viewer"
-        case .toggleBeforeAfter: "Before / after"
-        case .togglePinCompare: "Compare"
-        case .toggleFullScreen: "Full screen"
-        case .togglePanels: "Panels"
-        case .undo: "Undo"
-        case .redo: "Redo"
+        case .tag(let t): String(localized: "\(t.title) tag")
+        case .pick: String(localized: "Pick")
+        case .reject: String(localized: "Reject")
+        case .unflag: String(localized: "Unflag")
+        case .move(.right, _): String(localized: "Next")
+        case .move(.left, _): String(localized: "Previous")
+        case .gridMode: String(localized: "Grid")
+        case .viewerMode: String(localized: "Viewer")
+        case .toggleBeforeAfter: String(localized: "Before / after")
+        case .togglePinCompare: String(localized: "Compare")
+        case .toggleFullScreen: String(localized: "Full screen")
+        case .togglePanels: String(localized: "Panels")
+        case .undo: String(localized: "Undo")
+        case .redo: String(localized: "Redo")
         default: "\(k)"
         }
     }
 
     private static func label(_ b: VoiceBatch) -> String {
         switch b {
-        case .rate(let n): "Rate \(n == 0 ? "no stars" : String(repeating: "★", count: n))"
-        case .pick: "Pick"
-        case .reject: "Reject"
-        case .unflag: "Unflag"
-        case .select: "Select"
-        case .apply: "Apply to"
+        case .rate(0): String(localized: "Rate no stars")
+        case .rate(let n): String(localized: "Rate \(String(repeating: "★", count: n))")
+        case .pick: String(localized: "Pick")
+        case .reject: String(localized: "Reject")
+        case .unflag: String(localized: "Unflag")
+        case .select: String(localized: "Select")
+        case .apply: String(localized: "Apply to")
         }
     }
 
     private static func label(_ f: PhotoFilter.PickFilter) -> String {
         switch f {
-        case .all: "Show all"
-        case .picked: "Show picks"
-        case .rejected: "Show rejects"
-        case .unflagged: "Show unflagged"
-        case .unrejected: "Show not rejected"
+        case .all: String(localized: "Show all")
+        case .picked: String(localized: "Show picks")
+        case .rejected: String(localized: "Show rejects")
+        case .unflagged: String(localized: "Show unflagged")
+        case .unrejected: String(localized: "Show not rejected")
         }
     }
 

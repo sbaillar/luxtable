@@ -49,12 +49,12 @@ struct MainToolbar: ToolbarContent {
                 Button { model.undo() } label: { Label("Undo", systemImage: "arrow.uturn.backward") }
                     .buttonStyle(ToolbarPillStyle())
                     .disabled(!model.history.canUndo)
-                    .help(model.history.undoLabel.map { "Undo \($0) (⌘Z)" } ?? "Nothing to undo (⌘Z)")
+                    .help(model.history.undoLabel.map { String(localized: "Undo \($0) (⌘Z)") } ?? String(localized: "Nothing to undo (⌘Z)"))
                     .accessibilityLabel(ToolbarControl.undo.control(model).label)
                 Button { model.redo() } label: { Label("Redo", systemImage: "arrow.uturn.forward") }
                     .buttonStyle(ToolbarPillStyle())
                     .disabled(!model.history.canRedo)
-                    .help(model.history.redoLabel.map { "Redo \($0) (⇧⌘Z)" } ?? "Nothing to redo (⇧⌘Z)")
+                    .help(model.history.redoLabel.map { String(localized: "Redo \($0) (⇧⌘Z)") } ?? String(localized: "Nothing to redo (⇧⌘Z)"))
                     .accessibilityLabel(ToolbarControl.redo.control(model).label)
             }
         }
@@ -120,7 +120,7 @@ struct SessionPicker: View {
         } label: {
             HStack(spacing: DS.Space.s) {
                 Image(systemName: "rectangle.stack").foregroundStyle(DS.accent)
-                Text(model.currentSession?.name ?? "No Session")
+                Text(model.currentSession?.name ?? String(localized: "No Session"))
                     .font(.system(size: 13, weight: .semibold))
                     .lineLimit(1)
                 Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold)).foregroundStyle(DS.textSecondary)
@@ -190,7 +190,7 @@ struct SessionMenuItem: View {
     let control: ToolbarControl
     @Bindable var model: AppModel
     let symbol: String
-    let title: String
+    let title: LocalizedStringKey
     let shortcut: String
     let action: () -> Void
     @Environment(\.isEnabled) private var isEnabled
@@ -313,7 +313,7 @@ struct ModeSwitch: View {
         .background(Color.primary.opacity(0.07), in: .capsule)
     }
 
-    private func item(_ m: BrowserMode, _ symbol: String, _ name: String) -> some View {
+    private func item(_ m: BrowserMode, _ symbol: String, _ name: LocalizedStringKey) -> some View {
         Button {
             mode = m
         } label: {

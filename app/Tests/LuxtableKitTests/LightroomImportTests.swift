@@ -183,10 +183,10 @@ private func warm(_ name: String = "LR Warm", groups: Set<AdjustGroup> = [.expos
 
     @Test func matchAndSourceLines() {
         let s = LRImportSummary(photos: 1200, matched: 812, matchedByPath: 800, matchedByHash: 10, matchedByName: 2)
-        #expect(s.matchLine == "812 of 1200 photos matched a photo in this session (by path 800, by content 10, by name and capture time 2)")
+        #expect(s.matchLine == "812 of \(1200.formatted()) photos matched a photo in this session (by path 800, by content 10, by name and capture time 2)")
         #expect(LRImportSummary(photos: 1, matched: 0).matchLine == "0 of 1 photo matched a photo in this session")
         let i = LRSourceInfo(kind: .catalog, origin: "Catalog.lrcat", writtenBy: "13.2", photos: 1200, collections: 1)
-        #expect(i.line == "Catalog.lrcat (Lightroom 13.2): 1200 photos, 1 collection")
+        #expect(i.line == "Catalog.lrcat (Lightroom 13.2): \(1200.formatted()) photos, 1 collection")
         #expect(LRSourceInfo(origin: "Shoot", photos: 1).line == "Shoot: 1 photo")
     }
 

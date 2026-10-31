@@ -161,11 +161,11 @@ public struct RenderError: Error, Equatable, LocalizedError {
     init(_ e: DsError) {
         switch e {
         case .InvalidArgument(let m): kind = .invalidArgument; message = m
-        case .Cancelled: kind = .cancelled; message = "Cancelled"
+        case .Cancelled: kind = .cancelled; message = String(localized: "Cancelled")
         case .Io(let m): kind = .io; message = m
         case .Unsupported(let m): kind = .unsupported; message = m
-        case .Internal(let m): kind = .internalError; message = "Internal error: \(m)"
-        case .FolderMoved(let m): kind = .io; message = "The folder was moved: \(m)"
+        case .Internal(let m): kind = .internalError; message = String(localized: "Internal error: \(m)")
+        case .FolderMoved(let m): kind = .io; message = String(localized: "The folder was moved: \(m)")
         }
     }
 

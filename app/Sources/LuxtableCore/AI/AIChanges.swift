@@ -2,29 +2,29 @@ import Foundation
 
 /// The texts of AI changes: a changed row's hover note and the AI Changes list's lines.
 public enum AIChangeText {
-    public static let listTitle = "AI Changes"
-    public static let menuTitle = "AI Changes…"
-    public static let undoAllTitle = "Undo All AI Changes"
-    public static let undoOneTitle = "Undo AI Change"
-    public static let empty = "No settings on this photo were changed by AI."
+    public static let listTitle = String(localized: "AI Changes")
+    public static let menuTitle = String(localized: "AI Changes…")
+    public static let undoAllTitle = String(localized: "Undo All AI Changes")
+    public static let undoOneTitle = String(localized: "Undo AI Change")
+    public static let empty = String(localized: "No settings on this photo were changed by AI.")
     /// A row whose earlier value isn't known (an AI Optimize report from an older version).
-    public static let cantUndo = "Its value before AI isn't known, so it can't be undone here. Set it by hand, or use ⌘Z."
+    public static let cantUndo = String(localized: "Its value before AI isn't known, so it can't be undone here. Set it by hand, or use ⌘Z.")
 
     /// Who changed it: "AI Optimize", "⌘K “warmer”", "Auto Adjust".
     public static func source(_ s: AIMarks.Source) -> String {
         switch s {
-        case .optimize: "AI Optimize"
+        case .optimize: String(localized: "AI Optimize")
         case .command(let prompt): "⌘K “\(prompt)”"
-        case .auto: "Auto Adjust"
+        case .auto: String(localized: "Auto Adjust")
         }
     }
 
     /// The source with its reason, after the dash of a hover note.
     static func because(_ c: AIChange) -> String {
         switch c.source {
-        case .optimize: c.explanation.map { "AI Optimize: \($0)" } ?? "AI Optimize"
+        case .optimize: c.explanation.map { String(localized: "AI Optimize: \($0)") } ?? String(localized: "AI Optimize")
         case .command(let prompt): "⌘K: “\(prompt)”"
-        case .auto: "Auto Adjust"
+        case .auto: String(localized: "Auto Adjust")
         }
     }
 
@@ -32,26 +32,28 @@ public enum AIChangeText {
     /// or for a row without one value "AI added a sky layer — Auto Adjust". `now`: the
     /// photo's edit (a row the user changed is no longer an AI change, so it holds AI's value).
     public static func tooltip(_ field: AIField, _ c: AIChange, now: EditState) -> String {
-        guard let e = AIFieldMap.entry(field) else { return "Changed by AI — \(because(c))" }
-        guard let new = e.value(in: now) else { return "AI \(e.phrase(before: c.before, after: now)) — \(because(c))" }
-        let was = c.before.flatMap(e.value(in:)).map { " (was \($0))" } ?? ""
-        return "AI changed it to \(new)\(was) — \(because(c))"
+        guard let e = AIFieldMap.entry(field) else { return String(localized: "Changed by AI — \(because(c))") }
+        guard let new = e.value(in: now) else {
+            return String(localized: "AI \(e.phrase(before: c.before, after: now)) — \(because(c))")
+        }
+        guard let was = c.before.flatMap(e.value(in:)) else { return String(localized: "AI changed it to \(new) — \(because(c))") }
+        return String(localized: "AI changed it to \(new) (was \(was)) — \(because(c))")
     }
 
     /// The list's "old → new" ("0.00 → +0.35", "Off → On"), or what AI did ("Added a sky layer").
     public static func detail(_ field: AIField, _ c: AIChange, now: EditState) -> String {
-        guard let e = AIFieldMap.entry(field) else { return "Changed" }
+        guard let e = AIFieldMap.entry(field) else { return String(localized: "Changed") }
         guard let new = e.value(in: now) else { return capitalizedFirst(e.phrase(before: c.before, after: now)) }
         return "\(c.before.flatMap(e.value(in:)) ?? "?") → \(new)"
     }
 
     /// "just now", "5 min ago", "3 h ago", else the date; "earlier" when not known.
     public static func when(_ time: Date?, now: Date = Date()) -> String {
-        guard let time else { return "earlier" }
+        guard let time else { return String(localized: "earlier") }
         let s = now.timeIntervalSince(time)
-        if s < 60 { return "just now" }
-        if s < 3600 { return "\(Int(s / 60)) min ago" }
-        if s < 86400 { return "\(Int(s / 3600)) h ago" }
+        if s < 60 { return String(localized: "just now") }
+        if s < 3600 { return String(localized: "\(Int(s / 60)) min ago") }
+        if s < 86400 { return String(localized: "\(Int(s / 3600)) h ago") }
         return time.formatted(date: .abbreviated, time: .shortened)
     }
 
@@ -79,7 +81,7 @@ public struct AIChangeRow: Identifiable, Equatable, Sendable {
     public let canUndo: Bool
 
     /// VoiceOver: one sentence for the line.
-    public var accessibilityLabel: String { "\(tool), \(setting): \(detail), by \(source), \(when)" }
+    public var accessibilityLabel: String { String(localized: "\(tool), \(setting): \(detail), by \(source), \(when)") }
 }
 
 /// The JSON kept in a photo's sidecar (`ai_changes`): the AI changes grouped by the step
@@ -189,7 +191,7 @@ extension AppModel {
     /// "Undo All AI Changes", or "… on 3 Photos" with Edit All Selected.
     public var undoAllAIChangesTitle: String {
         let n = undoAllAIChangesPhotoCount
-        return n > 1 ? "\(AIChangeText.undoAllTitle) on \(n) Photos" : AIChangeText.undoAllTitle
+        return n > 1 ? String(localized: "Undo All AI Changes on \(n) Photos") : AIChangeText.undoAllTitle
     }
 
     /// Put rows (`nil`: all) back at their pre-AI values on each photo, as one undo step.
@@ -202,7 +204,9 @@ extension AppModel {
         }
         guard !plan.isEmpty else { return }
         let rows = plan.values.reduce(0) { $0 + $1.count }
-        let label = rows == 1 ? "Revert AI Change to \(plan.values.first?.first?.0.label ?? "")" : "Revert \(rows) AI Changes"
+        let label = rows == 1 ? String(localized: "Revert AI Change to \(plan.values.first?.first?.0.label ?? "")")
+            : String(localized: "Revert \(rows) AI Changes")
+
         updateEdits(plan.keys.sorted { $0.raw < $1.raw }, label: label) { id, e in
             for (entry, before) in plan[id] ?? [] { entry.restore(&e, before) }
         }

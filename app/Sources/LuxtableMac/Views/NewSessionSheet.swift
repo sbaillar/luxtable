@@ -25,7 +25,7 @@ struct NewSessionSheet: View {
                     .focused($nameFocused)
                     .onSubmit { create() }
                     .accessibilityLabel("Session name")
-                    .accessibilityHint(form.problem ?? "Return creates the session")
+                    .accessibilityHint(form.problem ?? String(localized: "Return creates the session"))
                 if let problem = form.problem {
                     Label {
                         Text(problem).foregroundStyle(DS.text)
@@ -39,13 +39,13 @@ struct NewSessionSheet: View {
             VStack(alignment: .leading, spacing: DS.Space.xs) {
                 Text("Location").font(DS.Font.label).foregroundStyle(DS.textSecondary)
                 HStack {
-                    Label(form.location.map { AppModel.displayPath($0) } ?? "Finding the sessions folder…",
+                    Label(form.location.map { AppModel.displayPath($0) } ?? String(localized: "Finding the sessions folder…"),
                           systemImage: "folder")
                         .font(DS.Font.label)
                         .foregroundStyle(DS.text)
                         .lineLimit(1).truncationMode(.middle)
                         .help(form.location?.path ?? "")
-                        .accessibilityLabel("Location: \(form.location?.path ?? "unknown")")
+                        .accessibilityLabel("Location: \(form.location?.path ?? String(localized: "unknown"))")
                     Spacer()
                     Button("Choose…", action: chooseLocation)
                         .disabled(form.isCreating)
@@ -73,7 +73,7 @@ struct NewSessionSheet: View {
                 Button("Create") { create() }
                     .keyboardShortcut(.defaultAction)
                     .disabled(!form.canCreate)
-                    .help(form.problem ?? "Create the session and open it")
+                    .help(form.problem ?? String(localized: "Create the session and open it"))
             }
         }
         .padding(DS.Space.l)
@@ -91,8 +91,8 @@ struct NewSessionSheet: View {
         panel.canChooseFiles = false
         panel.canCreateDirectories = true
         panel.directoryURL = form.location
-        panel.prompt = "Choose"
-        panel.message = "Choose where to create the session"
+        panel.prompt = String(localized: "Choose")
+        panel.message = String(localized: "Choose where to create the session")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         Task { await form.choose(url) }
     }

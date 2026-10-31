@@ -30,18 +30,18 @@ public struct IPTCMetadata: Hashable, Sendable, Codable {
 
         public var label: String {
             switch self {
-            case .title: "Title"
-            case .caption: "Caption"
-            case .headline: "Headline"
-            case .creator: "Creator"
-            case .credit: "Credit Line"
-            case .copyright: "Copyright"
-            case .sublocation: "Sublocation"
-            case .city: "City"
-            case .state: "State / Province"
-            case .country: "Country"
-            case .instructions: "Instructions"
-            case .usageTerms: "Usage Terms"
+            case .title: String(localized: "Title")
+            case .caption: String(localized: "Caption")
+            case .headline: String(localized: "Headline")
+            case .creator: String(localized: "Creator")
+            case .credit: String(localized: "Credit Line")
+            case .copyright: String(localized: "Copyright")
+            case .sublocation: String(localized: "Sublocation")
+            case .city: String(localized: "City")
+            case .state: String(localized: "State / Province")
+            case .country: String(localized: "Country")
+            case .instructions: String(localized: "Instructions")
+            case .usageTerms: String(localized: "Usage Terms")
             }
         }
 
@@ -155,7 +155,7 @@ extension AppModel {
     public func commitMetadata(_ edit: MetadataEdit, typed: String) -> MetadataEdit {
         guard let value = MetadataEditing.change(typed: typed, shown: edit.baseline) else { return edit }
         let field = edit.field
-        updatePhotos(edit.ids, label: "Edit \(field.label)") { $0.metadata[field] = value }
+        updatePhotos(edit.ids, label: String(localized: "Edit \(field.label)")) { $0.metadata[field] = value }
         var next = edit
         next.baseline = .value(value)
         return next
@@ -169,12 +169,12 @@ extension AppModel {
     /// Clear `field` on every selected photo, Mixed or not (one undo step): what an
     /// empty commit into a Mixed field doesn't do.
     public func clearMetadata(_ field: IPTCMetadata.Field) {
-        updatePhotos(metadataTargets.map(\.id), label: "Clear \(field.label)") { $0.metadata[field] = "" }
+        updatePhotos(metadataTargets.map(\.id), label: String(localized: "Clear \(field.label)")) { $0.metadata[field] = "" }
     }
 
     /// Set every field `preset` sets on the selection (one undo step).
     public func applyMetadataPreset(_ preset: MetadataPreset) {
-        updatePhotos(metadataTargets.map(\.id), label: "Apply “\(preset.name)”") {
+        updatePhotos(metadataTargets.map(\.id), label: String(localized: "Apply “\(preset.name)”")) {
             $0.metadata = $0.metadata.overlaid(preset.fields)
         }
     }

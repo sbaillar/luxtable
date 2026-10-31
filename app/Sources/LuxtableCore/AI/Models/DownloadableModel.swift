@@ -53,7 +53,7 @@ public struct DownloadableModelDescriptor: Sendable, Equatable {
     public static let lama: DownloadableModelDescriptor = {
         let base = "https://huggingface.co/mlboydaisuke/LaMa-CoreML/resolve/\(lamaRevision)/LaMa.mlpackage/"
         return DownloadableModelDescriptor(
-            name: "LaMa", displayName: "removal model",
+            name: "LaMa", displayName: String(localized: "removal model"),
             files: [
                 file(base, "Manifest.json", "c814fff3cedf827c044094545ef80b0280b6cb8dd0e5c0bcf69fd31921191e58", 617),
                 file(base, "Data/com.apple.CoreML/model.mlmodel",
@@ -79,7 +79,7 @@ public struct DownloadableModelDescriptor: Sendable, Equatable {
         let base = "https://huggingface.co/apple/coreml-detr-semantic-segmentation/resolve/\(skyRevision)/"
             + "DETRResnet50SemanticSegmentationF16.mlpackage/"
         return DownloadableModelDescriptor(
-            name: "DETRResnet50SemanticSegmentationF16", displayName: "sky model",
+            name: "DETRResnet50SemanticSegmentationF16", displayName: String(localized: "sky model"),
             files: [
                 file(base, "Manifest.json", "0749549c6b11139e11a40aaab82add4843a9977010337e596cce3dbb35c98512", 617),
                 file(base, "Data/com.apple.CoreML/model.mlmodel",
@@ -109,7 +109,7 @@ public struct DownloadableModelDescriptor: Sendable, Equatable {
     public static let faceParsing: DownloadableModelDescriptor = {
         let base = "https://huggingface.co/mlboydaisuke/Face-Parsing-CoreML/resolve/\(faceParsingRevision)/FaceParsing.mlpackage/"
         return DownloadableModelDescriptor(
-            name: "FaceParsing", displayName: "face parsing model",
+            name: "FaceParsing", displayName: String(localized: "face parsing model"),
             files: [
                 file(base, "Manifest.json", "4faf3700dad0497c6efd622ca031cb04d17ad8b685477403c8cd573effdb4a1a", 385),
                 file(base, "Data/com.apple.CoreML/model.mlmodel",
@@ -127,7 +127,7 @@ public struct DownloadableModelDescriptor: Sendable, Equatable {
     public static let depthAnything: DownloadableModelDescriptor = {
         let base = "https://huggingface.co/apple/coreml-depth-anything-v2-small/resolve/\(depthAnythingRevision)/DepthAnythingV2SmallF16.mlpackage/"
         return DownloadableModelDescriptor(
-            name: "DepthAnythingV2SmallF16", displayName: "depth model",
+            name: "DepthAnythingV2SmallF16", displayName: String(localized: "depth model"),
             files: [
                 file(base, "Manifest.json", "2883ae290c48fe916dc5ececac03a7d847fa277165a49ef5652fa1d2b9cb55f7", 617),
                 file(base, "Data/com.apple.CoreML/model.mlmodel",
@@ -148,9 +148,9 @@ public enum ModelDownloadError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .download(let n, let m): "Couldn't download the \(n): \(m)"
-        case .checksum(let n, let f): "The downloaded \(n) is damaged (\(f)). Try again."
-        case .compile(let n, let m): "Couldn't prepare the \(n): \(m)"
+        case .download(let n, let m): String(localized: "Couldn't download the \(n): \(m)")
+        case .checksum(let n, let f): String(localized: "The downloaded \(n) is damaged (\(f)). Try again.")
+        case .compile(let n, let m): String(localized: "Couldn't prepare the \(n): \(m)")
         }
     }
 }
@@ -270,7 +270,8 @@ public final class DownloadableModel {
             return try await loadNow(url)
         } catch {
             discardCompiled()
-            state = .failed(Self.message(error) + " Try again to download it anew.")
+            state = .failed(Self.message(error) + String(localized: " Try again to download it anew."))
+
             throw error
         }
     }

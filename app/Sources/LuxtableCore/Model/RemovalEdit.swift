@@ -39,7 +39,7 @@ public enum PeopleTargets {
     public static func label(_ target: AITarget, person: Int?) -> String {
         let name = target.rawValue.capitalized
         guard let person else { return name }
-        return "\(name) (Person \(person + 1))"
+        return String(localized: "\(name) (Person \(person + 1))")
     }
 
     /// The mask shape for a menu choice: all people (`person == nil`) or one of them.

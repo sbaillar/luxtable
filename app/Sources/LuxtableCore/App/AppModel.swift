@@ -300,7 +300,7 @@ public final class AppModel {
     /// The row the viewer previews (hovered in the History panel).
     public internal(set) var historyPreview: HistoryNode?
     /// Never "up to date" before the archive service has said so.
-    public private(set) var archiveStatus = ArchiveStatus(state: .unavailable("Checking the archive…"),
+    public private(set) var archiveStatus = ArchiveStatus(state: .unavailable(String(localized: "Checking the archive…")),
                                                           target: AppSettings.defaultArchiveTarget, lastSuccess: nil)
     /// The toolbar archive popover (also opened by `--snapshot --archive-popover`).
     public var archivePopoverShown = false
@@ -489,7 +489,7 @@ public final class AppModel {
         guard let resuming = importer as? any ImportResuming else { return }
         do {
             try await resuming.discard(p)
-            show(Toast("Discarded the unfinished import into “\(p.sessionName)”", symbol: "trash"))
+            show(Toast(String(localized: "Discarded the unfinished import into “\(p.sessionName)”"), symbol: "trash"))
         } catch {
             show(error)
         }
@@ -515,7 +515,7 @@ public final class AppModel {
     /// and can be cancelled with `cancelOpen()`.
     public func openFolder(_ url: URL) async {
         guard let store = sessions as? any FolderSessionOpening else {
-            show(Toast("Opening folders works in live mode (run without --demo)", symbol: "folder"))
+            show(Toast(String(localized: "Opening folders works in live mode (run without --demo)"), symbol: "folder"))
             return
         }
         openTask?.cancel()
@@ -542,7 +542,7 @@ public final class AppModel {
             } catch is CancellationError {
                 // A newer open took over (it shows its own progress): say nothing of this one.
                 guard let self, self.finishOpening(folderToken) else { return }
-                self.show(Toast("Opening \(url.lastPathComponent) was cancelled", symbol: "xmark.circle"))
+                self.show(Toast(String(localized: "Opening \(url.lastPathComponent) was cancelled"), symbol: "xmark.circle"))
             } catch {
                 self?.finishOpening(folderToken)
                 self?.show(error)
@@ -639,7 +639,7 @@ public final class AppModel {
     /// the store followed it: say so, and list it again at its new place (photo URLs
     /// changed), keeping the focused photo.
     func sessionMoved(_ move: SessionMove) async {
-        show(Toast("“\(move.from.lastPathComponent)” was renamed to “\(move.to.name)” — following it",
+        show(Toast(String(localized: "“\(move.from.lastPathComponent)” was renamed to “\(move.to.name)” — following it"),
                    symbol: "folder.badge.gearshape"))
         let wasCurrent = currentSession.map { RecentFolders.canonical($0.url) == RecentFolders.canonical(move.from) } ?? false
         guard wasCurrent else {
@@ -694,8 +694,8 @@ public final class AppModel {
             forgetVolumeRecords(session.url, folder, moved.url) // located again (also at the same path)
             await reloadSessions(select: moved)
             let missing = missingCount
-            show(Toast(missing == 0 ? "“\(session.name)” found at \(folder.path)"
-                                    : "“\(session.name)” linked to \(folder.path); \(missing) photos still missing",
+            show(Toast(missing == 0 ? String(localized: "“\(session.name)” found at \(folder.path)")
+                                    : String(localized: "“\(session.name)” linked to \(folder.path); \(missing) photos still missing"),
                        symbol: "folder.badge.questionmark", isError: missing > 0))
         } catch {
             AppLog.session.error("locating \(session.url.path, privacy: .private(mask: .hash)) at \(folder.path, privacy: .private(mask: .hash)) failed: \(error.localizedDescription, privacy: .private(mask: .hash))")
@@ -803,8 +803,7 @@ public final class AppModel {
         // A folder that isn't there can't open: say where it was and what to do (it may
         // be back since the list was made: a drive plugged in again).
         if session.unavailable?.folderMissing == true, !FileManager.default.fileExists(atPath: session.url.path) {
-            show(Toast("“\(session.name)” isn't at \(session.url.deletingLastPathComponent().path) any more "
-                       + "(moved, deleted, or its drive isn't connected). Use Locate Folder… to point to it.",
+            show(Toast(String(localized: "“\(session.name)” isn't at \(session.url.deletingLastPathComponent().path) any more (moved, deleted, or its drive isn't connected). Use Locate Folder… to point to it."),
                        symbol: "questionmark.folder", isError: true))
             return
         }
@@ -812,11 +811,12 @@ public final class AppModel {
         // A batch that couldn't be written is A's: the store would resolve its ids in the session
         // loaded next, so it never leaves with a switch. Stay on A and say why.
         if switching, saver.hasUnsaved {
-            var why = "saving isn't finished"
+            var why = String(localized: "saving isn't finished")
             var count = saver.pendingCount
             if case .failed(let message, let pending) = saver.state { (why, count) = (message, pending) }
-            show(Toast("Still on “\(currentSession?.name ?? "this session")”: \(count) change\(count == 1 ? "" : "s") "
-                       + "couldn’t be saved (\(why)), so “\(session.name)” wasn’t opened.",
+            show(Toast(count == 1
+                ? String(localized: "Still on “\(currentSession?.name ?? String(localized: "this session"))”: 1 change couldn’t be saved (\(why)), so “\(session.name)” wasn’t opened.")
+                : String(localized: "Still on “\(currentSession?.name ?? String(localized: "this session"))”: \(count) changes couldn’t be saved (\(why)), so “\(session.name)” wasn’t opened."),
                        symbol: "exclamationmark.triangle", isError: true))
             return
         }
@@ -901,8 +901,7 @@ public final class AppModel {
         isSwitchingSession = false
         switchingTo = nil
         // Said with the state change it explains, not after the store has been re-pointed.
-        show(Toast("“\(session.name)” is taking too long to open (is its drive connected?). "
-                   + "\(currentSession.map { "“\($0.name)”" } ?? "The previous session") is still open.",
+        show(Toast(String(localized: "“\(session.name)” is taking too long to open (is its drive connected?). \(currentSession.map { "“\($0.name)”" } ?? String(localized: "The previous session")) is still open."),
                    symbol: "exclamationmark.triangle", isError: true))
         if let shown = currentSession { await (sessions as? any CurrentSessionPointing)?.makeCurrent(shown) }
     }
@@ -910,7 +909,7 @@ public final class AppModel {
     /// Whether an edit is refused because a session is loading (and says so).
     func refusingEdits() -> Bool {
         guard isSwitchingSession else { return false }
-        show(Toast("Still opening “\(switchingTo ?? "the session")”: that change wasn’t applied.", symbol: "hourglass"))
+        show(Toast(String(localized: "Still opening “\(switchingTo ?? String(localized: "the session"))”: that change wasn’t applied."), symbol: "hourglass"))
         return true
     }
 
@@ -1002,7 +1001,7 @@ public final class AppModel {
     /// Flush pending saves (bounded by `timeout`) and report whether it's safe to quit.
     public func prepareToTerminate(timeout: Duration = .seconds(5)) async -> TerminationDecision {
         let finished = await flushSaves(within: timeout)
-        if !finished { return .failed(message: "Saving is taking too long.", pending: saver.pendingCount) }
+        if !finished { return .failed(message: String(localized: "Saving is taking too long."), pending: saver.pendingCount) }
         if case .failed(let m, let n) = saver.state { return .failed(message: m, pending: n) }
         if !persistsChanges {
             let changed = edits.count + photos.filter { $0.rating > 0 || $0.pick != .none || $0.colorTag != .none }.count
@@ -1274,7 +1273,7 @@ extension AppModel {
         let items = exportItems
         guard !items.isEmpty else {
             let videos = exportSkippedVideos
-            show(Toast(videos > 0 ? "Videos aren't exported. Select photos to export" : "Select photos to export",
+            show(Toast(videos > 0 ? String(localized: "Videos aren't exported. Select photos to export") : String(localized: "Select photos to export"),
                        symbol: "square.and.arrow.up", isError: true))
             return
         }
@@ -1332,7 +1331,7 @@ extension AppModel {
     nonisolated static func archiveQuitDecision(_ state: ArchiveStatus.State) -> TerminationDecision {
         switch state {
         case .failed(let m): .archiveFailed(message: m)
-        case .problems(let n): .archiveFailed(message: "\(n) item\(n == 1 ? " is" : "s are") not in the archive.")
+        case .problems(let n): .archiveFailed(message: n == 1 ? String(localized: "1 item is not in the archive.") : String(localized: "\(n) items are not in the archive."))
         default: .ok
         }
     }

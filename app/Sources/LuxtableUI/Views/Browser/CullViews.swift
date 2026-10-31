@@ -135,10 +135,10 @@ package struct CullDialogs: ViewModifier {
             titleVisibility: .visible
         ) {
             let n = cull.pendingSelects?.ids.count ?? 0
-            Button("Move \(n) \(n == 1 ? "Photo" : "Photos")") { Task { await cull.confirmMoveToSelects() } }
+            Button(n == 1 ? "Move 1 Photo" : "Move \(n) Photos") { Task { await cull.confirmMoveToSelects() } }
             Button("Cancel", role: .cancel) { cull.pendingSelects = nil }
         } message: {
-            Text((cull.pendingSelects?.message ?? "") + ". Change the rating in Settings.")
+            Text((cull.pendingSelects?.message ?? "") + String(localized: ". Change the rating in Settings."))
         }
         .confirmationDialog(
             "Delete Rejected Files?",

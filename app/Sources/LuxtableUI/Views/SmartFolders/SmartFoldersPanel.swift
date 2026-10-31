@@ -11,7 +11,7 @@ struct SmartFoldersPanel: View {
         let sf = model.smartFolders
         let selected = model.filter.smartFolder?.id
         VStack(alignment: .leading, spacing: DS.Space.xxs) {
-            row(symbol: "photo.on.rectangle", tint: DS.textSecondary, name: "All Photos",
+            row(symbol: "photo.on.rectangle", tint: DS.textSecondary, name: String(localized: "All Photos"),
                 count: model.photoCount, selected: selected == nil, shortcut: "⌘0") { model.selectSmartFolder(nil) }
             ForEach(sf.visibleFolders) { f in
                 row(symbol: f.symbol, tint: tint(f), name: f.name, count: sf.counts[f.id, default: 0],
@@ -91,7 +91,7 @@ struct SmartFoldersPanel: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .help(shortcut.map { "Show \(name.lowercased()) (\($0))" } ?? "Show \(name.lowercased())")
+        .help(shortcut.map { String(localized: "Show \(name.lowercased()) (\($0))") } ?? String(localized: "Show \(name.lowercased())"))
         .accessibilityLabel("\(name), \(count) photos")
         .accessibilityAddTraits(selected ? .isSelected : [])
     }

@@ -31,7 +31,7 @@ public struct LayerController {
     public func add() -> Int? {
         guard app.focusedID != nil else { return nil }
         var added: Int?
-        edit("Add Layer") { e in
+        edit(String(localized: "Add Layer")) { e in
             let l = LayerOps.newLayer(after: e.layers)
             added = l.id
             e.layers.append(l)
@@ -44,19 +44,19 @@ public struct LayerController {
     public func duplicateSelected() -> Int? {
         guard let id = selected else { return nil }
         var copy: Int?
-        edit("Duplicate Layer") { e in copy = LayerOps.duplicate(id, in: &e.layers) }
+        edit(String(localized: "Duplicate Layer")) { e in copy = LayerOps.duplicate(id, in: &e.layers) }
         select(copy)
         return copy
     }
 
     public func deleteSelected() {
         guard let id = selected else { return }
-        edit("Delete Layer") { LayerOps.remove(id, from: &$0.layers) }
+        edit(String(localized: "Delete Layer")) { LayerOps.remove(id, from: &$0.layers) }
         select(nil)
     }
 
     public func rename(_ layer: Int, to name: String) {
-        edit("Rename Layer") { LayerOps.rename(layer, to: name, in: &$0.layers) }
+        edit(String(localized: "Rename Layer")) { LayerOps.rename(layer, to: name, in: &$0.layers) }
     }
 
     /// Change one layer; `key` coalesces a slider drag into one undo step.
@@ -91,19 +91,19 @@ public struct LayerController {
     /// Turn the luminance / colour range refinement of the selected layer's mask on or off.
     public func setLumaRange(_ on: Bool) {
         guard let id = selected else { return }
-        update(id, label: on ? "Luma Range" : "Remove Luma Range") { $0.mask.lumaRange = on ? LumaRangeEdit() : nil }
+        update(id, label: on ? String(localized: "Luma Range") : String(localized: "Remove Luma Range")) { $0.mask.lumaRange = on ? LumaRangeEdit() : nil }
     }
 
     public func clearColorRange() {
         guard let id = selected else { return }
-        update(id, label: "Remove Color Range") { $0.mask.colorRange = nil }
+        update(id, label: String(localized: "Remove Color Range")) { $0.mask.colorRange = nil }
     }
 
     /// Accessibility label for a layer row.
     public static func accessibilityLabel(_ l: LayerEdit, selected: Bool) -> String {
-        var parts = [l.name, l.enabled ? "visible" : "hidden", "opacity \(Int((l.opacity * 100).rounded())) percent",
+        var parts = [l.name, l.enabled ? String(localized: "visible") : String(localized: "hidden"), String(localized: "opacity \(Int((l.opacity * 100).rounded())) percent"),
                      LayerOps.maskSummary(l.mask)]
-        if selected { parts.append("selected") }
+        if selected { parts.append(String(localized: "selected")) }
         return parts.joined(separator: ", ")
     }
 }

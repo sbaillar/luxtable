@@ -74,7 +74,7 @@ struct PluginsSettingsView: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = true
         panel.treatsFilePackagesAsDirectories = false
-        panel.prompt = "Install"
+        panel.prompt = String(localized: "Install")
         if panel.runModal() == .OK, let url = panel.url { choose(url) }
     }
 
@@ -87,7 +87,7 @@ struct PluginsSettingsView: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.treatsFilePackagesAsDirectories = false
-        panel.prompt = "Load"
+        panel.prompt = String(localized: "Load")
         if panel.runModal() == .OK, let url = panel.url { Task { await store.addDevFolder(url) } }
     }
 }
@@ -183,8 +183,8 @@ private struct PluginRow: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.canCreateDirectories = true
-        panel.prompt = "Allow This Folder"
-        panel.message = "Choose the one folder this plug-in may use."
+        panel.prompt = String(localized: "Allow This Folder")
+        panel.message = String(localized: "Choose the one folder this plug-in may use.")
         return panel.runModal() == .OK ? panel.url : nil
     }
 }

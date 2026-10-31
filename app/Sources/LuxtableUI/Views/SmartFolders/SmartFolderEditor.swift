@@ -21,7 +21,7 @@ struct SmartFolderEditor: View {
                 TextField("Name", text: $draft.name)
                 HStack {
                     Picker("Rating", selection: $draft.ratingMode) {
-                        ForEach(SmartFolderDraft.RatingMode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                        ForEach(SmartFolderDraft.RatingMode.allCases, id: \.self) { Text($0.pickerTitle).tag($0) }
                     }
                     if ![.any, .unrated].contains(draft.ratingMode) {
                         Stepper("\(draft.rating)★", value: $draft.rating, in: 1...5).fixedSize()
@@ -42,7 +42,7 @@ struct SmartFolderEditor: View {
                                     .overlay(Circle().strokeBorder(.white, lineWidth: on ? 2 : 0))
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel("\(t.name) tag")
+                            .accessibilityLabel("\(t.title) tag")
                             .accessibilityAddTraits(on ? .isSelected : [])
                         }
                     }
@@ -70,7 +70,7 @@ struct SmartFolderEditor: View {
                 TextField("Keywords (all of, comma-separated)", text: $draft.keywords)
                 TextField("Text (name, keywords, camera, lens)", text: $draft.text)
                 Picker("Edited", selection: $draft.edited) {
-                    ForEach(SmartFolderDraft.EditedMode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                    ForEach(SmartFolderDraft.EditedMode.allCases, id: \.self) { Text($0.pickerTitle).tag($0) }
                 }
             }
             HStack {
@@ -86,5 +86,30 @@ struct SmartFolderEditor: View {
         }
         .padding(DS.Space.l)
         .frame(width: 440)
+    }
+}
+
+extension SmartFolderDraft.RatingMode {
+    /// The editor's picker titles (the raw values are the English names).
+    var pickerTitle: LocalizedStringKey {
+        switch self {
+        case .any: "Any"
+        case .exactly: "Exactly"
+        case .atLeast: "At least"
+        case .atMost: "At most"
+        case .between: "Between"
+        case .unrated: "Unrated"
+        }
+    }
+}
+
+extension SmartFolderDraft.EditedMode {
+    /// The editor's picker titles (the raw values are the English names).
+    var pickerTitle: LocalizedStringKey {
+        switch self {
+        case .any: "Any"
+        case .edited: "Edited"
+        case .unedited: "Not edited"
+        }
     }
 }

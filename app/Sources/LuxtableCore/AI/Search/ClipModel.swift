@@ -88,10 +88,11 @@ public enum ClipModelError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .download(let m): "Couldn't download the search model: \(m)"
-        case .checksum(let f): "The downloaded search model is damaged (\(f)). Try again."
-        case .compile(let m): "Couldn't prepare the search model: \(m)"
-        case .load(let m): "Couldn't load the search model: \(m)"
+        case .download(let m): String(localized: "Couldn't download the search model: \(m)")
+        case .checksum(let f): String(localized: "The downloaded search model is damaged (\(f)). Try again.")
+        case .compile(let m): String(localized: "Couldn't prepare the search model: \(m)")
+        case .load(let m): String(localized: "Couldn't load the search model: \(m)")
+
         }
     }
 }

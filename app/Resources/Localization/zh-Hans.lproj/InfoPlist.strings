@@ -1,0 +1,8 @@
+"NSDocumentsFolderUsageDescription" = "Luxtable 将你的会话保存在你选择的文件夹中。";
+"NSDesktopFolderUsageDescription" = "当你选择“桌面”文件夹时，Luxtable 会从中导入照片，且绝不修改原片。";
+"NSDownloadsFolderUsageDescription" = "当你选择“下载”文件夹时，Luxtable 会从中导入照片，且绝不修改原片。";
+"NSRemovableVolumesUsageDescription" = "Luxtable 从存储卡导入照片，且绝不修改存储卡。";
+"NSNetworkVolumesUsageDescription" = "Luxtable 将会话归档到你的网络照片共享位置。";
+"NSLocalNetworkUsageDescription" = "Luxtable 将会话归档到本地网络中的 NAS，并使你的 Immich 服务器中的相簿保持最新。";
+"NSMicrophoneUsageDescription" = "语音命令会聆听“下一张”和“五”等筛选命令。音频只保留在这台 Mac 上。";
+"NSSpeechRecognitionUsageDescription" = "语音命令由 Apple 的设备端语音模型在这台 Mac 上识别。不会向服务器发送任何内容。";

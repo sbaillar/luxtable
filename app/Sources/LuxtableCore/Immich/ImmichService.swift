@@ -53,7 +53,7 @@ public struct RustImmichService: ImmichService {
 
     public func syncAlbums(server: ImmichServer, mapping: ImmichPathMapping, rules: [ImmichRule], every: Bool) async throws
         -> ImmichSyncReport {
-        guard let manager else { throw ImmichError.failed("Archiving isn't running.") }
+        guard let manager else { throw ImmichError.failed(String(localized: "Archiving isn't running.")) }
         try? FileManager.default.createDirectory(at: statePath.deletingLastPathComponent(), withIntermediateDirectories: true)
         let path = statePath.path
         return try await Self.run { token in
@@ -71,7 +71,7 @@ public struct RustImmichService: ImmichService {
     }
 
     private func handle(_ session: SessionInfo) async throws -> SessionHandle {
-        guard let h = await handles(session) else { throw ImmichError.failed("“\(session.name)” isn't open.") }
+        guard let h = await handles(session) else { throw ImmichError.failed(String(localized: "“\(session.name)” isn't open.")) }
         return h
     }
 

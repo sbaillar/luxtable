@@ -22,11 +22,11 @@ public enum LookJSON {
     public static func leftOut(_ edit: EditState) -> [String] {
         let identity = EditState()
         var out: [String] = []
-        if edit.curve.points.values.contains(where: { !$0.isEmpty }) { out.append("curves") }
-        if !edit.colorEditor.advanced.isEmpty || edit.colorEditor.skin != nil { out.append("colour ranges") }
-        if EditCodec.flags.contains(where: { edit[keyPath: $0.1] != identity[keyPath: $0.1] }) { out.append("switches") }
-        if edit.crop != identity.crop { out.append("the crop") }
-        if !edit.layers.isEmpty { out.append("layers") }
+        if edit.curve.points.values.contains(where: { !$0.isEmpty }) { out.append(String(localized: "curves")) }
+        if !edit.colorEditor.advanced.isEmpty || edit.colorEditor.skin != nil { out.append(String(localized: "colour ranges")) }
+        if EditCodec.flags.contains(where: { edit[keyPath: $0.1] != identity[keyPath: $0.1] }) { out.append(String(localized: "switches")) }
+        if edit.crop != identity.crop { out.append(String(localized: "the crop")) }
+        if !edit.layers.isEmpty { out.append(String(localized: "layers")) }
         return out
     }
 

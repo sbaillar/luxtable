@@ -4,13 +4,13 @@ import Foundation
 public enum ArchiveDisplay {
     public static func title(_ s: ArchiveStatus.State) -> String {
         switch s {
-        case .idle: "Archive up to date"
-        case .syncing(let f): f < 0 ? "Syncing…" : "Syncing… \(Safe.clampedInt((f * 100))) %"
-        case .behind(let n): "Behind by \(n) file\(n == 1 ? "" : "s")"
-        case .problems: "Archived with problems"
-        case .offline: "Archive offline"
-        case .failed(let why): why.hasPrefix(RustArchiveService.settingsErrorPrefix) ? "Archive settings not applied" : "Last sync failed"
-        case .notArchived: "Not archived yet"
+        case .idle: String(localized: "Archive up to date")
+        case .syncing(let f): f < 0 ? String(localized: "Syncing…") : String(localized: "Syncing… \(Safe.clampedInt((f * 100))) %")
+        case .behind(let n): n == 1 ? String(localized: "Behind by \(n) file") : String(localized: "Behind by \(n) files")
+        case .problems: String(localized: "Archived with problems")
+        case .offline: String(localized: "Archive offline")
+        case .failed(let why): why.hasPrefix(RustArchiveService.settingsErrorPrefix) ? String(localized: "Archive settings not applied") : String(localized: "Last sync failed")
+        case .notArchived: String(localized: "Not archived yet")
         case .unavailable(let m): m
         }
     }
@@ -31,40 +31,43 @@ public enum ArchiveDisplay {
     /// Toolbar badge text.
     public static func short(_ s: ArchiveStatus.State) -> String {
         switch s {
-        case .idle: "Archived"
-        case .syncing(let f): f < 0 ? "Syncing" : "\(Int(f * 100))%"
-        case .behind(let n): "\(n) behind"
-        case .problems: "Problems"
-        case .offline: "Offline"
-        case .failed: "Error"
-        case .notArchived: "Not archived"
-        case .unavailable: "Archive off"
+        case .idle: String(localized: "Archived")
+        case .syncing(let f): f < 0 ? String(localized: "Syncing") : "\(Int(f * 100))%"
+        case .behind(let n): String(localized: "\(n) behind")
+        case .problems: String(localized: "Problems")
+        case .offline: String(localized: "Offline")
+        case .failed: String(localized: "Error")
+        case .notArchived: String(localized: "Not archived")
+        case .unavailable: String(localized: "Archive off")
         }
     }
 
     /// Popover status line.
     public static func long(_ s: ArchiveStatus.State) -> String {
         switch s {
-        case .idle: "Up to date"
-        case .syncing(let f): f < 0 ? "Syncing" : "Syncing, \(Int(f * 100))%"
-        case .behind(let n): "\(n) file\(n == 1 ? "" : "s") waiting"
-        case .problems(let n): "\(n) item\(n == 1 ? " is" : "s are") not in the archive. Retrying."
+        case .idle: String(localized: "Up to date")
+        case .syncing(let f): f < 0 ? String(localized: "Syncing") : String(localized: "Syncing, \(Int(f * 100))%")
+        case .behind(let n): n == 1 ? String(localized: "\(n) file waiting") : String(localized: "\(n) files waiting")
+        case .problems(let n): n == 1
+            ? String(localized: "\(n) item is not in the archive. Retrying.")
+            : String(localized: "\(n) items are not in the archive. Retrying.")
         case .offline: ArchiveDisplay.offlineText
         case .failed(let m): m
-        case .notArchived: "A session hasn't been archived yet. It is archived with its next change or Sync Now."
+        case .notArchived: String(localized: "A session hasn't been archived yet. It is archived with its next change or Sync Now.")
         case .unavailable(let m): m
         }
     }
 
     /// Offline covers a share that isn't mounted and a different disk at its path (N3).
-    public static let offlineText = "Target not available (not mounted, or a different disk is at that path). Changes are queued."
+    public static let offlineText = String(localized: "Target not available (not mounted, or a different disk is at that path). Changes are queued.")
 
     /// N2: said with the badge (tooltip) and the popover title when the archive
     /// leaves rejected photos out, e.g. "3 rejects excluded".
     public static func exclusionNote(_ status: ArchiveStatus, settings: ArchiveSettingsSnapshot) -> String? {
         guard settings.isActive, !settings.archiveRejected else { return nil }
         let n = status.detail?.sessions.reduce(0) { $0 + $1.rejectsExcluded } ?? 0
-        return n > 0 ? "\(n) reject\(n == 1 ? "" : "s") excluded" : "Rejected photos excluded"
+        if n == 1 { return String(localized: "\(n) reject excluded") }
+        return n > 0 ? String(localized: "\(n) rejects excluded") : String(localized: "Rejected photos excluded")
     }
 
     /// The badge tooltip: the explanation, plus what is left out.
@@ -75,50 +78,49 @@ public enum ArchiveDisplay {
     /// Popover explanation.
     public static func explanation(_ s: ArchiveStatus.State) -> String {
         if case .unavailable = s {
-            return "Set an archive target and switch archiving on in Settings › Archive. Nothing is copied until then."
+            return String(localized: "Set an archive target and switch archiving on in Settings › Archive. Nothing is copied until then.")
         }
-        return "rsync copies sessions to the archive in the background. It never deletes from the archive; "
-            + "replaced files are kept in .lt-archive-trash."
+        return String(localized: "rsync copies sessions to the archive in the background. It never deletes from the archive; replaced files are kept in .lt-archive-trash.")
     }
 
     /// Why archiving is off (badge popover and state).
     public static func offText(_ s: ArchiveSettingsSnapshot) -> String {
-        if !s.hasTarget { return s.objectStore == nil ? "Archive off: no target set" : "Archive off: no bucket set" }
-        return s.enabled ? "Archive off" : "Archive switched off"
+        if !s.hasTarget { return s.objectStore == nil ? String(localized: "Archive off: no target set") : String(localized: "Archive off: no bucket set") }
+        return s.enabled ? String(localized: "Archive off") : String(localized: "Archive switched off")
     }
 
     // MARK: Popover detail
 
     /// One session line, e.g. "3 files waiting · last sync 2 min ago".
     public static func sessionLine(_ x: ArchiveDetail.Session, now: Date = Date()) -> String {
-        if let why = x.notArchivable { return "Not archived: \(why)" }
-        if x.notResponding { return "Not responding: the archive volume stopped answering. Retried when it's back." }
+        if let why = x.notArchivable { return String(localized: "Not archived: \(why)") }
+        if x.notResponding { return String(localized: "Not responding: the archive volume stopped answering. Retried when it's back.") }
         if !x.problems.isEmpty {
             let n = x.problems.count
-            var s = "\(n) item\(n == 1 ? "" : "s") not archived"
-            if let r = x.retryIn { s += " · retry in \(Formatters.duration(Double(r.components.seconds)))" }
-            if let d = x.lastSuccess { s += " · last full sync \(Formatters.relative(d, now: now))" }
+            var s = n == 1 ? String(localized: "\(n) item not archived") : String(localized: "\(n) items not archived")
+            if let r = x.retryIn { s += " · " + String(localized: "retry in \(Formatters.duration(Double(r.components.seconds)))") }
+            if let d = x.lastSuccess { s += " · " + String(localized: "last full sync \(Formatters.relative(d, now: now))") }
             return s
         }
         if x.running {
             let pct = x.fraction.map { " \(Safe.clampedInt(($0 * 100))) %" } ?? ""
             let rate = x.bytesPerSecond.map { " · \(ByteCountFormatter.string(fromByteCount: Int64($0), countStyle: .file))/s" } ?? ""
-            return "Syncing\(pct)\(rate)"
+            return String(localized: "Syncing") + pct + rate
         }
         var parts: [String] = []
         if let e = x.lastError {
-            parts.append("Last sync failed: \(e)")
-            if let r = x.retryIn { parts.append("retry in \(Formatters.duration(Double(r.components.seconds)))") }
-            if x.lastSuccess == nil { parts.append("never archived") }
+            parts.append(String(localized: "Last sync failed: \(e)"))
+            if let r = x.retryIn { parts.append(String(localized: "retry in \(Formatters.duration(Double(r.components.seconds)))")) }
+            if x.lastSuccess == nil { parts.append(String(localized: "never archived")) }
         } else if x.pending > 0 {
-            parts.append("\(x.pending) change\(x.pending == 1 ? "" : "s") waiting")
+            parts.append(x.pending == 1 ? String(localized: "\(x.pending) change waiting") : String(localized: "\(x.pending) changes waiting"))
         } else if x.lastSuccess != nil {
-            parts.append("Up to date")
+            parts.append(String(localized: "Up to date"))
             if let counts = archivedCounts(x) { parts.append(counts) }
         } else {
-            parts.append("Not archived yet")
+            parts.append(String(localized: "Not archived yet"))
         }
-        if let d = x.lastSuccess { parts.append("last sync \(Formatters.relative(d, now: now))") }
+        if let d = x.lastSuccess { parts.append(String(localized: "last sync \(Formatters.relative(d, now: now))")) }
         return parts.joined(separator: " · ")
     }
 
@@ -127,8 +129,10 @@ public enum ArchiveDisplay {
     public static func archivedCounts(_ x: ArchiveDetail.Session) -> String? {
         guard x.originals > 0 else { return nil }
         let archived = x.originals - x.rejectsExcluded
-        if x.rejectsExcluded == 0 { return "\(archived) of \(x.originals) archived" }
-        return "\(archived) archived, \(x.rejectsExcluded) reject\(x.rejectsExcluded == 1 ? "" : "s") excluded"
+        if x.rejectsExcluded == 0 { return String(localized: "\(archived) of \(x.originals) archived") }
+        return x.rejectsExcluded == 1
+            ? String(localized: "\(archived) archived, \(x.rejectsExcluded) reject excluded")
+            : String(localized: "\(archived) archived, \(x.rejectsExcluded) rejects excluded")
     }
 
     /// One run line, e.g. "Trip · on demand · succeeded in 1.2 s".
@@ -136,26 +140,29 @@ public enum ArchiveDisplay {
         let secs = Double(r.duration.components.seconds) + Double(r.duration.components.attoseconds) / 1e18
         let took = secs < 10 ? String(format: "%.1f s", secs) : "\(Safe.clampedInt(secs)) s"
         var s = "\(r.session) · \(r.trigger) · \(r.outcome)"
-        if ["succeeded", "failed", "incomplete"].contains(r.outcome) { s += " in \(took)" }
-        if !r.problems.isEmpty { s += ": \(r.problems.count) not archived" }
+        if ["succeeded", "failed", "incomplete"].contains(r.outcome) { s += " " + String(localized: "in \(took)") }
+        if !r.problems.isEmpty { s += ": " + String(localized: "\(r.problems.count) not archived") }
         if let m = r.message { s += ": \(m)" }
-        if !r.warnings.isEmpty { s += " (\(r.warnings.count) warning\(r.warnings.count == 1 ? "" : "s"))" }
+        if !r.warnings.isEmpty { s += r.warnings.count == 1
+            ? " (" + String(localized: "\(r.warnings.count) warning") + ")"
+            : " (" + String(localized: "\(r.warnings.count) warnings") + ")" }
         return s
     }
 
     /// Amazon Photos hand-off line.
     public static func amazonLine(_ a: ArchiveDetail.Amazon) -> String {
-        if a.running { return "Handing originals to Amazon Photos…" }
-        if a.folderMissing { return "Amazon Photos folder missing: \(a.folder). Choose it again in Settings › Archive." }
-        if let e = a.error { return "Amazon Photos: \(e)" }
-        guard a.lastRun != nil else { return "Amazon Photos: after the next import" }
+        if a.running { return String(localized: "Handing originals to Amazon Photos…") }
+        if a.folderMissing { return String(localized: "Amazon Photos folder missing: \(a.folder). Choose it again in Settings › Archive.") }
+        if let e = a.error { return String(localized: "Amazon Photos: \(e)") }
+        guard a.lastRun != nil else { return String(localized: "Amazon Photos: after the next import") }
         // L2: the cumulative total, not "0 handed over, 40 already there" after the first pass.
         let total = a.placed + a.alreadyMirrored
-        var parts = ["\(total) original\(total == 1 ? "" : "s") handed to the app" + (a.placed > 0 ? " (\(a.placed) new)" : "")]
-        if a.rejectsExcluded > 0 { parts.append("\(a.rejectsExcluded) reject\(a.rejectsExcluded == 1 ? "" : "s") excluded") }
-        if a.waiting > 0 { parts.append("\(a.waiting) waiting for verification") }
-        if !a.failed.isEmpty { parts.append("\(a.failed.count) failed") }
-        return "Amazon Photos: " + parts.joined(separator: ", ")
+        var parts = [(total == 1 ? String(localized: "\(total) original handed to the app") : String(localized: "\(total) originals handed to the app"))
+            + (a.placed > 0 ? " (" + String(localized: "\(a.placed) new") + ")" : "")]
+        if a.rejectsExcluded > 0 { parts.append(a.rejectsExcluded == 1 ? String(localized: "\(a.rejectsExcluded) reject excluded") : String(localized: "\(a.rejectsExcluded) rejects excluded")) }
+        if a.waiting > 0 { parts.append(String(localized: "\(a.waiting) waiting for verification")) }
+        if !a.failed.isEmpty { parts.append(String(localized: "\(a.failed.count) failed")) }
+        return String(localized: "Amazon Photos: \(parts.joined(separator: ", "))")
     }
 
     /// Whether a run line shows as a problem (red) in the popover.
@@ -172,6 +179,6 @@ public enum ArchiveDisplay {
     }
 
     public static func accessibilityLabel(_ status: ArchiveStatus) -> String {
-        "Archive: \(long(status.state))"
+        String(localized: "Archive: \(long(status.state))")
     }
 }

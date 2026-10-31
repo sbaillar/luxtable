@@ -16,7 +16,7 @@ public struct RustPhotoMerger: PhotoMerging {
 
     public func preview(_ photos: [Photo], options: PhotoMergeOptions, maxEdge: Int) async throws -> PhotoMergePreview {
         let paths = try photos.map { p in
-            guard let url = p.url else { throw RenderError(.InvalidArgument(message: "\(p.filename) has no file")) }
+            guard let url = p.url else { throw RenderError(.InvalidArgument(message: String(localized: "\(p.filename) has no file"))) }
             return url.path
         }
         let ffiOptions = options.ffi
@@ -28,7 +28,7 @@ public struct RustPhotoMerger: PhotoMerging {
             return try await mergePreview(paths: paths, options: ffiOptions, maxEdge: edge, token: token)
         }
         guard let image = Self.decode(p.jpeg) else {
-            throw RenderError(.Internal(message: "the merge preview couldn't be decoded"))
+            throw RenderError(.Internal(message: String(localized: "the merge preview couldn't be decoded")))
         }
         return PhotoMergePreview(image: image, width: Int(p.width), height: Int(p.height),
                                  projection: PhotoMergeOptions.Projection(p.projection),

@@ -13,11 +13,11 @@ struct LensPanel: View {
                                                                  chosen: lens.profile))
             // Manual profile choice (e.g. a Sigma or Tamron lens with no automatic match).
             Menu {
-                Button("Automatic (from the lens EXIF)") { model.updateEdit(label: "Lens Profile") { $0.lens.profile = nil } }
+                Button("Automatic (from the lens EXIF)") { model.updateEdit(label: String(localized: "Lens Profile")) { $0.lens.profile = nil } }
                 ForEach(LensProfiles.grouped(), id: \.maker) { group in
                     Menu(group.maker) {
                         ForEach(group.models, id: \.self) { m in
-                            Button(m) { model.updateEdit(label: "Lens Profile") { $0.lens.profile = m } }
+                            Button(m) { model.updateEdit(label: String(localized: "Lens Profile")) { $0.lens.profile = m } }
                         }
                     }
                 }
@@ -31,7 +31,7 @@ struct LensPanel: View {
             }
             Toggle("Enable profile corrections", isOn: Binding(
                 get: { lens.enabled },
-                set: { v in model.updateEdit(label: "Lens Correction") { $0.lens.enabled = v } }))
+                set: { v in model.updateEdit(label: String(localized: "Lens Correction")) { $0.lens.enabled = v } }))
                 .font(DS.Font.label)
                 .help("Correct distortion and corner shading using the lens profile")
                 .aiHighlight(model, AIFieldMap.lensEnabled, value: lens.enabled ? "on" : "off")
@@ -40,7 +40,7 @@ struct LensPanel: View {
                 EditSlider(model: model, spec: Specs.lightFalloff, keyPath: \.lens.lightFalloff)
                 Toggle("Remove chromatic aberration", isOn: Binding(
                     get: { lens.chromaticAberration },
-                    set: { v in model.updateEdit(label: "Chromatic Aberration") { $0.lens.chromaticAberration = v } }))
+                    set: { v in model.updateEdit(label: String(localized: "Chromatic Aberration")) { $0.lens.chromaticAberration = v } }))
                     .font(DS.Font.label)
                     .help("Remove color fringes along high-contrast edges")
                     .aiHighlight(model, AIFieldMap.chromaticAberration, value: lens.chromaticAberration ? "on" : "off")
@@ -76,10 +76,10 @@ struct CropPanel: View {
             // [cmp9] The canvas tools: crop (handles, thirds), straighten (drag a level line).
             HStack(spacing: DS.Space.xs) {
                 Chip(title: "Crop", selected: tool == .crop) { model.perform(.tool(.crop)) }
-                    .help(bindings.help("Crop: drag the handles; ⏎ applies, Esc cancels, X swaps orientation", .cropTool))
+                    .help(bindings.help(String(localized: "Crop: drag the handles; ⏎ applies, Esc cancels, X swaps orientation"), .cropTool))
                     .accessibilityLabel("Crop tool")
                 Chip(title: "Straighten", selected: tool == .straighten) { model.perform(.tool(.straighten)) }
-                    .help(bindings.help("Straighten: drag along something that should be level or plumb", .straightenTool))
+                    .help(bindings.help(String(localized: "Straighten: drag along something that should be level or plumb"), .straightenTool))
                     .accessibilityLabel("Straighten tool")
                 Chip(title: "Swap", selected: false) { model.swapCropOrientation() }
                     .help("Swap the crop between portrait and landscape (X in the crop tool)")
@@ -123,9 +123,9 @@ struct CropPanel: View {
 
     static func help(_ r: CropRatio) -> String {
         switch r {
-        case .original: "Crop in the photo's own shape; kept for later crops until you pick another ratio"
-        case .free: "Crop to any shape"
-        default: "Crop to \(r.title)\(r.detail.map { " (\($0.lowercased()))" } ?? ""), centred in the current crop; kept for later crops until you pick another ratio"
+        case .original: String(localized: "Crop in the photo's own shape; kept for later crops until you pick another ratio")
+        case .free: String(localized: "Crop to any shape")
+        default: String(localized: "Crop to \(r.title)\(r.detail.map { " (\($0.lowercased()))" } ?? ""), centred in the current crop; kept for later crops until you pick another ratio")
         }
     }
 }

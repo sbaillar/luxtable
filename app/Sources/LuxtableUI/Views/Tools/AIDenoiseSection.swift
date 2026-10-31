@@ -14,7 +14,7 @@ struct AIDenoiseSection: View {
             Toggle("AI Denoise", isOn: Binding(
                 get: { noise.aiDenoise },
                 set: { on in
-                    model.updateEdit(label: "AI Denoise") { $0.noise.aiDenoise = on }
+                    model.updateEdit(label: String(localized: "AI Denoise")) { $0.noise.aiDenoise = on }
                     if on { Task { await service.checkFocused() } }
                 }))
                 .font(DS.Font.label)

@@ -18,7 +18,7 @@ public enum NativeFeature: String, CaseIterable, Sendable, Identifiable {
 
     public var title: String {
         switch self {
-        case .archive: "Archive"
+        case .archive: String(localized: "Archive")
         case .amazonPhotos: "Amazon Photos"
         case .immich: "Immich"
         case .googlePhotos: "Google Photos"

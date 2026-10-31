@@ -28,7 +28,7 @@ struct PeopleMaskMenu: View {
                     } label: {
                         HStack(spacing: 3) {
                             if busy == t { ProgressView().controlSize(.mini) } else { Image(systemName: PeopleMenu.symbol(t)) }
-                            Text(t.rawValue.capitalized).font(DS.Font.caption)
+                            Text(Self.title(t)).font(DS.Font.caption)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -54,6 +54,20 @@ struct PeopleMaskMenu: View {
         .task(id: model.focusedID) {
             person = nil
             count = await controller.peopleCount()
+        }
+    }
+
+    /// The part buttons' names (Person and its six sub-parts).
+    private static func title(_ t: AITarget) -> String {
+        switch t {
+        case .person: String(localized: "Person")
+        case .face: String(localized: "Face")
+        case .skin: String(localized: "Skin")
+        case .eyes: String(localized: "Eyes")
+        case .teeth: String(localized: "Teeth")
+        case .hair: String(localized: "Hair")
+        case .clothes: String(localized: "Clothes")
+        default: t.rawValue.capitalized
         }
     }
 

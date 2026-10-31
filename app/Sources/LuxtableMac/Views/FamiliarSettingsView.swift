@@ -115,7 +115,9 @@ private struct PresetRow: View {
 enum FamiliarText {
     static func keysStatus(_ preset: KeyPreset, _ bindings: KeyBindings) -> String {
         let n = preset.changes(in: bindings)
-        return n == 0 ? "\(preset.title) keys, unchanged" : "\(preset.title) keys + \(n) of your own change\(n == 1 ? "" : "s")"
+        return n == 0 ? String(localized: "\(preset.title) keys, unchanged")
+            : n == 1 ? String(localized: "\(preset.title) keys + 1 of your own change")
+            : String(localized: "\(preset.title) keys + \(n) of your own changes")
     }
 
     static func namesExample(_ n: NameSet) -> String {
@@ -124,15 +126,15 @@ enum FamiliarText {
 
     /// The status bar's reminder of what is in use.
     static func statusLine(_ layout: LayoutPreset, _ keys: KeyPreset) -> String {
-        layout.rawValue == keys.rawValue ? "\(layout.title) layout and keys" : "\(layout.title) layout · \(keys.title) keys"
+        layout.rawValue == keys.rawValue ? String(localized: "\(layout.title) layout and keys")
+            : String(localized: "\(layout.title) layout · \(keys.title) keys")
     }
 
     /// `offersNewcomer`: the first-run list, whose own row is for "nothing yet".
     static func choiceTitle(_ l: LayoutPreset, offersNewcomer: Bool = false) -> String {
-        l == .luxtable && !offersNewcomer ? "Luxtable, or nothing yet" : l.title
+        l == .luxtable && !offersNewcomer ? String(localized: "Luxtable, or nothing yet") : l.title
     }
 
-    static let newcomerTitle = "Nothing yet: I'm new to photo editing"
-    static let newcomerSummary = "Start in Simple mode: an Auto button, looks and a few easy sliders. "
-        + "Every tool is one switch away (View ▸ Simple Mode)."
+    static let newcomerTitle = String(localized: "Nothing yet: I'm new to photo editing")
+    static let newcomerSummary = String(localized: "Start in Simple mode: an Auto button, looks and a few easy sliders. Every tool is one switch away (View ▸ Simple Mode).")
 }

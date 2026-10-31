@@ -14,7 +14,7 @@ public struct GooglePhotosTarget: Codable, Equatable, Hashable, Sendable {
         self.albumTitle = albumTitle
     }
 
-    public var summary: String { "Google Photos (\(albumTitle))" }
+    public var summary: String { String(localized: "Google Photos (\(albumTitle))") }
 }
 
 /// An album this app created in the user's Google Photos.
@@ -89,12 +89,12 @@ public struct GooglePhotosUpload: Equatable, Sendable {
 
     /// "12 uploaded to Google Photos (Trip) · 2 failed".
     public var summary: String {
-        if let error { return "Google Photos: \(error)" }
-        var s = "\(uploaded.count) uploaded to Google Photos"
+        if let error { return String(localized: "Google Photos: \(error)") }
+        var s = String(localized: "\(uploaded.count) uploaded to Google Photos")
         if let albumTitle { s += " (\(albumTitle))" }
-        if !failed.isEmpty { s += " · \(failed.count) failed" }
-        if cancelled { s += " · stopped" }
-        if signInNeeded { s += " · sign in again in Settings ▸ Google Photos" }
+        if !failed.isEmpty { s += String(localized: " · \(failed.count) failed") }
+        if cancelled { s += String(localized: " · stopped") }
+        if signInNeeded { s += String(localized: " · sign in again in Settings ▸ Google Photos") }
         return s
     }
 }
@@ -393,9 +393,9 @@ public enum GooglePhotosError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .notSetUp: "This build has no Google sign-in built in: add your own OAuth client ID first (see “How to set up”)."
-        case .notSignedIn: "Sign in to Google Photos in Settings ▸ Google Photos."
-        case .keychain: "The Keychain refused to save the Google sign-in."
+        case .notSetUp: String(localized: "This build has no Google sign-in built in: add your own OAuth client ID first (see “How to set up”).")
+        case .notSignedIn: String(localized: "Sign in to Google Photos in Settings ▸ Google Photos.")
+        case .keychain: String(localized: "The Keychain refused to save the Google sign-in.")
         case .failed(let m): m
         }
     }

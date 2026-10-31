@@ -175,7 +175,7 @@ struct MetadataPanel: View {
                         }
                         .buttonStyle(.plain)
                         .help("Rate \(r) (key \(r))")
-                        .accessibilityLabel("Rate \(r) star\(r == 1 ? "" : "s")")
+                        .accessibilityLabel(r == 1 ? "Rate 1 star" : "Rate \(r) stars")
                         .accessibilityAddTraits(r == p.rating ? .isSelected : [])
                     }
                 }
@@ -239,7 +239,7 @@ struct KeywordsPanel: View {
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: DS.Space.xs)], alignment: .leading, spacing: DS.Space.xs) {
                     ForEach(keywords, id: \.self) { k in
-                        Chip(title: "\(k)  ✕", selected: true) { model.removeKeyword(k) }
+                        Chip(title: k + "  ✕", selected: true) { model.removeKeyword(k) }
                             .help("Remove “\(k)”")
                             .accessibilityLabel("Keyword \(k)")
                             .accessibilityHint("Removes it")
@@ -298,12 +298,12 @@ struct AmazonPhotosPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.s) {
             PanelNote(text: "Luxtable mirrors your originals into a folder that the official Amazon Photos app backs up. No passwords, no private APIs.")
-            InfoRow(label: "Folder", value: settings.amazonPhotosFolder?.path ?? "Off")
+            InfoRow(label: "Folder", value: settings.amazonPhotosFolder?.path ?? String(localized: "Off"))
             HStack {
                 Button("Choose…") {
                     if let url = PlatformPanels.chooseItem(files: false, directories: true, createDirectories: true,
-                                                           prompt: "Use Folder",
-                                                           message: "Choose the folder the Amazon Photos app backs up") {
+                                                           prompt: String(localized: "Use Folder"),
+                                                           message: String(localized: "Choose the folder the Amazon Photos app backs up")) {
                         settings.amazonPhotosFolder = url
                     }
                 }

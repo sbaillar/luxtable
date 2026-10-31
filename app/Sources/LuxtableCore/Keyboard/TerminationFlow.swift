@@ -8,11 +8,11 @@ public enum TerminationFlow {
 
         public var title: String {
             switch self {
-            case .retry: "Try Again"
-            case .quitAnyway: "Quit Anyway"
-            case .cancel: "Cancel"
-            case .stopImportAndQuit: "Stop Import and Quit"
-            case .stopExportAndQuit: "Stop Export and Quit"
+            case .retry: String(localized: "Try Again")
+            case .quitAnyway: String(localized: "Quit Anyway")
+            case .cancel: String(localized: "Cancel")
+            case .stopImportAndQuit: String(localized: "Stop Import and Quit")
+            case .stopExportAndQuit: String(localized: "Stop Export and Quit")
             }
         }
     }
@@ -39,13 +39,13 @@ public enum TerminationFlow {
         case .ok:
             return nil
         case .failed(let message, let pending):
-            return Alert(title: "\(pending) change\(pending == 1 ? "" : "s") couldn’t be saved",
-                         message: "\(message)\n\nIf you quit now, \(pending == 1 ? "it is" : "they are") lost.",
+            return Alert(title: pending == 1 ? String(localized: "1 change couldn’t be saved") : String(localized: "\(pending) changes couldn’t be saved"),
+                         message: pending == 1 ? String(localized: "\(message)\n\nIf you quit now, it is lost.")
+                             : String(localized: "\(message)\n\nIf you quit now, they are lost."),
                          choices: [.retry, .cancel, .quitAnyway], isCritical: true)
         case .unsavedInMemory(let count):
-            return Alert(title: "\(count) rating\(count == 1 ? "" : "s") and edit\(count == 1 ? "" : "s") will be lost",
-                         message: "This folder is open without a session store: ratings and edits are kept in "
-                             + "memory only. Quitting discards them.",
+            return Alert(title: count == 1 ? String(localized: "1 rating and edit will be lost") : String(localized: "\(count) ratings and edits will be lost"),
+                         message: String(localized: "This folder is open without a session store: ratings and edits are kept in memory only. Quitting discards them."),
                          choices: [.cancel, .quitAnyway], isCritical: true)
         case .importRunning:
             // The copy stops at its next chunk; its journal resumes it next time.
@@ -53,13 +53,12 @@ public enum TerminationFlow {
                          choices: [.cancel, .stopImportAndQuit], isCritical: false)
         case .exportRunning:
             // The batch stops at its next photo; files already written stay.
-            return Alert(title: "An export is running",
-                         message: "Stop it and quit? Photos already exported stay; the rest aren't exported.",
+            return Alert(title: String(localized: "An export is running"),
+                         message: String(localized: "Stop it and quit? Photos already exported stay; the rest aren't exported."),
                          choices: [.cancel, .stopExportAndQuit], isCritical: false)
         case .archiveFailed(let message):
-            return Alert(title: "The last archive run failed",
-                         message: "\(message)\n\nYour photos are safe on this Mac, but the archive doesn't have all of them. "
-                             + "Luxtable tries again the next time it opens.",
+            return Alert(title: String(localized: "The last archive run failed"),
+                         message: String(localized: "\(message)\n\nYour photos are safe on this Mac, but the archive doesn't have all of them. Luxtable tries again the next time it opens."),
                          choices: [.cancel, .quitAnyway], isCritical: false)
         }
     }

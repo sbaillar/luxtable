@@ -33,7 +33,7 @@ public struct GitHubReleaseFetcher: ReleaseFetching {
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
         let (data, response) = try await URLSession(configuration: .ephemeral).data(for: request)
         if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
-            throw UpdateError("GitHub answered HTTP \(http.statusCode)")
+            throw UpdateError(String(localized: "GitHub answered HTTP \(http.statusCode)"))
         }
         return data
     }
@@ -67,12 +67,12 @@ public enum CodeSigner: Equatable, Sendable {
     public static func of(_ url: URL) throws -> CodeSigner {
         var code: SecStaticCode?
         guard SecStaticCodeCreateWithPath(url as CFURL, [], &code) == errSecSuccess, let code else {
-            throw UpdateError("“\(url.lastPathComponent)” isn’t an app Luxtable can check.")
+            throw UpdateError(String(localized: "“\(url.lastPathComponent)” isn’t an app Luxtable can check."))
         }
         var info: CFDictionary?
         guard SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &info) == errSecSuccess,
               let dict = info as? [String: Any] else {
-            throw UpdateError("The signature of “\(url.lastPathComponent)” couldn’t be read.")
+            throw UpdateError(String(localized: "The signature of “\(url.lastPathComponent)” couldn’t be read."))
         }
         return signer(team: dict[kSecCodeInfoTeamIdentifier as String] as? String,
                       leaf: (dict[kSecCodeInfoCertificates as String] as? [SecCertificate])?.first
@@ -103,11 +103,11 @@ public struct UpdateTools: Sendable {
     public static let live = UpdateTools(
         unzip: { zip, into in
             let (status, err) = try await run("/usr/bin/ditto", ["-x", "-k", zip.path, into.path])
-            guard status == 0 else { throw UpdateError("The download couldn’t be unpacked: \(err)") }
+            guard status == 0 else { throw UpdateError(String(localized: "The download couldn’t be unpacked: \(err)")) }
         },
         verifySignature: { app in
             let (status, err) = try await run("/usr/bin/codesign", ["--verify", "--deep", "--strict", app.path])
-            guard status == 0 else { throw UpdateError("The downloaded app’s signature doesn’t check out: \(err)") }
+            guard status == 0 else { throw UpdateError(String(localized: "The downloaded app’s signature doesn’t check out: \(err)")) }
         },
         spawn: { script, arguments in
             let p = Process()

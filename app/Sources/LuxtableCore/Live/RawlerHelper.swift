@@ -126,8 +126,8 @@ public final class RawlerHelper {
             })
         } catch let e as ModelFetchError {
             switch e {
-            case .download(let m): throw RawlerHelperError(message: "The RAW helper couldn’t be downloaded: \(m)")
-            case .checksum: throw RawlerHelperError(message: "The downloaded RAW helper isn’t the expected file (checksum mismatch).")
+            case .download(let m): throw RawlerHelperError(message: String(localized: "The RAW helper couldn’t be downloaded: \(m)"))
+            case .checksum: throw RawlerHelperError(message: String(localized: "The downloaded RAW helper isn’t the expected file (checksum mismatch)."))
             }
         }
         try fm.setAttributes([.posixPermissions: 0o755], ofItemAtPath: staging.path)
@@ -159,9 +159,9 @@ public enum RawlerHelperText {
 
     public static func status(_ state: RawlerHelper.State) -> String {
         switch state {
-        case .notInstalled: "Not installed"
-        case .downloading(let f): "Downloading… \(Int((f * 100).rounded()))%"
-        case .installed(let v): v.isEmpty ? "Installed" : "Installed (rawler \(v))"
+        case .notInstalled: String(localized: "Not installed")
+        case .downloading(let f): String(localized: "Downloading… \(Int((f * 100).rounded()))%")
+        case .installed(let v): v.isEmpty ? String(localized: "Installed") : String(localized: "Installed (rawler \(v))")
         case .failed(let m): m
         }
     }

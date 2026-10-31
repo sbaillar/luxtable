@@ -145,8 +145,8 @@ extension AppModel {
     /// Why `id` can't be its stack's cover (nil: it can, or it isn't in a burst).
     public func coverHint(for id: PhotoID) -> String? {
         guard let d = coverDecision(of: id), !d.candidates.contains(id) else { return nil }
-        if photo(id)?.pick == .rejected { return "Unreject it to make it the cover" }
-        return "Rate it \(String(repeating: "★", count: d.topRating)) or higher to make it the cover"
+        if photo(id)?.pick == .rejected { return String(localized: "Unreject it to make it the cover") }
+        return String(localized: "Rate it \(String(repeating: "★", count: d.topRating)) or higher to make it the cover")
     }
 
     /// Use `id` (default: the strip's current frame, else the focused photo) as its stack's

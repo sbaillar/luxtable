@@ -31,6 +31,12 @@ if [[ -d "$CLT_FW" ]]; then
   TEST_FLAGS=(-Xswiftc -F -Xswiftc "$CLT_FW" -Xlinker -rpath -Xlinker "$CLT_FW")
 fi
 
+# The compiler lists every localizable string it compiles (scripts/l10n.py checks them
+# against the string tables after the tests; docs/LOCALIZATION.md).
+L10N_OUT="$SCRATCH/l10n"
+mkdir -p "$L10N_OUT"
+TEST_FLAGS+=(-Xswiftc -emit-localized-strings -Xswiftc -emit-localized-strings-path -Xswiftc "$L10N_OUT")
+
 # Force a relink of the test bundle when the Rust archive changed.
 BIN_DIR="$(swift build --package-path app --scratch-path "$SCRATCH" --show-bin-path)"
 LIB_HASH="$(shasum -a 256 app/.rust/lib/liblt_ffi.a | awk '{print $1}')"
@@ -42,6 +48,9 @@ fi
 export LT_SUPPORT_ROOT="${LT_SUPPORT_ROOT:-$(mktemp -d -t luxtable-test-support)}"
 swift test --package-path app --scratch-path "$SCRATCH" --enable-code-coverage "${TEST_FLAGS[@]}" "$@"
 mkdir -p "$BIN_DIR" && echo "$LIB_HASH" >"$BIN_DIR/.liblt_ffi.linked"
+
+# Every string in the code is in the English table, and every translation is complete.
+python3 scripts/l10n.py check "$L10N_OUT"
 
 PROFDATA="$BIN_DIR/codecov/default.profdata"
 XCTEST="$BIN_DIR/LuxtablePackageTests.xctest/Contents/MacOS/LuxtablePackageTests"

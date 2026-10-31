@@ -165,9 +165,9 @@ public enum AIFieldMap {
         public func value(in e: EditState) -> String? {
             switch kind {
             case .slider(let spec):
-                if field.panel == .whiteBalance, e.whiteBalance.asShot { return "As Shot" }
+                if field.panel == .whiteBalance, e.whiteBalance.asShot { return String(localized: "As Shot") }
                 return keyPath.map { spec.string(e[keyPath: $0]) }
-            case .toggle(let on, _): return on(e) ? "On" : "Off"
+            case .toggle(let on, _): return on(e) ? String(localized: "On") : String(localized: "Off")
             case .other: return nil
             }
         }
@@ -176,14 +176,17 @@ public enum AIFieldMap {
         /// "added a sky layer", "turned AI Denoise on".
         public func phrase(before: EditState?, after: EditState) -> String {
             switch kind {
-            case .slider: return "changed \(label)"
-            case .toggle(let on, let noun): return "turned \(noun) \(on(after) ? "on" : "off")"
+            case .slider: return String(localized: "changed \(label)")
+            case .toggle(let on, let noun):
+                return on(after) ? String(localized: "turned \(noun) on") : String(localized: "turned \(noun) off")
             case .other(let noun):
                 if field == AIFieldMap.layers, let b = before, after.layers.count > b.layers.count,
                    let added = after.layers.last(where: { l in !b.layers.contains { $0.id == l.id } }) {
-                    return "added \(AIChangeText.article(added.name)) \(added.name.lowercased()) layer"
+                    let name = added.name.lowercased()
+                    return AIChangeText.article(added.name) == "an"
+                        ? String(localized: "added an \(name) layer") : String(localized: "added a \(name) layer")
                 }
-                return "changed the \(noun)"
+                return String(localized: "changed the \(noun)")
             }
         }
     }
@@ -245,17 +248,18 @@ public enum AIFieldMap {
             slider(.hdr, "shadows", Specs.shadows, \.hdr.shadows, .shadows),
             slider(.hdr, "whites", Specs.whites, \.hdr.whites),
             slider(.hdr, "blacks", Specs.blacks, \.hdr.blacks),
-            row(.levels, "levels", "Levels", noun: "levels", \.levels, .levels),
-            row(.curve, "curve", "Curve", noun: "curve", \.curve),
-            row(.colorBalance, "wheels", "Color Wheels", noun: "color balance", \.colorBalance),
+            row(.levels, "levels", String(localized: "Levels"), noun: String(localized: "levels"), \.levels, .levels),
+            row(.curve, "curve", String(localized: "Curve"), noun: String(localized: "curve"), \.curve),
+            row(.colorBalance, "wheels", String(localized: "Color Wheels"), noun: String(localized: "color balance"),
+                \.colorBalance),
         ]
         for (i, band) in ColorEditorEdit.bandNames.enumerated() {
             e += [
-                slider(.colorEditor, "band\(i).hue", Specs.bandHue, \.colorEditor.bands[i].hueShift, label: "\(band) Hue"),
+                slider(.colorEditor, "band\(i).hue", Specs.bandHue, \.colorEditor.bands[i].hueShift, label: String(localized: "\(band) Hue")),
                 slider(.colorEditor, "band\(i).saturation", Specs.bandSaturation, \.colorEditor.bands[i].saturation,
-                       label: "\(band) Saturation"),
+                       label: String(localized: "\(band) Saturation")),
                 slider(.colorEditor, "band\(i).lightness", Specs.bandLightness, \.colorEditor.bands[i].lightness,
-                       label: "\(band) Lightness"),
+                       label: String(localized: "\(band) Lightness")),
             ]
         }
         e += [
@@ -264,22 +268,26 @@ public enum AIFieldMap {
             slider(.sharpening, "amount", Specs.sharpenAmount, \.detail.sharpenAmount),
             slider(.sharpening, "radius", Specs.sharpenRadius, \.detail.sharpenRadius),
             slider(.sharpening, "threshold", Specs.sharpenThreshold, \.detail.sharpenThreshold),
-            toggle(.noise, "aiDenoise", "AI Denoise", noun: "AI Denoise", \.noise.aiDenoise, .aiDenoise),
+            toggle(.noise, "aiDenoise", String(localized: "AI Denoise"), noun: String(localized: "AI Denoise"),
+                   \.noise.aiDenoise, .aiDenoise),
             slider(.noise, "aiStrength", Specs.aiDenoiseStrength, \.noise.aiStrength, .aiDenoise),
             slider(.noise, "luminance", Specs.noiseLuminance, \.noise.luminance, .noiseReduction),
             slider(.noise, "color", Specs.noiseColor, \.noise.color, .noiseReduction),
             slider(.noise, "detail", Specs.noiseDetail, \.noise.detail),
             slider(.vignette, "amount", Specs.vignetteAmount, \.vignette.amountEV),
             slider(.vignette, "midpoint", Specs.vignetteMidpoint, \.vignette.midpoint),
-            toggle(.lensCorrection, "enabled", "Lens Profile", noun: "lens correction", \.lens.enabled, .lensCorrection),
+            toggle(.lensCorrection, "enabled", String(localized: "Lens Profile"), noun: String(localized: "lens correction"),
+                   \.lens.enabled, .lensCorrection),
             slider(.lensCorrection, "distortion", Specs.distortion, \.lens.distortion, .lensCorrection),
             slider(.lensCorrection, "lightFalloff", Specs.lightFalloff, \.lens.lightFalloff, .lensCorrection),
-            toggle(.lensCorrection, "chromaticAberration", "Chromatic Aberration", noun: "chromatic aberration removal",
+            toggle(.lensCorrection, "chromaticAberration", String(localized: "Chromatic Aberration"),
+                   noun: String(localized: "chromatic aberration removal"),
                    \.lens.chromaticAberration, .lensCorrection),
             slider(.lensCorrection, "keystoneVertical", Specs.keystoneVertical, \.lens.keystoneVertical),
             slider(.lensCorrection, "keystoneHorizontal", Specs.keystoneHorizontal, \.lens.keystoneHorizontal),
             slider(.crop, "angle", Specs.straighten, \.crop.angle, .straighten),
-            Entry(field: cropFrame, label: "Crop", kind: .other(noun: "crop"), optimize: .straighten, keyPath: nil,
+            Entry(field: cropFrame, label: String(localized: "Crop"), kind: .other(noun: String(localized: "crop")),
+                  optimize: .straighten, keyPath: nil,
                   changed: { a, b in a.crop.aspect != b.crop.aspect || a.crop.rect != b.crop.rect
                       || a.crop.quarterTurns != b.crop.quarterTurns },
                   restore: { e, s in
@@ -287,7 +295,7 @@ public enum AIFieldMap {
                       e.crop.rect = s.crop.rect
                       e.crop.quarterTurns = s.crop.quarterTurns
                   }),
-            row(.layers, "layers", "Layers", noun: "layers", \.layers, .skyLayer),
+            row(.layers, "layers", String(localized: "Layers"), noun: String(localized: "layers"), \.layers, .skyLayer),
         ]
         return e
     }()
@@ -319,15 +327,16 @@ public enum AIHighlightStyle {
     /// The outline around a changed row.
     public static let borderWidth = 1.5
     public static let badgeSymbol = "sparkles"
-    public static let panelBadgeHelp = "Contains settings changed by AI (click to list them)"
-    public static let clearTitle = "Clear AI Highlights"
-    public static let showTitle = "Show AI-Changed Tools"
+    public static let panelBadgeHelp = String(localized: "Contains settings changed by AI (click to list them)")
+    public static let clearTitle = String(localized: "Clear AI Highlights")
+    public static let showTitle = String(localized: "Show AI-Changed Tools")
     /// VoiceOver, after a panel header's or tool tab's name.
-    public static let containerSuffix = ", has settings changed by AI"
+    public static let containerSuffix = String(localized: ", has settings changed by AI")
 
     /// VoiceOver: the control's value, then that AI changed it.
     public static func accessibilityValue(_ value: String) -> String {
-        value.isEmpty ? "changed by AI" : "\(value), changed by AI"
+        value.isEmpty ? String(localized: "changed by AI") : String(localized: "\(value), changed by AI")
+
     }
 
     /// The tinted row background: `color` over the panel grey at `tintOpacity`.

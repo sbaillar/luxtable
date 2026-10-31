@@ -65,7 +65,7 @@ struct C1SettingsSheet: View {
         }
     }
 
-    private func busy(_ text: String) -> some View {
+    private func busy(_ text: LocalizedStringKey) -> some View {
         HStack(spacing: DS.Space.s) {
             ProgressView().controlSize(.small)
             Text(text).font(DS.Font.label).foregroundStyle(DS.text)
@@ -109,7 +109,7 @@ struct C1SettingsSheet: View {
                     .foregroundStyle(row.action.writes ? DS.text : DS.textSecondary)
             }
             ForEach(Array(row.item.notes.enumerated()), id: \.offset) { _, n in
-                Text("\(n.dropped ? "Not carried over" : "Approximate"): \(n.text)")
+                Text((n.dropped ? String(localized: "Not carried over") : String(localized: "Approximate")) + ": " + n.text)
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary).textSelection(.enabled)
                     .padding(.leading, DS.Space.m)
             }
@@ -118,10 +118,10 @@ struct C1SettingsSheet: View {
     }
 
     @ViewBuilder private func found(_ scan: C1SettingsScan) -> some View {
-        let lines = scan.folders.map { "\($0.name): \($0.files == 0 ? "empty" : "\($0.files) file\($0.files == 1 ? "" : "s")")" }
-        section("Found", lines)
-        section("Preferences not carried over", scan.notes.map(\.text))
-        section("Not read", scan.skipped.map { "\($0.file): \($0.reason)" })
+        let lines = scan.folders.map { "\($0.name): \($0.files == 0 ? String(localized: "empty") : $0.files == 1 ? String(localized: "1 file") : String(localized: "\($0.files) files"))" }
+        section(String(localized: "Found"), lines)
+        section(String(localized: "Preferences not carried over"), scan.notes.map(\.text))
+        section(String(localized: "Not read"), scan.skipped.map { "\($0.file): \($0.reason)" })
     }
 
     @ViewBuilder private func section(_ title: String, _ lines: [String]) -> some View {

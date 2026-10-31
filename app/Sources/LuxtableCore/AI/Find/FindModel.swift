@@ -233,7 +233,7 @@ public final class FindModel {
         if let d = q.date { out.append(Chip(kind: .date, text: d.phrase)) }
         if let r = Self.rating(min: q.minRating, max: q.maxRating) { out.append(Chip(kind: .rating, text: r)) }
         if let f = q.flag { out.append(Chip(kind: .flag, text: Self.flag(f))) }
-        if !q.text.isEmpty { out.append(Chip(kind: .visual, text: "looks like: \(q.text)")) }
+        if !q.text.isEmpty { out.append(Chip(kind: .visual, text: String(localized: "looks like: \(q.text)"))) }
         return out
     }
 
@@ -241,19 +241,19 @@ public final class FindModel {
     public var notes: [String] {
         guard let q = results?.query else { return [] }
         var out: [String] = q.people.filter(\.names.isEmpty).map {
-            "No one named “\($0.term.capitalized)” yet — name faces in People."
+            String(localized: "No one named “\($0.term.capitalized)” yet — name faces in People.")
         }
         for p in q.places where p.sources.isEmpty {
-            out.append("Nothing is called “\(p.term)”.")
+            out.append(String(localized: "Nothing is called “\(p.term)”."))
         }
         if visualUnavailable {
-            out.append("Download the search model (search field ▸ Download) to match descriptions and places by look.")
+            out.append(String(localized: "Download the search model (search field ▸ Download) to match descriptions and places by look."))
         }
         return out
     }
 
     static func list(_ names: [String]) -> String {
-        names.count <= 1 ? names.first ?? "" : names.dropLast().joined(separator: ", ") + " or " + names.last!
+        names.count <= 1 ? names.first ?? "" : names.dropLast().joined(separator: ", ") + String(localized: " or ") + names.last!
     }
 
     static func placeChip(_ p: FindPlaceRecord) -> Chip {
@@ -266,29 +266,29 @@ public final class FindModel {
     /// Where a place matched, named honestly.
     static func source(_ s: PlaceSourceRecord, term: String) -> Chip {
         switch s {
-        case .location(let v): Chip(kind: .place, text: "location “\(v)”")
-        case .sessionName(let n): Chip(kind: .place, text: "matched session name “\(n)”")
-        case .folder(let n): Chip(kind: .place, text: "matched folder name “\(n)”")
-        case .keyword(let k): Chip(kind: .place, text: "keyword “\(k)”")
-        case .looksLike: Chip(kind: .looksLike, text: "looks like: \(term)")
+        case .location(let v): Chip(kind: .place, text: String(localized: "location “\(v)”"))
+        case .sessionName(let n): Chip(kind: .place, text: String(localized: "matched session name “\(n)”"))
+        case .folder(let n): Chip(kind: .place, text: String(localized: "matched folder name “\(n)”"))
+        case .keyword(let k): Chip(kind: .place, text: String(localized: "keyword “\(k)”"))
+        case .looksLike: Chip(kind: .looksLike, text: String(localized: "looks like: \(term)"))
         }
     }
 
     static func rating(min: UInt8?, max: UInt8?) -> String? {
         switch (min, max) {
         case (nil, nil): nil
-        case (_, 0?): "Unrated"
+        case (_, 0?): String(localized: "Unrated")
         case let (lo?, hi?) where lo == hi: String(repeating: "★", count: Int(lo))
-        case let (lo?, _): String(repeating: "★", count: Int(lo)) + " or more"
-        case let (nil, hi?): "up to " + String(repeating: "★", count: Int(hi))
+        case let (lo?, _): String(localized: "\(String(repeating: "★", count: Int(lo))) or more")
+        case let (nil, hi?): String(localized: "up to \(String(repeating: "★", count: Int(hi)))")
         }
     }
 
     static func flag(_ f: PickFlag) -> String {
         switch f {
-        case .picked: "Picked"
-        case .rejected: "Rejected"
-        case .unflagged: "Unflagged"
+        case .picked: String(localized: "Picked")
+        case .rejected: String(localized: "Rejected")
+        case .unflagged: String(localized: "Unflagged")
         }
     }
 
@@ -299,24 +299,26 @@ public final class FindModel {
             case .person(let name, let suggested):
                 Chip(kind: suggested ? .suggested : .person, text: suggested ? "\(name)?" : name)
             case .place(let term, let s): source(s, term: term)
-            case .date: Chip(kind: .date, text: phrase ?? "date")
-            case .rating(let stars): Chip(kind: .rating, text: stars == 0 ? "Unrated" : String(repeating: "★", count: Int(stars)))
+            case .date: Chip(kind: .date, text: phrase ?? String(localized: "date"))
+            case .rating(let stars):
+                Chip(kind: .rating, text: stars == 0 ? String(localized: "Unrated") : String(repeating: "★", count: Int(stars)))
             case .flag(let pick): Chip(kind: .flag, text: flag(pick))
-            case .visual(let score): Chip(kind: .visual, text: "looks like it (\(Int((score * 100).rounded())))")
-            case .text(let term): Chip(kind: .text, text: "“\(term)” in folder or keywords")
-            case .title(let text): Chip(kind: .text, text: "titled “\(text)”")
+            case .visual(let score): Chip(kind: .visual, text: String(localized: "looks like it (\(Int((score * 100).rounded())))"))
+            case .text(let term): Chip(kind: .text, text: String(localized: "“\(term)” in folder or keywords"))
+            case .title(let text): Chip(kind: .text, text: String(localized: "titled “\(text)”"))
             }
         }
     }
 
     /// Why a session is listed.
     public static func reason(_ s: FindSessionRecord) -> String {
-        let photos = s.hits == 1 ? "1 photo" : "\(s.hits) photos"
+        let photos = s.hits == 1 ? String(localized: "1 photo") : String(localized: "\(Int(clamping: s.hits)) photos")
         let why = switch s.reason {
-        case .name(let term): "name matches “\(term)”"
-        case .folder(_, let folder): "folder “\(folder)”"
-        case .keyword(_, let keyword): "keyword “\(keyword)”"
-        case .manyHits: "many matches"
+        case .name(let term): String(localized: "name matches “\(term)”")
+        case .folder(_, let folder): String(localized: "folder “\(folder)”")
+        case .keyword(_, let keyword): String(localized: "keyword “\(keyword)”")
+        case .manyHits: String(localized: "many matches")
+
         }
         return "\(why) · \(photos)"
     }

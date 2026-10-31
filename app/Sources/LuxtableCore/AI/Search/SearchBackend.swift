@@ -95,7 +95,7 @@ public protocol SearchBackend: Sendable {
 public enum SearchBackendError: Error, Equatable, LocalizedError {
     case sessionNotOpen
 
-    public var errorDescription: String? { "Open the session to search it." }
+    public var errorDescription: String? { String(localized: "Open the session to search it.") }
 }
 
 extension PhotoFilter {

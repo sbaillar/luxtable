@@ -70,33 +70,33 @@ public enum LookSuggester {
         if s.hasPerson {
             let share = Safe.clampedInt((s.faceArea * 100))
             add("portrait", s.faces > 0 && share > 0
-                ? "A person (face \(share)% of the frame): keep them sharp, soften the background."
-                : "A person in the frame: keep them sharp, soften the background.")
+                ? String(localized: "A person (face \(share)% of the frame): keep them sharp, soften the background.")
+                : String(localized: "A person in the frame: keep them sharp, soften the background."))
         }
         if s.lowLight {
-            let why = s.tags.contains(.night) ? "A night scene"
-                : s.iso >= 3200 ? "Shot in low light (ISO \(s.iso))"
-                : s.shutter >= 1.0 / 15 ? "Shot in low light (a slow shutter)"
-                : "A dark photo"
-            add("moody", "\(why): deepen the shadows rather than lift the noise.")
-            add("noir", "\(why): black and white with grain suits it.")
+            let why = s.tags.contains(.night) ? String(localized: "A night scene")
+                : s.iso >= 3200 ? String(localized: "Shot in low light (ISO \(String(s.iso)))")
+                : s.shutter >= 1.0 / 15 ? String(localized: "Shot in low light (a slow shutter)")
+                : String(localized: "A dark photo")
+            add("moody", String(localized: "\(why): deepen the shadows rather than lift the noise."))
+            add("noir", String(localized: "\(why): black and white with grain suits it."))
         }
-        if s.tags.contains(.sunset) { add("golden-hour", "A sunset: warm the light it already has.") }
+        if s.tags.contains(.sunset) { add("golden-hour", String(localized: "A sunset: warm the light it already has.")) }
         if s.tags.contains(.snow) || s.tags.contains(.beach) {
-            add("bright-airy", s.tags.contains(.snow) ? "Snow: keep it bright and clean." : "A beach: keep it bright and clean.")
+            add("bright-airy", s.tags.contains(.snow) ? String(localized: "Snow: keep it bright and clean.") : String(localized: "A beach: keep it bright and clean."))
         }
-        if s.tags.contains(.backlit) { add("dreamy-glow", "Backlit: let the light glow.") }
+        if s.tags.contains(.backlit) { add("dreamy-glow", String(localized: "Backlit: let the light glow.")) }
         if s.tags.contains(.landscape) {
-            if s.skyFraction >= 0.25 { add("hdr-detail", "A big sky: hold it and open the land below.") }
-            add("golden-hour", "A landscape: warm, late-day light.")
-            add("pop", "A landscape: richer colour and crisper detail.")
+            if s.skyFraction >= 0.25 { add("hdr-detail", String(localized: "A big sky: hold it and open the land below.")) }
+            add("golden-hour", String(localized: "A landscape: warm, late-day light."))
+            add("pop", String(localized: "A landscape: richer colour and crisper detail."))
         }
         if s.hasPerson {
-            add("bw-soft", "A portrait: a gentle black and white.")
+            add("bw-soft", String(localized: "A portrait: a gentle black and white."))
         }
         // Fill up to three with general-purpose looks.
-        for (id, why) in [("cinematic", "A versatile grade for most scenes."), ("pop", "Livelier colour and contrast."),
-                          ("faded-matte", "A soft, muted film feel.")] where out.count < 3 {
+        for (id, why) in [("cinematic", String(localized: "A versatile grade for most scenes.")), ("pop", String(localized: "Livelier colour and contrast.")),
+                          ("faded-matte", String(localized: "A soft, muted film feel."))] where out.count < 3 {
             add(id, why)
         }
         return out

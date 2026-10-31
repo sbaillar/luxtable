@@ -391,7 +391,7 @@ public final class LibraryModel {
     /// Rate the selection (0 clears).
     public func rate(_ stars: Int) {
         let n = min(max(stars, 0), 5)
-        edit(.rating(stars: UInt8(n)), label: n == 0 ? "Clear Rating" : "Rate \(n)") { $0.rating = UInt8(n) } photo: { $0.rating = n }
+        edit(.rating(stars: UInt8(n)), label: n == 0 ? String(localized: "Clear Rating") : String(localized: "Rate \(n)")) { $0.rating = UInt8(n) } photo: { $0.rating = n }
     }
 
     /// Toggles, like the browser: the tag every selected photo already has is cleared.
@@ -400,15 +400,15 @@ public final class LibraryModel {
         let all = !sel.isEmpty && sel.allSatisfy { items[$0].map { RustSessionStore.tag($0.label) == tag } ?? false }
         let value: ColorTag = all ? .none : tag
         let l = RustSessionStore.label(value)
-        edit(.label(label: l), label: "Color Tag \(value.name)") { $0.label = l } photo: { $0.colorTag = value }
+        edit(.label(label: l), label: String(localized: "Color Tag \(value.name)")) { $0.label = l } photo: { $0.colorTag = value }
     }
 
     public func setFlag(_ p: PickState) {
         let f = RustSessionStore.flag(p)
         let label = switch p {
-        case .picked: "Pick"
-        case .rejected: "Reject"
-        case .none: "Unflag"
+        case .picked: String(localized: "Pick")
+        case .rejected: String(localized: "Reject")
+        case .none: String(localized: "Unflag")
         }
         edit(.flag(pick: f), label: label) { $0.pick = f } photo: { $0.pick = p }
     }
@@ -447,7 +447,7 @@ public final class LibraryModel {
             }
             guard let self else { return }
             if !failed.isEmpty {
-                self.app?.show(Toast("Couldn’t change \(failed.joined(separator: "; "))", symbol: "exclamationmark.triangle",
+                self.app?.show(Toast(String(localized: "Couldn’t change \(failed.joined(separator: "; "))"), symbol: "exclamationmark.triangle",
                                      isError: true))
             }
             if !open.isEmpty, let app = self.app, let session = app.currentSession {
@@ -583,21 +583,23 @@ public final class LibraryModel {
     /// "1,234 photos" (of how many in the Library when filtered).
     public var countText: String {
         let n = ids.count.formatted()
-        let noun = ids.count == 1 ? "photo" : "photos"
-        guard let total = overview?.total, Int(total) != ids.count else { return "\(n) \(noun)" }
-        return "\(n) of \(Int(total).formatted()) \(Int(total) == 1 ? "photo" : "photos")"
+        guard let total = overview?.total, Int(total) != ids.count else {
+            return ids.count == 1 ? String(localized: "\(n) photo") : String(localized: "\(n) photos")
+        }
+        let all = Int(total).formatted()
+        return Int(total) == 1 ? String(localized: "\(n) of \(all) photo") : String(localized: "\(n) of \(all) photos")
     }
 
     /// The sidebar selection's title.
     public var title: String {
         switch scope {
-        case .all: "All Photographs"
-        case .session(let id): overview?.sessions.first { $0.id == id }?.name ?? "Session"
+        case .all: String(localized: "All Photographs")
+        case .session(let id): overview?.sessions.first { $0.id == id }?.name ?? String(localized: "Session")
         case .sessions(let ids) where ids.count == 2:
-            ids.map { id in overview?.sessions.first { $0.id == id }?.name ?? "Session" }.joined(separator: " + ")
-        case .sessions(let ids): "\(ids.count) Sessions"
-        case .opened: "Opened Sessions"
-        case .collection(let id): collections.first { $0.id == id }?.name ?? "Collection"
+            ids.map { id in overview?.sessions.first { $0.id == id }?.name ?? String(localized: "Session") }.joined(separator: " + ")
+        case .sessions(let ids): String(localized: "\(ids.count) Sessions")
+        case .opened: String(localized: "Opened Sessions")
+        case .collection(let id): collections.first { $0.id == id }?.name ?? String(localized: "Collection")
         case .year, .month, .day: LibraryDates.title(scope)
         }
     }
@@ -615,11 +617,11 @@ public enum LibraryText {
         var parts = [URL(fileURLWithPath: i.path).lastPathComponent, i.sessionName]
         if i.rating > 0 { parts.append(RatingText.label(Int(i.rating))) }
         switch i.pick {
-        case .picked: parts.append("picked")
-        case .rejected: parts.append("rejected")
+        case .picked: parts.append(String(localized: "picked"))
+        case .rejected: parts.append(String(localized: "rejected"))
         case .unflagged: break
         }
-        if i.label != .none { parts.append("\(RustSessionStore.tag(i.label).name.lowercased()) label") }
+        if i.label != .none { parts.append(String(localized: "\(RustSessionStore.tag(i.label).name.lowercased()) label")) }
         return parts.joined(separator: ", ")
     }
 

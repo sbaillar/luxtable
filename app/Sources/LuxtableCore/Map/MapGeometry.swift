@@ -248,8 +248,9 @@ public enum PlaceFilter: Hashable, Sendable {
     /// The filter bar's chip.
     public var title: String {
         switch self {
-        case .photos(let ids): "Map: \(ids.count) photo\(ids.count == 1 ? "" : "s")"
-        case .area: "Map: area"
+        case .photos(let ids): ids.count == 1 ? String(localized: "Map: \(ids.count) photo")
+                                              : String(localized: "Map: \(ids.count) photos")
+        case .area: String(localized: "Map: area")
         }
     }
 }

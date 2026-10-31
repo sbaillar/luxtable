@@ -64,7 +64,7 @@ extension AppModel {
     public func applyCropRatio(_ r: CustomCropRatio) {
         guard let id = focusedID, photo(id)?.isVideo != true, let ratio = r.ratio else { return }
         let v = viewer
-        updateEdits([id], label: "Crop \(r.name)") { id, e in
+        updateEdits([id], label: String(localized: "Crop \(r.name)")) { id, e in
             e.crop.aspect = .free
             let box = v.cropBox(for: e, photo: id)
             v.setCropBox(CropGeometry.fit(box.rect, ratio: ratio, size: box.size), in: &e, photo: id)

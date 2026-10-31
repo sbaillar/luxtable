@@ -21,7 +21,7 @@ public struct URLSessionModelDownloader: ModelDownloader {
 
     public func download(_ url: URL, to destination: URL, progress: @escaping @Sendable (Int64) -> Void) async throws {
         guard schemes.contains(url.scheme?.lowercased() ?? "") else {
-            throw SegmentationError.download("only https downloads are allowed (\(url.lastPathComponent))")
+            throw SegmentationError.download(String(localized: "only https downloads are allowed (\(url.lastPathComponent))"))
         }
         let running = RunningDownload()
         let size: Int64 = try await withTaskCancellationHandler {
@@ -174,7 +174,8 @@ public enum ModelFiles {
         do {
             try await withTaskCancellationHandler { try await transfer.value } onCancel: { transfer.cancel() }
         } catch is CancellationError {
-            if overflow.tripped { throw ModelFetchError.download("\(path) is larger than expected") }
+            if overflow.tripped { throw ModelFetchError.download(String(localized: "\(path) is larger than expected"))
+ }
             throw CancellationError()
         } catch let e as SegmentationError {
             if case .download(let m) = e { throw ModelFetchError.download(m) }
@@ -183,7 +184,8 @@ public enum ModelFiles {
             throw ModelFetchError.download((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
         }
         let actual = (try? FileManager.default.attributesOfItem(atPath: destination.path)[.size] as? NSNumber)?.int64Value ?? 0
-        guard actual <= limit else { throw ModelFetchError.download("\(path) is larger than expected") }
+        guard actual <= limit else { throw ModelFetchError.download(String(localized: "\(path) is larger than expected"))
+ }
         let ok = try await Task.detached(priority: .userInitiated) {
             if let check { return try check(destination) }
             return try sha256(of: destination) == pinned

@@ -150,6 +150,7 @@ public struct UnsavableChanges: Error, LocalizedError, Equatable {
     public let ids: Set<PhotoID>
     public init(ids: Set<PhotoID>) { self.ids = ids }
     public var errorDescription: String? {
-        "\(ids.count) change\(ids.count == 1 ? "" : "s") couldn’t be saved: the session \(ids.count == 1 ? "it belongs" : "they belong") to is closed."
+        ids.count == 1 ? String(localized: "1 change couldn’t be saved: the session it belongs to is closed.")
+            : String(localized: "\(ids.count) changes couldn’t be saved: the session they belong to is closed.")
     }
 }

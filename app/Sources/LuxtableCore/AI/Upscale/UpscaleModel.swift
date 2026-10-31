@@ -12,12 +12,12 @@ public enum UpscaleModelDescriptor {
     /// (`convert.py` EXPECTED_WEIGHTS_SHA256).
     public static let weightsSHA256 = "d43bffce05fa1714f1a50e6ef19780f0ef5453a7e9448875316a4d564f46a310"
     /// What the UI says when this build can't upscale.
-    public static let reasons = (missing: "AI Upscale model not included in this build.",
-                                 damaged: "The AI Upscale model in this build is damaged (its checksum doesn’t match).")
+    public static let reasons = (missing: String(localized: "AI Upscale model not included in this build."),
+                                 damaged: String(localized: "The AI Upscale model in this build is damaged (its checksum doesn’t match)."))
     /// Why the menu offers the download again (a downloaded copy failed its check).
-    public static let downloadDamaged = "The downloaded AI Upscale model is damaged. Photo ▸ Enhance ▸ Download AI Upscale Model… gets it again."
+    public static let downloadDamaged = String(localized: "The downloaded AI Upscale model is damaged. Photo ▸ Enhance ▸ Download AI Upscale Model… gets it again.")
     /// Why the menu offers the download instead of Upscale 2×.
-    public static let notDownloaded = "AI Upscale needs its model (about 34 MB). Photo ▸ Enhance ▸ Download AI Upscale Model… gets it."
+    public static let notDownloaded = String(localized: "AI Upscale needs its model (about 34 MB). Photo ▸ Enhance ▸ Download AI Upscale Model… gets it.")
 
     /// Where the converted package's files are published (`<base>Manifest.json`, …).
     /// Nil until the converted package is published (docs/UPSCALE_MODEL.md, "Download"): a
@@ -61,12 +61,13 @@ public enum UpscaleModelDescriptor {
     }
 
     /// What the download prompt says (once, before anything is fetched).
-    public static let downloadNotice = """
+    public static let downloadNotice = String(localized: """
         Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, about 34 MB) and keep it on this Mac. \
         Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's \
         Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in \
         Luxtable ▸ About Luxtable.
-        """
+        """)
+
 
     /// The bundled package in `bundle`, if the build included it.
     public static func bundledPackage(in bundle: Bundle) -> URL? {
@@ -175,7 +176,7 @@ public final class UpscaleModelDownload {
             let dst = package.appendingPathComponent(file.path)
             try fm.createDirectory(at: dst.deletingLastPathComponent(), withIntermediateDirectories: true)
             let before = done
-            let name = "AI Upscale model"
+            let name = String(localized: "AI Upscale model")
             do {
                 try await ModelFiles.fetch(file.url, to: dst, sha256: file.sha256, size: file.size, path: file.path,
                                            using: downloader, progress: { [weak self] bytes in
@@ -209,7 +210,8 @@ public enum UpscaleError: Error, Equatable, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .unavailable(let m): m
-        case .failed(let m): "AI Upscale failed: \(m)"
+        case .failed(let m): String(localized: "AI Upscale failed: \(m)")
+
         }
     }
 }

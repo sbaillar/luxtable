@@ -25,7 +25,7 @@ struct LightroomImportSheet: View {
 
     private var sourceLine: some View {
         HStack(spacing: DS.Space.s) {
-            Text(model.source?.path ?? "Choose a Lightroom catalog (.lrcat), a folder of XMP sidecars, or presets")
+            Text(model.source?.path ?? String(localized: "Choose a Lightroom catalog (.lrcat), a folder of XMP sidecars, or presets"))
                 .font(DS.Font.label).foregroundStyle(model.source == nil ? DS.textSecondary : DS.text)
                 .lineLimit(1).truncationMode(.middle)
             Spacer()
@@ -45,7 +45,7 @@ struct LightroomImportSheet: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = true
         panel.allowsMultipleSelection = false
-        panel.message = "Choose a Lightroom catalog (.lrcat), a folder of XMP sidecars, or preset files"
+        panel.message = String(localized: "Choose a Lightroom catalog (.lrcat), a folder of XMP sidecars, or preset files")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         Task { await model.choose(url) }
     }
@@ -94,7 +94,7 @@ struct LightroomImportSheet: View {
         }
     }
 
-    private func busy(_ text: String) -> some View {
+    private func busy(_ text: LocalizedStringKey) -> some View {
         HStack(spacing: DS.Space.s) {
             ProgressView().controlSize(.small)
             Text(text).font(DS.Font.label).foregroundStyle(DS.text)
@@ -105,8 +105,8 @@ struct LightroomImportSheet: View {
 
     private var categories: some View {
         HStack(alignment: .top, spacing: DS.Space.l) {
-            group("Library", LRCategory.organise)
-            group("Develop", LRCategory.develop)
+            group(String(localized: "Library"), LRCategory.organise)
+            group(String(localized: "Develop"), LRCategory.develop)
         }
     }
 

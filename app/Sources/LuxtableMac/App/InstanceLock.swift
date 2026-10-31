@@ -97,9 +97,9 @@ public final class InstanceLock: @unchecked Sendable {
         NSApplication.shared.setActivationPolicy(.regular)
         NSApp.activate()
         let alert = NSAlert()
-        alert.messageText = "Luxtable is already running or still closing"
+        alert.messageText = String(localized: "Luxtable is already running or still closing")
         alert.informativeText = message
-        alert.addButton(withTitle: "Quit")
+        alert.addButton(withTitle: String(localized: "Quit"))
         alert.runModal()
     }
 
@@ -118,13 +118,13 @@ public final class InstanceLock: @unchecked Sendable {
             held = lock
             return true
         case .held(let holder):
-            let who = holder.map { "pid \($0.pid)" + ($0.host == hostName ? "" : " on \($0.host)") } ?? "another process"
+            let who = holder.map { "pid \($0.pid)" + ($0.host == hostName ? "" : " on \($0.host)") } ?? String(localized: "another process")
             if let holder, activate(holder) {
                 report("Luxtable is already running with \(support.path) (\(who)); switched to it.")
             } else {
-                let message = "Another Luxtable (\(who)) is using \(support.path) and didn't come to the front. "
-                    + "It may still be closing, for example while waiting on a disconnected network volume. "
-                    + "Wait a moment, or quit it in Activity Monitor, then open Luxtable again."
+                let message = String(localized: "Another Luxtable (\(who)) is using \(support.path) and didn't come to the front. ")
+                    + String(localized: "It may still be closing, for example while waiting on a disconnected network volume. ")
+                    + String(localized: "Wait a moment, or quit it in Activity Monitor, then open Luxtable again.")
                 report("Luxtable: " + message)
                 alert(message)
             }

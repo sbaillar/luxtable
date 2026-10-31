@@ -154,62 +154,62 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
 public enum CommandCatalog {
     public static func title(_ c: MenuCommand, model: AppModel) -> String {
         switch c {
-        case .openFolder: "Open Folder…"
+        case .openFolder: String(localized: "Open Folder…")
         // H5: only a live build without a verifying importer is "coming soon".
         case .importCard: model.mode == .live && !(model.importer is any ImportVerifying)
-            ? "Import from Card (Coming Soon)…" : "Import from Card…"
+            ? String(localized: "Import from Card (Coming Soon)…") : String(localized: "Import from Card…")
         case .newSession: CommandCatalogTitles.newSession
         case .closeSession: CommandCatalogTitles.closeSession
         case .showLibrary: CommandCatalogTitles.showLibrary
         case .copyAdjustments: model.settings.names.copyMenu
         case .applyAdjustments: model.settings.names.applyMenu
-        case .copyFromPrevious: "Copy from Previous"
-        case .autoAdjust: "Auto Adjust"
-        case .aiOptimize: model.optimizePanel != nil ? "Close AI Optimize"
-            : model.optimizeTargets.count > 1 ? "AI Optimize \(model.optimizeTargets.count) Photos…" : "AI Optimize…"
-        case .aiCull: "AI Cull"
-        case .askAI: "Edit with Words…"
-        case .find: "Find…"
+        case .copyFromPrevious: String(localized: "Copy from Previous")
+        case .autoAdjust: String(localized: "Auto Adjust")
+        case .aiOptimize: model.optimizePanel != nil ? String(localized: "Close AI Optimize")
+            : model.optimizeTargets.count > 1 ? String(localized: "AI Optimize \(model.optimizeTargets.count) Photos…") : String(localized: "AI Optimize…")
+        case .aiCull: String(localized: "AI Cull")
+        case .askAI: String(localized: "Edit with Words…")
+        case .find: String(localized: "Find…")
         case .showAIChanges: AIHighlightStyle.showTitle
         case .clearAIHighlights: AIHighlightStyle.clearTitle
-        case .aiChanges: model.aiChangesShown ? "Hide AI Changes" : AIChangeText.menuTitle
+        case .aiChanges: model.aiChangesShown ? String(localized: "Hide AI Changes") : AIChangeText.menuTitle
         case .undoAllAIChanges: model.undoAllAIChangesTitle
-        case .resetAllAdjustments: "Reset All Adjustments"
-        case .zoomIn: "Zoom In"
-        case .zoomOut: "Zoom Out"
-        case .zoomFit: "Zoom to Fit"
-        case .zoomActual: "Actual Size (100%)"
-        case .rotateLeft: "Rotate Left"
-        case .rotateRight: "Rotate Right"
-        case .fullScreen: model.viewer.state.fullScreen ? "Exit Full Screen" : "Enter Full Screen"
-        case .cheatSheet: "Keyboard Shortcuts"
-        case .moveTabUp: "Move Tool Tab Left"
-        case .moveTabDown: "Move Tool Tab Right"
-        case .showAll: "Show All Photos"
-        case .exportSelected: model.selectedIDs.count > 1 ? "Export \(model.selectedIDs.count) Photos…" : "Export…"
+        case .resetAllAdjustments: String(localized: "Reset All Adjustments")
+        case .zoomIn: String(localized: "Zoom In")
+        case .zoomOut: String(localized: "Zoom Out")
+        case .zoomFit: String(localized: "Zoom to Fit")
+        case .zoomActual: String(localized: "Actual Size (100%)")
+        case .rotateLeft: String(localized: "Rotate Left")
+        case .rotateRight: String(localized: "Rotate Right")
+        case .fullScreen: model.viewer.state.fullScreen ? String(localized: "Exit Full Screen") : String(localized: "Enter Full Screen")
+        case .cheatSheet: String(localized: "Keyboard Shortcuts")
+        case .moveTabUp: String(localized: "Move Tool Tab Left")
+        case .moveTabDown: String(localized: "Move Tool Tab Right")
+        case .showAll: String(localized: "Show All Photos")
+        case .exportSelected: model.selectedIDs.count > 1 ? String(localized: "Export \(model.selectedIDs.count) Photos…") : String(localized: "Export…")
         case .showRating1, .showRating2, .showRating3, .showRating4, .showRating5:
-            "Show \(c.ratingFolder!) \(c.ratingFolder == 1 ? "Star" : "Stars") Only"
-        case .moveRejectedToTrash: "Move Rejected to Trash"
-        case .movePickedToSelects: "Move Picked and Rated to Selects…"
-        case .restoreSessionTrash: "Restore from Session Trash"
-        case .deleteRejected: "Delete Rejected…"
+            c.ratingFolder == 1 ? String(localized: "Show 1 Star Only") : String(localized: "Show \(c.ratingFolder!) Stars Only")
+        case .moveRejectedToTrash: String(localized: "Move Rejected to Trash")
+        case .movePickedToSelects: String(localized: "Move Picked and Rated to Selects…")
+        case .restoreSessionTrash: String(localized: "Restore from Session Trash")
+        case .deleteRejected: String(localized: "Delete Rejected…")
         case .newVariant: model.settings.names.newVariant
-        case .survey: model.survey.isActive ? "Leave Survey" : "Survey Selected"
-        case .matchExposures: "Match Total Exposures"
-        case .matchWhiteBalance: "Match White Balance to Focused Photo"
-        case .customizeTools: "Customize Tools…"
-        case .toggleAllToolsTab: "Show All Tools Tab"
-        case .showHistory: "Show History"
-        case .showSelectionInViewer: "Show Selection in Viewer"
+        case .survey: model.survey.isActive ? String(localized: "Leave Survey") : String(localized: "Survey Selected")
+        case .matchExposures: String(localized: "Match Total Exposures")
+        case .matchWhiteBalance: String(localized: "Match White Balance to Focused Photo")
+        case .customizeTools: String(localized: "Customize Tools…")
+        case .toggleAllToolsTab: String(localized: "Show All Tools Tab")
+        case .showHistory: String(localized: "Show History")
+        case .showSelectionInViewer: String(localized: "Show Selection in Viewer")
         case .filmstripBottom, .filmstripLeft, .filmstripRight: c.filmstripPosition!.title
-        case .largerFilmstripThumbnails: "Larger Filmstrip Thumbnails"
-        case .smallerFilmstripThumbnails: "Smaller Filmstrip Thumbnails"
-        case .voiceCommands: "Voice Commands"
-        case .voiceHelp: "What Can I Say?"
-        case .upscale: model.upscaler?.title(in: model) ?? "Upscale 2×"
-        case .mergeHDR: "Merge to HDR…"
-        case .mergePanorama: "Merge to Panorama…"
-        case .mergeBestShot: "Merge to Best Shot…"
+        case .largerFilmstripThumbnails: String(localized: "Larger Filmstrip Thumbnails")
+        case .smallerFilmstripThumbnails: String(localized: "Smaller Filmstrip Thumbnails")
+        case .voiceCommands: String(localized: "Voice Commands")
+        case .voiceHelp: String(localized: "What Can I Say?")
+        case .upscale: model.upscaler?.title(in: model) ?? String(localized: "Upscale 2×")
+        case .mergeHDR: String(localized: "Merge to HDR…")
+        case .mergePanorama: String(localized: "Merge to Panorama…")
+        case .mergeBestShot: String(localized: "Merge to Best Shot…")
         case .developForImmich: model.immich.developTitle
         case .stopDevelopingForImmich: model.immich.stopTitle
         case .simpleMode: SimpleModeText.menuTitle
@@ -235,15 +235,15 @@ public enum CommandCatalog {
     public static func help(_ c: MenuCommand, model: AppModel) -> String? {
         switch c {
         case .newSession:
-            model.canCreateSession ? "Create an empty session and open it (⇧⌘N)" : "This mode can’t create sessions"
+            model.canCreateSession ? String(localized: "Create an empty session and open it (⇧⌘N)") : String(localized: "This mode can’t create sessions")
         case .showLibrary:
-            "Every session's photos in one catalog (⇧⌘L): filter, sort, rate and open any photo in its session"
+            String(localized: "Every session's photos in one catalog (⇧⌘L): filter, sort, rate and open any photo in its session")
         case .closeSession:
             if let s = model.currentSession {
-                model.cull.busy ? "Wait until the files have moved"
-                    : "Close “\(s.name)” (⌥⌘W). Nothing is deleted, and it stays in the Sessions list."
+                model.cull.busy ? String(localized: "Wait until the files have moved")
+                    : String(localized: "Close “\(s.name)” (⌥⌘W). Nothing is deleted, and it stays in the Sessions list.")
             } else {
-                "No session is open"
+                String(localized: "No session is open")
             }
         case .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, .deleteRejected:
             model.cull.canMove ? nil : CullFinisher.inPlaceReason
@@ -251,11 +251,11 @@ public enum CommandCatalog {
             model.upscaler.map { $0.help(in: model) } ?? UpscaleModelDescriptor.reasons.missing
         case .mergeBestShot:
             model.canMergeBestShot
-                ? "One new photo from the burst: the best frame, with open eyes and sharper areas from the others (⇧⌘B)"
-                : "Select two or more frames of a burst, or one photo of a burst"
+                ? String(localized: "One new photo from the burst: the best frame, with open eyes and sharper areas from the others (⇧⌘B)")
+                : String(localized: "Select two or more frames of a burst, or one photo of a burst")
         case .developForImmich: model.immich.developHelp
         case .stopDevelopingForImmich:
-            "Stop updating the selection's developed copies. The copies already made stay in Developed and in the archive"
+            String(localized: "Stop updating the selection's developed copies. The copies already made stay in Developed and in the archive")
         default: nil
         }
     }
@@ -441,38 +441,38 @@ public enum ToolbarHelp {
     /// `verifies`: the import service verifies copies (lt-import) [imp6].
     public static func importButton(mode: AppMode, verifies: Bool = false) -> String {
         if verifies {
-            return "Import from a memory card or folder (⇧⌘I). Every file is copied, verified byte for byte, and never deleted from the card."
+            return String(localized: "Import from a memory card or folder (⇧⌘I). Every file is copied, verified byte for byte, and never deleted from the card.")
         }
         return mode == .live
-            ? "Import is coming soon: Luxtable never copies from cards until it can verify every file; you can browse a card read-only (⇧⌘I)."
-            : "Import from a memory card or folder (⇧⌘I). Demo: copies are simulated and not verified."
+            ? String(localized: "Import is coming soon: Luxtable never copies from cards until it can verify every file; you can browse a card read-only (⇧⌘I).")
+            : String(localized: "Import from a memory card or folder (⇧⌘I). Demo: copies are simulated and not verified.")
     }
 
     public static func importTitle(mode: AppMode, verifies: Bool = false) -> String {
-        mode == .live && !verifies ? "Import (coming soon)" : "Import"
+        mode == .live && !verifies ? String(localized: "Import (coming soon)") : String(localized: "Import")
     }
 
     public static func viewerGrid(_ b: KeyBindings) -> String {
-        "Viewer \(b.hint(.viewerMode)) or Grid \(b.hint(.gridMode))".replacingOccurrences(of: "  ", with: " ")
+        String(localized: "Viewer \(b.hint(.viewerMode)) or Grid \(b.hint(.gridMode))").replacingOccurrences(of: "  ", with: " ")
     }
 
-    public static func beforeAfter(_ b: KeyBindings) -> String { b.help("Before / after split", .beforeAfter) }
-    public static func compare(_ b: KeyBindings) -> String { b.help("Pin this photo and compare others against it", .pinCompare) }
+    public static func beforeAfter(_ b: KeyBindings) -> String { b.help(String(localized: "Before / after split"), .beforeAfter) }
+    public static func compare(_ b: KeyBindings) -> String { b.help(String(localized: "Pin this photo and compare others against it"), .pinCompare) }
     /// [multiview]
-    public static let showSelection = "Show every selected photo in the viewer (⌘-click or ⇧-click in the filmstrip to select)"
-    public static func pick(_ b: KeyBindings) -> String { b.help("Pick", .pick) }
-    public static func reject(_ b: KeyBindings) -> String { b.help("Reject", .reject) }
-    public static func stack(_ b: KeyBindings) -> String { b.help("Expand or collapse this burst stack", .toggleStack) }
-    public static func autoAdjust() -> String { "Auto white balance and tone (⇧A)" }
+    public static let showSelection = String(localized: "Show every selected photo in the viewer (⌘-click or ⇧-click in the filmstrip to select)")
+    public static func pick(_ b: KeyBindings) -> String { b.help(String(localized: "Pick"), .pick) }
+    public static func reject(_ b: KeyBindings) -> String { b.help(String(localized: "Reject"), .reject) }
+    public static func stack(_ b: KeyBindings) -> String { b.help(String(localized: "Expand or collapse this burst stack"), .toggleStack) }
+    public static func autoAdjust() -> String { String(localized: "Auto white balance and tone (⇧A)") }
     public static func aiOptimize() -> String {
-        "AI Optimize: measured suggestions, each explained; choose which to apply (⌥⌘A)"
+        String(localized: "AI Optimize: measured suggestions, each explained; choose which to apply (⌥⌘A)")
     }
     /// [cmp9] Crop / straighten toolbar buttons.
     public static func tool(_ t: CanvasTool, _ b: KeyBindings) -> String {
         switch t {
-        case .crop: b.help("Crop: drag the handles; ⏎ applies, Esc cancels, X swaps orientation", .cropTool)
-        case .straighten: b.help("Straighten: drag along something that should be level", .straightenTool)
-        case .colorPicker: b.help("Color readout: click to pin the color under the cursor", .colorPickerTool)
+        case .crop: b.help(String(localized: "Crop: drag the handles; ⏎ applies, Esc cancels, X swaps orientation"), .cropTool)
+        case .straighten: b.help(String(localized: "Straighten: drag along something that should be level"), .straightenTool)
+        case .colorPicker: b.help(String(localized: "Color readout: click to pin the color under the cursor"), .colorPickerTool)
         default: t.viewerLabel
         }
     }
@@ -480,8 +480,8 @@ public enum ToolbarHelp {
 
 /// The session commands' menu titles (shared by `CommandCatalog` and `MenuKeys`).
 package enum CommandCatalogTitles {
-    package static let newSession = "New Session…"
-    package static let closeSession = "Close Session"
+    package static let newSession = String(localized: "New Session…")
+    package static let closeSession = String(localized: "Close Session")
     /// [library] File menu and the Open Session sheet.
-    package static let showLibrary = "Browse All Sessions in Library"
+    package static let showLibrary = String(localized: "Browse All Sessions in Library")
 }

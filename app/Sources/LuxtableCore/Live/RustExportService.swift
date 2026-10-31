@@ -68,7 +68,7 @@ public struct RustExportService: ExportService {
     }
 
     public func validate(_ recipes: [ExportRecipe], defaultFolder: URL) -> String? {
-        if recipes.isEmpty { return "Choose at least one recipe." }
+        if recipes.isEmpty { return String(localized: "Choose at least one recipe.") }
         do {
             if let problem = try validateExportRecipes(recipes: recipes.map { Self.spec($0, defaultFolder: defaultFolder) }) {
                 return Self.plain(problem)
@@ -81,7 +81,7 @@ public struct RustExportService: ExportService {
         for r in recipes {
             if let w = r.watermark, w.kind == .text, !w.fontFamily.isEmpty,
                !CoreTextWatermarkRenderer.isInstalled(w.fontFamily) {
-                return "\(r.name): the watermark font \(w.fontFamily) isn't installed on this Mac."
+                return String(localized: "\(r.name): the watermark font \(w.fontFamily) isn't installed on this Mac.")
             }
         }
         return nil
@@ -260,20 +260,20 @@ extension RustExportService {
         let withRemovals = items.filter { $0.value.edit?.removals.isEmpty == false }
         guard !withRemovals.isEmpty, let removalCheck, let why = await removalCheck() else { return [:] }
         return withRemovals.mapValues { item in
-            "\(item.url.deletingPathExtension().lastPathComponent): not exported. Its removals can't be filled as previewed: \(why)."
+            String(localized: "\(item.url.deletingPathExtension().lastPathComponent): not exported. Its removals can't be filled as previewed: \(why).")
         }
     }
 
     /// "DSC0001: …": why a photo with an AI mask layer wasn't exported.
     static func maskFailure(_ item: ExportJobItem, targets: Set<AITarget>) -> String {
         let name = item.url.deletingPathExtension().lastPathComponent
-        let what = targets.map(\.rawValue).sorted().joined(separator: " and ")
+        let what = targets.sorted { $0.rawValue < $1.rawValue }.map(\.maskNoun).joined(separator: String(localized: " and "))
         let why = targets.contains(.sky)
-            ? "the sky model isn't available on this Mac. Open the Layers panel to download it, then export again"
+            ? String(localized: "the sky model isn't available on this Mac. Open the Layers panel to download it, then export again")
             : targets.allSatisfy(PeopleTargets.isPeople)
-            ? "the person it was made for isn't found in the photo any more, or Vision couldn't compute it on this Mac"
-            : "Vision couldn't compute it on this Mac"
-        return "\(name): not exported. Its \(what) mask couldn't be made: \(why)."
+            ? String(localized: "the person it was made for isn't found in the photo any more, or Vision couldn't compute it on this Mac")
+            : String(localized: "Vision couldn't compute it on this Mac")
+        return String(localized: "\(name): not exported. Its \(what) mask couldn't be made: \(why).")
     }
 }
 
@@ -317,7 +317,7 @@ final class ExportDepth: @unchecked Sendable {
     static func failureMessage(_ message: String, gaveUp: GaveUp?) -> String? {
         switch gaveUp {
         case .cancelled: nil
-        case .tooSlow: "not exported: its lens blur's depth map took too long"
+        case .tooSlow: String(localized: "not exported: its lens blur's depth map took too long")
         case nil: message
         }
     }
@@ -410,12 +410,12 @@ final class ExportMasks: ExportMaskSource, @unchecked Sendable {
 public struct UnavailableExportService: ExportService {
     public init() {}
     public func validate(_ recipes: [ExportRecipe], defaultFolder: URL) -> String? {
-        "Export works in live mode (run without --demo)."
+        String(localized: "Export works in live mode (run without --demo).")
     }
 
     public func previewFileName(template: String, sample: ExportFileNameSample, seq: Int, ext: String) -> String? { nil }
 
     public func export(_ job: ExportJob, progress: @escaping @Sendable (ExportProgressUpdate) -> Void) async throws -> ExportOutcome {
-        throw RenderError(.Unsupported(message: "Export works in live mode (run without --demo)."))
+        throw RenderError(.Unsupported(message: String(localized: "Export works in live mode (run without --demo).")))
     }
 }

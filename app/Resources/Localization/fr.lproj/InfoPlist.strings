@@ -1,0 +1,8 @@
+"NSDocumentsFolderUsageDescription" = "Luxtable conserve vos sessions dans un dossier de votre choix.";
+"NSDesktopFolderUsageDescription" = "Luxtable importe des photos depuis votre dossier Bureau lorsque vous le choisissez, sans jamais modifier les originaux.";
+"NSDownloadsFolderUsageDescription" = "Luxtable importe des photos depuis votre dossier Téléchargements lorsque vous le choisissez, sans jamais modifier les originaux.";
+"NSRemovableVolumesUsageDescription" = "Luxtable importe des photos depuis les cartes mémoire sans jamais les modifier.";
+"NSNetworkVolumesUsageDescription" = "Luxtable archive les sessions sur votre partage réseau de photos.";
+"NSLocalNetworkUsageDescription" = "Luxtable archive les sessions sur un NAS de votre réseau local et tient à jour les albums de votre serveur Immich.";
+"NSMicrophoneUsageDescription" = "Les commandes vocales écoutent les commandes de tri comme « suivante » et « cinq ». L’audio reste sur ce Mac.";
+"NSSpeechRecognitionUsageDescription" = "Les commandes vocales sont reconnues sur ce Mac par le modèle vocal intégré d’Apple. Rien n’est envoyé à un serveur.";

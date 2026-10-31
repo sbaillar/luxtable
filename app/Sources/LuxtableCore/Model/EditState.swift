@@ -159,7 +159,9 @@ public struct ColorBandEdit: Equatable, Sendable {
 
 public struct ColorEditorEdit: Equatable, Sendable {
     /// Red, orange, yellow, green, cyan, blue, purple, magenta (lt-core `BASIC_BAND_HUES`).
-    public static let bandNames = ["Red", "Orange", "Yellow", "Green", "Cyan", "Blue", "Purple", "Magenta"]
+    public static let bandNames = [String(localized: "Red"), String(localized: "Orange"), String(localized: "Yellow"),
+                                    String(localized: "Green"), String(localized: "Cyan"), String(localized: "Blue"),
+                                    String(localized: "Purple"), String(localized: "Magenta")]
     public static let bandHues: [Double] = [0, 30, 60, 120, 180, 240, 270, 300]
     public var bands = Array(repeating: ColorBandEdit(), count: 8)
     /// Advanced mode: picked hue ranges (lt-core `ColorEditor::advanced`).

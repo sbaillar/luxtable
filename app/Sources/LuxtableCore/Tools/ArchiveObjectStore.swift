@@ -10,8 +10,8 @@ public enum ArchiveDestinationKind: String, CaseIterable, Sendable {
 
     public var title: String {
         switch self {
-        case .folder: "Folder"
-        case .object: "Object storage"
+        case .folder: String(localized: "Folder")
+        case .object: String(localized: "Object storage")
         }
     }
 }

@@ -10,9 +10,9 @@ public struct ExportRecipe: Codable, Equatable, Identifiable, Sendable {
             switch self {
             case .jpeg: "JPEG"
             case .heic: "HEIC"
-            case .tiff16: "TIFF 16-bit"
-            case .png8: "PNG 8-bit"
-            case .png16: "PNG 16-bit"
+            case .tiff16: String(localized: "TIFF 16-bit")
+            case .png8: String(localized: "PNG 8-bit")
+            case .png16: String(localized: "PNG 16-bit")
             }
         }
 
@@ -36,11 +36,11 @@ public struct ExportRecipe: Codable, Equatable, Identifiable, Sendable {
 
         public var title: String {
             switch self {
-            case .original: "Original"
-            case .longEdge: "Long edge (px)"
-            case .shortEdge: "Short edge (px)"
-            case .megapixels: "Megapixels"
-            case .percent: "Percent"
+            case .original: String(localized: "Original")
+            case .longEdge: String(localized: "Long edge (px)")
+            case .shortEdge: String(localized: "Short edge (px)")
+            case .megapixels: String(localized: "Megapixels")
+            case .percent: String(localized: "Percent")
             }
         }
     }
@@ -170,14 +170,14 @@ public struct ExportRecipe: Codable, Equatable, Identifiable, Sendable {
     public var summary: String {
         var parts = [format.hasQuality ? "\(format.title) \(quality)" : format.title]
         switch sizeMode {
-        case .original: parts.append("original size")
+        case .original: parts.append(String(localized: "original size"))
         case .longEdge, .shortEdge: parts.append("\(Int(sizeValue)) px")
         case .megapixels: parts.append("\(sizeValue.formatted()) MP")
         case .percent: parts.append("\(sizeValue.formatted()) %")
         }
-        if aiUpscale { parts.append("AI Upscale") }
+        if aiUpscale { parts.append(String(localized: "AI Upscale")) }
         parts.append(outputProfile?.name ?? space.title)
-        if !includeMetadata { parts.append("no metadata") } else if stripGPS { parts.append("no GPS") }
+        if !includeMetadata { parts.append(String(localized: "no metadata")) } else if stripGPS { parts.append(String(localized: "no GPS")) }
         if let watermark { parts.append(watermark.summary) }
         if let googlePhotos { parts.append(googlePhotos.summary) }
         parts += postProcess.map(\.name)
@@ -270,8 +270,8 @@ public enum ExportDestination {
         if checked == true { return (folder.appendingPathComponent("Output", isDirectory: true), nil) }
         let other = fallback.appendingPathComponent(session.name, isDirectory: true)
         let note = checked == nil
-            ? "The session's folder didn't answer in time, so exports go to \(other.path). Choose another folder if you like."
-            : "The session's folder is on a card or can't be written, so exports go to \(other.path)."
+            ? String(localized: "The session's folder didn't answer in time, so exports go to \(other.path). Choose another folder if you like.")
+            : String(localized: "The session's folder is on a card or can't be written, so exports go to \(other.path).")
         return (other, note)
     }
 

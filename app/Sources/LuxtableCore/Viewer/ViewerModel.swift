@@ -96,9 +96,9 @@ public final class ViewerModel {
         if let id = app.focusedID, app.isOriginalMissing(id) {
             if app.isVolumeGone(id), let root = app.volumeRoot(of: id) { return .driveDisconnected(volume: root.lastPathComponent) }
             if let other = app.otherVolume(of: id) {
-                return .missingOnOtherVolume(name: app.photo(id)?.filename ?? "This photo", volume: other.lastPathComponent)
+                return .missingOnOtherVolume(name: app.photo(id)?.filename ?? String(localized: "This photo"), volume: other.lastPathComponent)
             }
-            return .missingOriginal(name: app.photo(id)?.filename ?? "This photo", canRemove: app.canRemoveMissing(id))
+            return .missingOriginal(name: app.photo(id)?.filename ?? String(localized: "This photo"), canRemove: app.canRemoveMissing(id))
         }
         if let f = renderFailure { return renderFailureIsUnsupported ? .cannotDevelop(f) : .renderFailed(f) }
         return nil
@@ -505,24 +505,24 @@ public final class ViewerModel {
     /// HUD note when develop renders run on the CPU (no GPU adapter).
     public var backendNote: String? {
         // Live (a GPU lost at runtime switches lt-ffi to the CPU renderer).
-        if renderer is DevelopRenderer { return DevelopRenderer.backend.gpu ? nil : "CPU rendering" }
-        return capabilities.cpuFallback ? "CPU rendering" : nil
+        if renderer is DevelopRenderer { return DevelopRenderer.backend.gpu ? nil : String(localized: "CPU rendering") }
+        return capabilities.cpuFallback ? String(localized: "CPU rendering") : nil
     }
 
     public nonisolated static func zoomLabel(zoom: ZoomMode, effective: Double, density: Double,
                                              developed: Bool = false, sensorDensity: Double? = nil) -> String {
-        guard zoom != .fit else { return "Fit" }
+        guard zoom != .fit else { return String(localized: "Fit") }
         let pct = "\(Int((effective * 100).rounded()))%"
         // With the pipeline every zoom is developed from the RAW (the 1:1 region follows),
         // but an auto-fitted frame is upsampled against the sensor: say by how much.
         if developed {
             // Up to 1:1 on screen: more screen pixels than sensor pixels means upsampled.
             if let d = sensorDensity, d > 0, effective <= 1.001, effective / d > 1.005 {
-                return "\(pct) (upsampled \(Int((effective / d - 1) * 100 + 0.5))%)"
+                return String(localized: "\(pct) (upsampled \(Int((effective / d - 1) * 100 + 0.5))%)")
             }
             return pct
         }
-        return min(effective, 1) > density * 1.02 ? "\(pct) (preview)" : pct
+        return min(effective, 1) > density * 1.02 ? String(localized: "\(pct) (preview)") : pct
     }
 
     /// Everything the Metal view draws, with loupe at the cursor when enabled.
@@ -565,7 +565,7 @@ public final class ViewerModel {
     public var beforeAfterNote: String? {
         guard state.beforeAfter, let app, let id = app.focusedID, app.photo(id)?.isVideo != true else { return nil }
         let edit = shownEdit(for: id)
-        return Self.beforeMatchesAfter(edit, developed: developedGeometry) ? "No edits on this photo: before and after are the same" : nil
+        return Self.beforeMatchesAfter(edit, developed: developedGeometry) ? String(localized: "No edits on this photo: before and after are the same") : nil
     }
 
     nonisolated static func beforeMatchesAfter(_ edit: EditState, developed: Bool) -> Bool {

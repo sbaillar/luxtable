@@ -60,7 +60,7 @@ public struct RecentEntry: Identifiable, Equatable, Sendable {
         guard let lastOpened else { return nil }
         let f = RelativeDateTimeFormatter()
         f.dateTimeStyle = .named
-        return "Opened " + f.localizedString(for: lastOpened, relativeTo: now)
+        return String(localized: "Opened \(f.localizedString(for: lastOpened, relativeTo: now))")
     }
 }
 

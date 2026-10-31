@@ -345,7 +345,7 @@ public struct SmartFolderMirror: Sendable {
 
     static func describe(_ error: Error) -> String {
         switch error {
-        case MirrorError.refused(let p): "refused \(p) (a symlink or not a folder)"
+        case MirrorError.refused(let p): String(localized: "refused \(p) (a symlink or not a folder)")
         case MirrorError.io(let p, let e): "\(p): \(String(cString: strerror(e)))"
         default: error.localizedDescription
         }

@@ -129,7 +129,7 @@ public final class CardCoordinator {
         queue.removeAll { $0 == url }
         ImportRegistry.shared.volumeDidDisappear(url)
         if let app, app.sheet == .importCard(url) {
-            app.show(Toast("\(url.lastPathComponent) was removed", symbol: "eject"))
+            app.show(Toast(String(localized: "\(url.lastPathComponent) was removed"), symbol: "eject"))
         }
     }
 }

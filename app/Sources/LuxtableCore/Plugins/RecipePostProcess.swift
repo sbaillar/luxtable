@@ -136,7 +136,7 @@ extension ExportRecipe {
     public func versionNote(_ step: RecipePostProcess, available: [PostProcessorInfo]) -> String? {
         guard let old = step.pluginVersion, let info = available.first(where: step.matches),
               info.pluginVersion != old else { return nil }
-        return "Set up with \(info.pluginName) \(old); \(info.pluginVersion) is installed. Check its settings."
+        return String(localized: "Set up with \(info.pluginName) \(old); \(info.pluginVersion) is installed. Check its settings.")
     }
 
     /// Steps whose plug-in isn't active any more (the export would refuse them).

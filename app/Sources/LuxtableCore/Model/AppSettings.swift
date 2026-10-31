@@ -14,8 +14,8 @@ public enum StartView: String, CaseIterable, Sendable {
 
     public var title: String {
         switch self {
-        case .session: "Session"
-        case .library: "Library (catalog)"
+        case .session: String(localized: "Session")
+        case .library: String(localized: "Library (catalog)")
         }
     }
 }

@@ -28,6 +28,21 @@ public enum ColorTag: Int, CaseIterable, Sendable, Codable {
         }
     }
 
+    /// The name shown in the UI, in the user's language (`name` stays English: identifiers
+    /// and voice phrases are built from it).
+    public var title: String {
+        switch self {
+        case .none: String(localized: "None")
+        case .red: String(localized: "Red")
+        case .yellow: String(localized: "Yellow")
+        case .green: String(localized: "Green")
+        case .blue: String(localized: "Blue")
+        case .purple: String(localized: "Purple")
+        case .orange: String(localized: "Orange")
+        case .pink: String(localized: "Pink")
+        }
+    }
+
     /// The key that toggles this tag (`nil` for `.none`).
     public var key: Character? {
         switch self {
@@ -194,9 +209,9 @@ public struct SessionInfo: Identifiable, Hashable, Sendable {
         /// The label shown in place of the photo count.
         public var label: String {
             switch self {
-            case .notFound: "not found"
-            case .noPhotos: "no photos found"
-            case .driveNotConnected: "drive not connected"
+            case .notFound: String(localized: "not found")
+            case .noPhotos: String(localized: "no photos found")
+            case .driveNotConnected: String(localized: "drive not connected")
             }
         }
 

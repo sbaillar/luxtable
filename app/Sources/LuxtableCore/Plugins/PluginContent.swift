@@ -51,7 +51,7 @@ public struct PluginContent: Sendable {
         for item in items {
             guard let uuid = UUID(uuidString: item.uuid) else { continue }
             if looks.contains(where: { $0.id == item.id || $0.preset.id == uuid }) {
-                errors.append("“\(pack.pluginName)”: the look \(item.name) is already provided by another plug-in")
+                errors.append(String(localized: "“\(pack.pluginName)”: the look \(item.name) is already provided by another plug-in"))
                 continue
             }
             looks.append(item.look(uuid: uuid))
@@ -63,7 +63,7 @@ public struct PluginContent: Sendable {
         for item in items {
             guard let uuid = UUID(uuidString: item.uuid) else { continue }
             if styles.contains(where: { $0.id == uuid }) {
-                errors.append("“\(pack.pluginName)”: the style \(item.name) is already provided by another plug-in")
+                errors.append(String(localized: "“\(pack.pluginName)”: the style \(item.name) is already provided by another plug-in"))
                 continue
             }
             styles.append(item.preset(uuid: uuid))
@@ -78,7 +78,7 @@ public struct PluginContent: Sendable {
         for pack in packs {
             guard let p = decode(PackPhrases.self, pack) else { continue }
             guard p.language.lowercased().hasPrefix("en") else {
-                errors.append("“\(pack.pluginName)”: its phrases are in \(p.language); voice commands are English only")
+                errors.append(String(localized: "“\(pack.pluginName)”: its phrases are in \(p.language); voice commands are English only"))
                 continue
             }
             for (phrase, command) in p.phrases {
@@ -88,7 +88,8 @@ public struct PluginContent: Sendable {
         }
         for (key, owners) in claims where owners.count > 1 {
             phrases = phrases.filter { VoiceCommandParser.normalize($0.key) != key }
-            errors.append("“\(key)” is claimed by \(owners.map { "“\($0.pack)”" }.joined(separator: " and ")); neither is used")
+            let names = owners.map { "“\($0.pack)”" }.joined(separator: String(localized: " and "))
+            errors.append(String(localized: "“\(key)” is claimed by \(names); neither is used"))
         }
     }
 

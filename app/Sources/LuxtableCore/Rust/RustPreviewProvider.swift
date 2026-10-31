@@ -67,7 +67,7 @@ struct RustPreviewDecoder: EncodedPreviewSource {
         let e = try await encodedPreview(for: url)
         guard let image = RustPreviewProvider.decode(jpeg: e.jpeg, maxPixelSize: maxPixelSize,
                                                      exifOrientation: e.orientation) else {
-            throw RenderError(.Unsupported(message: "the embedded preview of \(url.lastPathComponent) can't be decoded"))
+            throw RenderError(.Unsupported(message: String(localized: "the embedded preview of \(url.lastPathComponent) can't be decoded")))
         }
         return image
     }

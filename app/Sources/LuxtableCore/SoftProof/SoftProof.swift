@@ -15,7 +15,7 @@ public struct ProofProfile: Codable, Equatable, Hashable, Identifiable, Sendable
 
         public static func < (a: Kind, b: Kind) -> Bool { a == .display && b == .printer }
 
-        public var title: String { self == .display ? "Screens and color spaces" : "Printers and papers" }
+        public var title: String { self == .display ? String(localized: "Screens and color spaces") : String(localized: "Printers and papers") }
     }
 
     public enum Model: String, Codable, Sendable { case rgb, cmyk, gray }
@@ -42,7 +42,7 @@ public struct ProofProfile: Codable, Equatable, Hashable, Identifiable, Sendable
 public enum ProofIntent: String, Codable, CaseIterable, Sendable {
     case perceptual, relativeColorimetric
 
-    public var title: String { self == .perceptual ? "Perceptual" : "Relative colorimetric" }
+    public var title: String { self == .perceptual ? String(localized: "Perceptual") : String(localized: "Relative colorimetric") }
 
     var ffi: ProofRenderingIntent { self == .perceptual ? .perceptual : .relativeColorimetric }
 }
@@ -216,9 +216,9 @@ public final class SoftProofModel {
     /// profile whose table is drawn, which during a rebuild is still the previous one.
     public var statusText: String? {
         guard enabled else { return nil }
-        if let error { return "Proof failed: \(error)" }
-        if let table { return "Proof: \(table.profileName)" }
-        return settings.profile.map { "Proof: preparing \($0.name)…" }
+        if let error { return String(localized: "Proof failed: \(error)") }
+        if let table { return String(localized: "Proof: \(table.profileName)") }
+        return settings.profile.map { String(localized: "Proof: preparing \($0.name)…") }
     }
 
     /// The profiles grouped for the picker (color spaces, displays, printers).
@@ -301,7 +301,7 @@ public final class SoftProofModel {
         guard building == nil else { return }
         guard let key = currentKey else {
             table = nil
-            error = "No profile chosen"
+            error = String(localized: "No profile chosen")
             onDisplayChange?()
             return
         }

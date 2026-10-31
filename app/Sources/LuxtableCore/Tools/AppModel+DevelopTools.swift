@@ -54,11 +54,11 @@ extension AppModel {
     /// What a WB pick gives (the loupe shows it before the click applies it): the
     /// pipeline's value, rounded as the sliders store it.
     func pickedWhiteBalance(_ p: Photo, edit: EditState, at finalPoint: CGPoint, sample: Int) async throws -> WhiteBalanceEdit {
-        guard let tools else { throw DevelopToolsError.unavailable("no develop pipeline") }
+        guard let tools else { throw DevelopToolsError.unavailable(String(localized: "no develop pipeline")) }
         return .custom(try await tools.pickWhiteBalance(for: p, edit: edit, at: finalPoint, sample: sample))
     }
 
     func applyPickedWhiteBalance(_ wb: WhiteBalanceEdit, to id: PhotoID) {
-        updateEdits([id], label: "White Balance Picker") { _, e in e.whiteBalance = wb }
+        updateEdits([id], label: String(localized: "White Balance Picker")) { _, e in e.whiteBalance = wb }
     }
 }

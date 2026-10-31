@@ -191,9 +191,9 @@ struct CopyOptionsView: View {
     }
 
     private var subtitle: String {
-        guard let name = options.sourceName else { return "Choose what Copy takes and Apply pastes." }
+        guard let name = options.sourceName else { return String(localized: "Choose what Copy takes and Apply pastes.") }
         return options.app.clipboard == nil
-            ? "Copy will take these from \(name)." : "On the clipboard: \(name). Apply pastes what is ticked."
+            ? String(localized: "Copy will take these from \(name).") : String(localized: "On the clipboard: \(name). Apply pastes what is ticked.")
     }
 
     private var layerList: some View {

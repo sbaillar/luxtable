@@ -82,9 +82,9 @@ public final class DevelopRenderer: CapableRenderer, GeometryPrefetching, @unche
     public static var backend: (name: String, gpu: Bool) {
         guard warm.isReady else {
             warmUp()
-            return ("GPU (starting)", true)
+            return (String(localized: "GPU (starting)"), true)
         }
-        return (try? developBackend()).map { ($0.name, $0.gpu) } ?? ("CPU rendering (unavailable)", false)
+        return (try? developBackend()).map { ($0.name, $0.gpu) } ?? (String(localized: "CPU rendering (unavailable)"), false)
     }
 
     public var capabilities: RendererCapabilities {

@@ -27,7 +27,7 @@ public enum ValueFormat: Equatable, Sendable {
         case .kelvin: Formatters.kelvin(v)
         case .percent: "\(Safe.clampedInt(v * 100)) %"
         case .degrees: Formatters.signed(v, decimals: 1) + "°"
-        case .fStop: v <= 0 ? "Off" : String(format: "f/%.1f", LensBlurEdit.fNumber(amount: v))
+        case .fStop: v <= 0 ? String(localized: "Off") : String(format: "f/%.1f", LensBlurEdit.fNumber(amount: v))
         }
     }
 
@@ -35,7 +35,7 @@ public enum ValueFormat: Equatable, Sendable {
     public func parse(_ text: String) -> Double? {
         if self == .fStop {
             let t = text.lowercased().trimmingCharacters(in: .whitespaces)
-            if t == "off" { return 0 }
+            if t == "off" || t == String(localized: "Off").lowercased() { return 0 }
             if t.hasPrefix("f"), let f = Double(t.filter { "0123456789.".contains($0) }), f > 0 {
                 return LensBlurEdit.amount(fNumber: f)
             }
@@ -108,79 +108,79 @@ public struct SliderSpec: Equatable, Sendable {
 
 /// The slider catalog. Defaults equal `EditState()` identity (tested).
 public enum Specs {
-    public static let temperature = SliderSpec("Kelvin", 2000...12000, default: 5500, step: 10, format: .kelvin,
-                                               help: "Color temperature of the light. Lower cools, higher warms.")
-    public static let tint = SliderSpec("Tint", -150...150, help: "Green (–) to magenta (+) balance.")
-    public static let exposure = SliderSpec("Exposure", -5...5, step: 0.01, format: .signedDecimal(2),
-                                            help: "Brightness in stops (EV).")
-    public static let contrast = SliderSpec("Contrast", -100...100, help: "Separation between darks and lights.")
-    public static let brightness = SliderSpec("Brightness", -100...100, help: "Midtone brightness, keeps black and white points.")
-    public static let saturation = SliderSpec("Saturation", -100...100, help: "Overall color intensity.")
-    public static let highlights = SliderSpec("Highlights", -100...100, help: "Recover (–) or boost (+) bright areas.")
-    public static let shadows = SliderSpec("Shadows", -100...100, help: "Lift (+) or deepen (–) dark areas.")
-    public static let whites = SliderSpec("White", -100...100, help: "Set the white point.")
-    public static let blacks = SliderSpec("Black", -100...100, help: "Set the black point.")
-    public static let clarity = SliderSpec("Clarity", -100...100, help: "Local midtone contrast.")
-    public static let structure = SliderSpec("Structure", -100...100, help: "Fine-detail contrast.")
-    public static let sharpenAmount = SliderSpec("Amount", 0...1000, default: 140, format: .integer,
-                                                 help: "Output sharpening strength.")
-    public static let sharpenRadius = SliderSpec("Radius", 0.2...2.5, default: 0.8, step: 0.1, format: .decimal(1),
-                                                 help: "Size of the edges sharpened, in pixels.")
-    public static let sharpenThreshold = SliderSpec("Threshold", 0...10, default: 1, step: 0.1, format: .decimal(1),
-                                                    help: "Skip low-contrast detail (noise) below this level.")
-    public static let noiseLuminance = SliderSpec("Luminance", 0...100, default: 25, format: .integer,
-                                                  help: "Smooth brightness noise.")
-    public static let noiseColor = SliderSpec("Color", 0...100, default: 25, format: .integer, help: "Remove color speckles.")
-    public static let noiseDetail = SliderSpec("Detail", 0...100, default: 50, format: .integer,
-                                               help: "Keep more fine texture when reducing noise.")
-    public static let vignetteAmount = SliderSpec("Amount", -3...3, step: 0.01, format: .signedDecimal(2),
-                                                  help: "Darken (–) or lighten (+) the corners, in stops.")
-    public static let vignetteMidpoint = SliderSpec("Midpoint", 0...1, default: 0.5, step: 0.01, format: .percent,
-                                                    help: "Where the falloff begins.")
-    public static let distortion = SliderSpec("Distortion", 0...1, default: 1, step: 0.01, format: .percent,
-                                              help: "Strength of the lens-profile distortion correction.")
-    public static let lightFalloff = SliderSpec("Light Falloff", 0...1, default: 0.5, step: 0.01, format: .percent,
-                                                help: "Strength of the corner-shading correction.")
-    public static let keystoneVertical = SliderSpec("Vertical", -30...30, step: 0.1, format: .degrees,
-                                                    help: "Correct converging verticals: + widens the top.")
-    public static let keystoneHorizontal = SliderSpec("Horizontal", -30...30, step: 0.1, format: .degrees,
-                                                      help: "Correct horizontal perspective: + widens the right side.")
-    public static let straighten = SliderSpec("Rotation", -45...45, step: 0.1, format: .degrees,
-                                              help: "Straighten the horizon.")
-    public static let blurAmount = SliderSpec("Amount", 0...100, format: .fStop,
-                                              help: "How much the out-of-focus parts blur, as a lens aperture (f/1.2 = the most).")
-    public static let focalRange = SliderSpec("Focal Range", 0...100, default: 20, format: .integer,
-                                              help: "How much depth around the focus stays sharp.")
-    public static let highlightBoost = SliderSpec("Bokeh", 0...100, default: 30, format: .integer,
-                                                  help: "How strongly bright out-of-focus lights bloom into discs.")
-    public static let bandPosition = SliderSpec("Position", 0...1, default: 0.55, step: 0.01, format: .percent,
-                                                help: "Height of the sharp band in the frame.")
-    public static let bandAngle = SliderSpec("Angle", -90...90, step: 0.5, format: .degrees, help: "Tilt of the sharp band.")
-    public static let bandWidth = SliderSpec("Width", 0...0.5, default: 0.06, step: 0.005, format: .percent,
-                                             help: "Half the height of the sharp band, of the long edge.")
-    public static let bandFeather = SliderSpec("Transition", 0.005...1, default: 0.22, step: 0.005, format: .percent,
-                                               help: "How far the blur takes to reach its full amount.")
-    public static let glowAmount = SliderSpec("Amount", 0...100, format: .integer, help: "A soft glow over the photo.")
-    public static let glowSize = SliderSpec("Size", 0...100, default: 50, format: .integer, help: "How far the glow spreads.")
-    public static let grainAmount = SliderSpec("Amount", 0...100, format: .integer, help: "Film grain strength.")
-    public static let grainSize = SliderSpec("Size", 0...100, default: 25, format: .integer, help: "Grain size.")
-    public static let grainRoughness = SliderSpec("Roughness", 0...100, default: 50, format: .integer,
-                                                  help: "Even (0) to clumpy, uneven grain (100).")
-    public static let halationAmount = SliderSpec("Halation", 0...100, format: .integer,
-                                                  help: "The red glow film shows around bright highlights.")
-    public static let wheelLightness = SliderSpec("Lightness", -1...1, step: 0.01, format: .signedDecimal(2),
-                                                  help: "Darken or brighten this tonal range.")
-    public static let bandHue = SliderSpec("Hue", -30...30, step: 0.5, format: .degrees, help: "Shift the hue of this color range.")
-    public static let bandSaturation = SliderSpec("Saturation", -100...100, help: "Saturation of this color range.")
-    public static let bandLightness = SliderSpec("Lightness", -100...100, help: "Lightness of this color range.")
-    public static let layerOpacity = SliderSpec("Opacity", 0...1, default: 1, step: 0.01, format: .percent,
-                                                help: "How strongly this layer applies.")
-    public static let layerExposure = SliderSpec("Exposure", -5...5, step: 0.01, format: .signedDecimal(2),
-                                                 help: "Layer exposure in stops.")
+    public static let temperature = SliderSpec(String(localized: "Kelvin"), 2000...12000, default: 5500, step: 10, format: .kelvin,
+                                               help: String(localized: "Color temperature of the light. Lower cools, higher warms."))
+    public static let tint = SliderSpec(String(localized: "Tint"), -150...150, help: String(localized: "Green (–) to magenta (+) balance."))
+    public static let exposure = SliderSpec(String(localized: "Exposure"), -5...5, step: 0.01, format: .signedDecimal(2),
+                                            help: String(localized: "Brightness in stops (EV)."))
+    public static let contrast = SliderSpec(String(localized: "Contrast"), -100...100, help: String(localized: "Separation between darks and lights."))
+    public static let brightness = SliderSpec(String(localized: "Brightness"), -100...100, help: String(localized: "Midtone brightness, keeps black and white points."))
+    public static let saturation = SliderSpec(String(localized: "Saturation"), -100...100, help: String(localized: "Overall color intensity."))
+    public static let highlights = SliderSpec(String(localized: "Highlights"), -100...100, help: String(localized: "Recover (–) or boost (+) bright areas."))
+    public static let shadows = SliderSpec(String(localized: "Shadows"), -100...100, help: String(localized: "Lift (+) or deepen (–) dark areas."))
+    public static let whites = SliderSpec(String(localized: "White"), -100...100, help: String(localized: "Set the white point."))
+    public static let blacks = SliderSpec(String(localized: "Black"), -100...100, help: String(localized: "Set the black point."))
+    public static let clarity = SliderSpec(String(localized: "Clarity"), -100...100, help: String(localized: "Local midtone contrast."))
+    public static let structure = SliderSpec(String(localized: "Structure"), -100...100, help: String(localized: "Fine-detail contrast."))
+    public static let sharpenAmount = SliderSpec(String(localized: "Amount"), 0...1000, default: 140, format: .integer,
+                                                 help: String(localized: "Output sharpening strength."))
+    public static let sharpenRadius = SliderSpec(String(localized: "Radius"), 0.2...2.5, default: 0.8, step: 0.1, format: .decimal(1),
+                                                 help: String(localized: "Size of the edges sharpened, in pixels."))
+    public static let sharpenThreshold = SliderSpec(String(localized: "Threshold"), 0...10, default: 1, step: 0.1, format: .decimal(1),
+                                                    help: String(localized: "Skip low-contrast detail (noise) below this level."))
+    public static let noiseLuminance = SliderSpec(String(localized: "Luminance"), 0...100, default: 25, format: .integer,
+                                                  help: String(localized: "Smooth brightness noise."))
+    public static let noiseColor = SliderSpec(String(localized: "Color"), 0...100, default: 25, format: .integer, help: String(localized: "Remove color speckles."))
+    public static let noiseDetail = SliderSpec(String(localized: "Detail"), 0...100, default: 50, format: .integer,
+                                               help: String(localized: "Keep more fine texture when reducing noise."))
+    public static let vignetteAmount = SliderSpec(String(localized: "Amount"), -3...3, step: 0.01, format: .signedDecimal(2),
+                                                  help: String(localized: "Darken (–) or lighten (+) the corners, in stops."))
+    public static let vignetteMidpoint = SliderSpec(String(localized: "Midpoint"), 0...1, default: 0.5, step: 0.01, format: .percent,
+                                                    help: String(localized: "Where the falloff begins."))
+    public static let distortion = SliderSpec(String(localized: "Distortion"), 0...1, default: 1, step: 0.01, format: .percent,
+                                              help: String(localized: "Strength of the lens-profile distortion correction."))
+    public static let lightFalloff = SliderSpec(String(localized: "Light Falloff"), 0...1, default: 0.5, step: 0.01, format: .percent,
+                                                help: String(localized: "Strength of the corner-shading correction."))
+    public static let keystoneVertical = SliderSpec(String(localized: "Vertical"), -30...30, step: 0.1, format: .degrees,
+                                                    help: String(localized: "Correct converging verticals: + widens the top."))
+    public static let keystoneHorizontal = SliderSpec(String(localized: "Horizontal"), -30...30, step: 0.1, format: .degrees,
+                                                      help: String(localized: "Correct horizontal perspective: + widens the right side."))
+    public static let straighten = SliderSpec(String(localized: "Rotation"), -45...45, step: 0.1, format: .degrees,
+                                              help: String(localized: "Straighten the horizon."))
+    public static let blurAmount = SliderSpec(String(localized: "Amount"), 0...100, format: .fStop,
+                                              help: String(localized: "How much the out-of-focus parts blur, as a lens aperture (f/1.2 = the most)."))
+    public static let focalRange = SliderSpec(String(localized: "Focal Range"), 0...100, default: 20, format: .integer,
+                                              help: String(localized: "How much depth around the focus stays sharp."))
+    public static let highlightBoost = SliderSpec(String(localized: "Bokeh"), 0...100, default: 30, format: .integer,
+                                                  help: String(localized: "How strongly bright out-of-focus lights bloom into discs."))
+    public static let bandPosition = SliderSpec(String(localized: "Position"), 0...1, default: 0.55, step: 0.01, format: .percent,
+                                                help: String(localized: "Height of the sharp band in the frame."))
+    public static let bandAngle = SliderSpec(String(localized: "Angle"), -90...90, step: 0.5, format: .degrees, help: String(localized: "Tilt of the sharp band."))
+    public static let bandWidth = SliderSpec(String(localized: "Width"), 0...0.5, default: 0.06, step: 0.005, format: .percent,
+                                             help: String(localized: "Half the height of the sharp band, of the long edge."))
+    public static let bandFeather = SliderSpec(String(localized: "Transition"), 0.005...1, default: 0.22, step: 0.005, format: .percent,
+                                               help: String(localized: "How far the blur takes to reach its full amount."))
+    public static let glowAmount = SliderSpec(String(localized: "Amount"), 0...100, format: .integer, help: String(localized: "A soft glow over the photo."))
+    public static let glowSize = SliderSpec(String(localized: "Size"), 0...100, default: 50, format: .integer, help: String(localized: "How far the glow spreads."))
+    public static let grainAmount = SliderSpec(String(localized: "Amount"), 0...100, format: .integer, help: String(localized: "Film grain strength."))
+    public static let grainSize = SliderSpec(String(localized: "Size"), 0...100, default: 25, format: .integer, help: String(localized: "Grain size."))
+    public static let grainRoughness = SliderSpec(String(localized: "Roughness"), 0...100, default: 50, format: .integer,
+                                                  help: String(localized: "Even (0) to clumpy, uneven grain (100)."))
+    public static let halationAmount = SliderSpec(String(localized: "Halation"), 0...100, format: .integer,
+                                                  help: String(localized: "The red glow film shows around bright highlights."))
+    public static let wheelLightness = SliderSpec(String(localized: "Lightness"), -1...1, step: 0.01, format: .signedDecimal(2),
+                                                  help: String(localized: "Darken or brighten this tonal range."))
+    public static let bandHue = SliderSpec(String(localized: "Hue"), -30...30, step: 0.5, format: .degrees, help: String(localized: "Shift the hue of this color range."))
+    public static let bandSaturation = SliderSpec(String(localized: "Saturation"), -100...100, help: String(localized: "Saturation of this color range."))
+    public static let bandLightness = SliderSpec(String(localized: "Lightness"), -100...100, help: String(localized: "Lightness of this color range."))
+    public static let layerOpacity = SliderSpec(String(localized: "Opacity"), 0...1, default: 1, step: 0.01, format: .percent,
+                                                help: String(localized: "How strongly this layer applies."))
+    public static let layerExposure = SliderSpec(String(localized: "Exposure"), -5...5, step: 0.01, format: .signedDecimal(2),
+                                                 help: String(localized: "Layer exposure in stops."))
 }
 
 extension Specs {
     public static let aiDenoiseStrength = SliderSpec(
-        "Strength", 0...100, default: 50, format: .integer,
-        help: "How much of the AI-denoised image is used. It also takes over the Luminance slider in proportion.")
+        String(localized: "Strength"), 0...100, default: 50, format: .integer,
+        help: String(localized: "How much of the AI-denoised image is used. It also takes over the Luminance slider in proportion."))
 }

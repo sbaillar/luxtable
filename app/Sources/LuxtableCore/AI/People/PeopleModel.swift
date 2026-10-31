@@ -65,7 +65,7 @@ public final class PeopleModel {
     /// A line for the status bar while faces are being found.
     public var indexingMessage: String? {
         guard let p = indexing, p.total > 0, p.done < p.total else { return nil }
-        return "Finding faces… \(p.done.formatted()) of \(p.total.formatted())"
+        return String(localized: "Finding faces… \(p.done.formatted()) of \(p.total.formatted())")
     }
 
     // MARK: - Session
@@ -270,7 +270,7 @@ public enum PeopleError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .nameTaken(let n): "Someone is already called “\(n)”."
+        case .nameTaken(let n): String(localized: "Someone is already called “\(n)”.")
         }
     }
 }

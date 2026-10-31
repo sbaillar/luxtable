@@ -41,10 +41,10 @@ public final class GooglePhotosSettingsModel {
 
     /// How to make the OAuth client (the full guide is docs/GOOGLE_PHOTOS.md).
     public static let setupSteps = [
-        "In Google Cloud Console, create a project and enable the Photos Library API.",
-        "Under Google Auth Platform, set up the consent screen (External) and add yourself as a test user.",
-        "Add the scopes photoslibrary.appendonly and photoslibrary.readonly.appcreateddata.",
-        "Create an OAuth client of type “Desktop app”, then paste its client ID and client secret here.",
+        String(localized: "In Google Cloud Console, create a project and enable the Photos Library API."),
+        String(localized: "Under Google Auth Platform, set up the consent screen (External) and add yourself as a test user."),
+        String(localized: "Add the scopes photoslibrary.appendonly and photoslibrary.readonly.appcreateddata."),
+        String(localized: "Create an OAuth client of type “Desktop app”, then paste its client ID and client secret here."),
     ]
 
     public var canSaveClient: Bool {
@@ -61,14 +61,14 @@ public final class GooglePhotosSettingsModel {
         clientIDEntry = ownClientID
         if !secretEntry.isEmpty {
             guard settings.clientSecretItem.write(secretEntry.trimmingCharacters(in: .whitespacesAndNewlines)) else {
-                message = "The Keychain refused the client secret."
+                message = String(localized: "The Keychain refused the client secret.")
                 return
             }
             secretEntry = ""
             hasSecret = true
         }
         message = ownClientID.hasSuffix(".apps.googleusercontent.com")
-            ? "Saved." : "Saved. Client IDs usually end in .apps.googleusercontent.com."
+            ? String(localized: "Saved.") : String(localized: "Saved. Client IDs usually end in .apps.googleusercontent.com.")
     }
 
     /// Forget the user's own client (only while signed out); the built-in one, if
@@ -76,7 +76,7 @@ public final class GooglePhotosSettingsModel {
     public func removeClient() {
         guard !isSignedIn else { return }
         guard settings.clientSecretItem.write(nil) else {
-            message = "Your client secret couldn't be removed from your Keychain."
+            message = String(localized: "Your client secret couldn't be removed from your Keychain.")
             return
         }
         settings.clientIDOverride = ""
@@ -84,7 +84,7 @@ public final class GooglePhotosSettingsModel {
         clientID = settings.clientID
         clientIDEntry = ""
         hasSecret = false
-        message = hasBuiltInClient ? "Your client was removed; Luxtable's own is used." : "Client removed."
+        message = hasBuiltInClient ? String(localized: "Your client was removed; Luxtable's own is used.") : String(localized: "Client removed.")
     }
 
     public var canSignIn: Bool { !clientID.isEmpty && !isSignedIn && !busy }
@@ -92,14 +92,14 @@ public final class GooglePhotosSettingsModel {
     public func signInNow() async {
         guard canSignIn else { return }
         busy = true
-        message = "Waiting for Google… finish signing in in the window that opened."
+        message = String(localized: "Waiting for Google… finish signing in in the window that opened.")
         defer { busy = false }
         do {
             try await signIn()
             isSignedIn = settings.isSignedIn
-            message = "Signed in. Exports can now go to Google Photos."
+            message = String(localized: "Signed in. Exports can now go to Google Photos.")
         } catch is CancellationError {
-            message = "Sign-in cancelled."
+            message = String(localized: "Sign-in cancelled.")
         } catch {
             message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
         }
@@ -113,12 +113,12 @@ public final class GooglePhotosSettingsModel {
         if let token = settings.refreshToken { await service.revoke(refreshToken: token) }
         let removed = settings.refreshTokenItem.write(nil)
         isSignedIn = settings.isSignedIn
-        message = removed ? "Signed out." : "The sign-in couldn't be removed from your Keychain."
+        message = removed ? String(localized: "Signed out.") : String(localized: "The sign-in couldn't be removed from your Keychain.")
     }
 
     /// The account state in words.
     public var status: String {
-        if clientID.isEmpty { return "Not set up" }
-        return isSignedIn ? "Signed in" : "Signed out"
+        if clientID.isEmpty { return String(localized: "Not set up") }
+        return isSignedIn ? String(localized: "Signed in") : String(localized: "Signed out")
     }
 }
