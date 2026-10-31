@@ -19,6 +19,8 @@ public enum ActiveSheet: Identifiable, Equatable, Sendable {
     case lightroomImport(LightroomImportModel)
     /// File ▸ Import Aperture or iPhoto Library…
     case appleLibraryImport(AppleLibraryImportModel)
+    /// File ▸ Import from Photos Library…, or an iPhone or iPad from the import sheet.
+    case externalImport(ExternalImportModel)
     /// Photo ▸ Merge to HDR… / Merge to Panorama…
     case merge(MergeModel)
 
@@ -33,6 +35,7 @@ public enum ActiveSheet: Identifiable, Equatable, Sendable {
         case .captureOneSettings: "capture-one-settings"
         case .lightroomImport: "lightroom-import"
         case .appleLibraryImport: "apple-library-import"
+        case .externalImport: "external-import"
         case .merge: "merge"
         }
     }
@@ -1029,6 +1032,7 @@ public final class AppModel {
 
     /// Called by the window when any sheet closes (the card coordinator presents a queued card).
     public func sheetDidClose() {
+        cleanUpStaging()
         cardCoordinator?.sheetDidClose()
     }
 

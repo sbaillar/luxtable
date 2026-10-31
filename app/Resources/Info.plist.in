@@ -20,6 +20,7 @@
   <key>NSDocumentsFolderUsageDescription</key><string>Luxtable keeps your sessions in a folder you choose.</string>
   <key>NSDesktopFolderUsageDescription</key><string>Luxtable imports photos from your Desktop folder when you choose it, and never modifies the originals.</string>
   <key>NSDownloadsFolderUsageDescription</key><string>Luxtable imports photos from your Downloads folder when you choose it, and never modifies the originals.</string>
+  <key>NSPhotoLibraryUsageDescription</key><string>Luxtable copies the originals of the photos you choose from your Photos library into a session. It never changes or deletes anything in Photos.</string>
   <key>NSRemovableVolumesUsageDescription</key><string>Luxtable imports photos from memory cards and never modifies them.</string>
   <key>NSNetworkVolumesUsageDescription</key><string>Luxtable archives sessions to your network photo share.</string>
   <key>NSLocalNetworkUsageDescription</key><string>Luxtable archives sessions to a NAS on your local network and keeps albums in your Immich server up to date.</string>
