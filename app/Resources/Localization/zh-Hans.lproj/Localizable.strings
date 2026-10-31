@@ -1217,6 +1217,7 @@
 "Forward %lld" = "前进 %lld";
 "Found" = "已找到";
 "Found an archived photo in Immich: check the folders, then Save." = "在 Immich 中找到一张已归档的照片：请检查文件夹，然后点按“存储”。";
+"Frame %@" = "第 %@ 帧";
 "Frame %@: %@" = "第 %@ 帧：%@";
 "Frame %@: the best frame, the base" = "第 %@ 帧：最好的一帧，作为基础";
 "Frame every photo on the map" = "在地图上显示所有照片";
@@ -1614,6 +1615,7 @@
 "Merge %lld Groups" = "合并 %lld 个组";
 "Merge a burst to one Best Shot (open eyes, sharpest parts)" = "将一组连拍合并为一张最佳照片（睁开的眼睛、最清晰的部分）";
 "Merge preview" = "合并预览";
+"Merge the burst into one photo: the best frame, with open eyes and sharper parts from the others (⇧⌘B)" = "将连拍合并为一张照片：以最好的一帧为基础，从其他帧取用睁开的眼睛和更清晰的部分（⇧⌘B）";
 "Merge to Best Shot" = "合并为最佳照片";
 "Merge to Best Shot…" = "合并为最佳照片…";
 "Merge to HDR" = "合并为 HDR";

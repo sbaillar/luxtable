@@ -5,7 +5,7 @@ import SwiftUI
 /// just above the filmstrip. It rises from the filmstrip with a spring, its frames fanning
 /// out from the stack's cell (a plain fade with Reduce Motion), and folds back the same way.
 /// A click shows a frame; "Use as Cover" (⏎, the hover button or the context menu) makes it
-/// the stack's cover. Esc, a click outside or the badge again closes it. The keys stay with
+/// the stack's cover; "Merge to Best Shot…" merges the burst. Esc, a click outside or the badge again closes it. The keys stay with
 /// the main keyboard router (`AppModel.handleBurstStripKey`), so rating and flag keys go
 /// to the shown frame as always.
 package struct BurstStrip: View {
@@ -90,6 +90,13 @@ private struct BurstStripContent: View {
                 Button("Use as Cover", systemImage: "checkmark.seal") { model.useAsCover() }
                     .disabled(picker.current.map { $0 == cover || !(decision?.candidates.contains($0) ?? false) } ?? true)
                     .help(picker.current.flatMap { model.coverHint(for: $0) } ?? String(localized: "Show this frame when the burst is collapsed (⏎)"))
+                if let frame = picker.current ?? frames.first, model.canMergeBestShot(ofStackOf: frame) {
+                    Button("Merge to Best Shot…", systemImage: "wand.and.stars") {
+                        model.closeBurstStrip()
+                        model.mergeBestShot(ofStackOf: frame)
+                    }
+                    .help("Merge the burst into one photo: the best frame, with open eyes and sharper parts from the others (⇧⌘B)")
+                }
                 Button("Close", systemImage: "xmark") { model.closeBurstStrip() }
                     .labelStyle(.iconOnly)
                     .buttonStyle(.borderless)

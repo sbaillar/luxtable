@@ -635,12 +635,14 @@ public final class AppModel {
     /// replaced or added photos), keeping the focused photo when it still exists.
     /// `keepingHistory`: after file moves, the undo history carries over
     /// instead of starting fresh as opening a session does.
-    func refreshCurrentSession(keepingHistory: Bool = false) async {
+    /// List the open session again. Focus stays on the focused photo (or `focusing`, a photo
+    /// the reload brings in) throughout: it never passes through the first photo on the way.
+    func refreshCurrentSession(keepingHistory: Bool = false, focusing: PhotoID? = nil) async {
         guard let s = currentSession else { return }
-        let focused = focusedID
+        let focused = focusing ?? focusedID
         let kept = history
         let keptRows = photoHistories
-        await reloadSessions(select: s)
+        await reloadSessions(select: s, focusing: focused)
         if keepingHistory, currentSession?.id == s.id {
             history = kept
             history.rebase(onto: items.mapValues(\.photo))
@@ -782,7 +784,9 @@ public final class AppModel {
     }
     @ObservationIgnored var missingCountCache: (version: Int, count: Int) = (-1, 0)
 
-    public func open(_ session: SessionInfo) async {
+    /// Open `session`; `focusing`: the photo to focus once listed (a reload keeps its photo)
+    /// instead of the first one or the one an update's restart left.
+    public func open(_ session: SessionInfo, focusing: PhotoID? = nil) async {
         deferredSession = nil // [library] a session the user opened replaces the one a Library start kept
         openToken += 1
         let token = openToken
@@ -885,7 +889,11 @@ public final class AppModel {
                 return p
             })
             selection = []
-            focusAfterOpen(session) // the first photo, or the one an update's restart left
+            if let focusing, items[focusing] != nil {
+                focus(focusing, extend: false)
+            } else {
+                focusAfterOpen(session) // the first photo, or the one an update's restart left
+            }
             await markDeviceEditsAdopted(session)
             await (sessions as? any CurrentSessionPointing)?.makeCurrent(session) // an older open's late load may have moved it
             await smartFolders.reload(store: sessions, session: session, photos: photos) // full count
@@ -932,10 +940,10 @@ public final class AppModel {
     func isStill(in session: UUID?) -> Bool { currentSession?.id == session && !isSwitchingSession }
 
     /// Refresh the session list (after an import created one) and optionally open `session`.
-    public func reloadSessions(select session: SessionInfo? = nil) async {
+    public func reloadSessions(select session: SessionInfo? = nil, focusing: PhotoID? = nil) async {
         do {
             sessionList = try await sessions.listSessions()
-            if let session, let fresh = sessionList.first(where: { $0.id == session.id }) { await open(fresh) }
+            if let session, let fresh = sessionList.first(where: { $0.id == session.id }) { await open(fresh, focusing: focusing) }
         } catch {
             show(error)
         }

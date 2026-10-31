@@ -1864,7 +1864,7 @@
 /* LuxtableCore/AI/Remove/RemovalModel.swift */
 "Basic fill. The first removal downloads a 217 MB model for better fills." = "Basic fill. The first removal downloads a 217 MB model for better fills.";
 
-/* LuxtableUI/Views/Viewer/ViewerContainer.swift */
+/* LuxtableMac/Views/Merge/BestShotTourView.swift, LuxtableUI/Views/Viewer/ViewerContainer.swift */
 "Before" = "Before";
 
 /* LuxtableCore/Tools/SimpleMode.swift */
@@ -1888,7 +1888,7 @@
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
 "Behind by %lld files" = "Behind by %lld files";
 
-/* LuxtableUI/Views/Browser/BurstStrip.swift */
+/* LuxtableMac/Views/Merge/BestShotTourView.swift, LuxtableUI/Views/Browser/BurstStrip.swift */
 "Best Shot" = "Best Shot";
 
 /* LuxtableMac/Views/Merge/BestShotTourView.swift */
@@ -3655,6 +3655,9 @@
 /* LuxtableCore/Immich/ImmichModel.swift */
 "Found an archived photo in Immich: check the folders, then Save." = "Found an archived photo in Immich: check the folders, then Save.";
 
+/* LuxtableMac/Views/Merge/BestShotTourView.swift */
+"Frame %@" = "Frame %@";
+
 /* LuxtableCore/Merge/BestShotTour.swift */
 "Frame %@: %@" = "Frame %@: %@";
 
@@ -4846,10 +4849,13 @@
 /* LuxtableMac/Views/Merge/MergeSheet.swift */
 "Merge preview" = "Merge preview";
 
+/* LuxtableUI/Views/Browser/BurstStrip.swift */
+"Merge the burst into one photo: the best frame, with open eyes and sharper parts from the others (⇧⌘B)" = "Merge the burst into one photo: the best frame, with open eyes and sharper parts from the others (⇧⌘B)";
+
 /* LuxtableCore/Merge/PhotoMerge.swift */
 "Merge to Best Shot" = "Merge to Best Shot";
 
-/* LuxtableCore/Keyboard/CommandCatalog.swift, LuxtableUI/Views/Browser/BrowserViews.swift */
+/* LuxtableCore/Keyboard/CommandCatalog.swift, LuxtableUI/Views/Browser/BrowserViews.swift, LuxtableUI/Views/Browser/BurstStrip.swift */
 "Merge to Best Shot…" = "Merge to Best Shot…";
 
 /* LuxtableCore/Merge/PhotoMerge.swift */

@@ -47,7 +47,7 @@ struct MergeSheet: View {
                     ProgressView().controlSize(.small).accessibilityLabel("Updating the preview")
                 }
             }
-            .frame(height: 300)
+            .frame(height: model.kind == .burst ? 390 : 300) // a Best Shot's tour adds its close-ups
             .clipShape(RoundedRectangle(cornerRadius: 4))
             .accessibilityElement(children: .combine)
             .accessibilityLabel("Merge preview")

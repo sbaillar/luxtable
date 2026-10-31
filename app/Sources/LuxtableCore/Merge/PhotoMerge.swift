@@ -485,11 +485,11 @@ extension AppModel {
         }
     }
 
-    /// The new photo is in the session: list it again and select the new photo.
+    /// The new photo is in the session: list it again with the new photo focused straight
+    /// away (the viewer doesn't show the first or the previous photo in between).
     func mergeFinished(_ id: PhotoID) async {
         await saver.flush()
-        await refreshCurrentSession()
-        if photo(id) != nil { focus(id, extend: false) }
+        await refreshCurrentSession(focusing: id)
     }
 
     func closeMergeSheet() {
