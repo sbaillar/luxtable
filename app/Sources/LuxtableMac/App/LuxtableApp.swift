@@ -27,6 +27,7 @@ public struct LuxtableApp: App {
         UserDefaults.standard.register(defaults: ["NSTreatUnknownArgumentsAsOpen": "NO"])
         let model = AppModel.live()
         model.confirmClose = SessionCloseAlert.ask // Close Session asks while jobs run
+        model.openSamples = SampleLauncher.live(mode: model.mode)
         UpscaleService.shared.confirmDownload = UpscaleService.askDownload // its terms, once
         _model = State(initialValue: model)
         let updater = Updater.live(model: model)
@@ -58,6 +59,11 @@ public struct LuxtableApp: App {
                         model.settings.onboardingComplete = true
                         model.sheet = nil
                         Task { await WindowSnapshot.run(model: model, path: args[i + 1]) }
+                    }
+                    if SampleLauncher.isSampleWindow(arguments: args, mode: model.mode) {
+                        // The sample photos have nothing to set up (scratch preferences).
+                        model.settings.onboardingComplete = true
+                        model.sheet = nil
                     }
                     await model.start()
                     if !AppModel.usesPrivateDefaults { updater.startAutomaticChecks() } // never in dev/snapshot runs

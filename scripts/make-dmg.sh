@@ -8,7 +8,8 @@
 # The window is laid out by Finder (AppleScript), so this needs a logged-in session; the first
 # run asks to let the terminal control Finder. The background is drawn by
 # `scripts/make-icon.swift dmg-background`. The image is signed like the app: with
-# LT_SIGN_IDENTITY (and a secure timestamp) when set, else with the app's own certificate;
+# LT_SIGN_IDENTITY (and a secure timestamp) when set, also notarized and stapled with
+# LT_NOTARY_PROFILE (see build-app.sh), else with the app's own certificate;
 # an ad-hoc signed app gives an unsigned image. The in-app updater doesn't use the image (it
 # downloads the zip; docs/RELEASING.md).
 set -euo pipefail
@@ -88,6 +89,13 @@ hdiutil convert -quiet "$work/rw.dmg" -format ULFO -ov -o "$OUT"
 
 if [ -n "${LT_SIGN_IDENTITY:-}" ]; then
   codesign --force --timestamp --sign "$LT_SIGN_IDENTITY" "$OUT"
+  if [ -n "${LT_NOTARY_PROFILE:-}" ]; then
+    # The image gets its own ticket, so Gatekeeper accepts it offline too (the app inside
+    # is already notarized and stapled by build-app.sh).
+    xcrun notarytool submit "$OUT" --keychain-profile "$LT_NOTARY_PROFILE" --wait
+    xcrun stapler staple "$OUT"
+    spctl --assess --type open --context context:primary-signature --verbose=2 "$OUT"
+  fi
 else
   signer="$(codesign -dvv "$APP" 2>&1 | /usr/bin/sed -n 's/^Authority=//p' | head -1)"
   [ -z "$signer" ] || codesign --force --timestamp=none --sign "$signer" "$OUT"

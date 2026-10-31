@@ -320,6 +320,9 @@ public final class AppModel {
     /// Asks before Close Session while imports, an export or an archive run are going
     /// (the app's alert; tests answer it). `true`: close. Unset: close without asking.
     @ObservationIgnored public var confirmClose: (@MainActor (SessionCloseAlert) async -> Bool)?
+    /// Opens Luxtable's sample photos in a separate demo window (the app's launcher; set in
+    /// live mode). Unset: the first-run screen doesn't offer them.
+    @ObservationIgnored public var openSamples: (@MainActor () -> Void)?
     /// Close Session in flight (another close is ignored; an open waits for it).
     public internal(set) var closing: Task<Void, Never>?
     /// How long Close waits for the store to release the session (a hung volume).
