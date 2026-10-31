@@ -81,10 +81,19 @@ public struct UpdateRelease: Equatable, Sendable, Identifiable {
     public static func assetName(_ version: AppVersion) -> String { "Luxtable-\(version)-macos-arm64.zip" }
 }
 
+/// One release's short notes, for the lists grouped by version (newest first).
+public struct VersionNotes: Equatable, Sendable, Identifiable {
+    public var version: AppVersion
+    public var notes: [String]
+    public var id: String { version.description }
+}
+
 /// The GitHub releases API's JSON, and which release is an update.
 public enum ReleaseFeed {
     /// Unauthenticated; only the app version is sent (the User-Agent).
     public static let url = URL(string: "https://api.github.com/repos/sbaillar/luxtable/releases?per_page=20")!
+    /// The releases page people read (What's New's link when the notes can't be fetched).
+    public static let page = URL(string: "https://github.com/sbaillar/luxtable/releases")!
 
     struct Release: Decodable {
         var tag_name: String
@@ -124,6 +133,27 @@ public enum ReleaseFeed {
     /// The newest release after `current` on the channel: betas only when `beta` is on.
     public static func newest(_ releases: [UpdateRelease], after current: AppVersion, beta: Bool) -> UpdateRelease? {
         releases.filter { (beta || !$0.isPrerelease) && $0.version > current }.max { $0.version < $1.version }
+    }
+
+    /// What changed in every release after `previous` up to `latest` on the channel, newest
+    /// first (`latest` itself counts whatever the channel): the update sheet when versions were
+    /// skipped, and "Updated to X". Releases without notes are left out.
+    public static func changes(_ releases: [UpdateRelease], after previous: AppVersion, upTo latest: AppVersion,
+                               beta: Bool) -> [VersionNotes] {
+        grouped(releases.filter { $0.version > previous }, upTo: latest, beta: beta)
+    }
+
+    /// The notes of `latest` and the releases before it on the channel, at most `count`,
+    /// newest first: Help ▸ What's New….
+    public static func recent(_ releases: [UpdateRelease], upTo latest: AppVersion, count: Int, beta: Bool) -> [VersionNotes] {
+        Array(grouped(releases, upTo: latest, beta: beta).prefix(count))
+    }
+
+    private static func grouped(_ releases: [UpdateRelease], upTo latest: AppVersion, beta: Bool) -> [VersionNotes] {
+        releases.filter { $0.version == latest || ($0.version < latest && (beta || !$0.isPrerelease)) }
+            .filter { !$0.notes.isEmpty }
+            .sorted { $0.version > $1.version }
+            .map { VersionNotes(version: $0.version, notes: $0.notes) }
     }
 
     static func sha256(_ digest: String?) -> String? {

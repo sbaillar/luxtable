@@ -277,6 +277,10 @@ struct AppCommands: Commands {
             Button("Check for Updates\u{2026}") { updater.checkNow() }
                 .disabled(!updater.isAvailable)
         }
+        CommandGroup(after: .help) {
+            Button("What’s New\u{2026}") { updater.showWhatsNew() }
+                .disabled(!updater.isAvailable)
+        }
         CommandGroup(replacing: .undoRedo) {
             Button(model.history.undoLabel.map { String(localized: "Undo \($0)") } ?? String(localized: "Undo")) { shared(.undo) }
                 .keyboardShortcut("z")

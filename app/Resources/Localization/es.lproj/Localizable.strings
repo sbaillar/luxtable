@@ -1571,6 +1571,7 @@
 "Luxtable can’t develop this file yet (%@). You’re seeing its embedded preview: you can still rate, tag and compare it." = "Luxtable aún no puede revelar este archivo (%@). Ves su vista previa incrustada: aún puedes valorarlo, etiquetarlo y compararlo.";
 "Luxtable can’t replace itself in “%@” (no permission there). " = "Luxtable no puede reemplazarse a sí mismo en “%@” (no tiene permiso allí). ";
 "Luxtable couldn’t check for updates: %@" = "Luxtable no ha podido buscar actualizaciones: %@";
+"Luxtable couldn’t get the release notes: %@" = "Luxtable no ha podido obtener las notas de la versión: %@";
 "Luxtable develops DNG files (including iPhone ProRAW) with its own decoders. Other RAW formats, and the colour data of most cameras, come from the free RAW helper: a separate program that runs the open-source rawler decoder. It isn’t part of Luxtable because it’s under another licence (LGPL-2.1)." = "Luxtable revela archivos DNG (incluido iPhone ProRAW) con sus propios decodificadores. Los demás formatos RAW, y los datos de color de la mayoría de las cámaras, proceden del asistente RAW gratuito: un programa aparte que ejecuta el decodificador de código abierto rawler. No forma parte de Luxtable porque tiene otra licencia (LGPL-2.1).";
 "Luxtable has no correction profile for this lens, so distortion and corner shading aren't corrected. Pick a matching profile below if one fits, or use Vignette and Perspective by hand." = "Luxtable no tiene perfil de corrección para este objetivo, así que la distorsión y el sombreado de las esquinas no se corrigen. Elige abajo un perfil que encaje, si lo hay, o usa Viñeta y Perspectiva a mano.";
 "Luxtable is already running or still closing" = "Luxtable ya se está ejecutando o aún se está cerrando";
@@ -1766,6 +1767,7 @@
 "No preview available for this photo." = "No hay vista previa disponible para esta foto.";
 "No profile chosen" = "Ningún perfil elegido";
 "No profile for %@" = "No hay perfil para %@";
+"No release notes for this version." = "No hay notas para esta versión.";
 "No saved workspaces" = "No hay espacios de trabajo guardados";
 "No session is open" = "No hay ninguna sesión abierta";
 "No session is open to import into. Open the library's originals as a session below, " = "No hay ninguna sesión abierta en la que importar. Abre los originales de la biblioteca como sesión a continuación, ";
@@ -2778,6 +2780,7 @@
 "Videos aren't shared. Select photos to share" = "Los vídeos no se comparten. Selecciona fotos para compartir";
 "View" = "Visualización";
 "View Update…" = "Ver actualización…";
+"View on GitHub" = "Ver en GitHub";
 "Viewer" = "Visor";
 "Viewer %@ or Grid %@" = "Visor %@ o cuadrícula %@";
 "Vignette" = "Viñeta";
@@ -2818,6 +2821,8 @@
 "What Can I Say?" = "¿Qué puedo decir?";
 "What can I say?" = "¿Qué puedo decir?";
 "What did you use before?" = "¿Qué usabas antes?";
+"What’s New in Luxtable" = "Novedades de Luxtable";
+"What’s New…" = "Novedades…";
 "What’s new" = "Novedades";
 "Where Immich sees the archive" = "Dónde ve Immich el archivo";
 "Where is %@ now?" = "¿Dónde está %@ ahora?";

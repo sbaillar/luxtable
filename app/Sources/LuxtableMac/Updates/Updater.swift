@@ -26,11 +26,26 @@ public final class Updater {
         case manualInstall(UpdateRelease, URL)
     }
 
-    /// "Updated to X" with its notes, once, after an update.
+    /// The What's New sheet: "Updated to X" once after an update (in the app or not), or
+    /// Help ▸ What's New…; the notes grouped by version, newest first.
     public struct WhatsNew: Identifiable, Equatable, Sendable {
+        public enum Reason: Equatable, Sendable {
+            case updated
+            case help
+        }
+
+        public enum Notes: Equatable, Sendable {
+            /// Help ▸ What's New… while the feed is fetched.
+            case loading
+            case loaded([VersionNotes])
+            case failed(String)
+        }
+
+        /// The running version.
         public var version: String
-        public var notes: [String]
-        public var id: String { version }
+        public var reason: Reason
+        public var notes: Notes
+        public var id: String { "\(reason)-\(version)" }
     }
 
     /// The running app: its bundle, identifier and version.
@@ -50,6 +65,8 @@ public final class Updater {
     public var sheetShown = false
     /// An automatic check found an update: the main window's small notice offers it.
     public private(set) var notice: UpdateRelease?
+    /// What the offered update changes: every release after the running one up to it.
+    public private(set) var changes: [VersionNotes] = []
     public var whatsNew: WhatsNew?
     public private(set) var lastChecked: Date?
     /// Why the last automatic check failed (shown in Settings ▸ Updates only).
@@ -80,18 +97,24 @@ public final class Updater {
     @ObservationIgnored private var running: Task<URL, Error>?
     @ObservationIgnored private var schedule: Task<Void, Never>?
     @ObservationIgnored private var restartWhenReady = false
+    /// The launch's or Help's fetch of the notes (tests wait for it).
+    @ObservationIgnored private(set) var notesTask: Task<Void, Never>?
     /// Restart (not a plain quit) asked for this termination.
     @ObservationIgnored private(set) var relaunchRequested = false
 
     nonisolated static let interval: TimeInterval = 24 * 3600
     nonisolated static let launchDelay: Duration = .seconds(10)
     nonisolated static let poll: Duration = .seconds(3600)
+    /// How many releases Help ▸ What's New… lists.
+    nonisolated static let recentCount = 5
 
     enum Keys {
         static let automatic = "updates.automatic"
         static let beta = "updates.includeBeta"
         static let skipped = "updates.skippedVersion"
         static let lastCheck = "updates.lastCheck"
+        /// The version that ran last: a newer one at launch was updated (in the app or not).
+        static let lastVersion = "updates.lastVersion"
     }
 
     public init(host: Host?, defaults: UserDefaults, support: URL = AppPaths.support,
@@ -143,14 +166,53 @@ public final class Updater {
 
     /// At launch: the one-shot resume state (for `AppModel.pendingResume`). After an update to
     /// this version it also says what's new, once. Downloads a quit left behind are removed.
+    ///
+    /// Updated since the last run (the remembered version is older): with automatic checks
+    /// on, the notes of every release since then come from the feed; otherwise, or when that
+    /// fails, the notes an in-app update saved, or nothing after an update done outside the
+    /// app. Nothing remembered (the first run, or a version before the key): only the saved
+    /// notes, so a new user sees nothing here.
     public func launched() -> ResumeState? {
         guard let host else { return nil }
         try? FileManager.default.removeItem(at: root)
         let r = resumeStore.consume()
-        if let r, r.updatedTo == host.version.description {
-            whatsNew = WhatsNew(version: r.updatedTo ?? "", notes: r.notes)
+        let current = host.version
+        let previous = defaults.string(forKey: Keys.lastVersion).flatMap(AppVersion.init)
+        defaults.set(current.description, forKey: Keys.lastVersion)
+        let saved = r.flatMap { $0.updatedTo == current.description ? [VersionNotes(version: current, notes: $0.notes)] : nil }
+        let show = { (notes: [VersionNotes]) in
+            self.whatsNew = WhatsNew(version: current.description, reason: .updated, notes: .loaded(notes))
+        }
+        if let previous, previous < current, automatic {
+            let beta = includeBeta
+            notesTask = Task {
+                let all = try? ReleaseFeed.releases(from: try await self.feed.releases())
+                let changes = all.map { ReleaseFeed.changes($0, after: previous, upTo: current, beta: beta) } ?? []
+                if !changes.isEmpty { show(changes) } else if let saved { show(saved) }
+            }
+        } else if let saved, previous.map({ $0 < current }) ?? true {
+            show(saved)
         }
         return r
+    }
+
+    /// Help ▸ What's New…: the running version's notes and the few releases before it,
+    /// fetched now (a user action, so automatic checks being off doesn't matter).
+    public func showWhatsNew() {
+        guard let host else { return }
+        let current = host.version
+        whatsNew = WhatsNew(version: current.description, reason: .help, notes: .loading)
+        let beta = includeBeta
+        notesTask = Task {
+            let notes: WhatsNew.Notes
+            do {
+                let all = try ReleaseFeed.releases(from: try await self.feed.releases())
+                notes = .loaded(ReleaseFeed.recent(all, upTo: current, count: Self.recentCount, beta: beta))
+            } catch {
+                notes = .failed(String(localized: "Luxtable couldn’t get the release notes: \(Self.message(error))"))
+            }
+            if self.whatsNew?.reason == .help { self.whatsNew?.notes = notes } // unless closed meanwhile
+        }
     }
 
     // MARK: - Checking
@@ -185,6 +247,7 @@ public final class Updater {
                 if case .available = state { state = .idle }
                 return
             }
+            changes = ReleaseFeed.changes(all, after: host.version, upTo: r.version, beta: includeBeta)
             state = .available(r)
             if !manual { notice = r }
         } catch {

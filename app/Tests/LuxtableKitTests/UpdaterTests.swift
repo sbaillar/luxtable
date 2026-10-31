@@ -613,8 +613,9 @@ import Testing
         let leftover = r.support.appendingPathComponent("Updates/.staging-x")
         try FileManager.default.createDirectory(at: leftover, withIntermediateDirectories: true)
         #expect(r.updater.launched() == state)
-        #expect(r.updater.whatsNew == Updater.WhatsNew(version: "0.1.19", notes: ["One", "Two"]))
-        #expect(r.updater.whatsNew?.id == "0.1.19")
+        #expect(r.updater.whatsNew == Updater.WhatsNew(version: "0.1.19", reason: .updated,
+                                                       notes: .loaded([VersionNotes(version: AppVersion("0.1.19")!, notes: ["One", "Two"])])))
+        #expect(r.updater.whatsNew?.id == "updated-0.1.19")
         #expect(!FileManager.default.fileExists(atPath: leftover.path))
         r.updater.whatsNew = nil
         #expect(r.updater.launched() == nil, "once")
@@ -626,6 +627,192 @@ import Testing
         let u = Updater(host: old.updater.host, defaults: Self.defaults(), support: r.support, feed: old.feed)
         #expect(u.launched()?.notes == ["One", "Two"])
         #expect(u.whatsNew == nil)
+    }
+
+    // MARK: - What's new across versions
+
+    /// Releases 0.3.0 … 0.5.0-beta.1: 0.3.1 has no notes, two betas, each release's one bullet
+    /// names it ("Notes 0.4.2").
+    static func historyJSON() throws -> Data {
+        let tags: [(String, Bool, String)] = [
+            ("v0.5.0-beta.1", true, "## What's new\n\n- Notes 0.5.0-beta.1\n"),
+            ("v0.4.2", false, "## What's new\n\n- Notes 0.4.2\n- More 0.4.2\n"),
+            ("v0.4.1", false, "## What's new\n\n- Notes 0.4.1\n"),
+            ("v0.4.0", false, "## What's new\n\n- Notes 0.4.0\n"),
+            ("v0.4.0-beta.1", true, "## What's new\n\n- Notes 0.4.0-beta.1\n"),
+            ("v0.3.1", false, ""),
+            ("v0.3.0", false, "## What's new\n\n- Notes 0.3.0\n"),
+        ]
+        return try JSONSerialization.data(withJSONObject: tags.map { tag, pre, body -> [String: Any] in
+            let name = "Luxtable-\(tag.dropFirst())-macos-arm64.zip"
+            return ["tag_name": tag, "prerelease": pre, "draft": false, "body": body,
+                    "assets": [["name": name, "size": 1000, "digest": "sha256:\(String(repeating: "a", count: 64))",
+                                "browser_download_url": "https://github.com/sbaillar/luxtable/releases/download/\(tag)/\(name)"]]]
+        })
+    }
+
+    static func versions(_ groups: [VersionNotes]) -> [String] { groups.map(\.version.description) }
+
+    @Test func changesAreEverySkippedReleaseNewestFirstOnTheChannel() throws {
+        let all = try ReleaseFeed.releases(from: Self.historyJSON())
+        let v = { AppVersion($0)! }
+        let stable = ReleaseFeed.changes(all, after: v("0.3.0"), upTo: v("0.4.2"), beta: false)
+        #expect(Self.versions(stable) == ["0.4.2", "0.4.1", "0.4.0"], "no betas, and 0.3.1 has no notes")
+        #expect(stable.first?.notes == ["Notes 0.4.2", "More 0.4.2"])
+        #expect(stable.first?.id == "0.4.2")
+        #expect(Self.versions(ReleaseFeed.changes(all, after: v("0.3.0"), upTo: v("0.4.2"), beta: true))
+                == ["0.4.2", "0.4.1", "0.4.0", "0.4.0-beta.1"])
+        #expect(Self.versions(ReleaseFeed.changes(all, after: v("0.4.1"), upTo: v("0.4.2"), beta: false)) == ["0.4.2"])
+        #expect(ReleaseFeed.changes(all, after: v("0.4.2"), upTo: v("0.4.2"), beta: false).isEmpty)
+        #expect(ReleaseFeed.changes(all, after: v("0.3.0"), upTo: v("0.3.1"), beta: false).isEmpty, "a release with no notes")
+        // The version itself counts on the stable channel (a beta installed by hand).
+        #expect(Self.versions(ReleaseFeed.changes(all, after: v("0.4.2"), upTo: v("0.5.0-beta.1"), beta: false)) == ["0.5.0-beta.1"])
+        // A beta tester moving on to the release: the beta's notes were already seen.
+        #expect(Self.versions(ReleaseFeed.changes(all, after: v("0.4.0-beta.1"), upTo: v("0.4.2"), beta: true))
+                == ["0.4.2", "0.4.1", "0.4.0"])
+    }
+
+    @Test func recentIsTheRunningVersionAndTheFewBeforeIt() throws {
+        let all = try ReleaseFeed.releases(from: Self.historyJSON())
+        let v = { AppVersion($0)! }
+        #expect(Self.versions(ReleaseFeed.recent(all, upTo: v("0.4.2"), count: 5, beta: false)) == ["0.4.2", "0.4.1", "0.4.0", "0.3.0"],
+                "nothing newer, no betas, nothing without notes")
+        #expect(Self.versions(ReleaseFeed.recent(all, upTo: v("0.4.2"), count: 2, beta: false)) == ["0.4.2", "0.4.1"])
+        #expect(Self.versions(ReleaseFeed.recent(all, upTo: v("0.4.2"), count: 5, beta: true))
+                == ["0.4.2", "0.4.1", "0.4.0", "0.4.0-beta.1", "0.3.0"])
+        #expect(Self.versions(ReleaseFeed.recent(all, upTo: v("0.5.0-beta.1"), count: 2, beta: false)) == ["0.5.0-beta.1", "0.4.2"])
+        #expect(ReleaseFeed.recent(all, upTo: v("0.2.0"), count: 5, beta: false).isEmpty)
+    }
+
+    @Test func theUpdateSheetListsEveryVersionSinceTheRunningOne() async throws {
+        let r = try Self.rig(current: "0.3.0", feed: try Self.historyJSON())
+        defer { try? FileManager.default.removeItem(at: r.support.deletingLastPathComponent()) }
+        let u = r.updater
+        #expect(u.changes.isEmpty)
+        await u.check(manual: true)
+        #expect(u.state.offered == "0.4.2")
+        #expect(Self.versions(u.changes) == ["0.4.2", "0.4.1", "0.4.0"])
+        u.includeBeta = true
+        await u.check(manual: true)
+        #expect(u.state.offered == "0.5.0-beta.1")
+        #expect(Self.versions(u.changes) == ["0.5.0-beta.1", "0.4.2", "0.4.1", "0.4.0", "0.4.0-beta.1"])
+    }
+
+    /// A launch of `current` after `remembered` ran (nil: never), with an in-app update's
+    /// `saved` notes (nil: none). Waits for the notes' fetch.
+    static func launch(current: String = "0.4.2", remembered: String?, automatic: Bool = true, saved: [String]? = nil,
+                       feed data: Data?) async throws -> (Updater, Feed, UserDefaults) {
+        let support = temp("launch")
+        defer { try? FileManager.default.removeItem(at: support) }
+        let d = defaults()
+        d.set(remembered, forKey: Updater.Keys.lastVersion)
+        d.set(automatic, forKey: Updater.Keys.automatic)
+        if let saved {
+            var state = ResumeState()
+            state.updatedTo = current
+            state.notes = saved
+            try ResumeStore(url: support.appendingPathComponent("resume.json")).save(state)
+        }
+        let feed = Feed(data: data)
+        let u = Updater(host: .init(bundle: support.appendingPathComponent("Luxtable.app"), identifier: "app.test.luxtable",
+                                    version: AppVersion(current)!),
+                        defaults: d, support: support, feed: feed)
+        _ = u.launched()
+        await u.notesTask?.value
+        return (u, feed, d)
+    }
+
+    static func shown(_ u: Updater) -> [String]? {
+        guard let w = u.whatsNew else { return nil }
+        #expect(w.reason == .updated)
+        #expect(w.version == u.currentVersion)
+        guard case .loaded(let g) = w.notes else { Issue.record("\(w.notes)"); return nil }
+        return g.map { "\($0.version): \($0.notes.joined(separator: " "))" }
+    }
+
+    @Test func theLaunchAfterAnUpdateShowsEveryReleaseSinceTheLastRun() async throws {
+        let feed = try Self.historyJSON()
+        // Updated outside the app (a disk image, Homebrew): the feed says what changed.
+        let (u, f, d) = try await Self.launch(remembered: "0.3.0", feed: feed)
+        #expect(Self.shown(u) == ["0.4.2: Notes 0.4.2 More 0.4.2", "0.4.1: Notes 0.4.1", "0.4.0: Notes 0.4.0"])
+        #expect(f.calls.count == 1)
+        #expect(d.string(forKey: Updater.Keys.lastVersion) == "0.4.2", "remembered for next time")
+        // In the app: the feed still wins over the newest release's saved notes.
+        let (inApp, _, _) = try await Self.launch(remembered: "0.4.0", saved: ["Saved"], feed: feed)
+        #expect(Self.shown(inApp) == ["0.4.2: Notes 0.4.2 More 0.4.2", "0.4.1: Notes 0.4.1"])
+        // Once: the next launch of the same version says nothing and fetches nothing.
+        let (again, f2, _) = try await Self.launch(remembered: "0.4.2", feed: feed)
+        #expect(again.whatsNew == nil)
+        #expect(f2.calls.count == 0)
+        // An older version back (the previous one dragged over): nothing.
+        let (older, _, _) = try await Self.launch(current: "0.4.1", remembered: "0.4.2", feed: feed)
+        #expect(older.whatsNew == nil)
+    }
+
+    @Test func theFirstRunEverShowsNothing() async throws {
+        let (u, f, d) = try await Self.launch(remembered: nil, feed: try Self.historyJSON())
+        #expect(u.whatsNew == nil, "new users get the Getting Started tour instead")
+        #expect(f.calls.count == 0)
+        #expect(d.string(forKey: Updater.Keys.lastVersion) == "0.4.2")
+        // Updated in the app from a version before the remembered version: the saved notes.
+        let (old, f2, _) = try await Self.launch(remembered: nil, saved: ["Saved"], feed: try Self.historyJSON())
+        #expect(Self.shown(old) == ["0.4.2: Saved"])
+        #expect(f2.calls.count == 0)
+    }
+
+    @Test func withoutAutomaticChecksOrTheFeedTheSavedNotesStand() async throws {
+        let feed = try Self.historyJSON()
+        let (off, f, _) = try await Self.launch(remembered: "0.3.0", automatic: false, saved: ["Saved"], feed: feed)
+        #expect(Self.shown(off) == ["0.4.2: Saved"])
+        #expect(f.calls.count == 0, "no request at launch with automatic checks off")
+        let (offOutside, f2, _) = try await Self.launch(remembered: "0.3.0", automatic: false, feed: feed)
+        #expect(offOutside.whatsNew == nil)
+        #expect(f2.calls.count == 0)
+        let (offline, f3, _) = try await Self.launch(remembered: "0.3.0", saved: ["Saved"], feed: nil)
+        #expect(Self.shown(offline) == ["0.4.2: Saved"])
+        #expect(f3.calls.count == 1)
+        let (offlineOutside, _, _) = try await Self.launch(remembered: "0.3.0", feed: nil)
+        #expect(offlineOutside.whatsNew == nil)
+        // An in-app update whose release has no notes: still "Updated to", with nothing listed.
+        let (empty, _, _) = try await Self.launch(current: "0.3.1", remembered: "0.3.0", saved: [], feed: feed)
+        #expect(Self.shown(empty) == ["0.3.1: "])
+    }
+
+    @Test func helpWhatsNewFetchesTheRecentReleases() async throws {
+        let r = try Self.rig(current: "0.4.2", feed: try Self.historyJSON())
+        defer { try? FileManager.default.removeItem(at: r.support.deletingLastPathComponent()) }
+        let u = r.updater
+        u.automatic = false // a user action: it fetches anyway
+        u.showWhatsNew()
+        #expect(u.whatsNew == Updater.WhatsNew(version: "0.4.2", reason: .help, notes: .loading))
+        #expect(u.whatsNew?.id == "help-0.4.2")
+        await u.notesTask?.value
+        guard case .loaded(let g) = u.whatsNew?.notes else { Issue.record("\(String(describing: u.whatsNew))"); return }
+        #expect(Self.versions(g) == ["0.4.2", "0.4.1", "0.4.0", "0.3.0"])
+        #expect(r.feed.calls.count == 1)
+        u.includeBeta = true
+        u.showWhatsNew()
+        await u.notesTask?.value
+        guard case .loaded(let b) = u.whatsNew?.notes else { Issue.record("\(String(describing: u.whatsNew))"); return }
+        #expect(Self.versions(b) == ["0.4.2", "0.4.1", "0.4.0", "0.4.0-beta.1", "0.3.0"])
+        // Closed before the notes arrived: it stays closed.
+        u.showWhatsNew()
+        u.whatsNew = nil
+        await u.notesTask?.value
+        #expect(u.whatsNew == nil)
+    }
+
+    @Test func helpWhatsNewSaysWhenTheNotesCantBeFetched() async throws {
+        let r = try Self.rig(current: "0.4.2", feed: try Self.historyJSON())
+        defer { try? FileManager.default.removeItem(at: r.support.deletingLastPathComponent()) }
+        let u = Updater(host: r.updater.host, defaults: Self.defaults(), support: r.support, feed: Feed(data: nil))
+        u.showWhatsNew()
+        await u.notesTask?.value
+        #expect(u.whatsNew?.notes == .failed("Luxtable couldn’t get the release notes: offline"))
+        let none = Updater(host: nil, defaults: Self.defaults(), support: r.support, feed: Feed(data: nil))
+        none.showWhatsNew()
+        #expect(none.whatsNew == nil, "only where the updater is available")
+        #expect(ReleaseFeed.page.absoluteString == "https://github.com/sbaillar/luxtable/releases")
     }
 
     // MARK: - The relauncher, for real
@@ -840,5 +1027,13 @@ import Testing
         #expect(UpdateText.title(.ready(rel)) == "Luxtable 0.1.18 is ready to install")
         #expect(UpdateText.detail(.ready(rel), current: current, beta: false).hasPrefix("It installs when you quit Luxtable."))
         #expect(UpdateText.detail(.failed("Nope."), current: current, beta: false) == "Nope.")
+    }
+}
+
+extension Updater.State {
+    /// The offered version, when one is.
+    var offered: String? {
+        if case .available(let r) = self { return r.version.description }
+        return nil
     }
 }
