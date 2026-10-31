@@ -190,6 +190,7 @@
 "%lld export steps" = "%lld 个导出步骤";
 "%lld face improved" = "改善了 %lld 张面孔";
 "%lld face moved too much to swap" = "%lld 张面孔移动过多，无法替换";
+"%lld faces" = "%lld 张面孔";
 "%lld faces improved" = "改善了 %lld 张面孔";
 "%lld faces moved too much to swap" = "%lld 张面孔移动过多，无法替换";
 "%lld failed" = "%lld 个失败";
@@ -265,6 +266,7 @@
 "%lld removals on this photo." = "此照片上有 %lld 处移除。";
 "%lld replaced" = "已替换 %lld 个";
 "%lld rows" = "%lld 行";
+"%lld sharper areas" = "%lld 个更清晰的区域";
 "%lld sharper region" = "%lld 个更清晰的区域";
 "%lld sharper regions" = "%lld 个更清晰的区域";
 "%lld spots on this photo." = "此照片上有 %lld 个污点。";
@@ -638,6 +640,7 @@
 "Behind by %lld file" = "落后 %lld 个文件";
 "Behind by %lld files" = "落后 %lld 个文件";
 "Best Shot" = "最佳照片";
+"Best Shot preview: %@" = "最佳照片预览：%@";
 "Best of %lld similar frames" = "%lld 张相似照片中的最佳一张";
 "Beta" = "测试版";
 "Betas are early builds of the next version, for trying new features before they’re released. They may have bugs." = "测试版是下一个版本的早期构建版本，用于在新功能发布前试用。可能存在错误。";
@@ -1221,6 +1224,8 @@
 "Forward %lld" = "前进 %lld";
 "Found" = "已找到";
 "Found an archived photo in Immich: check the folders, then Save." = "在 Immich 中找到一张已归档的照片：请检查文件夹，然后点按“存储”。";
+"Frame %@: %@" = "第 %@ 帧：%@";
+"Frame %@: the best frame, the base" = "第 %@ 帧：最好的一帧，作为基础";
 "Frame every photo on the map" = "在地图上显示所有照片";
 "Frame the selected photos" = "显示所选照片";
 "Freeform" = "自由";
@@ -2142,6 +2147,8 @@
 "Replace presets that are already there" = "替换已存在的预设";
 "Replaced by another copy" = "已被另一个副本替换";
 "Replaces version %@." = "替换版本 %@。";
+"Replay" = "重播";
+"Replay the Best Shot tour" = "重播最佳照片的演示";
 "Reset" = "复位";
 "Reset %@" = "复位%@";
 "Reset %lld photos to the original. ⌘Z to undo" = "已将 %lld 张照片复位为原片。按 ⌘Z 撤销";
@@ -2323,6 +2330,7 @@
 "Show Selection in Viewer" = "在查看器中显示所选内容";
 "Show Welcome Again" = "再次显示欢迎屏幕";
 "Show a QR code and a code to type" = "显示二维码和要输入的代码";
+"Show again which frame each part came from" = "再次显示每个部分来自哪一帧";
 "Show all" = "全部显示";
 "Show all (any flag)" = "全部显示（任意旗标）";
 "Show all photos" = "显示所有照片";
@@ -2530,6 +2538,7 @@
 "The AI Upscale model in this build is damaged (its checksum doesn’t match)." = "此版本中的 AI 放大模型已损坏（校验和不匹配）。";
 "The API key couldn't be removed from your Keychain." = "无法从你的钥匙串中移除 API 密钥。";
 "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it." = "未安装 Amazon Photos 应用。由它上传该文件夹；Luxtable 只负责填充。";
+"The Best Shot" = "最佳照片";
 "The Keychain refused the API key." = "钥匙串拒绝了 API 密钥。";
 "The Keychain refused the client secret." = "钥匙串拒绝了客户端密钥。";
 "The Keychain refused the key." = "钥匙串拒绝了此密钥。";
@@ -2864,6 +2873,8 @@
 "Zoom. Pixels are developed from the RAW; at 100% and above they are the sensor's own." = "缩放。像素由 RAW 冲印而来；在 100% 及以上时，显示的是传感器自身的像素。";
 "Zoom. “(preview)” means the pixels shown are upscaled while the 1:1 render loads." = "缩放。“（预览）”表示在 1:1 渲染载入期间，显示的像素是放大后的。";
 "` (left of 1)" = "`（1 的左侧）";
+"a face" = "一张面孔";
+"a sharper area" = "一个更清晰的区域";
 "added a %@ layer" = "添加了%@图层";
 "added an %@ layer" = "添加了%@图层";
 "added to collections" = "添加到收藏夹";

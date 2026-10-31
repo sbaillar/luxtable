@@ -17,6 +17,7 @@ private actor FakeMerger: PhotoMerging {
     /// The merge waits until cancelled (after reporting 0.3).
     var mergeHangs = false
     var unaligned = 0
+    var patches: [BestShotPatch] = []
     private(set) var started: [PhotoMergeOptions] = []
     private(set) var finished: [PhotoMergeOptions] = []
     private(set) var cancelledPreviews = 0
@@ -25,8 +26,9 @@ private actor FakeMerger: PhotoMerging {
     init(previewDelay: Duration = .zero) { self.previewDelay = previewDelay }
 
     func set(previewDelay: Duration? = nil, previewFailure: Error?? = nil, mergeResult: Result<PhotoID, Error>? = nil,
-             mergeHangs: Bool? = nil, unaligned: Int? = nil) {
+             mergeHangs: Bool? = nil, unaligned: Int? = nil, patches: [BestShotPatch]? = nil) {
         if let unaligned { self.unaligned = unaligned }
+        if let patches { self.patches = patches }
         if let previewDelay { self.previewDelay = previewDelay }
         if let previewFailure { self.previewFailure = previewFailure }
         if let mergeResult { self.mergeResult = mergeResult }
@@ -47,7 +49,8 @@ private actor FakeMerger: PhotoMerging {
                                  projection: options.kind == .hdr ? .perspective : .cylindrical,
                                  ghostRegions: options.deghost == .off ? 0 : 3, exposureEV: 0.25,
                                  unalignedFrames: unaligned,
-                                 facesReplaced: options.kind == .burst && !options.bestShot.isEmpty ? 1 : 0)
+                                 facesReplaced: options.kind == .burst && !options.bestShot.isEmpty ? 1 : 0,
+                                 reference: 1, patches: patches)
     }
 
     func merge(_ photos: [PhotoID], in session: SessionInfo, options: PhotoMergeOptions,
@@ -349,6 +352,53 @@ private final class Calls {
                 == ["2 faces improved", "1 sharper region", "1 face moved too much to swap", "2 frames not used"])
     }
 
+    @Test func bestShotTourShowsTheBaseEachGivingFrameThenTheResult() throws {
+        let image = try MockPhotoMerger.gradient(width: 2, height: 2)
+        let box = CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.4)
+        let sharp = { (s: Int) in BestShotPatch(kind: .sharper, source: s, bounds: box) }
+        let face = { (s: Int) in BestShotPatch(kind: .face, source: s, bounds: box) }
+        func tour(_ patches: [BestShotPatch]) -> [BestShotTourStep] {
+            BestShotTourStep.tour(PhotoMergePreview(image: image, width: 1, height: 1, projection: .perspective,
+                                                    reference: 1, patches: patches))
+        }
+        #expect(tour([]).isEmpty, "nothing taken: just the result")
+        let patches = [sharp(3), sharp(0), sharp(3), face(0)]
+        let steps = tour(patches)
+        #expect(steps.map(\.picture) == [.source(1), .source(0), .source(3), .result], "frames in order, the base first")
+        #expect(steps.map(\.caption) == ["Frame 2: the best frame, the base", "Frame 1: a face and a sharper area",
+                                         "Frame 4: 2 sharper areas", "The Best Shot"])
+        #expect(steps[0].highlights.isEmpty && steps[2].highlights == [sharp(3), sharp(3)] && steps[3].highlights == patches)
+        #expect(BestShotTourStep.gifts([face(0), face(2)]) == "2 faces")
+    }
+
+    @Test func bestShotTourWaitsForTheFrames() async throws {
+        let merger = FakeMerger()
+        await merger.set(patches: [BestShotPatch(kind: .face, source: 0, bounds: CGRect(x: 0, y: 0, width: 0.5, height: 0.5))])
+        let frame = try MockPhotoMerger.gradient(width: 3, height: 2)
+        let gate = AsyncStream<Void>.makeStream()
+        let m = MergeModel(kind: .burst, session: session, sources: [samplePhoto(1), samplePhoto(2)], merger: merger,
+                           frameImage: { p in
+                               for await _ in gate.stream { break }
+                               return p.id == PhotoID(1) ? frame : nil
+                           }, onMerged: { _ in }, close: {})
+        m.start()
+        #expect(await waitUntil { m.preview != nil && !m.isPreviewing })
+        #expect(m.bestShotTour.isEmpty, "not before the frames are loaded")
+        gate.continuation.yield()
+        gate.continuation.yield()
+        #expect(await waitUntil { !m.bestShotTour.isEmpty })
+        #expect(m.bestShotTour.map(\.picture) == [.source(1), .source(0), .result])
+        #expect(m.image(for: .source(0)) === frame)
+        #expect(m.image(for: .source(1)) === m.preview?.image, "a frame without a preview shows the result")
+        #expect(m.image(for: .source(7)) === m.preview?.image && m.image(for: .result) === m.preview?.image)
+        // HDR and panoramas have no tour.
+        let hdr = MergeModel(kind: .hdr, session: session, sources: [samplePhoto(1), samplePhoto(2)], merger: merger,
+                             frameImage: { _ in frame }, onMerged: { _ in }, close: {})
+        hdr.start()
+        #expect(await waitUntil { hdr.preview != nil })
+        #expect(hdr.frameImages.isEmpty && hdr.bestShotTour.isEmpty)
+    }
+
     @Test func bestShotFacesComeUprightFromVision() {
         let f = BestShotFrame.Face(FaceInfo(boundingBox: CGRect(x: 0.2, y: 0.1, width: 0.3, height: 0.4), captureQuality: 0.6,
                                             leftEyeAspect: 0.3, rightEyeAspect: 0.26))
@@ -381,6 +431,8 @@ private final class Calls {
         #expect(sheet.kind == .burst && sheet.sources.map(\.id) == s.memberIDs)
         #expect(await waitUntil { sheet.preview != nil && !sheet.isAnalyzing && !sheet.isPreviewing })
         #expect(sheet.options.bestShot.count == s.count, "one per frame (Vision found no face in the demo's images)")
+        #expect(await waitUntil { !sheet.bestShotTour.isEmpty }, "the demo's sharper corner from the second frame")
+        #expect(sheet.bestShotTour.map(\.picture) == [.source(0), .source(1), .result])
         sheet.merge()
         #expect(await waitUntil { m.sheet == nil })
         let shot = try #require(m.focusedPhoto)

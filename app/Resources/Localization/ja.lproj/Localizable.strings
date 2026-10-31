@@ -190,6 +190,7 @@
 "%lld export steps" = "%lld 個の書き出しステップ";
 "%lld face improved" = "改善した顔 %lld 個";
 "%lld face moved too much to swap" = "動きが大きすぎて差し替えられなかった顔 %lld 個";
+"%lld faces" = "顔 %lld 個";
 "%lld faces improved" = "改善した顔 %lld 個";
 "%lld faces moved too much to swap" = "動きが大きすぎて差し替えられなかった顔 %lld 個";
 "%lld failed" = "%lld 件失敗";
@@ -265,6 +266,7 @@
 "%lld removals on this photo." = "この写真には %lld 個の除去があります。";
 "%lld replaced" = "%lld 個を置き換えました";
 "%lld rows" = "%lld 行";
+"%lld sharper areas" = "よりシャープな領域 %lld 個";
 "%lld sharper region" = "よりシャープにした領域 %lld 個";
 "%lld sharper regions" = "よりシャープにした領域 %lld 個";
 "%lld spots on this photo." = "この写真には %lld 個のスポットがあります。";
@@ -638,6 +640,7 @@
 "Behind by %lld file" = "%lld 個のファイルが未処理";
 "Behind by %lld files" = "%lld 個のファイルが未処理";
 "Best Shot" = "ベストショット";
+"Best Shot preview: %@" = "ベストショットのプレビュー：%@";
 "Best of %lld similar frames" = "類似した %lld コマの中のベスト";
 "Beta" = "ベータ";
 "Betas are early builds of the next version, for trying new features before they’re released. They may have bugs." = "ベータ版は次のバージョンの早期ビルドで、リリース前に新機能を試すためのものです。バグがある可能性があります。";
@@ -1221,6 +1224,8 @@
 "Forward %lld" = "%lld 枚進む";
 "Found" = "検出";
 "Found an archived photo in Immich: check the folders, then Save." = "Immich でアーカイブ済みの写真が見つかりました：フォルダを確認してから“保存”をクリックしてください。";
+"Frame %@: %@" = "フレーム %@：%@";
+"Frame %@: the best frame, the base" = "フレーム %@：最も良いフレーム、ベース";
 "Frame every photo on the map" = "すべての写真をマップに収める";
 "Frame the selected photos" = "選択した写真をマップに収める";
 "Freeform" = "自由形式";
@@ -2142,6 +2147,8 @@
 "Replace presets that are already there" = "既存のプリセットを置き換える";
 "Replaced by another copy" = "別のコピーに置き換えられました";
 "Replaces version %@." = "バージョン %@ を置き換えます。";
+"Replay" = "もう一度再生";
+"Replay the Best Shot tour" = "ベストショットの解説をもう一度再生";
 "Reset" = "リセット";
 "Reset %@" = "%@ をリセット";
 "Reset %lld photos to the original. ⌘Z to undo" = "%lld 枚の写真をオリジナルに戻しました。⌘Z で取り消せます";
@@ -2323,6 +2330,7 @@
 "Show Selection in Viewer" = "選択範囲をビューアに表示";
 "Show Welcome Again" = "ようこそ画面をもう一度表示";
 "Show a QR code and a code to type" = "QR コードと入力用のコードを表示";
+"Show again which frame each part came from" = "各部分がどのフレームから来たかをもう一度表示";
 "Show all" = "すべてを表示";
 "Show all (any flag)" = "すべてを表示（フラグを問わず）";
 "Show all photos" = "すべての写真を表示";
@@ -2530,6 +2538,7 @@
 "The AI Upscale model in this build is damaged (its checksum doesn’t match)." = "このビルドの AI アップスケールモデルは破損しています（チェックサムが一致しません）。";
 "The API key couldn't be removed from your Keychain." = "API キーをキーチェーンから削除できませんでした。";
 "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it." = "Amazon Photos App がインストールされていません。フォルダのアップロードは Amazon Photos App が行い、Luxtable はフォルダにファイルを入れるだけです。";
+"The Best Shot" = "ベストショット";
 "The Keychain refused the API key." = "キーチェーンが API キーを拒否しました。";
 "The Keychain refused the client secret." = "キーチェーンがクライアントシークレットを拒否しました。";
 "The Keychain refused the key." = "キーチェーンがキーを拒否しました。";
@@ -2864,6 +2873,8 @@
 "Zoom. Pixels are developed from the RAW; at 100% and above they are the sensor's own." = "ズーム。ピクセルは RAW から現像されます。100% 以上ではセンサー本来のピクセルです。";
 "Zoom. “(preview)” means the pixels shown are upscaled while the 1:1 render loads." = "ズーム。「（プレビュー）」は、1:1 の描画を読み込む間、表示中のピクセルが拡大されていることを示します。";
 "` (left of 1)" = "`（1 の左）";
+"a face" = "顔 1 個";
+"a sharper area" = "よりシャープな領域 1 個";
 "added a %@ layer" = "%@ レイヤーを追加しました";
 "added an %@ layer" = "%@ レイヤーを追加しました";
 "added to collections" = "コレクションに追加";

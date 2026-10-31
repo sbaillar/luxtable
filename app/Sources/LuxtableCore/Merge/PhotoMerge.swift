@@ -102,6 +102,23 @@ public struct PhotoMergeOptions: Equatable, Sendable {
     }
 }
 
+/// Part of a Best Shot taken from another source (lt-merge's patch).
+public struct BestShotPatch: Equatable, Sendable {
+    public enum Kind: Equatable, Sendable { case face, sharper }
+
+    public var kind: Kind
+    /// Index of the source it came from.
+    public var source: Int
+    /// Where, normalized to the result, top-left origin.
+    public var bounds: CGRect
+
+    public init(kind: Kind, source: Int, bounds: CGRect) {
+        self.kind = kind
+        self.source = source
+        self.bounds = bounds
+    }
+}
+
 /// The merged result developed with its initial edit, for the sheet.
 public struct PhotoMergePreview: @unchecked Sendable {
     public var image: CGImage
@@ -123,10 +140,15 @@ public struct PhotoMergePreview: @unchecked Sendable {
     public var regionsReplaced: Int
     /// Best Shot: better faces left as they were (the head moved too much to blend).
     public var facesKept: Int
+    /// The source the result is built on.
+    public var reference: Int
+    /// Best Shot: what was taken from the other sources, faces last.
+    public var patches: [BestShotPatch]
 
     public init(image: CGImage, width: Int, height: Int, projection: PhotoMergeOptions.Projection,
                 ghostRegions: Int = 0, exposureEV: Double = 0, unalignedFrames: Int = 0,
-                facesReplaced: Int = 0, regionsReplaced: Int = 0, facesKept: Int = 0) {
+                facesReplaced: Int = 0, regionsReplaced: Int = 0, facesKept: Int = 0,
+                reference: Int = 0, patches: [BestShotPatch] = []) {
         self.image = image
         self.width = width
         self.height = height
@@ -137,6 +159,8 @@ public struct PhotoMergePreview: @unchecked Sendable {
         self.facesReplaced = facesReplaced
         self.regionsReplaced = regionsReplaced
         self.facesKept = facesKept
+        self.reference = reference
+        self.patches = patches
     }
 }
 
@@ -173,6 +197,8 @@ public final class MergeModel {
     public private(set) var mergeError: String?
     /// Best Shot: Vision is looking at the sources (before the first preview).
     public private(set) var isAnalyzing = false
+    /// Best Shot: the sources' previews for the tour, one per source once loaded.
+    public private(set) var frameImages: [CGImage?] = []
 
     @ObservationIgnored let merger: any PhotoMerging
     @ObservationIgnored let debounce: Duration
@@ -181,15 +207,19 @@ public final class MergeModel {
     @ObservationIgnored let onMerged: @MainActor (PhotoID) async -> Void
     /// Best Shot: the faces and scores of the sources, one per source (nil: none).
     @ObservationIgnored let analyze: (@MainActor ([Photo]) async -> [BestShotFrame])?
+    /// Best Shot: a source's upright preview, for the tour.
+    @ObservationIgnored let frameImage: (@MainActor (Photo) async -> CGImage?)?
     /// Close the sheet.
     @ObservationIgnored let close: @MainActor () -> Void
     @ObservationIgnored private(set) var previewTask: Task<Void, Never>?
     @ObservationIgnored private(set) var mergeTask: Task<Void, Never>?
     @ObservationIgnored private(set) var analysisTask: Task<Void, Never>?
+    @ObservationIgnored private(set) var framesTask: Task<Void, Never>?
 
     init(kind: PhotoMergeKind, session: SessionInfo, sources: [Photo], merger: any PhotoMerging,
          debounce: Duration = .milliseconds(300), maxEdge: Int = 1200,
          analyze: (@MainActor ([Photo]) async -> [BestShotFrame])? = nil,
+         frameImage: (@MainActor (Photo) async -> CGImage?)? = nil,
          onMerged: @escaping @MainActor (PhotoID) async -> Void, close: @escaping @MainActor () -> Void) {
         self.options = PhotoMergeOptions(kind: kind)
         self.session = session
@@ -198,6 +228,7 @@ public final class MergeModel {
         self.debounce = debounce
         self.maxEdge = maxEdge
         self.analyze = analyze
+        self.frameImage = frameImage
         self.onMerged = onMerged
         self.close = close
     }
@@ -251,6 +282,16 @@ public final class MergeModel {
 
     /// The first preview, at once (a Best Shot first finds the faces in its sources).
     public func start() {
+        if kind == .burst, let frameImage {
+            framesTask = Task { [weak self, sources] in
+                var images: [CGImage?] = []
+                for p in sources {
+                    guard !Task.isCancelled else { return }
+                    images.append(await frameImage(p))
+                }
+                self?.frameImages = images
+            }
+        }
         guard kind == .burst, let analyze else { return refreshPreview(debounced: false) }
         isAnalyzing = true
         isPreviewing = true
@@ -326,6 +367,7 @@ public final class MergeModel {
             mergeTask?.cancel()
         } else {
             analysisTask?.cancel()
+            framesTask?.cancel()
             previewTask?.cancel()
             close()
         }
@@ -400,7 +442,10 @@ extension AppModel {
         let ids = sources.map(\.id)
         var analyze: (@MainActor ([Photo]) async -> [BestShotFrame])?
         if kind == .burst { analyze = { [weak self] photos in await self?.bestShotFrames(photos) ?? [] } }
+        var frameImage: (@MainActor (Photo) async -> CGImage?)?
+        if kind == .burst { frameImage = { [weak self] p in await self?.analysisImage(for: p) } }
         let m = MergeModel(kind: kind, session: session, sources: sources, merger: merger, analyze: analyze,
+                           frameImage: frameImage,
                            onMerged: { [weak self] id in
                                if kind == .burst { self?.bestShotMade(id, from: ids) }
                                await self?.mergeFinished(id)

@@ -36,7 +36,10 @@ struct MergeSheet: View {
         VStack(alignment: .leading, spacing: DS.Space.xxs) {
             ZStack {
                 Rectangle().fill(Color.black.opacity(0.25))
-                if let p = model.preview {
+                let tour = model.bestShotTour
+                if !tour.isEmpty, !model.isPreviewing {
+                    BestShotTourView(model: model, steps: tour)
+                } else if let p = model.preview {
                     Image(decorative: p.image, scale: 1).resizable().aspectRatio(contentMode: .fit)
                         .opacity(model.isPreviewing ? 0.6 : 1)
                 }

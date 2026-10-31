@@ -16,7 +16,7 @@
 /* LuxtableCore/AI/Models/DownloadableModel.swift */
 " Try again to download it anew." = " Try again to download it anew.";
 
-/* LuxtableCore/AI/People/PeopleMaskWiring.swift, LuxtableCore/App/SessionLifecycle.swift, LuxtableCore/Browser/CullFinishing.swift, LuxtableCore/Live/RustExportService.swift, LuxtableCore/Plugins/PluginContent.swift */
+/* LuxtableCore/AI/People/PeopleMaskWiring.swift, LuxtableCore/App/SessionLifecycle.swift, LuxtableCore/Browser/CullFinishing.swift, LuxtableCore/Live/RustExportService.swift, LuxtableCore/Merge/BestShotTour.swift, LuxtableCore/Plugins/PluginContent.swift */
 " and " = " and ";
 
 /* LuxtableCore/Browser/OpenFailures.swift, LuxtableCore/Import/ImportReport.swift */
@@ -574,6 +574,9 @@
 /* LuxtableCore/Merge/PhotoMerge.swift */
 "%lld face moved too much to swap" = "%lld face moved too much to swap";
 
+/* LuxtableCore/Merge/BestShotTour.swift */
+"%lld faces" = "%lld faces";
+
 /* LuxtableCore/Merge/PhotoMerge.swift */
 "%lld faces improved" = "%lld faces improved";
 
@@ -798,6 +801,9 @@
 
 /* LuxtableCore/Browser/FilmstripSizing.swift */
 "%lld rows" = "%lld rows";
+
+/* LuxtableCore/Merge/BestShotTour.swift */
+"%lld sharper areas" = "%lld sharper areas";
 
 /* LuxtableCore/Merge/PhotoMerge.swift */
 "%lld sharper region" = "%lld sharper region";
@@ -1917,6 +1923,9 @@
 
 /* LuxtableUI/Views/Browser/BurstStrip.swift */
 "Best Shot" = "Best Shot";
+
+/* LuxtableMac/Views/Merge/BestShotTourView.swift */
+"Best Shot preview: %@" = "Best Shot preview: %@";
 
 /* LuxtableCore/AI/DSAIBridge.swift */
 "Best of %lld similar frames" = "Best of %lld similar frames";
@@ -3666,6 +3675,12 @@
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "Found an archived photo in Immich: check the folders, then Save." = "Found an archived photo in Immich: check the folders, then Save.";
+
+/* LuxtableCore/Merge/BestShotTour.swift */
+"Frame %@: %@" = "Frame %@: %@";
+
+/* LuxtableCore/Merge/BestShotTour.swift */
+"Frame %@: the best frame, the base" = "Frame %@: the best frame, the base";
 
 /* LuxtableUI/Views/Map/MapBrowser.swift */
 "Frame every photo on the map" = "Frame every photo on the map";
@@ -6430,6 +6445,12 @@
 /* LuxtableCore/Plugins/PluginStore.swift */
 "Replaces version %@." = "Replaces version %@.";
 
+/* LuxtableMac/Views/Merge/BestShotTourView.swift */
+"Replay" = "Replay";
+
+/* LuxtableMac/Views/Merge/BestShotTourView.swift */
+"Replay the Best Shot tour" = "Replay the Best Shot tour";
+
 /* LuxtableCore/AI/AppModel+Instruction.swift, LuxtableUI/Views/Controls/ColorWheelView.swift, LuxtableUI/Views/Tools/ColorPanels.swift */
 "Reset" = "Reset";
 
@@ -6972,6 +6993,9 @@
 
 /* LuxtableMac/Views/DevicesSettingsView.swift */
 "Show a QR code and a code to type" = "Show a QR code and a code to type";
+
+/* LuxtableMac/Views/Merge/BestShotTourView.swift */
+"Show again which frame each part came from" = "Show again which frame each part came from";
 
 /* LuxtableCore/Voice/VoiceCommandParser.swift */
 "Show all" = "Show all";
@@ -7593,6 +7617,9 @@
 
 /* LuxtableCore/Tools/ArchiveSettingsModel.swift */
 "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it." = "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it.";
+
+/* LuxtableCore/Merge/BestShotTour.swift */
+"The Best Shot" = "The Best Shot";
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "The Keychain refused the API key." = "The Keychain refused the API key.";
@@ -8595,6 +8622,12 @@
 
 /* LuxtableCore/Voice/VoiceController.swift */
 "` (left of 1)" = "` (left of 1)";
+
+/* LuxtableCore/Merge/BestShotTour.swift */
+"a face" = "a face";
+
+/* LuxtableCore/Merge/BestShotTour.swift */
+"a sharper area" = "a sharper area";
 
 /* LuxtableCore/AI/AIHighlights.swift */
 "added a %@ layer" = "added a %@ layer";
