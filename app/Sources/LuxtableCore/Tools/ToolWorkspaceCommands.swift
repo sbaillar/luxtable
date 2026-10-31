@@ -38,6 +38,7 @@ public enum ToolWorkspaceCommands {
 
     private static func show(_ panel: ToolPanelID, model: AppModel, layout: ToolLayout) {
         model.panelsHidden = false
+        model.settings.simpleMode = false // Simple mode has no tool tabs to show it in
         if model.viewer.state.fullScreen { model.viewer.state.fullScreen = false }
         model.collapsedPanels.remove(panel)
         layout.requestReveal(panel)

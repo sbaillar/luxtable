@@ -55,6 +55,8 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
     /// [immich] Photo ▸ Keep a Developed Copy for Immich / Stop Updating Developed Copy
     /// (also in the browser's context menu).
     case developForImmich, stopDevelopingForImmich
+    /// View ▸ Simple Mode (⌃⌘S): a few easy controls instead of the tool tabs.
+    case simpleMode
 
     public var id: String { rawValue }
 
@@ -116,6 +118,8 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
         // ⌘+ / ⌘- zoom the photo and ⌥⌘= / ⌥⌘- are the system's Accessibility Zoom.
         case .largerFilmstripThumbnails: Shortcut(key: "=", modifiers: [.command, .control])
         case .smallerFilmstripThumbnails: Shortcut(key: "-", modifiers: [.command, .control])
+        // S for Simple; ⌥⌘S is Survey and ⇧⌘S nothing a newcomer expects to change modes.
+        case .simpleMode: Shortcut(key: "s", modifiers: [.command, .control])
         case .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, .deleteRejected, .matchWhiteBalance,
              .toggleAllToolsTab, .showAIChanges, .clearAIHighlights, .undoAllAIChanges, .upscale, .showHistory,
              .voiceHelp, .showSelectionInViewer, .filmstripBottom, .filmstripLeft, .filmstripRight,
@@ -208,6 +212,7 @@ public enum CommandCatalog {
         case .mergeBestShot: "Merge to Best Shot…"
         case .developForImmich: model.immich.developTitle
         case .stopDevelopingForImmich: model.immich.stopTitle
+        case .simpleMode: SimpleModeText.menuTitle
         }
     }
 
@@ -278,7 +283,7 @@ public enum CommandCatalog {
         let hasPhoto = model.focusedID != nil
         switch c {
         case .openFolder, .importCard, .showLibrary, .cheatSheet, .fullScreen, .customizeTools, .voiceCommands, .showHistory, .voiceHelp,
-             .showSelectionInViewer, .filmstripBottom, .filmstripLeft, .filmstripRight: return true
+             .showSelectionInViewer, .filmstripBottom, .filmstripLeft, .filmstripRight, .simpleMode: return true
         // Shown as a checkmark; hiding it is off only when it is the last tab.
         case .toggleAllToolsTab: return !layout.workspace.contains(.allTools) || layout.workspace.canRemoveTab(.allTools)
         case .newSession: return model.canCreateSession && model.sheet == nil
@@ -384,6 +389,7 @@ public enum CommandCatalog {
         case .mergeBestShot: model.beginMerge(.burst)
         case .developForImmich: Task { await model.immich.developSelected() }
         case .stopDevelopingForImmich: Task { await model.immich.stopDeveloping() }
+        case .simpleMode: model.setSimpleMode(!model.settings.simpleMode)
         }
         return .none
     }

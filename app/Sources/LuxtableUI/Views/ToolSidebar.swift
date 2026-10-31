@@ -218,8 +218,29 @@ package struct ToolSidebar: View {
     }
 
     package var body: some View {
+        Group {
+            if model.settings.simpleMode {
+                // Simple mode: one panel of easy controls instead of the tabs.
+                VStack(spacing: 0) {
+                    SimpleModeSwitch(model: model)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 36)
+                        .background(DS.chrome)
+                    Divider()
+                    SimplePanel(model: model)
+                }
+            } else {
+                fullTools
+            }
+        }
+        .frame(width: PanelWidth.clamp(width))
+        .background(DS.panelBackground)
+        .overlay(alignment: side == .left ? .trailing : .leading) { resizeHandle }
+    }
+
+    private var fullTools: some View {
         let tab = ToolWorkspaceCommands.selectedTab(model: model, layout: layout)
-        VStack(spacing: 0) {
+        return VStack(spacing: 0) {
             ToolTabStrip(model: model, layout: layout)
                 .zIndex(1)
             Divider()
@@ -249,6 +270,7 @@ package struct ToolSidebar: View {
                     .foregroundStyle(DS.text)
                 Spacer()
                 WhyButton(model: model)
+                SimpleModeSwitch(model: model).controlSize(.small)
                 if model.editAllSelected, model.selection.count > 1 {
                     Text(PanelChrome.photoCount(model.selection.count))
                         .font(DS.Font.caption)
@@ -312,9 +334,6 @@ package struct ToolSidebar: View {
                     .padding(DS.Space.s)
             }
         }
-        .frame(width: PanelWidth.clamp(width))
-        .background(DS.panelBackground)
-        .overlay(alignment: side == .left ? .trailing : .leading) { resizeHandle }
     }
 
     private var resizeHandle: some View {

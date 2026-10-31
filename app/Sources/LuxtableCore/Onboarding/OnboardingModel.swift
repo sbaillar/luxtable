@@ -48,6 +48,8 @@ public final class OnboardingModel {
     public var amazonFolder: URL?
     /// The familiar layout (and its keys and names) to start with.
     public var familiar: LayoutPreset
+    /// "Nothing, I'm new to photo editing": Luxtable's layout, starting in Simple mode.
+    public private(set) var newToEditing: Bool
 
     @ObservationIgnored private let settings: AppSettings
     @ObservationIgnored private let features: FeatureGates?
@@ -87,6 +89,19 @@ public final class OnboardingModel {
         archiveEnabled = features?.isOn(.archive) ?? true
         amazonFolder = settings.amazonPhotosFolder
         familiar = settings.layoutPreset
+        newToEditing = settings.simpleMode
+    }
+
+    /// The "What did you use before?" choice of an app: its layout, in Full mode.
+    public func choose(_ layout: LayoutPreset) {
+        familiar = layout
+        newToEditing = false
+    }
+
+    /// The "I'm new to photo editing" choice: Luxtable's layout, starting in Simple mode.
+    public func chooseNewToEditing() {
+        familiar = .luxtable
+        newToEditing = true
     }
 
     /// The steps shown: Amazon Photos only while its integration is on.
@@ -200,6 +215,7 @@ public final class OnboardingModel {
             settings.toolSidePreset = nil
             settings.useKeyPreset(KeyPreset(layout: familiar))
         }
+        settings.simpleMode = newToEditing
         settings.onboardingComplete = true
         if let features {
             let on = chosenFeatures.filter { !features.isOn($0) }

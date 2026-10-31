@@ -379,6 +379,7 @@ struct AppCommands: Commands {
             item(.showHistory)
             Toggle("Tools on Left", isOn: Binding(get: { model.settings.toolSide == .left },
                                                   set: { model.settings.putTools(on: $0 ? .left : .right) }))
+            simpleModeToggle
             Divider()
             item(.fullScreen)
             Divider()
@@ -386,6 +387,14 @@ struct AppCommands: Commands {
             item(.voiceHelp)
             item(.cheatSheet)
         }
+    }
+
+    /// View ▸ Simple Mode (⌃⌘S), checked while on.
+    private var simpleModeToggle: some View {
+        let s = MenuCommand.simpleMode.shortcut!
+        return Toggle(CommandCatalog.title(.simpleMode, model: model),
+                      isOn: Binding(get: { model.settings.simpleMode }, set: { _ in CommandCatalog.perform(.simpleMode, model: model) }))
+            .keyboardShortcut(KeyEquivalent(s.key), modifiers: Self.modifiers(s.modifiers))
     }
 
     /// View ▸ Voice Commands (⌃⌘V), checked while on.

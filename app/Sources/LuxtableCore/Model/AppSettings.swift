@@ -161,6 +161,8 @@ public final class AppSettings {
     public var stackBursts: Bool { didSet { defaults.set(stackBursts, forKey: Keys.stackBursts) } }
     /// The crop tool's ratio, kept until the user picks another (Original by default).
     public var cropRatio: CropRatio { didSet { defaults.set(cropRatio.rawValue, forKey: Keys.cropRatio) } }
+    /// Simple mode: one panel of easy controls instead of the tool tabs (View ▸ Simple Mode; off by default).
+    public var simpleMode: Bool { didSet { defaults.set(simpleMode, forKey: Keys.simpleMode) } }
 
     /// [multiview] The filmstrip's position and size in the window `window` (one row at the bottom until changed).
     public func filmstripLayout(window: String) -> FilmstripLayout { filmstripLayouts[window] ?? FilmstripLayout() }
@@ -245,6 +247,7 @@ public final class AppSettings {
         static let filmstripLayout = "filmstripLayout"
         static let stackBursts = "stackBursts"
         static let cropRatio = "cropRatio"
+        static let simpleMode = "simpleMode"
     }
 
     public init(defaults: UserDefaults = .standard) {
@@ -308,6 +311,7 @@ public final class AppSettings {
         showSelectionInViewer = defaults.object(forKey: Keys.showSelection) as? Bool ?? true
         stackBursts = defaults.object(forKey: Keys.stackBursts) as? Bool ?? true
         cropRatio = defaults.string(forKey: Keys.cropRatio).flatMap(CropRatio.init(rawValue:)) ?? .original
+        simpleMode = defaults.bool(forKey: Keys.simpleMode)
         let preset = defaults.string(forKey: Keys.keyPreset).flatMap(KeyPreset.init(rawValue:)) ?? .luxtable
         keyPreset = preset
         keyBindings = (defaults.dictionary(forKey: Keys.bindings) as? [String: String])

@@ -201,7 +201,7 @@ struct StylesPanel: View {
 }
 
 /// The applied look's Intensity slider: 0 restores the photo as it was before the look.
-private struct LookIntensityRow: View {
+struct LookIntensityRow: View {
     @Bindable var model: AppModel
     let look: AppliedLookEdit
 
