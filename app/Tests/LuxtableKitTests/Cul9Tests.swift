@@ -21,10 +21,11 @@ actor Cul9Store: SessionStore, SessionFileOrganizing, SessionMoveReporting {
     var nextID: Int64 = 1000
     var handler: (@Sendable (SessionMove) -> Void)?
 
-    init(count: Int, name: String = "Cull") {
+    /// `spacing`: seconds between captures (a fraction of a second makes a burst).
+    init(count: Int, name: String = "Cull", spacing: Double = 10) {
         let photos = (1...count).map { i -> Photo in
             var p = samplePhoto(Int64(i))
-            p.meta.captureDate = Date(timeIntervalSince1970: 1_790_000_000 + Double(i) * 10)
+            p.meta.captureDate = Date(timeIntervalSince1970: 1_790_000_000 + Double(i) * spacing)
             return p
         }
         photosByID = Dictionary(uniqueKeysWithValues: photos.map { ($0.id, $0) })
@@ -330,6 +331,38 @@ final class Cul9Box<T>: @unchecked Sendable {
         await m.cull.confirmDeleteRejected()
         #expect(await store.trashEmptied == 2 && m.photos.count == 4 && m.cull.pendingDelete == nil)
         #expect(m.toast?.message == "Moved 2 rejected files to the Trash")
+    }
+
+    @Test func burstFramesAndTheBestShotGoToTheSessionTrash() async throws {
+        let store = Cul9Store(count: 4, spacing: 0.1)
+        let m = await model(store)
+        m.setStackBursts(true)
+        let stack = try #require(m.browserState.stacks.stacks.first { $0.count == 4 })
+        let frames = stack.memberIDs
+        // The last frame stands in for a Best Shot: it is the burst's cover.
+        m.browserState.addBestShot(frames[3], sources: Array(frames[0..<3]))
+        m.browserState.refresh(photos: m.visiblePhotos)
+        m.openBurstStrip(for: frames[0])
+        #expect(m.burstStripShown)
+        m.showInBurstStrip(frames[3])
+        await m.trashBurstFrame(frames[3])
+        #expect(m.cull.trashedIDs == [frames[3]] && !m.visibleIDs.contains(frames[3]), "the Best Shot is in the session Trash")
+        #expect(m.toast?.message == "Moved 1 photo to the session Trash (⌘Z to undo)")
+        m.browserState.refresh(photos: m.visiblePhotos)
+        #expect(m.burstStripShown && m.browserState.picker.frames.count == 3, "the strip stays open on the rest")
+        let shown = try #require(m.focusedID)
+        #expect(frames.contains(shown) && shown != frames[3], "a frame of the burst, not the first photo")
+        // ⌘Z brings it back.
+        m.undo()
+        #expect(await waitUntil { m.visibleIDs.contains(frames[3]) })
+        // Down to one frame: the strip closes.
+        for id in frames.dropLast() { await m.trashBurstFrame(id); m.browserState.refresh(photos: m.visiblePhotos) }
+        #expect(!m.burstStripShown && m.cull.trashedIDs.count == 3)
+        // A folder opened in place: nothing moves, and it says why.
+        await store.setCanMove(false)
+        await m.cull.refresh()
+        await m.trashBurstFrame(frames[3])
+        #expect(m.toast?.message == CullFinisher.inPlaceReason && m.visibleIDs.contains(frames[3]))
     }
 
     @Test func inPlaceFoldersNeverMoveFiles() async {

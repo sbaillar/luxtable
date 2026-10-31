@@ -1669,11 +1669,15 @@
 "Move to" = "移動先";
 "Move to Selects takes picked photos and" = "「セレクトに移動」の対象：採用した写真と";
 "Move to Selects?" = "セレクトに移動しますか？";
+"Move to Session Trash" = "セッションのゴミ箱に移動";
 "Move to Trash" = "ゴミ箱に入れる";
+"Move to the session Trash (⌘Z to undo)" = "セッションのゴミ箱に移動（⌘Z で取り消し）";
 "Moved %lld photos to Selects (⌘Z to undo)" = "%lld 枚の写真をセレクトに移動しました（⌘Z で取り消せます）";
+"Moved %lld photos to the session Trash (⌘Z to undo)" = "%lld 枚の写真をセッションのゴミ箱に移動しました（⌘Z で取り消し）";
 "Moved %lld rejected files to the Trash" = "除外した %lld 個のファイルをゴミ箱に移動しました";
 "Moved %lld rejected photos to the session Trash" = "除外した %lld 枚の写真をセッションのゴミ箱に移動しました";
 "Moved 1 photo to Selects (⌘Z to undo)" = "1 枚の写真をセレクトに移動しました（⌘Z で取り消せます）";
+"Moved 1 photo to the session Trash (⌘Z to undo)" = "1 枚の写真をセッションのゴミ箱に移動しました（⌘Z で取り消し）";
 "Moved 1 rejected file to the Trash" = "除外した 1 個のファイルをゴミ箱に移動しました";
 "Moved 1 rejected photo to the session Trash" = "除外した 1 枚の写真をセッションのゴミ箱に移動しました";
 "My Presets" = "マイプリセット";

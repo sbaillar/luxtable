@@ -43,6 +43,8 @@ A burst is a run of frames shot in quick succession. Luxtable can show each burs
 - **The burst strip:** click a stack (or its badge) in the filmstrip and its frames open in a strip just above the filmstrip, highest rated first, each with its stars. Click a frame, or use `←` `→`, to see it in the viewer; the rating and flag keys still apply to it.
 - The cover is marked in the strip: **Your pick** or **AI pick** when it broke a tie, so you can see whose choice it was and change it.
 - **Use as Cover** (the button, a frame's context menu, or `↩`) is offered on the frames tied for the top rating. On the others the strip says what it takes, for example "Rate it ★★★ or higher to make it the cover".
+- **Merge to Best Shot…** in the strip's header merges the burst into one photo (see [Best Shot](09-hdr-panorama.md#best-shot)).
+- **Move to Session Trash** (the trash button on a frame, or its context menu) takes a frame out of the burst, a Best Shot too: its file goes to the session's Trash folder. `⌘Z` brings it back, and so does **Restore from Session Trash**; only **Delete Rejected…** empties the session Trash into the macOS Trash. The strip stays open on the other frames. In a folder opened in place, Luxtable never moves your files, so the button isn't there.
 - `Esc`, a click outside the strip or a click on the badge again closes the strip.
 - **Your choice is kept:** it is saved with the session, so it is the same on every Mac that opens it. If a frame is later rated higher, that frame becomes the cover, but your choice is remembered and comes back when the ratings tie again. If the burst changes (an import or a delete), the choice stays while its frame is still in the burst. Survey starts on your chosen cover too.
 

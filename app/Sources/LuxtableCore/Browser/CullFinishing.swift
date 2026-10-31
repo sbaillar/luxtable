@@ -179,6 +179,14 @@ public final class CullFinisher {
         await moveToSelects(selectIDs)
     }
 
+    /// These photos' files to the session Trash (⌘Z, or Restore from Session Trash, brings
+    /// them back); `focusing`: the photo to show afterwards.
+    public func moveToTrash(_ ids: [PhotoID], focusing: PhotoID? = nil) async {
+        await move(ids, to: .trash, focusing: focusing,
+                   done: { n in n == 1 ? String(localized: "Moved 1 photo to the session Trash (⌘Z to undo)")
+                       : String(localized: "Moved \(n) photos to the session Trash (⌘Z to undo)") })
+    }
+
     private func moveToSelects(_ ids: [PhotoID]) async {
         await move(ids, to: .selects,
                    done: { n in n == 1 ? String(localized: "Moved 1 photo to Selects (⌘Z to undo)")
@@ -286,7 +294,8 @@ public final class CullFinisher {
         }
     }
 
-    private func move(_ ids: [PhotoID], to folder: SessionFolderKind, done: (Int) -> String) async {
+    private func move(_ ids: [PhotoID], to folder: SessionFolderKind, focusing: PhotoID? = nil,
+                      done: (Int) -> String) async {
         guard let app, let store, canMove else {
             app?.show(Toast(Self.inPlaceReason, symbol: "folder", isError: true))
             return
@@ -297,7 +306,7 @@ public final class CullFinisher {
         await app.saver.flush()
         do {
             let moves = try await store.move(ids, to: folder)
-            await app.refreshCurrentSession(keepingHistory: true) // review M8: edits stay undoable
+            await app.refreshCurrentSession(keepingHistory: true, focusing: focusing) // review M8: edits stay undoable
             lastMove = folder == .capture || moves.isEmpty ? nil : FileMove(moves: moves, historyDepth: app.history.undoStack.count)
             app.show(Toast(done(moves.count), symbol: folder == .trash ? "trash" : "folder"))
         } catch {

@@ -146,7 +146,9 @@ private struct BurstStripContent: View {
                        hint: model.coverHint(for: id),
                        index: index, count: count, anchorX: picker.anchor?.midX, confirmations: picker.confirmations,
                        justConfirmed: picker.confirmedCover == id, reduceMotion: reduceMotion, cache: model.thumbnails,
-                       onShow: { model.showInBurstStrip(id) }, onUseAsCover: { model.useAsCover(id) })
+                       canTrash: model.cull.canMove,
+                       onShow: { model.showInBurstStrip(id) }, onUseAsCover: { model.useAsCover(id) },
+                       onTrash: { Task { await model.trashBurstFrame(id) } })
                 .id(id)
         }
     }
@@ -186,8 +188,11 @@ private struct BurstFrame: View {
     let justConfirmed: Bool
     let reduceMotion: Bool
     let cache: ThumbnailCache
+    /// The session can move its files: Move to Session Trash is offered.
+    let canTrash: Bool
     let onShow: () -> Void
     let onUseAsCover: () -> Void
+    let onTrash: () -> Void
     @Environment(\.burstFan) private var fan
     @State private var hovering = false
 
@@ -208,6 +213,18 @@ private struct BurstFrame: View {
                         .padding(DS.Space.xs)
                         .transition(.scale.combined(with: .opacity))
                         .accessibilityHidden(true)
+                }
+            }
+            .overlay(alignment: .bottomTrailing) {
+                if hovering, canTrash {
+                    Button("Move to Session Trash", systemImage: "trash", action: onTrash)
+                        .labelStyle(.iconOnly)
+                        .font(.system(size: 10, weight: .semibold))
+                        .buttonStyle(.borderedProminent).tint(.black.opacity(0.7))
+                        .controlSize(.mini)
+                        .help("Move to the session Trash (⌘Z to undo)")
+                        .padding(.trailing, DS.Space.xs).padding(.bottom, 16)
+                        .transition(.opacity)
                 }
             }
             .overlay(alignment: .topTrailing) {
@@ -262,11 +279,16 @@ private struct BurstFrame: View {
                 } else if let hint {
                     Text(hint)
                 }
+                if canTrash {
+                    Divider()
+                    Button("Move to Session Trash", systemImage: "trash", action: onTrash)
+                }
             }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("\(item.photo.filename), \(item.photo.rating) stars, \(index + 1) of \(count)\(isCover ? ", \(coverLabel)" : "")")
             .accessibilityAddTraits(isCurrent ? [.isButton, .isSelected] : .isButton)
             .accessibilityAction { onShow() }
             .accessibilityAction(named: canBeCover ? String(localized: "Use as Cover") : (hint ?? String(localized: "Use as Cover")), onUseAsCover)
+            .accessibilityAction(named: String(localized: "Move to Session Trash")) { if canTrash { onTrash() } }
     }
 }
