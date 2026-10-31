@@ -5,13 +5,14 @@ import SwiftUI
 
 /// A Settings pane, in sidebar order.
 enum SettingsPane: String, CaseIterable, Identifiable {
-    case general, familiar, shortcuts, raw, archive, amazonPhotos, googlePhotos, immich, ai, voice, devices, plugins, updates
+    case general, sharing, familiar, shortcuts, raw, archive, amazonPhotos, googlePhotos, immich, ai, voice, devices, plugins, updates
 
     var id: Self { self }
 
     var title: String {
         switch self {
         case .general: String(localized: "General")
+        case .sharing: String(localized: "Sharing")
         case .familiar: String(localized: "Familiar")
         case .shortcuts: String(localized: "Shortcuts")
         case .raw: String(localized: "RAW")
@@ -30,6 +31,7 @@ enum SettingsPane: String, CaseIterable, Identifiable {
     var symbol: String {
         switch self {
         case .general: "gearshape"
+        case .sharing: "square.and.arrow.up"
         case .familiar: "rectangle.split.3x1"
         case .shortcuts: "keyboard"
         case .raw: "camera.aperture"
@@ -98,6 +100,7 @@ struct PreferencesView: View {
     @ViewBuilder private func detail(_ pane: SettingsPane) -> some View {
         switch pane {
         case .general: SettingsView(settings: settings)
+        case .sharing: ShareSettingsView(defaults: settings.userDefaults)
         case .familiar: FamiliarSettingsView(settings: settings)
         case .shortcuts: ShortcutsSettingsView(settings: settings)
         case .raw: RawSettingsView(helper: RawlerHelper.shared)

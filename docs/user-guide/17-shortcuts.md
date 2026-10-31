@@ -80,5 +80,6 @@ These are Luxtable's default keys. Single keys can be changed in Settings ▸ Sh
 | `⇧⌘L` | Browse all sessions in the Library |
 | `⇧⌘I` | Import from card |
 | `⌘E` | Export |
+| `⌥⌘E` | Share (Messages, Mail, AirDrop…) |
 | `⌘F` | Find |
 | `⌘,` | Settings |
