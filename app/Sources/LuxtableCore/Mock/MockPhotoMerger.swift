@@ -21,11 +21,20 @@ public struct MockPhotoMerger: PhotoMerging {
         let projection: PhotoMergeOptions.Projection = options.kind == .hdr ? .perspective
             : options.projection == .auto ? (photos.count > 6 ? .spherical : .cylindrical) : options.projection
         let blink = options.bestShot.contains { f in f.faces.contains { ($0.eyesOpen ?? 1) < 0.5 } }
+        // A sharper corner from the second frame, and (blinks) a face from the last.
+        var patches: [BestShotPatch] = []
+        if options.kind == .burst {
+            patches.append(BestShotPatch(kind: .sharper, source: 1, bounds: CGRect(x: 0.6, y: 0.55, width: 0.3, height: 0.3)))
+            if blink {
+                patches.append(BestShotPatch(kind: .face, source: photos.count - 1,
+                                             bounds: CGRect(x: 0.35, y: 0.2, width: 0.2, height: 0.25)))
+            }
+        }
         return PhotoMergePreview(image: image, width: w, height: h, projection: projection,
                                  ghostRegions: options.kind == .hdr && options.deghost != .off ? 2 : 0,
                                  exposureEV: options.kind == .hdr ? 0.5 : 0,
                                  facesReplaced: options.kind == .burst && blink ? 1 : 0,
-                                 regionsReplaced: options.kind == .burst ? 1 : 0)
+                                 regionsReplaced: options.kind == .burst ? 1 : 0, patches: patches)
     }
 
     public func merge(_ photos: [PhotoID], in session: SessionInfo, options: PhotoMergeOptions,

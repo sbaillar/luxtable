@@ -115,6 +115,29 @@ pub struct MergePreview {
     pub regions_replaced: u32,
     /// Best Shot: better faces left as they were (the head moved too much to blend).
     pub faces_kept: u32,
+    /// The source (index into the paths) the result is built on.
+    pub reference: u32,
+    /// Best Shot: every part taken from another source, faces last (none otherwise).
+    pub patches: Vec<MergePatch>,
+}
+
+/// What a Best Shot patch replaced.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, uniffi::Enum)]
+pub enum MergePatchKind {
+    /// A better face (usually open eyes).
+    Face,
+    /// A sharper region.
+    Sharper,
+}
+
+/// Part of a Best Shot taken from another source.
+#[derive(Debug, Clone, Copy, PartialEq, uniffi::Record)]
+pub struct MergePatch {
+    pub kind: MergePatchKind,
+    /// The source it came from (index into the paths).
+    pub source: u32,
+    /// Where, normalized to the result (top-left origin, y down).
+    pub bounds: crate::frame::NormRect,
 }
 
 /// A face Vision found on a Best Shot source, normalized to the upright photo (top-left
@@ -365,6 +388,7 @@ struct Outcome {
     faces_replaced: u32,
     regions_replaced: u32,
     faces_kept: u32,
+    patches: Vec<lt_merge::Patch>,
 }
 
 impl From<Merged> for Outcome {
@@ -374,6 +398,7 @@ impl From<Merged> for Outcome {
             faces_replaced: 0,
             regions_replaced: 0,
             faces_kept: 0,
+            patches: Vec::new(),
         }
     }
 }
@@ -512,6 +537,7 @@ fn run_burst(
         faces_replaced: count(lt_merge::PatchKind::Face),
         regions_replaced: count(lt_merge::PatchKind::Sharper),
         faces_kept: c.faces_kept,
+        patches: c.patches,
         merged: Merged {
             frame: c.frame,
             exposure_ev: 0.0,
@@ -634,6 +660,8 @@ async fn preview(
             last: AtomicU64::new(0),
         };
         let outcome = run_merge(&mut sources, options, &signals, &monitor)?;
+        let reference_source = keep[outcome.merged.reference] as u32;
+        let patches = preview_patches(&outcome.patches, &keep);
         let merged = outcome.merged;
         let (ev, ghosts, projection, unaligned) = (
             merged.exposure_ev,
@@ -660,6 +688,8 @@ async fn preview(
             faces_replaced: outcome.faces_replaced,
             regions_replaced: outcome.regions_replaced,
             faces_kept: outcome.faces_kept,
+            reference: reference_source,
+            patches,
         })
     })
     .await
@@ -672,6 +702,27 @@ fn kept(kind: MergeKind, signals: &[BurstSignals], n: usize) -> Vec<usize> {
     } else {
         (0..n).collect()
     }
+}
+
+/// lt-merge's patches for the app: their frame indexes (into the `keep` sources) become
+/// indexes into the paths it passed.
+fn preview_patches(patches: &[lt_merge::Patch], keep: &[usize]) -> Vec<MergePatch> {
+    patches
+        .iter()
+        .map(|p| MergePatch {
+            kind: match p.kind {
+                lt_merge::PatchKind::Face => MergePatchKind::Face,
+                lt_merge::PatchKind::Sharper => MergePatchKind::Sharper,
+            },
+            source: keep[p.frame] as u32,
+            bounds: crate::frame::NormRect {
+                x: p.bounds.x,
+                y: p.bounds.y,
+                w: p.bounds.w,
+                h: p.bounds.h,
+            },
+        })
+        .collect()
 }
 
 /// `items` at `keep`.

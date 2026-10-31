@@ -708,6 +708,36 @@ fn best_shot_keeps_the_best_scored_frames_in_capture_order() {
         "only Best Shot drops frames"
     );
     assert_eq!(pick(&["a", "b", "c"], &[0, 2, 9]), vec!["a", "c"]);
+    // Patches name the paths the app passed, not the kept frames.
+    let bounds = lt_core::NormRect {
+        x: 0.1,
+        y: 0.2,
+        w: 0.3,
+        h: 0.4,
+    };
+    let patches = preview_patches(
+        &[
+            lt_merge::Patch {
+                kind: lt_merge::PatchKind::Sharper,
+                frame: 1,
+                bounds,
+            },
+            lt_merge::Patch {
+                kind: lt_merge::PatchKind::Face,
+                frame: 2,
+                bounds,
+            },
+        ],
+        &[0, 5, 11],
+    );
+    assert_eq!(
+        patches
+            .iter()
+            .map(|p| (p.kind, p.source))
+            .collect::<Vec<_>>(),
+        vec![(MergePatchKind::Sharper, 5), (MergePatchKind::Face, 11)]
+    );
+    assert_eq!((patches[0].bounds.x, patches[0].bounds.h), (0.1, 0.4));
     assert!(check_signals(&[], 3).is_ok());
     assert!(check_signals(&scored(&[None, None]), 2).is_ok());
     assert!(matches!(
@@ -794,6 +824,24 @@ fn best_shot_takes_the_open_eyes_and_writes_an_upright_dng() {
         (1, 0, 0)
     );
     assert_eq!(p.exposure_ev, 0.0);
+    // Built on the best scored frame; the open eyes come from the second, over the face.
+    assert_eq!(p.reference, 0);
+    let face: Vec<_> = p
+        .patches
+        .iter()
+        .filter(|q| q.kind == MergePatchKind::Face)
+        .collect();
+    assert_eq!(face.len(), 1, "{:?}", p.patches);
+    assert_eq!(face[0].source, 1);
+    let (cx, cy) = (
+        face[0].bounds.x + face[0].bounds.w / 2.0,
+        face[0].bounds.y + face[0].bounds.h / 2.0,
+    );
+    assert!(
+        (cx - 96.0 / 192.0).abs() < 0.1 && (cy - 128.0 / 256.0).abs() < 0.1,
+        "{:?}",
+        face[0].bounds
+    );
     assert!(matches!(
         block_on(burst_preview(
             paths,

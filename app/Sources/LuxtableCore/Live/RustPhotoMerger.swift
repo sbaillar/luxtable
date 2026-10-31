@@ -34,7 +34,8 @@ public struct RustPhotoMerger: PhotoMerging {
                                  projection: PhotoMergeOptions.Projection(p.projection),
                                  ghostRegions: Int(p.ghostRegions), exposureEV: Double(p.exposureEv),
                                  unalignedFrames: Int(p.unalignedFrames), facesReplaced: Int(p.facesReplaced),
-                                 regionsReplaced: Int(p.regionsReplaced), facesKept: Int(p.facesKept))
+                                 regionsReplaced: Int(p.regionsReplaced), facesKept: Int(p.facesKept),
+                                 reference: Int(p.reference), patches: p.patches.map(BestShotPatch.init))
     }
 
     public func merge(_ photos: [PhotoID], in session: SessionInfo, options: PhotoMergeOptions,
@@ -122,5 +123,13 @@ extension PhotoMergeOptions.Projection {
         case .cylindrical: .cylindrical
         case .perspective: .perspective
         }
+    }
+}
+
+extension BestShotPatch {
+    init(_ p: MergePatch) {
+        self.init(kind: p.kind == .face ? .face : .sharper, source: Int(p.source),
+                  bounds: CGRect(x: Double(p.bounds.x), y: Double(p.bounds.y),
+                                 width: Double(p.bounds.w), height: Double(p.bounds.h)))
     }
 }

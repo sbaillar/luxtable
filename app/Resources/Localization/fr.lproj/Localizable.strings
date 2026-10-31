@@ -190,6 +190,7 @@
 "%lld export steps" = "%lld étapes d’exportation";
 "%lld face improved" = "%lld visage amélioré";
 "%lld face moved too much to swap" = "%lld visage trop déplacé pour être remplacé";
+"%lld faces" = "%lld visages";
 "%lld faces improved" = "%lld visages améliorés";
 "%lld faces moved too much to swap" = "%lld visages trop déplacés pour être remplacés";
 "%lld failed" = "%lld échecs";
@@ -265,6 +266,7 @@
 "%lld removals on this photo." = "%lld suppressions sur cette photo.";
 "%lld replaced" = "%lld remplacés";
 "%lld rows" = "%lld rangées";
+"%lld sharper areas" = "%lld zones plus nettes";
 "%lld sharper region" = "%lld zone plus nette";
 "%lld sharper regions" = "%lld zones plus nettes";
 "%lld spots on this photo." = "%lld retouches sur cette photo.";
@@ -638,6 +640,7 @@
 "Behind by %lld file" = "%lld fichier en retard";
 "Behind by %lld files" = "%lld fichiers en retard";
 "Best Shot" = "Meilleure photo";
+"Best Shot preview: %@" = "Aperçu de la meilleure prise : %@";
 "Best of %lld similar frames" = "Meilleure de %lld vues similaires";
 "Beta" = "Bêta";
 "Betas are early builds of the next version, for trying new features before they’re released. They may have bugs." = "Les bêtas sont des versions préliminaires de la prochaine version, pour essayer les nouveautés avant leur sortie. Elles peuvent comporter des bugs.";
@@ -1221,6 +1224,8 @@
 "Forward %lld" = "Avancer de %lld";
 "Found" = "Trouvé";
 "Found an archived photo in Immich: check the folders, then Save." = "Une photo archivée a été trouvée dans Immich : vérifiez les dossiers, puis enregistrez.";
+"Frame %@: %@" = "Image %@ : %@";
+"Frame %@: the best frame, the base" = "Image %@ : la meilleure, la base";
 "Frame every photo on the map" = "Cadrer toutes les photos sur la carte";
 "Frame the selected photos" = "Cadrer les photos sélectionnées";
 "Freeform" = "Libre";
@@ -2142,6 +2147,8 @@
 "Replace presets that are already there" = "Remplacer les préréglages déjà présents";
 "Replaced by another copy" = "Remplacé par une autre copie";
 "Replaces version %@." = "Remplace la version %@.";
+"Replay" = "Rejouer";
+"Replay the Best Shot tour" = "Rejouer la visite de la meilleure prise";
 "Reset" = "Réinitialiser";
 "Reset %@" = "Réinitialiser %@";
 "Reset %lld photos to the original. ⌘Z to undo" = "%lld photos réinitialisées à l’original. ⌘Z pour annuler";
@@ -2323,6 +2330,7 @@
 "Show Selection in Viewer" = "Afficher la sélection dans la visionneuse";
 "Show Welcome Again" = "Revoir l’écran de bienvenue";
 "Show a QR code and a code to type" = "Afficher un code QR et un code à saisir";
+"Show again which frame each part came from" = "Montrer à nouveau de quelle image vient chaque partie";
 "Show all" = "Tout afficher";
 "Show all (any flag)" = "Tout afficher (tout marqueur)";
 "Show all photos" = "Afficher toutes les photos";
@@ -2530,6 +2538,7 @@
 "The AI Upscale model in this build is damaged (its checksum doesn’t match)." = "Le modèle d’agrandissement IA de cette version est endommagé (sa somme de contrôle ne correspond pas).";
 "The API key couldn't be removed from your Keychain." = "La clé API n’a pas pu être supprimée de votre trousseau.";
 "The Amazon Photos app isn't installed. It uploads the folder; Luxtable only fills it." = "L’app Amazon Photos n’est pas installée. C’est elle qui téléverse le dossier ; Luxtable se contente de le remplir.";
+"The Best Shot" = "La meilleure prise";
 "The Keychain refused the API key." = "Le trousseau a refusé la clé API.";
 "The Keychain refused the client secret." = "Le trousseau a refusé le code secret client.";
 "The Keychain refused the key." = "Le trousseau a refusé la clé.";
@@ -2864,6 +2873,8 @@
 "Zoom. Pixels are developed from the RAW; at 100% and above they are the sensor's own." = "Zoom. Les pixels sont développés depuis le RAW ; à 100 % et au-delà, ce sont ceux du capteur.";
 "Zoom. “(preview)” means the pixels shown are upscaled while the 1:1 render loads." = "Zoom. « (aperçu) » signifie que les pixels affichés sont agrandis pendant le chargement du rendu 1:1.";
 "` (left of 1)" = "` (à gauche de 1)";
+"a face" = "un visage";
+"a sharper area" = "une zone plus nette";
 "added a %@ layer" = "a ajouté un calque %@";
 "added an %@ layer" = "a ajouté un calque %@";
 "added to collections" = "ajoutées aux collections";
