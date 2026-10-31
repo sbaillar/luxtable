@@ -1,8 +1,9 @@
 import CoreGraphics
 import Foundation
 
-/// The merge sheet's Best Shot tour: the base frame, then each frame that gave something
-/// with the parts it gave highlighted, then the result with every part outlined.
+/// The merge sheet's Best Shot tour: the base frame, then the photo built up one frame at a
+/// time (each frame's parts laid over the base, the new ones compared up close with the
+/// base), then the result with every part outlined.
 public struct BestShotTourStep: Equatable, Sendable {
     public enum Picture: Hashable, Sendable {
         /// The source at this index (its preview, upright).
@@ -11,12 +12,16 @@ public struct BestShotTourStep: Equatable, Sendable {
     }
 
     public var picture: Picture
+    /// The parts this step adds (outlined, and compared up close with the base).
     public var highlights: [BestShotPatch]
+    /// On a source step: every part laid over the base so far, this step's included.
+    public var layers: [BestShotPatch]
     public var caption: String
 
-    public init(picture: Picture, highlights: [BestShotPatch], caption: String) {
+    public init(picture: Picture, highlights: [BestShotPatch], layers: [BestShotPatch] = [], caption: String) {
         self.picture = picture
         self.highlights = highlights
+        self.layers = layers
         self.caption = caption
     }
 
@@ -25,9 +30,11 @@ public struct BestShotTourStep: Equatable, Sendable {
         guard !p.patches.isEmpty else { return [] }
         var steps = [BestShotTourStep(picture: .source(p.reference), highlights: [],
                                       caption: String(localized: "Frame \(String(p.reference + 1)): the best frame, the base"))]
+        var layers: [BestShotPatch] = []
         for source in Set(p.patches.map(\.source)).sorted() where source != p.reference {
             let given = p.patches.filter { $0.source == source }
-            steps.append(BestShotTourStep(picture: .source(source), highlights: given,
+            layers += given
+            steps.append(BestShotTourStep(picture: .source(source), highlights: given, layers: layers,
                                           caption: String(localized: "Frame \(String(source + 1)): \(gifts(given))")))
         }
         steps.append(BestShotTourStep(picture: .result, highlights: p.patches, caption: String(localized: "The Best Shot")))
@@ -60,5 +67,23 @@ extension MergeModel {
         case .result: preview?.image
         case .source(let i): frameImages.indices.contains(i) ? frameImages[i] ?? preview?.image : preview?.image
         }
+    }
+
+    /// The base frame's preview (what the tour builds on).
+    public var baseImage: CGImage? { image(for: .source(preview?.reference ?? 0)) }
+}
+
+extension CGImage {
+    /// The part of the image at `bounds` (normalized, top-left origin), grown by `margin` of
+    /// its size on every side for context and kept inside the image; nil when empty.
+    public func crop(normalized bounds: CGRect, margin: CGFloat = 0) -> CGImage? {
+        let grown = bounds.insetBy(dx: -bounds.width * margin, dy: -bounds.height * margin)
+            .intersection(CGRect(x: 0, y: 0, width: 1, height: 1))
+        guard !grown.isNull else { return nil }
+        let (w, h) = (CGFloat(width), CGFloat(height))
+        let x0 = (grown.minX * w).rounded(), y0 = (grown.minY * h).rounded()
+        let px = CGRect(x: x0, y: y0, width: (grown.maxX * w).rounded() - x0, height: (grown.maxY * h).rounded() - y0)
+        guard px.width >= 1, px.height >= 1 else { return nil }
+        return cropping(to: px)
     }
 }

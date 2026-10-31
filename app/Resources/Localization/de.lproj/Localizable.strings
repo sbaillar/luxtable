@@ -1217,6 +1217,7 @@
 "Forward %lld" = "%lld vor";
 "Found" = "Gefunden";
 "Found an archived photo in Immich: check the folders, then Save." = "Ein archiviertes Foto in Immich gefunden: Prüfe die Ordner und klicke dann auf „Sichern“.";
+"Frame %@" = "Bild %@";
 "Frame %@: %@" = "Bild %@: %@";
 "Frame %@: the best frame, the base" = "Bild %@: das beste Bild, die Grundlage";
 "Frame every photo on the map" = "Alle Fotos auf der Karte einrahmen";
@@ -1614,6 +1615,7 @@
 "Merge %lld Groups" = "%lld Gruppen zusammenführen";
 "Merge a burst to one Best Shot (open eyes, sharpest parts)" = "Eine Serie zu einem besten Bild zusammenfügen (offene Augen, schärfste Bereiche)";
 "Merge preview" = "Vorschau der Zusammenfügung";
+"Merge the burst into one photo: the best frame, with open eyes and sharper parts from the others (⇧⌘B)" = "Die Serie zu einem Foto zusammenfügen: das beste Bild, mit offenen Augen und schärferen Teilen aus den anderen (⇧⌘B)";
 "Merge to Best Shot" = "Zum besten Bild zusammenfügen";
 "Merge to Best Shot…" = "Zum besten Bild zusammenfügen…";
 "Merge to HDR" = "Zu HDR zusammenfügen";

@@ -1217,6 +1217,7 @@
 "Forward %lld" = "%lld 枚進む";
 "Found" = "検出";
 "Found an archived photo in Immich: check the folders, then Save." = "Immich でアーカイブ済みの写真が見つかりました：フォルダを確認してから“保存”をクリックしてください。";
+"Frame %@" = "フレーム %@";
 "Frame %@: %@" = "フレーム %@：%@";
 "Frame %@: the best frame, the base" = "フレーム %@：最も良いフレーム、ベース";
 "Frame every photo on the map" = "すべての写真をマップに収める";
@@ -1614,6 +1615,7 @@
 "Merge %lld Groups" = "%lld 個のグループを結合";
 "Merge a burst to one Best Shot (open eyes, sharpest parts)" = "連写を 1 枚のベストショットに結合（開いた目、最もシャープな部分）";
 "Merge preview" = "結合のプレビュー";
+"Merge the burst into one photo: the best frame, with open eyes and sharper parts from the others (⇧⌘B)" = "連写を1枚の写真に結合します：最も良いフレームに、他のフレームから開いた目とよりシャープな部分を取り込みます（⇧⌘B）";
 "Merge to Best Shot" = "ベストショットに結合";
 "Merge to Best Shot…" = "ベストショットに結合…";
 "Merge to HDR" = "HDR に結合";

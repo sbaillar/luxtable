@@ -9,6 +9,28 @@ import UniformTypeIdentifiers
 @testable import LuxtableMac
 @testable import LuxtableUI
 
+/// Every value `focusedID` takes after it's made, in order (observed, so the steps a
+/// reload passes through between its awaits are seen).
+@MainActor private final class FocusTrail {
+    private(set) var values: [PhotoID?] = []
+    private let model: AppModel
+
+    init(_ model: AppModel) {
+        self.model = model
+        track()
+    }
+
+    private func track() {
+        withObservationTracking { _ = model.focusedID } onChange: { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                self.values.append(self.model.focusedID)
+                self.track()
+            }
+        }
+    }
+}
+
 /// A merger whose timing and results the test controls.
 private actor FakeMerger: PhotoMerging {
     var previewDelay: Duration
@@ -270,12 +292,21 @@ private final class Calls {
         }
         #expect(await waitUntil { sheet.preview != nil })
         #expect(sheet.preview?.projection == .perspective && sheet.preview?.exposureEV == 0.5)
+        let trail = FocusTrail(m)
         sheet.merge()
         #expect(await waitUntil { m.sheet == nil })
         #expect(m.photoCount == 11)
         let new = m.focusedPhoto
         #expect(new.map { !ids.contains($0.id) } == true && new?.filename.hasSuffix("-HDR.dng") == true)
         #expect(m.selection == Set(new.map { [$0.id] } ?? []))
+        // Straight to the new photo: never the first one or the previous one on the way.
+        await Task.yield()
+        #expect(!trail.values.isEmpty && trail.values.allSatisfy { $0 == new?.id }, "\(trail.values)")
+        // A plain reload keeps its photo throughout.
+        let still = FocusTrail(m)
+        await m.refreshCurrentSession()
+        await Task.yield()
+        #expect(m.focusedID == new?.id && still.values.allSatisfy { $0 == new?.id }, "\(still.values)")
     }
 
     // MARK: - Best Shot
@@ -368,7 +399,19 @@ private final class Calls {
         #expect(steps.map(\.caption) == ["Frame 2: the best frame, the base", "Frame 1: a face and a sharper area",
                                          "Frame 4: 2 sharper areas", "The Best Shot"])
         #expect(steps[0].highlights.isEmpty && steps[2].highlights == [sharp(3), sharp(3)] && steps[3].highlights == patches)
+        // The photo builds up: each frame's parts stay laid over the base for the next frames.
+        #expect(steps[0].layers.isEmpty && steps[1].layers == [sharp(0), face(0)]
+                && steps[2].layers == [sharp(0), face(0), sharp(3), sharp(3)])
         #expect(BestShotTourStep.gifts([face(0), face(2)]) == "2 faces")
+    }
+
+    @Test func closeUpsCropTheirPartWithSomeRoomAround() throws {
+        let image = try MockPhotoMerger.gradient(width: 200, height: 100)
+        let c = try #require(image.crop(normalized: CGRect(x: 0.25, y: 0.5, width: 0.1, height: 0.2), margin: 0.5))
+        #expect((c.width, c.height) == (40, 40), "the part and half its size on every side")
+        let edge = try #require(image.crop(normalized: CGRect(x: 0.95, y: 0.9, width: 0.1, height: 0.2), margin: 0.5))
+        #expect((edge.width, edge.height) == (20, 20), "kept inside the image")
+        #expect(image.crop(normalized: CGRect(x: 2, y: 2, width: 0.1, height: 0.1)) == nil)
     }
 
     @Test func bestShotTourWaitsForTheFrames() async throws {
@@ -391,6 +434,7 @@ private final class Calls {
         #expect(m.image(for: .source(0)) === frame)
         #expect(m.image(for: .source(1)) === m.preview?.image, "a frame without a preview shows the result")
         #expect(m.image(for: .source(7)) === m.preview?.image && m.image(for: .result) === m.preview?.image)
+        #expect(m.baseImage === m.preview?.image, "the base (frame 2) has no preview here: the result stands in")
         // HDR and panoramas have no tour.
         let hdr = MergeModel(kind: .hdr, session: session, sources: [samplePhoto(1), samplePhoto(2)], merger: merger,
                              frameImage: { _ in frame }, onMerged: { _ in }, close: {})
