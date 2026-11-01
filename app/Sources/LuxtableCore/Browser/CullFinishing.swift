@@ -17,7 +17,9 @@ import Observation
 /// - **New Variant**: a second rendition of the focused photo (its edits copied).
 ///
 /// A folder opened in place holds the user's own files: these are disabled there,
-/// with the reason.
+/// with the reason. There (and in the demo) **Move to Trash…** sends the photos the user
+/// chose, after a confirmation, straight to the macOS Trash instead (dragged back out in
+/// Finder, not ⌘Z); never from a memory card or the archive.
 @MainActor @Observable
 public final class CullFinisher {
     /// One file move, undoable while it is the last thing done.
@@ -33,6 +35,13 @@ public final class CullFinisher {
 
     /// The open session can move originals (created by import).
     public private(set) var canMove = false
+    /// The open session can't move originals, but its photos can go to the macOS Trash
+    /// (a folder opened in place, the demo): Move to Trash… asks, then sends them.
+    public private(set) var canTrashOriginals = false
+    /// Why they can't (the folder is on a memory card or in the archive).
+    public private(set) var trashOriginalsRefusal: OriginalsTrashRefusal?
+    /// Move to Trash… is waiting for the user to confirm.
+    public var pendingTrashOriginals: OriginalsTrashPlan?
     /// Delete Rejected… is waiting for the user to confirm (how many files).
     public var pendingDelete: Int?
     /// Move to Selects is waiting for the user to confirm (review N5).
@@ -50,17 +59,38 @@ public final class CullFinisher {
 
     /// Look at the open session (after it opened).
     func refresh() async {
-        guard let app, let s = app.currentSession, let store = app.sessions as? any SessionFileOrganizing else {
+        guard let app, let s = app.currentSession else {
             canMove = false
+            canTrashOriginals = false
+            trashOriginalsRefusal = nil
             return
         }
-        canMove = await store.canMoveOriginals(in: s)
+        let moves = await (app.sessions as? any SessionFileOrganizing)?.canMoveOriginals(in: s) ?? false
+        var trashes = false
+        var refusal: OriginalsTrashRefusal?
+        if !moves, let trasher = app.sessions as? any OriginalsTrashing {
+            refusal = await trasher.originalsTrashRefusal(in: s, archiveTarget: archiveTarget)
+            trashes = refusal == nil
+        }
+        canMove = moves
+        canTrashOriginals = trashes
+        trashOriginalsRefusal = refusal
+    }
+
+    /// The archive folder (never deleted from), when archiving to a folder is set up.
+    private var archiveTarget: String? {
+        guard let a = app?.settings.archiveSnapshot, a.objectStore == nil else { return nil }
+        let t = a.target.trimmingCharacters(in: .whitespaces)
+        return t.isEmpty ? nil : (t as NSString).expandingTildeInPath
     }
 
     /// [session close] Nothing to confirm or undo any more (⌘Z never moves the closed
     /// session's files back).
     func sessionClosed() {
         canMove = false
+        canTrashOriginals = false
+        trashOriginalsRefusal = nil
+        pendingTrashOriginals = nil
         pendingDelete = nil
         pendingSelects = nil
         lastMove = nil
@@ -280,6 +310,81 @@ public final class CullFinisher {
         }
     }
 
+    /// How a photo of this session leaves it: the session Trash (imported, ⌘Z), the macOS
+    /// Trash after a confirmation (opened in place, the demo), or not at all (why).
+    public enum TrashRoute: Equatable, Sendable {
+        case sessionTrash
+        case macOSTrash
+        case unavailable(String)
+    }
+
+    public var trashRoute: TrashRoute {
+        if canMove { return .sessionTrash }
+        if canTrashOriginals { return .macOSTrash }
+        return .unavailable(trashOriginalsRefusal?.reason ?? Self.inPlaceReason)
+    }
+
+    /// What Move to Trash… sends to the macOS Trash, for the confirmation.
+    public struct OriginalsTrashPlan: Equatable, Sendable {
+        public var ids: [PhotoID]
+        /// The photo to show afterwards (a neighbour).
+        public var focusing: PhotoID?
+        /// How many files they are (variants share one).
+        public var files: Int
+        /// The file's name, when there is one file.
+        public var name: String?
+
+        /// "“DSC01234.ARW” goes to the macOS Trash and leaves this session…"
+        public var message: String {
+            let what = files == 1
+                ? String(localized: "“\(name ?? String(localized: "The photo"))” goes to the macOS Trash and leaves this session, with its edits.")
+                : String(localized: "\(files) files go to the macOS Trash and leave this session, with their edits.")
+            let back = files == 1
+                ? String(localized: "⌘Z can’t bring it back: you can drag it back out of the Trash in Finder until you empty it.")
+                : String(localized: "⌘Z can’t bring them back: you can drag them back out of the Trash in Finder until you empty it.")
+            return what + " " + back
+        }
+
+        public var confirmTitle: String {
+            files == 1 ? String(localized: "Move 1 File to Trash") : String(localized: "Move \(files) Files to Trash")
+        }
+    }
+
+    /// Ask before sending `ids` to the macOS Trash (the view shows the confirmation);
+    /// `focusing`: the photo to show afterwards. Says why when it can't.
+    public func requestTrashOriginals(_ ids: [PhotoID], focusing: PhotoID? = nil) {
+        guard let app, !ids.isEmpty else { return }
+        guard canTrashOriginals else {
+            if case .unavailable(let why) = trashRoute { app.show(Toast(why, symbol: "folder", isError: true)) }
+            return
+        }
+        let photos = ids.compactMap { app.photo($0) }
+        let files = Set(photos.map { $0.url?.standardizedFileURL.path ?? "name:" + $0.filename })
+        pendingTrashOriginals = OriginalsTrashPlan(ids: ids, focusing: focusing, files: max(files.count, 1),
+                                                   name: files.count == 1 ? photos.first?.filename : nil)
+    }
+
+    /// The user confirmed: the files go to the macOS Trash and leave the session; their
+    /// cover marks (a Best Shot's) go too, and the neighbour is shown.
+    public func confirmTrashOriginals() async {
+        guard let plan = pendingTrashOriginals else { return }
+        pendingTrashOriginals = nil
+        guard let app, let store = app.sessions as? any OriginalsTrashing, canTrashOriginals else { return }
+        busy = true
+        defer { busy = false }
+        await app.saver.flush()
+        do {
+            let n = try await store.trashOriginals(plan.ids, archiveTarget: archiveTarget)
+            app.photosLeftSession(plan.ids, focusing: plan.focusing)
+            await app.refreshCurrentSession(keepingHistory: true, focusing: plan.focusing)
+            app.show(Toast(n == 1 ? String(localized: "Moved 1 file to the Trash") : String(localized: "Moved \(n) files to the Trash"),
+                           symbol: "trash"))
+        } catch {
+            await app.refreshCurrentSession(keepingHistory: true)
+            app.show(error)
+        }
+    }
+
     public func newVariant() async {
         guard let app, let store, let id = app.focusedID, app.focusedPhoto?.isVideo == false else { return }
         await app.saver.flush()
@@ -360,6 +465,57 @@ final class CullState {
 }
 
 extension AppModel {
+    /// `ids` left the session (sent to the macOS Trash): focus (and the burst strip) moves
+    /// on to `focusing` before the list changes, and their cover marks go (saved with the
+    /// session).
+    func photosLeftSession(_ ids: [PhotoID], focusing: PhotoID?) {
+        let b = browserState
+        if let focusing, let f = focusedID, ids.contains(f) { focus(focusing, extend: false) }
+        if let c = b.picker.current, ids.contains(c), let focusing { b.picker.select(focusing) }
+        guard let covers = b.dropCovers(of: ids), let session = currentSession else { return }
+        let previous = b.coverSave
+        let store = sessions
+        b.coverSave = Task { [weak self] in
+            await previous?.value // saves land in the order they were made
+            do {
+                try await store.saveStackCovers(covers, in: session)
+            } catch {
+                self?.show(error)
+            }
+        }
+    }
+
+    /// What Photo ▸ Move to Trash… takes: the selection when several photos are
+    /// selected, else the focused photo.
+    public var trashTargets: [PhotoID] {
+        let ids = selection.count > 1 ? visibleIDs.filter(selection.contains) : focusedID.map { [$0] } ?? []
+        return ids.filter { photo($0).map { !$0.inTrash } ?? false }
+    }
+
+    /// The photo to show once `ids` are gone: the focused one if it stays, else the next
+    /// one shown after it, else the one before.
+    func neighbour(leaving ids: [PhotoID]) -> PhotoID? {
+        let gone = Set(ids)
+        if let f = focusedID, !gone.contains(f) { return f }
+        let order = visibleIDs
+        guard let at = (focusedID ?? ids.first).flatMap({ order.firstIndex(of: $0) }) else { return nil }
+        return order[at...].first { !gone.contains($0) } ?? order[..<at].last { !gone.contains($0) }
+    }
+
+    /// Photo ▸ Move to Trash… (and the browser's context menu): in a session that moves
+    /// files the targets go to the session Trash (⌘Z); over the user's own folder they go
+    /// to the macOS Trash after a confirmation.
+    public func moveTargetsToTrash() async {
+        let ids = trashTargets
+        guard !ids.isEmpty else { return }
+        let next = neighbour(leaving: ids)
+        switch cull.trashRoute {
+        case .sessionTrash: await cull.moveToTrash(ids, focusing: next)
+        case .macOSTrash: cull.requestTrashOriginals(ids, focusing: next)
+        case .unavailable(let why): show(Toast(why, symbol: "folder", isError: true))
+        }
+    }
+
     /// N-up survey mode (select the best of a burst).
     public var survey: SurveyModel { CullRegistry.state(for: self).survey }
     /// Finishing a cull: rejects to Trash, picks to Selects, delete rejected, variants.

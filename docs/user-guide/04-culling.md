@@ -44,7 +44,8 @@ A burst is a run of frames shot in quick succession. Luxtable can show each burs
 - The cover is marked in the strip: **Your pick** or **AI pick** when it broke a tie, so you can see whose choice it was and change it.
 - **Use as Cover** (the button, a frame's context menu, or `↩`) is offered on the frames tied for the top rating. On the others the strip says what it takes, for example "Rate it ★★★ or higher to make it the cover".
 - **Merge to Best Shot…** in the strip's header merges the burst into one photo (see [Best Shot](09-hdr-panorama.md#best-shot)).
-- **Move to Session Trash** (the trash button on a frame, or its context menu) takes a frame out of the burst, a Best Shot too: its file goes to the session's Trash folder. `⌘Z` brings it back, and so does **Restore from Session Trash**; only **Delete Rejected…** empties the session Trash into the macOS Trash. The strip stays open on the other frames. In a folder opened in place, Luxtable never moves your files, so the button isn't there.
+- **Move to Session Trash** (the trash button on a frame, or its context menu) takes a frame out of the burst, a Best Shot too: its file goes to the session's Trash folder. `⌘Z` brings it back, and so does **Restore from Session Trash**; only **Delete Rejected…** empties the session Trash into the macOS Trash. The strip stays open on the other frames.
+- **Move to Trash…** takes its place in a folder opened in place (and in the sample photos), where nothing moves to a session Trash: after you confirm, the frame's file, a Best Shot too, goes to the macOS Trash and leaves the session. `⌘Z` can't bring it back, but you can drag it back out of the Trash in Finder until you empty it. Nothing is ever deleted from a memory card, from the archive or from inside an Aperture, iPhoto or Photos library: there the menu says why instead.
 - `Esc`, a click outside the strip or a click on the badge again closes the strip.
 - **Your choice is kept:** it is saved with the session, so it is the same on every Mac that opens it. If a frame is later rated higher, that frame becomes the cover, but your choice is remembered and comes back when the ratings tie again. If the burst changes (an import or a delete), the choice stays while its frame is still in the burst. Survey starts on your chosen cover too.
 
@@ -63,6 +64,7 @@ Turn on **View ▸ Voice Commands** (`⌃⌘V`) and say what to do: "pick", "rej
 - **Photo ▸ Move Rejected to Trash** moves rejects into the session's Trash folder. **Restore from Session Trash** brings them back.
 - **Photo ▸ Move Picked and Rated to Selects…** moves the keepers into Selects.
 - **Photo ▸ Delete Rejected…** asks before it deletes anything, and never touches a card or the archive.
+- **Photo ▸ Move to Session Trash** (also in the grid's and filmstrip's context menu) moves the selected photos to the session's Trash folder (`⌘Z` to undo). In a folder opened in place it is **Move to Trash…**: after you confirm, the files go to the macOS Trash and leave the session (drag them back out in Finder). It is off for a folder on a memory card, in the archive or inside a photo library.
 
 ## Smart folders, filters and metadata
 

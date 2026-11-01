@@ -123,7 +123,7 @@ struct CullContextMenu: View {
     }
 }
 
-/// "Move Picked and Rated to Selects…" and "Delete Rejected…" confirmations.
+/// "Move Picked and Rated to Selects…", "Delete Rejected…" and "Move to Trash…" confirmations.
 package struct CullDialogs: ViewModifier {
     @Bindable var model: AppModel
 
@@ -153,6 +153,18 @@ package struct CullDialogs: ViewModifier {
             Button("Cancel", role: .cancel) { cull.pendingDelete = nil }
         } message: {
             Text(CullFinisher.deleteMessage(cull.pendingDelete ?? 0, archiveNote: cull.deleteArchiveNote))
+        }
+        .confirmationDialog(
+            "Move to Trash?",
+            isPresented: Binding(get: { cull.pendingTrashOriginals != nil }, set: { if !$0 { cull.pendingTrashOriginals = nil } }),
+            titleVisibility: .visible
+        ) {
+            Button(cull.pendingTrashOriginals?.confirmTitle ?? String(localized: "Move to Trash"), role: .destructive) {
+                Task { await cull.confirmTrashOriginals() }
+            }
+            Button("Cancel", role: .cancel) { cull.pendingTrashOriginals = nil }
+        } message: {
+            Text(cull.pendingTrashOriginals?.message ?? "")
         }
     }
 }

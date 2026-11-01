@@ -14,3 +14,7 @@ A hand-held burst rarely has one frame where everyone's eyes are open and everyt
 The best frame is the base and the others are aligned to it. Each face that is better in another frame, open eyes first, is blended in, and so are regions that are clearly sharper elsewhere. The preview says what was taken: faces improved, sharper regions, and faces that moved too much to swap.
 
 The result is `<name>-Best.dng` next to the sources. It joins the burst and becomes its cover, unless you chose a cover yourself.
+
+## Deleting a merge
+
+A merged photo is a photo like any other. In a session you imported, the trash button on its frame in the burst strip (or **Photo ▸ Move to Session Trash**) moves it to the session Trash, and `⌘Z` brings it back. In a folder opened in place, **Move to Trash…** asks first, then sends the DNG to the macOS Trash and takes it out of the session; drag it back out of the Trash in Finder if you change your mind. A deleted Best Shot stops being its burst's cover.

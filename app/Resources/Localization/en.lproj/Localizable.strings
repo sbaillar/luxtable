@@ -592,6 +592,9 @@
 /* LuxtableCore/Import/ImportReport.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift */
 "%lld files" = "%lld files";
 
+/* LuxtableCore/Browser/CullFinishing.swift */
+"%lld files go to the macOS Trash and leave this session, with their edits." = "%lld files go to the macOS Trash and leave this session, with their edits.";
+
 /* LuxtableCore/ExternalImport/ExternalImportModel.swift */
 "%lld files in other formats not imported" = "%lld files in other formats not imported";
 
@@ -4951,11 +4954,17 @@
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Move %@ up in %@" = "Move %@ up in %@";
 
+/* LuxtableCore/Browser/CullFinishing.swift */
+"Move %lld Files to Trash" = "Move %lld Files to Trash";
+
 /* LuxtableUI/Views/Browser/CullViews.swift */
 "Move %lld Photos" = "Move %lld Photos";
 
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Move %lld photos to Selects (Picked, or %@, %@)" = "Move %lld photos to Selects (Picked, or %@, %@)";
+
+/* LuxtableCore/Browser/CullFinishing.swift */
+"Move 1 File to Trash" = "Move 1 File to Trash";
 
 /* LuxtableUI/Views/Browser/CullViews.swift */
 "Move 1 Photo" = "Move 1 Photo";
@@ -4999,8 +5008,17 @@
 /* LuxtableCore/Keyboard/KeyboardRouter.swift */
 "Move several, go to a photo (“the 4th photo”)" = "Move several, go to a photo (“the 4th photo”)";
 
+/* LuxtableUI/Views/Browser/BurstStrip.swift */
+"Move the file to the macOS Trash (asks first; ⌘Z can’t undo it)" = "Move the file to the macOS Trash (asks first; ⌘Z can’t undo it)";
+
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Move the only copy, kept inside Luxtable's session, back into the folder" = "Move the only copy, kept inside Luxtable's session, back into the folder";
+
+/* LuxtableCore/Keyboard/CommandCatalog.swift */
+"Move the selection to the session Trash (⌘Z to undo)" = "Move the selection to the session Trash (⌘Z to undo)";
+
+/* LuxtableCore/Keyboard/CommandCatalog.swift */
+"Move the selection's files to the macOS Trash (asks first; ⌘Z can’t undo it)" = "Move the selection's files to the macOS Trash (asks first; ⌘Z can’t undo it)";
 
 /* LuxtableUI/Views/ToolSidebar.swift */
 "Move to" = "Move to";
@@ -5011,14 +5029,23 @@
 /* LuxtableUI/Views/Browser/CullViews.swift */
 "Move to Selects?" = "Move to Selects?";
 
-/* LuxtableUI/Views/Browser/BurstStrip.swift */
+/* LuxtableCore/Keyboard/CommandCatalog.swift, LuxtableUI/Views/Browser/BurstStrip.swift */
 "Move to Session Trash" = "Move to Session Trash";
 
 /* LuxtableUI/Views/Browser/CullViews.swift */
 "Move to Trash" = "Move to Trash";
 
+/* LuxtableUI/Views/Browser/CullViews.swift */
+"Move to Trash?" = "Move to Trash?";
+
+/* LuxtableCore/Keyboard/CommandCatalog.swift, LuxtableUI/Views/Browser/BurstStrip.swift */
+"Move to Trash…" = "Move to Trash…";
+
 /* LuxtableUI/Views/Browser/BurstStrip.swift */
 "Move to the session Trash (⌘Z to undo)" = "Move to the session Trash (⌘Z to undo)";
+
+/* LuxtableCore/Browser/CullFinishing.swift */
+"Moved %lld files to the Trash" = "Moved %lld files to the Trash";
 
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Moved %lld photos to Selects (⌘Z to undo)" = "Moved %lld photos to Selects (⌘Z to undo)";
@@ -5031,6 +5058,9 @@
 
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Moved %lld rejected photos to the session Trash" = "Moved %lld rejected photos to the session Trash";
+
+/* LuxtableCore/Browser/CullFinishing.swift */
+"Moved 1 file to the Trash" = "Moved 1 file to the Trash";
 
 /* LuxtableCore/Browser/CullFinishing.swift */
 "Moved 1 photo to Selects (⌘Z to undo)" = "Moved 1 photo to Selects (⌘Z to undo)";
@@ -7783,6 +7813,9 @@
 /* LuxtableCore/Remote/RemoteLinkModel.swift */
 "The paired-device list can't be read: %@" = "The paired-device list can't be read: %@";
 
+/* LuxtableCore/Browser/CullFinishing.swift */
+"The photo" = "The photo";
+
 /* LuxtableMac/Views/Export/ExportSheet.swift */
 "The photo's caption (else its title) becomes the description in Google Photos." = "The photo's caption (else its title) becomes the description in Google Photos.";
 
@@ -7917,6 +7950,15 @@
 
 /* LuxtableMac/Views/OnboardingView.swift */
 "This folder doesn't exist yet. Luxtable creates it when you finish." = "This folder doesn't exist yet. Luxtable creates it when you finish.";
+
+/* LuxtableCore/Live/RustSessionStore.swift */
+"This folder is in the archive: Luxtable never deletes from the archive." = "This folder is in the archive: Luxtable never deletes from the archive.";
+
+/* LuxtableCore/Live/RustSessionStore.swift */
+"This folder is inside a photo library, which Luxtable never changes. Delete photos in the app that owns the library." = "This folder is inside a photo library, which Luxtable never changes. Delete photos in the app that owns the library.";
+
+/* LuxtableCore/Live/RustSessionStore.swift */
+"This folder is on a memory card: Luxtable never deletes from a card. Import it, or delete files in Finder." = "This folder is on a memory card: Luxtable never deletes from a card. Import it, or delete files in Finder.";
 
 /* LuxtableCore/Keyboard/TerminationFlow.swift */
 "This folder is open without a session store: ratings and edits are kept in memory only. Quitting discards them." = "This folder is open without a session store: ratings and edits are kept in memory only. Quitting discards them.";
@@ -9352,6 +9394,9 @@
 /* LuxtableCore/App/AppModel.swift */
 "“%@” found at %@" = "“%@” found at %@";
 
+/* LuxtableCore/Browser/CullFinishing.swift */
+"“%@” goes to the macOS Trash and leaves this session, with its edits." = "“%@” goes to the macOS Trash and leaves this session, with its edits.";
+
 /* LuxtableCore/Voice/VoicePhraseBook.swift */
 "“%@” has a number after “photo”, “number” or “go to”: voice hears that as a position." = "“%@” has a number after “photo”, “number” or “go to”: voice hears that as a position.";
 
@@ -9453,6 +9498,12 @@
 
 /* LuxtableMac/Views/MainToolbar.swift, LuxtableUI/Views/CommandBar/CommandBarView.swift */
 "⌘K" = "⌘K";
+
+/* LuxtableCore/Browser/CullFinishing.swift */
+"⌘Z can’t bring it back: you can drag it back out of the Trash in Finder until you empty it." = "⌘Z can’t bring it back: you can drag it back out of the Trash in Finder until you empty it.";
+
+/* LuxtableCore/Browser/CullFinishing.swift */
+"⌘Z can’t bring them back: you can drag them back out of the Trash in Finder until you empty it." = "⌘Z can’t bring them back: you can drag them back out of the Trash in Finder until you empty it.";
 
 /* LuxtableUI/Views/Tools/ToolCustomizeView.swift */
 "⌥⌘↑ / ⌥⌘↓ move the selected tool; Delete removes it. Removed tools stay in the Tools menu." = "⌥⌘↑ / ⌥⌘↓ move the selected tool; Delete removes it. Removed tools stay in the Tools menu.";

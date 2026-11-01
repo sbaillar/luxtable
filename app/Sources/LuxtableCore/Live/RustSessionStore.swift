@@ -1153,6 +1153,60 @@ extension RustSessionStore: SessionFileOrganizing {
     }
 }
 
+/// Why photos can't go to the macOS Trash from a folder opened in place.
+public enum OriginalsTrashRefusal: Sendable, Equatable {
+    /// The folder is on a memory card: nothing ever deletes from a card.
+    case memoryCard
+    /// The folder is in the archive: nothing ever deletes from the archive.
+    case archive
+    /// The folder is inside an Aperture, iPhoto or Photos library, which is only ever read.
+    case photoLibrary
+
+    public var reason: String {
+        switch self {
+        case .memoryCard: String(localized: "This folder is on a memory card: Luxtable never deletes from a card. Import it, or delete files in Finder.")
+        case .archive: String(localized: "This folder is in the archive: Luxtable never deletes from the archive.")
+        case .photoLibrary: String(localized: "This folder is inside a photo library, which Luxtable never changes. Delete photos in the app that owns the library.")
+        }
+    }
+}
+
+/// Stores whose sessions over the user's own folder (opened in place, and the demo)
+/// can send photos to the macOS Trash: "Move to Trash…", after a confirmation. The
+/// file and its sidecars go to the Trash (dragged back out in Finder, not ⌘Z) and
+/// the photo leaves the session. Never from a memory card or the archive.
+public protocol OriginalsTrashing: Sendable {
+    /// Why `session`'s photos can't go to the macOS Trash (nil: they can). `archiveTarget`:
+    /// the archive folder, when one is set.
+    func originalsTrashRefusal(in session: SessionInfo, archiveTarget: String?) async -> OriginalsTrashRefusal?
+    /// The files of `ids` (every variant of each) to the macOS Trash; returns how many files went.
+    func trashOriginals(_ ids: [PhotoID], archiveTarget: String?) async throws -> Int
+}
+
+extension RustSessionStore: OriginalsTrashing {
+    public func originalsTrashRefusal(in session: SessionInfo, archiveTarget: String?) async -> OriginalsTrashRefusal? {
+        guard let h = try? await handle(for: session) else { return nil }
+        return switch h.originalsTrashRefusal(archiveTarget: archiveTarget) {
+        case .memoryCard: .memoryCard
+        case .archive: .archive
+        case .photoLibrary: .photoLibrary
+        case nil: nil
+        }
+    }
+
+    public func trashOriginals(_ ids: [PhotoID], archiveTarget: String?) async throws -> Int {
+        var n = 0
+        for (sid, list) in grouped(ids) {
+            let raws = list.map(\.raw)
+            n += Int(try await perform(sid) { h, token in
+                try await h.trashOriginals(variantIds: raws, archiveTarget: archiveTarget, token: token)
+            })
+            for id in list { forget(Key(session: sid, photo: id)) }
+        }
+        return n
+    }
+}
+
 // MARK: - AI Optimize reports (sidecar `optimize_report`)
 
 extension RustSessionStore: OptimizeReportStoring {

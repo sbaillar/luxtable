@@ -1459,3 +1459,90 @@ fn photos_past_the_cap_are_never_marked_missing() {
         [] as [(session::ImageId, relpath::RelPath); 0]
     );
 }
+
+/// A trasher that moves what it is handed into `bin` (or refuses everything).
+struct Bin {
+    dir: PathBuf,
+    refuse: bool,
+    got: std::sync::Mutex<Vec<PathBuf>>,
+}
+
+impl Bin {
+    fn new(dir: PathBuf, refuse: bool) -> Self {
+        fs::create_dir_all(&dir).unwrap();
+        Self {
+            dir,
+            refuse,
+            got: std::sync::Mutex::new(Vec::new()),
+        }
+    }
+}
+
+impl Trasher for Bin {
+    fn trash(&self, paths: &[PathBuf]) -> std::result::Result<(), String> {
+        if self.refuse {
+            return Err("volume has no Trash".into());
+        }
+        for (i, p) in paths.iter().enumerate() {
+            let name = format!("{i}-{}", p.file_name().unwrap().to_string_lossy());
+            fs::rename(p, self.dir.join(name)).unwrap();
+        }
+        self.got.lock().unwrap().extend_from_slice(paths);
+        Ok(())
+    }
+}
+
+#[test]
+fn trash_originals_sends_an_in_place_photo_and_its_sidecars_to_the_trash() {
+    let mut e = ext(&[("a.ARW", b"aaaa"), ("b.ARW", b"bbbbb")]);
+    let sync = e.s.sync_external().unwrap();
+    let ids = e.register(&sync.untracked);
+    let first_is_a =
+        e.s.image(ids[0])
+            .unwrap()
+            .rel_path
+            .as_str()
+            .ends_with("a.ARW");
+    let (a, b) = if first_is_a {
+        (ids[0], ids[1])
+    } else {
+        (ids[1], ids[0])
+    };
+    let va = e.variant(a);
+    let vb = e.variant(b);
+    let va2 = e.s.new_variant(a).unwrap();
+    e.s.set_rating(&[va], Rating::new(3).unwrap()).unwrap();
+    let album = e.s.create_album("Keep").unwrap();
+    e.s.add_to_album(album, &[va, vb]).unwrap();
+
+    // A refusing trasher (a volume without a Trash) leaves everything in place.
+    let bins = tempfile::tempdir().unwrap();
+    let no = Bin::new(bins.path().join("no"), true);
+    assert!(matches!(
+        e.s.trash_originals(&[a], &no),
+        Err(SessionError::Trash(_))
+    ));
+    assert!(e.folder.join("a.ARW").is_file());
+    assert!(e.s.variant(va).is_ok() && e.s.variant(va2).is_ok());
+
+    let bin = Bin::new(bins.path().join("bin"), false);
+    assert_eq!(e.s.trash_originals(&[a, a], &bin).unwrap(), 1);
+    let got = bin.got.lock().unwrap().clone();
+    assert_eq!(got.len(), 3, "original + two sidecars: {got:?}");
+    assert_eq!(got[0], e.folder.join("a.ARW"), "the original goes first");
+    assert!(got[1..].iter().all(|p| p.starts_with(&e.root)));
+    assert!(!e.folder.join("a.ARW").exists());
+    assert!(e.s.image(a).is_err() && e.s.variant(va).is_err() && e.s.variant(va2).is_err());
+    assert_eq!(e.s.undo_depth(va), 0);
+    assert_eq!(e.s.album_variants(album).unwrap(), [vb]);
+    assert!(e.folder.join("b.ARW").is_file());
+    // It stays gone: the folder no longer has it, and nothing is missing.
+    assert_eq!(e.s.sync_external().unwrap().missing, Vec::<ImageId>::new());
+    assert_eq!(e.s.images().unwrap().len(), 1);
+    // An unknown photo is an error, and nothing is handed over.
+    assert!(matches!(
+        e.s.trash_originals(&[a, b], &bin),
+        Err(SessionError::NotFound { .. })
+    ));
+    assert!(e.folder.join("b.ARW").is_file());
+}

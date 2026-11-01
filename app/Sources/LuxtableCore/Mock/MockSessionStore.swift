@@ -180,3 +180,27 @@ extension MockSessionStore: AIChangesStoring {
         for id in ids { storedAIChanges[id] = json }
     }
 }
+
+// MARK: - Move to Trash… (the demo: the photo leaves the session)
+
+extension MockSessionStore: OriginalsTrashing {
+    public func originalsTrashRefusal(in session: SessionInfo, archiveTarget: String?) async -> OriginalsTrashRefusal? { nil }
+
+    public func trashOriginals(_ ids: [PhotoID], archiveTarget: String?) async throws -> Int {
+        let gone = Set(ids)
+        var n = 0
+        for (sid, list) in photosBySession {
+            let kept = list.filter { !gone.contains($0.id) }
+            guard kept.count != list.count else { continue }
+            n += list.count - kept.count
+            photosBySession[sid] = kept
+            albumsBySession[sid] = albumsBySession[sid]?.map { a in
+                var a = a
+                a.photoIDs.removeAll(where: gone.contains)
+                return a
+            }
+        }
+        for id in ids { edits[id] = nil }
+        return n
+    }
+}

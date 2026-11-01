@@ -12,7 +12,7 @@ Everything in Luxtable happens in a session: a folder of photos and their sideca
 
 ## Folders opened in place
 
-When you open a folder that isn't a Luxtable session, Luxtable works on it in place: it never moves, renames or changes your files, and writes only its own sidecars and index. Renamed or edited files are recognised again when you reopen the folder. Commands that would move files, such as moving rejects to the session Trash, are turned off for such folders and say why.
+When you open a folder that isn't a Luxtable session, Luxtable works on it in place: it never moves, renames or changes your files, and writes only its own sidecars and index. Renamed or edited files are recognised again when you reopen the folder. Commands that would move files, such as moving rejects to the session Trash, are turned off for such folders and say why. The one way a file leaves such a folder is **Move to Trash…**, which asks first and sends it to the macOS Trash (never from a memory card, the archive or a photo library); see [Culling](04-culling.md#finishing-a-cull).
 
 ## What is in a session folder
 

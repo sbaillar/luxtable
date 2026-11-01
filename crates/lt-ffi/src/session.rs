@@ -543,6 +543,63 @@ fn fat_volume(folder: &Path) -> bool {
         .is_ok_and(|st| matches!(fs_type_name(&st).as_str(), "msdos" | "exfat"))
 }
 
+/// Why photos can't be sent to the macOS Trash ([`SessionHandle::trash_originals`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, uniffi::Enum)]
+pub enum TrashRefusal {
+    /// On a memory card: nothing ever deletes from a card.
+    MemoryCard,
+    /// Inside the archive target: nothing ever deletes from the archive.
+    Archive,
+    /// Inside an Aperture, iPhoto or Photos library: the library is only ever read
+    /// (a file taken out of its package would break it).
+    PhotoLibrary,
+}
+
+impl TrashRefusal {
+    fn reason(self) -> &'static str {
+        match self {
+            Self::MemoryCard => {
+                "is on a memory card, and Luxtable never deletes from a card: import it, or delete it in Finder"
+            }
+            Self::Archive => "is in the archive, and Luxtable never deletes from the archive",
+            Self::PhotoLibrary => {
+                "is inside a photo library, which Luxtable never changes: delete it in the app that owns the library"
+            }
+        }
+    }
+}
+
+/// A memory card: a `DCIM` folder (the path is in one, or is a volume or folder
+/// that holds one) on removable media or a FAT/exFAT volume, as cameras
+/// write them. A copy of a card's `DCIM` on the Mac's own disk is not a card.
+pub(crate) fn on_memory_card(path: &Path) -> bool {
+    let dcim = path.ancestors().any(|a| {
+        a.file_name()
+            .is_some_and(|n| n.eq_ignore_ascii_case("DCIM"))
+    }) || path.join("DCIM").is_dir();
+    dcim && (fat_volume(path) || lt_fsutil::is_removable(path))
+}
+
+/// Why the file or folder at `path` must not go to the Trash: on a card
+/// (`on_card`), inside an Apple photo library, or inside `archive` (resolved
+/// through symlinks).
+fn trash_refusal(
+    path: &Path,
+    archive: Option<&Path>,
+    on_card: fn(&Path) -> bool,
+) -> Option<TrashRefusal> {
+    if on_card(path) {
+        return Some(TrashRefusal::MemoryCard);
+    }
+    if crate::apple::inside_library(path) {
+        return Some(TrashRefusal::PhotoLibrary);
+    }
+    let canon = |p: &Path| fs::canonicalize(p).unwrap_or_else(|_| p.to_path_buf());
+    archive
+        .filter(|a| !a.as_os_str().is_empty() && canon(path).starts_with(canon(a)))
+        .map(|_| TrashRefusal::Archive)
+}
+
 pub(crate) fn read_meta(p: &Path) -> Option<(ImageMetaLite, RawMetadata)> {
     let m = lt_raw::read_metadata(p).ok()?;
     let size = m.dimensions.unwrap_or(lt_core::Size::new(0, 0));
@@ -1210,6 +1267,47 @@ impl SessionHandle {
     fn empty_trash_with(&self, trasher: &dyn lt_session::Trasher) -> Result<u64, DsError> {
         self.check_folder()?;
         Ok(lock(&self.session).empty_trash(trasher)? as u64)
+    }
+
+    /// [`Self::trash_originals`] with the trasher and the card check injected.
+    /// Every file is checked before any is handed over: one on a card or in the
+    /// archive refuses the whole call and nothing is touched.
+    pub(crate) fn trash_originals_with(
+        &self,
+        variant_ids: &[i64],
+        archive_target: Option<&Path>,
+        trasher: &dyn lt_session::Trasher,
+        on_card: fn(&Path) -> bool,
+    ) -> Result<u64, DsError> {
+        self.check_folder()?;
+        let mut s = lock(&self.session);
+        let mut images = Vec::new();
+        for v in Self::ids(variant_ids) {
+            let image = s.variant(v)?.image;
+            let path = s.original_path(s.image(image)?.rel_path.as_str());
+            if let Some(why) = trash_refusal(&path, archive_target, on_card) {
+                let name = path.file_name().unwrap_or_default().to_string_lossy();
+                return Err(DsError::Unsupported {
+                    message: format!("{name} {}", why.reason()),
+                });
+            }
+            images.push(image);
+        }
+        Ok(s.trash_originals(&images, trasher)? as u64)
+    }
+
+    /// [`Self::originals_trash_refusal`] with the card check injected: the
+    /// in-place folder, or the session folder of an imported session.
+    fn trash_refusal_with(
+        &self,
+        archive_target: Option<&Path>,
+        on_card: fn(&Path) -> bool,
+    ) -> Option<TrashRefusal> {
+        let folder = match &self.in_place {
+            Some(f) => f.clone(),
+            None => lock(&self.session).root().to_path_buf(),
+        };
+        trash_refusal(&folder, archive_target, on_card)
     }
 
     /// The folder must still be where it was: the user's folder of an in-place
@@ -2274,6 +2372,40 @@ impl SessionHandle {
             self.empty_trash_with(&lt_session::SystemTrash)
         })
         .await
+    }
+
+    /// "Move to Trash…" in a folder opened in place (where nothing moves to a
+    /// session Trash): hand the originals of `variant_ids` and their sidecars to
+    /// the macOS Trash (`NSFileManager`, recoverable from Finder, not by undo)
+    /// and drop them from the session, every variant of each photo included.
+    /// The app asks first. Refused, with nothing touched, for a photo on a
+    /// memory card or inside `archive_target` (the archive folder, when one is
+    /// set); a volume without a Trash refuses and nothing is deleted. Works in
+    /// imported sessions too (the app uses the undoable session Trash there).
+    pub async fn trash_originals(
+        self: Arc<Self>,
+        variant_ids: Vec<i64>,
+        archive_target: Option<String>,
+        token: Arc<CancelToken>,
+    ) -> Result<u64, DsError> {
+        run_job(token, move |_| {
+            self.trash_originals_with(
+                &variant_ids,
+                archive_target.as_deref().map(Path::new),
+                &lt_session::SystemTrash,
+                on_memory_card,
+            )
+        })
+        .await
+    }
+
+    /// Why this session's photos can't go to the macOS Trash
+    /// ([`Self::trash_originals`]): its folder is on a memory card or in the
+    /// archive (`archive_target`). `None`: they can (each file is checked
+    /// again when it goes). Reads the volume (cached per mount).
+    #[allow(clippy::needless_pass_by_value)] // UniFFI hands exports owned values
+    pub fn originals_trash_refusal(&self, archive_target: Option<String>) -> Option<TrashRefusal> {
+        self.trash_refusal_with(archive_target.as_deref().map(Path::new), on_memory_card)
     }
 
     /// A new variant of the photo behind `variant_id` (its edits copied, culling
@@ -3767,6 +3899,183 @@ mod tests {
         assert!(e.is_err(), "{e:?}");
         assert!(f.path().join("x.ARW").is_file());
         assert!(ip.empty_trash_with(&fake).is_err());
+    }
+
+    /// Moves what it is handed into `bin` (a Trash stand-in), or refuses.
+    struct Bin {
+        dir: PathBuf,
+        refuse: bool,
+        got: Mutex<Vec<PathBuf>>,
+    }
+
+    impl Bin {
+        fn new(dir: PathBuf, refuse: bool) -> Self {
+            fs::create_dir_all(&dir).unwrap();
+            Self {
+                dir,
+                refuse,
+                got: Mutex::new(Vec::new()),
+            }
+        }
+    }
+
+    impl lt_session::Trasher for Bin {
+        fn trash(&self, paths: &[PathBuf]) -> Result<(), String> {
+            if self.refuse {
+                return Err("volume has no Trash".into());
+            }
+            for (i, p) in paths.iter().enumerate() {
+                let name = format!("{i}-{}", p.file_name().unwrap().to_string_lossy());
+                fs::rename(p, self.dir.join(name)).unwrap();
+            }
+            lock(&self.got).extend_from_slice(paths);
+            Ok(())
+        }
+    }
+
+    /// In a folder opened in place any photo can go to the macOS Trash with
+    /// its sidecars and leave the session; a refusing Trash, a card or the
+    /// archive leave everything as it was.
+    #[test]
+    fn in_place_photos_go_to_the_macos_trash_but_never_from_a_card_or_the_archive() {
+        let f = folder(&[("a.ARW", b"aaaa"), ("b.ARW", b"bb"), ("c.ARW", b"ccc")]);
+        let h = open(f.path());
+        assert!(!h.can_move_originals());
+        let v = list(&h);
+        let (a, b) = (
+            by_name(&v, "a.ARW").variant_id,
+            by_name(&v, "b.ARW").variant_id,
+        );
+        let not_card = |_: &Path| false;
+        let bins = tempfile::tempdir().unwrap();
+
+        let no = Bin::new(bins.path().join("no"), true);
+        let e = h
+            .trash_originals_with(&[a], None, &no, not_card)
+            .unwrap_err();
+        assert!(e.to_string().contains("nothing was deleted"), "{e}");
+        assert!(f.path().join("a.ARW").is_file() && list(&h).len() == 3);
+
+        // A card: refused before anything is handed over.
+        let bin = Bin::new(bins.path().join("bin"), false);
+        let e = h
+            .trash_originals_with(&[b, a], None, &bin, |_| true)
+            .unwrap_err();
+        assert!(
+            matches!(&e, DsError::Unsupported { message } if message.contains("b.ARW is on a memory card")),
+            "{e:?}"
+        );
+        assert_eq!(
+            h.trash_refusal_with(None, |_| true),
+            Some(TrashRefusal::MemoryCard)
+        );
+        // The archive (here: the folder itself is the archive target).
+        let e = h
+            .trash_originals_with(&[a], Some(f.path()), &bin, not_card)
+            .unwrap_err();
+        assert!(
+            matches!(&e, DsError::Unsupported { message } if message.contains("in the archive")),
+            "{e:?}"
+        );
+        assert_eq!(
+            h.trash_refusal_with(Some(f.path()), not_card),
+            Some(TrashRefusal::Archive)
+        );
+        assert!(lock(&bin.got).is_empty());
+        assert!(f.path().join("a.ARW").is_file() && f.path().join("b.ARW").is_file());
+        // An unknown photo: nothing goes.
+        assert!(
+            h.trash_originals_with(&[a, 999_999], None, &bin, not_card)
+                .is_err()
+        );
+        assert!(lock(&bin.got).is_empty());
+
+        // Another archive, not a card: it goes, with its sidecar, and stays gone.
+        let elsewhere = bins.path().join("Archive");
+        assert_eq!(h.trash_refusal_with(Some(&elsewhere), not_card), None);
+        assert_eq!(
+            h.originals_trash_refusal(None),
+            None,
+            "a temp folder is no card"
+        );
+        assert_eq!(
+            h.trash_originals_with(&[a], Some(&elsewhere), &bin, not_card)
+                .unwrap(),
+            1
+        );
+        let got = lock(&bin.got).clone();
+        let canon = fs::canonicalize(f.path()).unwrap();
+        assert_eq!(got[0], canon.join("a.ARW"), "the original first: {got:?}");
+        assert!(got.len() >= 2, "and its sidecar: {got:?}");
+        assert!(!f.path().join("a.ARW").exists());
+        let left = list(&h);
+        assert_eq!(left.len(), 2);
+        assert!(left.iter().all(|r| r.file_name != "a.ARW" && !r.missing));
+        let again = open(f.path());
+        assert_eq!(list(&again).len(), 2, "reopened: not missing, not back");
+
+        // The folder moved: nothing happens.
+        let moved = bins.path().join("Moved");
+        fs::rename(f.path(), &moved).unwrap();
+        assert!(matches!(
+            h.trash_originals_with(&[b], None, &bin, not_card),
+            Err(DsError::FolderMoved { .. })
+        ));
+        fs::rename(&moved, f.path()).unwrap();
+    }
+
+    /// What counts as a memory card: a `DCIM` folder on removable or FAT
+    /// media; a copy of one on the Mac's own disk, or any other folder, is not.
+    #[test]
+    fn a_dcim_copy_on_the_internal_disk_is_not_a_memory_card() {
+        let f = folder(&[("DCIM/100MSDCF/a.ARW", b"a"), ("Shoot/b.ARW", b"b")]);
+        assert!(!on_memory_card(&f.path().join("Shoot/b.ARW")));
+        assert!(!on_memory_card(&f.path().join("DCIM/100MSDCF/a.ARW")));
+        assert!(
+            !on_memory_card(f.path()),
+            "holds a DCIM, on the internal disk"
+        );
+        assert_eq!(
+            trash_refusal(f.path(), Some(Path::new("")), |_| false),
+            None
+        );
+    }
+
+    /// A photo inside an Aperture or iPhoto library is never taken out of it.
+    #[test]
+    fn a_photo_inside_a_photo_library_is_refused() {
+        let f = folder(&[("Old.aplibrary/Masters/a.ARW", b"a"), ("Shoot/b.ARW", b"b")]);
+        let lib = f.path().join("Old.aplibrary/Masters/a.ARW");
+        assert_eq!(
+            trash_refusal(&lib, None, |_| false),
+            Some(TrashRefusal::PhotoLibrary)
+        );
+        assert_eq!(
+            trash_refusal(&f.path().join("Shoot/b.ARW"), None, |_| false),
+            None
+        );
+        let bins = tempfile::tempdir().unwrap();
+        let store = bins.path().join("store");
+        let h = open_in_place(
+            &f.path().join("Old.aplibrary/Masters"),
+            Some(&store),
+            None,
+            &FAKE,
+            &|| false,
+            &mut |_, _, _| {},
+        )
+        .unwrap();
+        let v = list(&h)[0].variant_id;
+        assert_eq!(
+            h.trash_refusal_with(None, |_| false),
+            Some(TrashRefusal::PhotoLibrary)
+        );
+        let bin = Bin::new(bins.path().join("bin"), false);
+        let e = h
+            .trash_originals_with(&[v], None, &bin, |_| false)
+            .unwrap_err();
+        assert!(e.to_string().contains("photo library"), "{e}");
+        assert!(lib.is_file() && lock(&bin.got).is_empty());
     }
 
     /// "Move Rejected to Trash" moves a file only when every

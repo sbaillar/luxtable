@@ -32,6 +32,10 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
     case share
     /// [cul9] H7: Photo ▸ finishing a cull, variants, and survey mode.
     case moveRejectedToTrash, movePickedToSelects, restoreSessionTrash, deleteRejected, newVariant, survey
+    /// Photo ▸ Move to Trash… (also the browser's context menu): the selection to the session
+    /// Trash (imported, ⌘Z), or after a confirmation to the macOS Trash (a folder opened in
+    /// place, the demo).
+    case moveToTrash
     /// Edit ▸ match the selection to the focused photo (`MatchSet.swift`).
     case matchExposures, matchWhiteBalance
     /// Tools ▸ Customize Tools… (⇧⌘T) and the All Tools tab.
@@ -126,7 +130,7 @@ public enum MenuCommand: String, CaseIterable, Sendable, Identifiable {
         case .smallerFilmstripThumbnails: Shortcut(key: "-", modifiers: [.command, .control])
         // S for Simple; ⌥⌘S is Survey and ⇧⌘S nothing a newcomer expects to change modes.
         case .simpleMode: Shortcut(key: "s", modifiers: [.command, .control])
-        case .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, .deleteRejected, .matchWhiteBalance,
+        case .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, .deleteRejected, .moveToTrash, .matchWhiteBalance,
              .toggleAllToolsTab, .showAIChanges, .clearAIHighlights, .undoAllAIChanges, .upscale, .showHistory,
              .voiceHelp, .showSelectionInViewer, .filmstripBottom, .filmstripLeft, .filmstripRight,
              .developForImmich, .stopDevelopingForImmich, .gettingStarted: nil
@@ -200,6 +204,8 @@ public enum CommandCatalog {
         case .movePickedToSelects: String(localized: "Move Picked and Rated to Selects…")
         case .restoreSessionTrash: String(localized: "Restore from Session Trash")
         case .deleteRejected: String(localized: "Delete Rejected…")
+        case .moveToTrash:
+            model.cull.trashRoute == .sessionTrash ? String(localized: "Move to Session Trash") : String(localized: "Move to Trash…")
         case .newVariant: model.settings.names.newVariant
         case .survey: model.survey.isActive ? String(localized: "Leave Survey") : String(localized: "Survey Selected")
         case .matchExposures: String(localized: "Match Total Exposures")
@@ -226,7 +232,7 @@ public enum CommandCatalog {
 
     /// [cul9] H7: Photo ▸ finishing a cull (after the plain-key items).
     public static let cullMenu: [MenuCommand?] = [
-        .survey, .newVariant, nil, .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, nil, .deleteRejected,
+        .survey, .newVariant, nil, .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, nil, .moveToTrash, .deleteRejected,
     ]
 
     /// Photo ▸ merging the selection into a new photo.
@@ -235,7 +241,7 @@ public enum CommandCatalog {
     /// The browser's context menu (grid and filmstrip): the cull-finishing commands
     /// are not only in the Photo menu (final-journeys2 discoverability).
     public static let cullContextMenu: [MenuCommand?] = [
-        .survey, nil, .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, nil, .deleteRejected,
+        .survey, nil, .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, nil, .moveToTrash, .deleteRejected,
     ]
 
     /// Why a cull command is off (a folder opened in place never moves files); what
@@ -255,6 +261,12 @@ public enum CommandCatalog {
             }
         case .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, .deleteRejected:
             model.cull.canMove ? nil : CullFinisher.inPlaceReason
+        case .moveToTrash:
+            switch model.cull.trashRoute {
+            case .sessionTrash: String(localized: "Move the selection to the session Trash (⌘Z to undo)")
+            case .macOSTrash: String(localized: "Move the selection's files to the macOS Trash (asks first; ⌘Z can’t undo it)")
+            case .unavailable(let why): why
+            }
         case .upscale:
             model.upscaler.map { $0.help(in: model) } ?? UpscaleModelDescriptor.reasons.missing
         case .mergeBestShot:
@@ -325,6 +337,8 @@ public enum CommandCatalog {
         case .restoreSessionTrash: return model.cull.canMove && !model.cull.busy
         case .deleteRejected:
             return model.cull.canMove && !model.cull.busy && !(model.cull.rejectedIDs.isEmpty && model.cull.trashedIDs.isEmpty)
+        case .moveToTrash:
+            return (model.cull.canMove || model.cull.canTrashOriginals) && !model.cull.busy && !model.trashTargets.isEmpty
         case .newVariant: return (model.focusedPhoto.map { !$0.isVideo } ?? false) && model.sessions is any SessionFileOrganizing
         case .survey: return model.survey.isActive || model.surveyCandidates.count >= 2
         case .matchExposures, .matchWhiteBalance: return model.canMatchSet
@@ -383,6 +397,7 @@ public enum CommandCatalog {
         case .movePickedToSelects: model.cull.requestMoveToSelects()
         case .restoreSessionTrash: Task { await model.cull.restoreFromTrash() }
         case .deleteRejected: model.cull.requestDeleteRejected()
+        case .moveToTrash: Task { await model.moveTargetsToTrash() }
         case .newVariant: Task { await model.cull.newVariant() }
         case .survey: if model.survey.isActive { model.survey.finish() } else { model.beginSurvey() }
         case .matchExposures: model.matchTotalExposures()

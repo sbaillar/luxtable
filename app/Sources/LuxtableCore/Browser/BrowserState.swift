@@ -85,6 +85,19 @@ public final class BrowserState {
         return covers
     }
 
+    /// `ids` left the session: their cover marks (a Best Shot's included) go. Returns every
+    /// cover to save, or nil when none was theirs.
+    @discardableResult
+    public func dropCovers(of ids: [PhotoID]) -> [StackCover]? {
+        let kept = StackCovers.removing(Set(ids), from: covers)
+        guard kept.count != covers.count else { return nil }
+        covers = kept
+        builtFrom = [] // regroup at the next refresh
+        builtVersion = nil
+        stacks.apply(covers: covers)
+        return covers
+    }
+
     /// Rebuild stacks when the photo list changed (ids or order). O(n); call on
     /// load/filter changes, not per keypress.
     public func refresh(photos: [Photo]) {

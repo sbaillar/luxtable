@@ -146,7 +146,7 @@ private struct BurstStripContent: View {
                        hint: model.coverHint(for: id),
                        index: index, count: count, anchorX: picker.anchor?.midX, confirmations: picker.confirmations,
                        justConfirmed: picker.confirmedCover == id, reduceMotion: reduceMotion, cache: model.thumbnails,
-                       canTrash: model.cull.canMove,
+                       trash: model.cull.trashRoute,
                        onShow: { model.showInBurstStrip(id) }, onUseAsCover: { model.useAsCover(id) },
                        onTrash: { Task { await model.trashBurstFrame(id) } })
                 .id(id)
@@ -188,8 +188,9 @@ private struct BurstFrame: View {
     let justConfirmed: Bool
     let reduceMotion: Bool
     let cache: ThumbnailCache
-    /// The session can move its files: Move to Session Trash is offered.
-    let canTrash: Bool
+    /// How the frame can leave the session: Move to Session Trash (imported), Move to
+    /// Trash… (a folder opened in place, the demo), or why it can't.
+    let trash: CullFinisher.TrashRoute
     let onShow: () -> Void
     let onUseAsCover: () -> Void
     let onTrash: () -> Void
@@ -216,13 +217,13 @@ private struct BurstFrame: View {
                 }
             }
             .overlay(alignment: .bottomTrailing) {
-                if hovering, canTrash {
-                    Button("Move to Session Trash", systemImage: "trash", action: onTrash)
+                if hovering, let title = trashTitle {
+                    Button(title, systemImage: "trash", action: onTrash)
                         .labelStyle(.iconOnly)
                         .font(.system(size: 10, weight: .semibold))
                         .buttonStyle(.borderedProminent).tint(.black.opacity(0.7))
                         .controlSize(.mini)
-                        .help("Move to the session Trash (⌘Z to undo)")
+                        .help(trashHelp)
                         .padding(.trailing, DS.Space.xs).padding(.bottom, 16)
                         .transition(.opacity)
                 }
@@ -279,9 +280,12 @@ private struct BurstFrame: View {
                 } else if let hint {
                     Text(hint)
                 }
-                if canTrash {
-                    Divider()
-                    Button("Move to Session Trash", systemImage: "trash", action: onTrash)
+                Divider()
+                if let title = trashTitle {
+                    Button(title, systemImage: "trash", action: onTrash)
+                } else if case .unavailable(let why) = trash {
+                    // Never an empty menu: why this frame can't be deleted here.
+                    Button(why, systemImage: "trash.slash") {}.disabled(true)
                 }
             }
             .accessibilityElement(children: .ignore)
@@ -289,6 +293,20 @@ private struct BurstFrame: View {
             .accessibilityAddTraits(isCurrent ? [.isButton, .isSelected] : .isButton)
             .accessibilityAction { onShow() }
             .accessibilityAction(named: canBeCover ? String(localized: "Use as Cover") : (hint ?? String(localized: "Use as Cover")), onUseAsCover)
-            .accessibilityAction(named: String(localized: "Move to Session Trash")) { if canTrash { onTrash() } }
+            .accessibilityAction(named: trashTitle ?? String(localized: "Move to Session Trash")) { if trashTitle != nil { onTrash() } }
+    }
+
+    /// The trash button's and menu item's title (nil: the frame can't leave the session here).
+    private var trashTitle: String? {
+        switch trash {
+        case .sessionTrash: String(localized: "Move to Session Trash")
+        case .macOSTrash: String(localized: "Move to Trash…")
+        case .unavailable: nil
+        }
+    }
+
+    private var trashHelp: String {
+        trash == .sessionTrash ? String(localized: "Move to the session Trash (⌘Z to undo)")
+            : String(localized: "Move the file to the macOS Trash (asks first; ⌘Z can’t undo it)")
     }
 }

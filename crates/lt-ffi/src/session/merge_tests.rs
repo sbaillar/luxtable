@@ -881,3 +881,66 @@ fn best_shot_takes_the_open_eyes_and_writes_an_upright_dng() {
         "geometry is the camera's: lens corrections stay on"
     );
 }
+
+/// A Best Shot made in a folder opened in place can be deleted: the DNG and
+/// its sidecar go to the (fake) macOS Trash and the photo leaves the session;
+/// the burst's frames stay.
+#[test]
+fn a_best_shot_in_a_folder_opened_in_place_goes_to_the_trash() {
+    struct Got(Mutex<Vec<PathBuf>>);
+    impl lt_session::Trasher for Got {
+        fn trash(&self, paths: &[PathBuf]) -> Result<(), String> {
+            for p in paths {
+                fs::remove_file(p).unwrap();
+            }
+            lock(&self.0).extend_from_slice(paths);
+            Ok(())
+        }
+    }
+    let f = crate::session::tests::folder(&[]);
+    let names = ["S1.dng", "S2.dng", "S3.dng"];
+    for (i, n) in names.iter().enumerate() {
+        let (dx, dy) = BURST_SHIFTS[i];
+        dng_oriented(
+            &f.path().join(n),
+            256,
+            192,
+            Orientation::Rotate90,
+            |x, y| burst_scene((191 - y) as f32 + dx, x as f32 + dy, i == 1),
+        );
+    }
+    let probe = crate::session::Probe {
+        volume_ok: |_| Ok(()),
+        ..crate::session::Probe::RAW
+    };
+    let h = Arc::new(
+        crate::session::open_in_place(f.path(), None, None, &probe, &|| false, &mut |_, _, _| {})
+            .unwrap(),
+    );
+    assert!(!h.can_move_originals());
+    let ids: Vec<i64> = names
+        .iter()
+        .map(|n| variant_named(&h, n).variant_id)
+        .collect();
+    let (_, _, _, signals) = burst(&f.path().join("unused"));
+    let out = block_on(
+        h.clone()
+            .merge_burst(ids, signals, None, CancelToken::new()),
+    )
+    .unwrap();
+    assert_eq!(out.file_name, "S1-Best.dng");
+    let best = f.path().join("S1-Best.dng");
+    assert!(best.is_file());
+
+    let bin = Got(Mutex::new(Vec::new()));
+    let n = h
+        .trash_originals_with(&[out.variant_id], None, &bin, |_| false)
+        .unwrap();
+    assert_eq!(n, 1);
+    let got = lock(&bin.0).clone();
+    assert!(got[0].ends_with("S1-Best.dng") && got.len() >= 2, "{got:?}");
+    assert!(!best.exists() && variant_named_opt(&h, "S1-Best.dng").is_none());
+    for n in names {
+        assert!(f.path().join(n).is_file() && variant_named_opt(&h, n).is_some());
+    }
+}

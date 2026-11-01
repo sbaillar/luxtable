@@ -431,18 +431,13 @@ impl Session {
         let mut removed = 0;
         let mut refused = None;
         for (id, rel) in &rows {
-            // The original first: a refusing volume refuses before any sidecar goes.
-            let mut paths = vec![self.root.join(rel)];
-            let sidecars = self.image_sidecars(ImageId(*id))?;
-            paths.extend(sidecars.iter().map(|(_, _, sc)| self.root.join(sc)));
-            paths.retain(|p| p.exists());
-            if let Err(e) = trasher.trash(&paths) {
-                refused = Some(e);
-                break;
+            match self.trash_image(&tx, trasher, ImageId(*id), rel)? {
+                Ok(gone) => variants.extend(gone),
+                Err(e) => {
+                    refused = Some(e);
+                    break;
+                }
             }
-            tx.execute("DELETE FROM variants WHERE image_id = ?", [id])?;
-            tx.execute("DELETE FROM images WHERE id = ?", [id])?;
-            variants.extend(sidecars.iter().map(|(vid, _, _)| VariantId(*vid)));
             removed += 1;
         }
         if refused.is_none() {
@@ -462,6 +457,76 @@ impl Session {
         match refused {
             Some(e) => Err(SessionError::Trash(e)),
             None => Ok(removed),
+        }
+    }
+
+    /// Hand one image's original, then its sidecars, to `trasher` and drop
+    /// its rows in `tx`. The inner `Err` is the trasher's refusal: nothing was
+    /// handed over (the original goes first) and the rows stay.
+    fn trash_image(
+        &self,
+        tx: &rusqlite::Transaction<'_>,
+        trasher: &dyn Trasher,
+        id: ImageId,
+        rel: &str,
+    ) -> Result<std::result::Result<Vec<VariantId>, String>> {
+        // The original first: a refusing volume refuses before any sidecar goes.
+        let mut paths = vec![self.original_path(rel)];
+        let sidecars = self.image_sidecars(id)?;
+        paths.extend(sidecars.iter().map(|(_, _, sc)| self.root.join(sc)));
+        paths.retain(|p| p.exists());
+        if let Err(e) = trasher.trash(&paths) {
+            return Ok(Err(e));
+        }
+        tx.execute("DELETE FROM variants WHERE image_id = ?", [id.0])?;
+        tx.execute("DELETE FROM images WHERE id = ?", [id.0])?;
+        Ok(Ok(sidecars
+            .iter()
+            .map(|(vid, _, _)| VariantId(*vid))
+            .collect()))
+    }
+
+    /// Hand these originals and their sidecars to `trasher` (the macOS Trash
+    /// in the app) and drop them from the index, without the session Trash in
+    /// between. Returns the number of originals removed.
+    ///
+    /// Unlike [`Self::empty_trash`] this also works in an external (in-place)
+    /// session, where the originals are the user's own files: it is reached
+    /// there only through `lt-ffi`'s `SessionHandle::trash_originals`, which
+    /// refuses files on a memory card or in the archive and is called after
+    /// the user confirmed. Nothing is deleted here: a trasher that refuses (a
+    /// volume without a Trash) leaves that photo and the rest as they are,
+    /// and the photos already handed over leave the index.
+    pub fn trash_originals(&mut self, images: &[ImageId], trasher: &dyn Trasher) -> Result<usize> {
+        let mut rows = Vec::with_capacity(images.len());
+        for id in images {
+            let info = self.image(*id)?;
+            if !rows.iter().any(|(i, _): &(ImageId, String)| i == id) {
+                rows.push((*id, info.rel_path.as_str().to_owned()));
+            }
+        }
+        let tx = self.write_lock()?;
+        let mut variants = Vec::new();
+        let mut refused = None;
+        for (id, rel) in &rows {
+            match self.trash_image(&tx, trasher, *id, rel)? {
+                Ok(gone) => variants.extend(gone),
+                Err(e) => {
+                    refused = Some(e);
+                    break;
+                }
+            }
+        }
+        tx.commit()?;
+        for v in &variants {
+            self.undo.forget(v.0);
+        }
+        if !variants.is_empty() {
+            self.drop_from_albums(&variants)?;
+        }
+        match refused {
+            Some(e) => Err(SessionError::Trash(e)),
+            None => Ok(rows.len()),
         }
     }
 

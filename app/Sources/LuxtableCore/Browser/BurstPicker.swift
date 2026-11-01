@@ -121,15 +121,23 @@ extension AppModel {
 
     /// A frame of the open burst (its Best Shot too) to the session Trash: the strip stays
     /// open on the next frame (it closes when one frame is left), and ⌘Z brings it back.
-    /// A folder opened in place holds the user's own files: it says why it can't.
+    /// In a folder opened in place (and the demo) it goes to the macOS Trash after a
+    /// confirmation instead; on a memory card or in the archive it says why it can't.
     public func trashBurstFrame(_ id: PhotoID) async {
-        guard cull.canMove else { return show(Toast(CullFinisher.inPlaceReason, symbol: "folder", isError: true)) }
         let order = burstStripOrder
         let next = order.firstIndex(of: id).flatMap { i in
             order.indices.contains(i + 1) ? order[i + 1] : (i > 0 ? order[i - 1] : nil)
         }
-        if browserState.picker.current == id, let next { browserState.picker.select(next) }
-        await cull.moveToTrash([id], focusing: focusedID == id ? next : focusedID)
+        let focusing = focusedID == id ? next : focusedID
+        switch cull.trashRoute {
+        case .sessionTrash:
+            if browserState.picker.current == id, let next { browserState.picker.select(next) }
+            await cull.moveToTrash([id], focusing: focusing)
+        case .macOSTrash:
+            cull.requestTrashOriginals([id], focusing: focusing) // the strip moves on once it is gone
+        case .unavailable(let why):
+            show(Toast(why, symbol: "folder", isError: true))
+        }
     }
 
     /// A frame clicked in the strip: shown in the viewer.

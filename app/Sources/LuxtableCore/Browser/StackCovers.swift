@@ -79,6 +79,12 @@ public enum StackCovers {
             + [StackCover(members: sources + [shot], cover: shot, bestShot: true)]
     }
 
+    /// `covers` without the marks whose cover is one of `ids` (photos that left the
+    /// session: a Best Shot sent to the Trash is no longer its burst's cover).
+    public static func removing(_ ids: Set<PhotoID>, from covers: [StackCover]) -> [StackCover] {
+        covers.filter { !ids.contains($0.cover) }
+    }
+
     /// `groups` (every photo in one) with each Best Shot of `covers` moved into the group
     /// holding most of the frames it was made from (it shares their capture time, but a
     /// grouping can still set it apart). Groups left empty are dropped.
