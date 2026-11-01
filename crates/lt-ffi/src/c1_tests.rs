@@ -130,8 +130,8 @@ fn imports_a_synthetic_session_opened_in_place() {
     .unwrap();
     assert_eq!(
         h.open_report().unwrap().added,
-        3,
-        "a, b and Selects/c; C1's Trash is not listed"
+        4,
+        "a, b, Selects/c, and the photo in C1's Trash (the session Trash)"
     );
     assert!(
         lock(&h.session).root().starts_with(&store),
@@ -197,7 +197,8 @@ fn imports_a_synthetic_session_opened_in_place() {
         BTreeMap::from([
             ("Capture/Selects/c.ARW".to_owned(), 2),
             ("Capture/a.ARW".to_owned(), 4),
-            ("Capture/b.ARW".to_owned(), 3)
+            ("Capture/b.ARW".to_owned(), 3),
+            ("Trash/d.ARW".to_owned(), 0)
         ])
     );
     let again = h.import_capture_one_with(&NoWb, REAL, &no()).unwrap();

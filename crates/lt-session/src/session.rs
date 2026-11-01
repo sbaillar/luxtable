@@ -772,8 +772,9 @@ impl Session {
             } = item;
             let rel = RelPath::new(&rel)?;
             if self.is_external() {
-                if rel.folder() != Folder::Capture {
-                    return Err(SessionError::ExternalOriginals("add outside Capture"));
+                if rel.folder() == Folder::Selects {
+                    // Capture is the folder, Trash its `Trash/` (the session Trash).
+                    return Err(SessionError::ExternalOriginals("add to Selects"));
                 }
             } else {
                 ensure_no_symlinks(&self.root, rel.as_str())?;
@@ -1748,10 +1749,21 @@ pub fn is_capture_one_session(dir: &Path) -> bool {
 }
 
 /// Folders a walk of a Capture One session skips (see [`is_capture_one_session`]).
+/// Its top-level `Trash/` is not skipped: it is the session Trash ([`external_rel`]).
 fn capture_one_skips(name: &str, depth: usize) -> bool {
-    name.eq_ignore_ascii_case("CaptureOne")
-        || (depth == 0
-            && (name.eq_ignore_ascii_case("Trash") || name.eq_ignore_ascii_case("Output")))
+    name.eq_ignore_ascii_case("CaptureOne") || (depth == 0 && name.eq_ignore_ascii_case("Output"))
+}
+
+/// The session path of `rel`, a path inside an external session's folder: what
+/// is in the folder's top-level `Trash/` is in the session Trash, the rest in
+/// Capture (see [`crate::relpath::original_path`]).
+fn external_rel(rel: &str) -> String {
+    let trash = Folder::Trash.dir_name();
+    if rel == trash || rel.strip_prefix(trash).is_some_and(|r| r.starts_with('/')) {
+        rel.to_owned()
+    } else {
+        format!("Capture/{rel}")
+    }
 }
 
 /// Walk the user's folder for an external session (see [`Session::external_files`]).
@@ -1768,7 +1780,7 @@ fn walk_external(
             // Unreadable sub-folder (permissions, a share that hiccuped): skip
             // it, keep the rest, and say so (its photos aren't missing).
             if let Some(rel) = rel_string(ext, dir) {
-                out.unreadable.push(format!("Capture/{rel}/"));
+                out.unreadable.push(format!("{}/", external_rel(&rel)));
             }
             return Ok(());
         }
@@ -1806,8 +1818,7 @@ fn walk_external(
             }
             let Ok(md) = entry.metadata() else { continue };
             if let Some(rel) = rel_string(ext, &entry.path()) {
-                out.originals
-                    .insert(format!("Capture/{rel}"), FileStat::of(&md));
+                out.originals.insert(external_rel(&rel), FileStat::of(&md));
             }
         }
     }

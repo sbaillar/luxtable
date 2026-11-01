@@ -409,7 +409,8 @@ private func digest(_ dir: URL) -> [String: String] {
         let m = await model(store)
         await m.open(info)
         #expect(await m.canImportCaptureOne)
-        #expect(await m.photos.count == 3, "a, b and Selects/c (C1's Trash isn't listed)")
+        #expect(await m.visibleIDs.count == 3, "a, b and Selects/c shown")
+        #expect(await m.photos.filter(\.inTrash).count == 1, "C1's Trash is the session Trash")
 
         await m.offerCaptureOneImport(after: dir)
         guard case .captureOneImport(let sheet)? = await m.sheet else {

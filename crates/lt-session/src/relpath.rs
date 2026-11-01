@@ -211,10 +211,12 @@ pub(crate) fn resolve_sidecar(
 
 /// Where the file (or directory) at session-relative `rel` lives: under the
 /// session root, or for sessions with external originals, under that root
-/// (`Capture/<rest>` → `<external>/<rest>`; external sessions only use Capture).
+/// (`Capture/<rest>` → `<external>/<rest>`, and the session Trash in the folder:
+/// `Trash/<rest>` → `<external>/Trash/<rest>`).
 pub fn original_path(root: &Path, external: Option<&Path>, rel: &str) -> PathBuf {
     match external {
         Some(ext) => match rel.split_once('/') {
+            Some((top, _)) if top == Folder::Trash.dir_name() => ext.join(rel),
             Some((_, rest)) => ext.join(rest),
             None => ext.to_path_buf(),
         },

@@ -642,6 +642,13 @@ pub(crate) fn volume_verdict(fs_type: &str, flags: u32, writable: bool) -> Resul
     Ok(())
 }
 
+/// The user may create and rename files in `folder` (its permissions, as the
+/// volume reports them; false on a read-only mount).
+fn folder_writable(folder: &Path) -> bool {
+    rustix::fs::access(folder, rustix::fs::Access::WRITE_OK).is_ok()
+        && rustix::fs::statfs(folder).is_ok_and(|st| st.f_flags & MNT_RDONLY == 0)
+}
+
 pub(crate) fn sidecar_volume_ok(folder: &Path) -> Result<(), String> {
     let st = rustix::fs::statfs(folder).map_err(|e| e.to_string())?;
     let name = fs_type_name(&st);
@@ -1294,6 +1301,21 @@ impl SessionHandle {
             images.push(image);
         }
         Ok(s.trash_originals(&images, trasher)? as u64)
+    }
+
+    /// [`Self::can_use_session_trash`] with the card and permission checks injected.
+    fn session_trash_with(
+        &self,
+        archive_target: Option<&Path>,
+        on_card: fn(&Path) -> bool,
+        writable: fn(&Path) -> bool,
+    ) -> bool {
+        match &self.in_place {
+            None => true,
+            Some(folder) => {
+                writable(folder) && self.trash_refusal_with(archive_target, on_card).is_none()
+            }
+        }
     }
 
     /// [`Self::originals_trash_refusal`] with the card check injected: the
@@ -2278,9 +2300,25 @@ impl SessionHandle {
 
     /// Whether originals can be moved between the session's folders (Capture,
     /// Selects, Trash) and the Trash emptied: sessions created by import only.
-    /// A folder opened in place holds the user's own files: never moved.
+    /// A folder opened in place only has a session Trash
+    /// ([`Self::can_use_session_trash`]).
     pub fn can_move_originals(&self) -> bool {
         self.in_place.is_none()
+    }
+
+    /// Whether photos can go to the session Trash and back ("Move to Session
+    /// Trash", undo, "Restore from Session Trash"). Always in an imported
+    /// session; in a folder opened in place when the user may write to the folder
+    /// (its file-system permissions decide, on any volume) and it is not on a
+    /// memory card, in the archive (`archive_target`) or in a photo library. Its
+    /// session Trash is the folder's `Trash/` sub-folder.
+    #[allow(clippy::needless_pass_by_value)] // UniFFI hands exports owned values
+    pub fn can_use_session_trash(&self, archive_target: Option<String>) -> bool {
+        self.session_trash_with(
+            archive_target.as_deref().map(Path::new),
+            on_memory_card,
+            folder_writable,
+        )
     }
 
     /// Move the originals of `ids` (with all their variants' sidecars) into
@@ -3886,19 +3924,70 @@ mod tests {
                 .iter()
                 .any(|r| r.variant_id == nv && r.file_name == "c.ARW")
         );
-        // A folder opened in place never moves the user's files.
+        // A folder opened in place: only its session Trash (its Trash/ folder) and back;
+        // never Selects, and the Trash is never emptied.
         let f = folder(&[("x.ARW", b"xx")]);
         let ip = Arc::new(open(f.path()));
-        assert!(!ip.can_move_originals());
+        assert!(!ip.can_move_originals() && ip.can_use_session_trash(None));
         let x = list(&ip)[0].variant_id;
         let e = block_on(ip.clone().move_to_folder(
             vec![x],
-            SessionFolder::Trash,
+            SessionFolder::Selects,
             CancelToken::new(),
         ));
         assert!(e.is_err(), "{e:?}");
-        assert!(f.path().join("x.ARW").is_file());
+        let moved = block_on(ip.clone().move_to_folder(
+            vec![x],
+            SessionFolder::Trash,
+            CancelToken::new(),
+        ))
+        .unwrap();
+        assert_eq!(
+            (moved[0].from.as_str(), moved[0].to.as_str()),
+            ("Capture/x.ARW", "Trash/x.ARW")
+        );
+        assert!(f.path().join("Trash/x.ARW").is_file() && !f.path().join("x.ARW").exists());
+        assert!(
+            list(&ip).iter().any(|r| r.variant_id == x),
+            "still in the session, in its Trash"
+        );
         assert!(ip.empty_trash_with(&fake).is_err());
+        assert!(f.path().join("Trash/x.ARW").is_file());
+        assert_eq!(
+            block_on(ip.clone().move_back(moved, vec![], CancelToken::new())).unwrap(),
+            1
+        );
+        assert!(f.path().join("x.ARW").is_file());
+    }
+
+    /// The session Trash of a folder opened in place: wherever the user may write
+    /// (whatever the volume), never on a card, in the archive or a read-only folder.
+    #[test]
+    fn in_place_session_trash_follows_folder_permissions() {
+        let f = folder(&[("a.ARW", b"aa")]);
+        let h = open(f.path());
+        let yes = |_: &Path| true;
+        let no = |_: &Path| false;
+        assert!(h.session_trash_with(None, no, yes));
+        assert!(!h.session_trash_with(None, no, no), "no write permission");
+        assert!(!h.session_trash_with(None, yes, yes), "a memory card");
+        assert!(
+            !h.session_trash_with(Some(f.path()), no, yes),
+            "the archive"
+        );
+        assert!(folder_writable(f.path()));
+        let mut perms = fs::metadata(f.path()).unwrap().permissions();
+        std::os::unix::fs::PermissionsExt::set_mode(&mut perms, 0o555);
+        fs::set_permissions(f.path(), perms.clone()).unwrap();
+        let read_only = folder_writable(f.path());
+        std::os::unix::fs::PermissionsExt::set_mode(&mut perms, 0o755);
+        fs::set_permissions(f.path(), perms).unwrap();
+        assert!(!read_only, "the folder's permissions decide");
+        // An imported session always has one.
+        let t = tempfile::tempdir().unwrap();
+        let plain =
+            SessionHandle::plain(lt_session::Session::create(&t.path().join("s"), "s").unwrap());
+        assert!(plain.session_trash_with(None, yes, no));
     }
 
     /// Moves what it is handed into `bin` (a Trash stand-in), or refuses.

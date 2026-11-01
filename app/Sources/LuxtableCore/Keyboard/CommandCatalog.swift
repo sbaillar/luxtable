@@ -259,7 +259,9 @@ public enum CommandCatalog {
             } else {
                 String(localized: "No session is open")
             }
-        case .moveRejectedToTrash, .movePickedToSelects, .restoreSessionTrash, .deleteRejected:
+        case .moveRejectedToTrash, .restoreSessionTrash:
+            model.cull.canSessionTrash ? nil : CullFinisher.inPlaceReason
+        case .movePickedToSelects, .deleteRejected:
             model.cull.canMove ? nil : CullFinisher.inPlaceReason
         case .moveToTrash:
             switch model.cull.trashRoute {
@@ -331,14 +333,14 @@ public enum CommandCatalog {
         case .share: return model.canShare
         case .showRating1, .showRating2, .showRating3, .showRating4, .showRating5:
             return model.smartFolders.ratingFolder(c.ratingFolder!) != nil
-        case .moveRejectedToTrash: return model.cull.canMove && !model.cull.busy && !model.cull.rejectedIDs.isEmpty
+        case .moveRejectedToTrash: return model.cull.canSessionTrash && !model.cull.busy && !model.cull.rejectedIDs.isEmpty
         case .movePickedToSelects: return model.cull.canMove && !model.cull.busy && !model.cull.selectIDs.isEmpty
         // Set-aside variants are only known on disk (N10): the command says when there is nothing.
-        case .restoreSessionTrash: return model.cull.canMove && !model.cull.busy
+        case .restoreSessionTrash: return model.cull.canSessionTrash && !model.cull.busy
         case .deleteRejected:
             return model.cull.canMove && !model.cull.busy && !(model.cull.rejectedIDs.isEmpty && model.cull.trashedIDs.isEmpty)
         case .moveToTrash:
-            return (model.cull.canMove || model.cull.canTrashOriginals) && !model.cull.busy && !model.trashTargets.isEmpty
+            return (model.cull.canSessionTrash || model.cull.canTrashOriginals) && !model.cull.busy && !model.trashTargets.isEmpty
         case .newVariant: return (model.focusedPhoto.map { !$0.isVideo } ?? false) && model.sessions is any SessionFileOrganizing
         case .survey: return model.survey.isActive || model.surveyCandidates.count >= 2
         case .matchExposures, .matchWhiteBalance: return model.canMatchSet
