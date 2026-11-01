@@ -50,6 +50,11 @@ else
 fi
 [ -d "$MNT" ] || { echo "make-dmg: the image didn't mount at $MNT" >&2; exit 1; }
 SetFile -a C "$MNT"
+# Finder lists a freshly attached disk a moment after it mounts (`diskutil image attach`, macOS 27).
+for _ in $(seq 50); do
+  [ "$(osascript -e "tell application \"Finder\" to exists disk \"$VOL\"")" = true ] && break
+  sleep 0.2
+done
 
 # Window 660x400 like the background; icon centres as the background's arrow expects. The
 # icons are placed in a later open than the window's options: Finder moves icons placed
