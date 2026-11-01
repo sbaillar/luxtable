@@ -35,8 +35,11 @@ public final class CullFinisher {
 
     /// The open session can move originals (created by import).
     public private(set) var canMove = false
-    /// The open session can't move originals, but its photos can go to the macOS Trash
-    /// (a folder opened in place, the demo): Move to Trash… asks, then sends them.
+    /// Photos can go to the session Trash and back (⌘Z, Restore): imported sessions, and
+    /// folders opened in place that the user may write to (their `Trash/` folder).
+    public private(set) var canSessionTrash = false
+    /// No session Trash, but the photos can go to the macOS Trash (a read-only folder
+    /// opened in place, the demo): Move to Trash… asks, then sends them.
     public private(set) var canTrashOriginals = false
     /// Why they can't (the folder is on a memory card or in the archive).
     public private(set) var trashOriginalsRefusal: OriginalsTrashRefusal?
@@ -51,7 +54,7 @@ public final class CullFinisher {
 
     /// Why the file commands are off here.
     public static let inPlaceReason =
-        String(localized: "This folder was opened in place: Luxtable never moves your own files. Import it to organize it.")
+        String(localized: "This folder was opened in place: Luxtable only moves your own files to its Trash folder. Import it to organize it.")
 
     init() {}
 
@@ -61,18 +64,22 @@ public final class CullFinisher {
     func refresh() async {
         guard let app, let s = app.currentSession else {
             canMove = false
+            canSessionTrash = false
             canTrashOriginals = false
             trashOriginalsRefusal = nil
             return
         }
-        let moves = await (app.sessions as? any SessionFileOrganizing)?.canMoveOriginals(in: s) ?? false
+        let organizer = app.sessions as? any SessionFileOrganizing
+        let moves = await organizer?.canMoveOriginals(in: s) ?? false
+        let sessionTrash = moves ? true : await organizer?.canUseSessionTrash(in: s, archiveTarget: archiveTarget) ?? false
         var trashes = false
         var refusal: OriginalsTrashRefusal?
-        if !moves, let trasher = app.sessions as? any OriginalsTrashing {
+        if !sessionTrash, let trasher = app.sessions as? any OriginalsTrashing {
             refusal = await trasher.originalsTrashRefusal(in: s, archiveTarget: archiveTarget)
             trashes = refusal == nil
         }
         canMove = moves
+        canSessionTrash = sessionTrash
         canTrashOriginals = trashes
         trashOriginalsRefusal = refusal
     }
@@ -88,6 +95,7 @@ public final class CullFinisher {
     /// session's files back).
     func sessionClosed() {
         canMove = false
+        canSessionTrash = false
         canTrashOriginals = false
         trashOriginalsRefusal = nil
         pendingTrashOriginals = nil
@@ -154,7 +162,7 @@ public final class CullFinisher {
     /// Files whose every variant is rejected go to the session Trash; a file with a
     /// kept variant stays and only its rejected variants are hidden (review H1).
     public func moveRejectedToTrash() async {
-        guard let app, let store, let session = app.currentSession, canMove else {
+        guard let app, let store, let session = app.currentSession, canSessionTrash else {
             app?.show(Toast(Self.inPlaceReason, symbol: "folder", isError: true))
             return
         }
@@ -227,7 +235,7 @@ public final class CullFinisher {
     /// aside by "Move Rejected to Trash" or Delete Variant back next to its photo
     /// (found on disk, so it works after a relaunch: review N10).
     public func restoreFromTrash() async {
-        guard let app, let store, let session = app.currentSession, canMove else {
+        guard let app, let store, let session = app.currentSession, canSessionTrash else {
             app?.show(Toast(Self.inPlaceReason, symbol: "folder", isError: true))
             return
         }
@@ -319,7 +327,7 @@ public final class CullFinisher {
     }
 
     public var trashRoute: TrashRoute {
-        if canMove { return .sessionTrash }
+        if canSessionTrash { return .sessionTrash }
         if canTrashOriginals { return .macOSTrash }
         return .unavailable(trashOriginalsRefusal?.reason ?? Self.inPlaceReason)
     }
@@ -401,7 +409,7 @@ public final class CullFinisher {
 
     private func move(_ ids: [PhotoID], to folder: SessionFolderKind, focusing: PhotoID? = nil,
                       done: (Int) -> String) async {
-        guard let app, let store, canMove else {
+        guard let app, let store, folder == .selects ? canMove : canSessionTrash else {
             app?.show(Toast(Self.inPlaceReason, symbol: "folder", isError: true))
             return
         }

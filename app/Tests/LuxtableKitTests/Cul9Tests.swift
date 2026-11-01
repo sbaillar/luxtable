@@ -12,6 +12,8 @@ actor Cul9Store: SessionStore, SessionFileOrganizing, SessionMoveReporting {
     var order: [PhotoID]
     var session: SessionInfo
     var canMove = true
+    /// A folder opened in place the user may write to: only its session Trash (nil: as `canMove`).
+    var sessionTrash: Bool?
     var moves: [(ids: [PhotoID], folder: SessionFolderKind)] = []
     var trashEmptied = 0
     /// Rejected variants hidden by `trashRejected` (as Rust sets their sidecars aside).
@@ -49,6 +51,7 @@ actor Cul9Store: SessionStore, SessionFileOrganizing, SessionMoveReporting {
     func save(edits: [PhotoID: EditState]) async throws {}
 
     func canMoveOriginals(in session: SessionInfo) async -> Bool { canMove }
+    func canUseSessionTrash(in session: SessionInfo, archiveTarget: String?) async -> Bool { sessionTrash ?? canMove }
     static func folder(of p: Photo) -> SessionFolderKind { p.inTrash ? .trash : p.inSelects ? .selects : .capture }
     static func file(_ p: Photo) -> String { p.url?.path ?? p.filename }
     func put(_ ids: [PhotoID], in folder: SessionFolderKind) {
@@ -58,7 +61,7 @@ actor Cul9Store: SessionStore, SessionFileOrganizing, SessionMoveReporting {
         }
     }
     func move(_ ids: [PhotoID], to folder: SessionFolderKind) async throws -> [FolderMove] {
-        guard canMove else { throw MockError.invalid("in place") }
+        guard canMove || (folder != .selects && sessionTrash == true) else { throw MockError.invalid("in place") }
         moves.append((ids, folder))
         let done = ids.compactMap { photosByID[$0] }.map {
             FolderMove(id: $0.id, from: "\(Self.folder(of: $0).rawValue)/\($0.filename)", to: "\(folder.rawValue)/\($0.filename)")
@@ -68,7 +71,7 @@ actor Cul9Store: SessionStore, SessionFileOrganizing, SessionMoveReporting {
     }
     /// Rust's rule: a file goes to Trash only when every variant (same file) is rejected.
     func trashRejected(in session: SessionInfo) async throws -> RejectsTrashed {
-        guard canMove else { throw MockError.invalid("in place") }
+        guard canMove || sessionTrash == true else { throw MockError.invalid("in place") }
         var done = RejectsTrashed()
         let files = Dictionary(grouping: order.compactMap { photosByID[$0] }.filter { !$0.inTrash }, by: Self.file)
         for vs in files.values.sorted(by: { $0[0].id < $1[0].id }) {
@@ -130,6 +133,7 @@ actor Cul9Store: SessionStore, SessionFileOrganizing, SessionMoveReporting {
     }
     func onSessionMoved(_ handler: @escaping @Sendable (SessionMove) -> Void) { self.handler = handler }
     func setCanMove(_ on: Bool) { canMove = on }
+    func setSessionTrash(_ on: Bool?) { sessionTrash = on }
     func rename(to name: String) {
         let from = session.url
         session = SessionInfo(name: name, url: URL(fileURLWithPath: "/tmp/\(name)"), photoCount: order.count, createdAt: Date())
@@ -365,6 +369,46 @@ final class Cul9Box<T>: @unchecked Sendable {
         #expect(m.toast?.message == CullFinisher.inPlaceReason && m.visibleIDs.contains(frames[3]))
     }
 
+    /// A folder opened in place that the user may write to (a NAS share included): a
+    /// Best Shot from the burst strip, and Move Rejected to Trash, go to its session
+    /// Trash, ⌘Z and Restore bring them back; Selects and Delete Rejected… stay off.
+    @Test func writableInPlaceFoldersUseTheSessionTrash() async throws {
+        let store = Cul9Store(count: 4, spacing: 0.1)
+        await store.setCanMove(false)
+        await store.setSessionTrash(true)
+        let m = await model(store)
+        #expect(!m.cull.canMove && m.cull.canSessionTrash && m.cull.trashRoute == .sessionTrash)
+        m.setStackBursts(true)
+        let frames = try #require(m.browserState.stacks.stacks.first { $0.count == 4 }).memberIDs
+        m.browserState.addBestShot(frames[3], sources: Array(frames[0..<3]))
+        m.browserState.refresh(photos: m.visiblePhotos)
+        m.openBurstStrip(for: frames[0])
+        m.showInBurstStrip(frames[3])
+        await m.trashBurstFrame(frames[3])
+        #expect(m.cull.trashedIDs == [frames[3]] && !m.visibleIDs.contains(frames[3]), "the Best Shot is in the session Trash")
+        #expect(m.cull.pendingTrashOriginals == nil, "no macOS Trash confirmation")
+        #expect(m.toast?.message == "Moved 1 photo to the session Trash (⌘Z to undo)")
+        m.undo()
+        #expect(await waitUntil { m.visibleIDs.contains(frames[3]) })
+        // Move Rejected to Trash, then Restore from Session Trash.
+        m.focus(frames[0], extend: false)
+        m.setPick(.rejected)
+        #expect(CommandCatalog.isEnabled(.moveRejectedToTrash, model: m) && CommandCatalog.help(.moveRejectedToTrash, model: m) == nil)
+        await m.cull.moveRejectedToTrash()
+        #expect(m.cull.trashedIDs == [frames[0]])
+        #expect(CommandCatalog.isEnabled(.restoreSessionTrash, model: m))
+        await m.cull.restoreFromTrash()
+        #expect(m.cull.trashedIDs.isEmpty && m.visibleIDs.contains(frames[0]))
+        // Never Selects, never Delete Rejected… (that empties to the macOS Trash).
+        m.focus(frames[1], extend: false)
+        m.setPick(.picked)
+        #expect(!CommandCatalog.isEnabled(.movePickedToSelects, model: m))
+        #expect(CommandCatalog.help(.deleteRejected, model: m) == CullFinisher.inPlaceReason)
+        await m.cull.movePickedToSelects()
+        #expect(m.photo(frames[1])?.inSelects == false && m.toast?.message == CullFinisher.inPlaceReason)
+        #expect(await store.movesSnapshot().allSatisfy { $0 != .selects })
+    }
+
     @Test func inPlaceFoldersNeverMoveFiles() async {
         let store = Cul9Store(count: 3)
         await store.setCanMove(false)
@@ -532,17 +576,26 @@ final class Cul9Box<T>: @unchecked Sendable {
         }
     }
 
-    /// A folder opened in place can't move its files.
-    @Test func inPlaceSessionsRefuseFileMovesLive() async throws {
+    /// A folder opened in place (that the user may write to) never moves its files to
+    /// Selects; its session Trash is its own `Trash/` folder, and they come back from it.
+    @Test func inPlaceSessionsTrashIntoTheirFolderLive() async throws {
         guard let dir = try sampleFolderCopy(limit: 1) else { return }
         defer { try? FileManager.default.removeItem(at: dir) }
         let store = RustSessionStore(recents: RecentFolders(defaults: testDefaults()),
                                      storeBase: dir.appendingPathComponent("stores"))
         let info = try await store.add(folder: dir)
         #expect(await !store.canMoveOriginals(in: info))
+        #expect(await store.canUseSessionTrash(in: info, archiveTarget: nil))
         let id = try #require(try await store.photos(in: info).first?.id)
-        await #expect(throws: (any Error).self) { _ = try await store.move([id], to: .trash) }
-        #expect(FileManager.default.fileExists(atPath: dir.appendingPathComponent(sampleARWs()[0].lastPathComponent).path))
+        let name = sampleARWs()[0].lastPathComponent
+        await #expect(throws: (any Error).self) { _ = try await store.move([id], to: .selects) }
+        #expect(FileManager.default.fileExists(atPath: dir.appendingPathComponent(name).path))
+        let moved = try await store.move([id], to: .trash)
+        #expect(FileManager.default.fileExists(atPath: dir.appendingPathComponent("Trash/\(name)").path))
+        #expect(try await store.photos(in: info).first { $0.id == id }?.inTrash == true)
+        try await store.moveBack(moved, hidden: [], in: info)
+        #expect(FileManager.default.fileExists(atPath: dir.appendingPathComponent(name).path))
+        #expect(await !store.canUseSessionTrash(in: info, archiveTarget: dir.path), "never in the archive")
     }
 
     /// Live: an in-place folder renamed while open (M3): the next write follows it,

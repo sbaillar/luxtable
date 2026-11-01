@@ -1074,9 +1074,14 @@ public struct RejectsTrashed: Equatable, Sendable {
 
 /// Stores that can finish a cull: move originals between the session's folders,
 /// empty its Trash into the macOS Trash, and make variants. Only sessions created
-/// by import move files; a folder opened in place holds the user's own files.
+/// by import move files freely; a folder opened in place only has a session Trash
+/// (its `Trash/` folder), when the user may write to it.
 public protocol SessionFileOrganizing: Sendable {
     func canMoveOriginals(in session: SessionInfo) async -> Bool
+    /// Whether photos can go to the session Trash and back (⌘Z, Restore from Session
+    /// Trash): always in an imported session; in a folder opened in place when the user
+    /// may write to it and it is not a card, the archive (`archiveTarget`) or a library.
+    func canUseSessionTrash(in session: SessionInfo, archiveTarget: String?) async -> Bool
     /// Move the originals of `ids` into `folder`; returns the originals moved.
     func move(_ ids: [PhotoID], to folder: SessionFolderKind) async throws -> [FolderMove]
     /// "Move Rejected to Trash": an original goes to the session's Trash only when
@@ -1094,10 +1099,22 @@ public protocol SessionFileOrganizing: Sendable {
     func newVariant(of id: PhotoID) async throws -> PhotoID
 }
 
+extension SessionFileOrganizing {
+    /// Stores without folders opened in place: where originals move, the Trash is.
+    public func canUseSessionTrash(in session: SessionInfo, archiveTarget: String?) async -> Bool {
+        await canMoveOriginals(in: session)
+    }
+}
+
 extension RustSessionStore: SessionFileOrganizing {
     public func canMoveOriginals(in session: SessionInfo) async -> Bool {
         guard let h = try? await handle(for: session) else { return false }
         return h.canMoveOriginals()
+    }
+
+    public func canUseSessionTrash(in session: SessionInfo, archiveTarget: String?) async -> Bool {
+        guard let h = try? await handle(for: session) else { return false }
+        return h.canUseSessionTrash(archiveTarget: archiveTarget)
     }
 
     public func move(_ ids: [PhotoID], to folder: SessionFolderKind) async throws -> [FolderMove] {

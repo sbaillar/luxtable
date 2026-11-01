@@ -237,12 +237,17 @@ impl Trasher for NoTrash {
 }
 
 #[test]
-fn external_sessions_refuse_to_move_or_trash_originals() {
+fn external_sessions_refuse_selects_and_emptying_the_trash() {
     let mut e = ext(&[("a.ARW", b"aaaa")]);
     let ids = e.register(&["Capture/a.ARW".to_owned()]);
     let v = e.variant(ids[0]);
     assert!(matches!(
-        e.s.move_to(&[v], Folder::Trash),
+        e.s.move_to(&[v], Folder::Selects),
+        Err(SessionError::ExternalOriginals(_))
+    ));
+    let back = [(v, RelPath::new("Selects/a.ARW").unwrap())];
+    assert!(matches!(
+        e.s.move_back(&back),
         Err(SessionError::ExternalOriginals(_))
     ));
     assert!(matches!(
@@ -253,7 +258,7 @@ fn external_sessions_refuse_to_move_or_trash_originals() {
         e.s.add_originals(vec![("Selects/a.ARW".into(), UNHASHED, meta())]),
         Err(SessionError::ExternalOriginals(_))
     ));
-    assert!(e.folder.join("a.ARW").exists());
+    assert!(e.folder.join("a.ARW").exists() && !e.folder.join("Selects").exists());
     // Internal sessions can't use external-only operations.
     let t = tempfile::tempdir().unwrap();
     let mut internal = Session::create(&t.path().join("s"), "s").unwrap();
@@ -267,6 +272,55 @@ fn external_sessions_refuse_to_move_or_trash_originals() {
     ));
     assert!(!internal.is_external() && internal.external_root().is_none());
     assert_eq!(internal.originals(), &Originals::Internal);
+}
+
+/// The session Trash of a folder opened in place is its `Trash/` folder: a photo
+/// moves there (sub-folders kept, sidecars along), a rescan keeps it in the Trash,
+/// and moving it back puts it where it was.
+#[test]
+fn external_photos_move_to_the_folder_trash_and_back() {
+    let mut e = ext(&[
+        ("a.ARW", b"aaaa"),
+        ("day1/b.ARW", b"bbbb"),
+        ("Trash/a.ARW", b"old!"),
+    ]);
+    let ids = e.register(&["Capture/a.ARW".to_owned(), "Capture/day1/b.ARW".to_owned()]);
+    let (a, b) = (e.variant(ids[0]), e.variant(ids[1]));
+    e.s.set_rating(&[a], Rating::new(3).unwrap()).unwrap();
+    let moved = e.s.move_to(&[a, b], Folder::Trash).unwrap();
+    let to: Vec<&str> = moved.iter().map(|m| m.to.as_str()).collect();
+    assert_eq!(
+        to,
+        ["Trash/a-2.ARW", "Trash/day1/b.ARW"],
+        "a name taken in Trash/ gets -2"
+    );
+    assert_eq!(fs::read(e.folder.join("Trash/a-2.ARW")).unwrap(), b"aaaa");
+    assert_eq!(
+        fs::read(e.folder.join("Trash/a.ARW")).unwrap(),
+        b"old!",
+        "never overwritten"
+    );
+    assert!(e.folder.join("Trash/day1/b.ARW").exists() && !e.folder.join("a.ARW").exists());
+    assert_eq!(e.s.image(ids[0]).unwrap().rel_path.folder(), Folder::Trash);
+    // A rescan finds them in the Trash, not missing; Trash/a.ARW is a new photo there.
+    let sync = e.s.sync_external().unwrap();
+    assert!(sync.missing.is_empty(), "{:?}", sync.missing);
+    assert!(
+        sync.untracked.iter().any(|r| r == "Trash/a.ARW"),
+        "{:?}",
+        sync.untracked
+    );
+    // Back where they came from, edits intact.
+    let back: Vec<_> = moved
+        .iter()
+        .map(|m| (if m.image == ids[0] { a } else { b }, m.from.clone()))
+        .collect();
+    assert_eq!(e.s.move_back(&back).unwrap().len(), 2);
+    assert_eq!(fs::read(e.folder.join("a.ARW")).unwrap(), b"aaaa");
+    assert!(e.folder.join("day1/b.ARW").exists());
+    assert_eq!(e.s.variant(a).unwrap().rating.stars(), 3);
+    let after = e.s.sync_external().unwrap();
+    assert!(after.missing.is_empty(), "{:?}", after.missing);
 }
 
 #[test]
@@ -1116,7 +1170,7 @@ fn an_unreadable_subfolder_is_neither_missing_nor_removable() {
 }
 
 #[test]
-fn capture_one_session_folders_list_only_capture_and_selects() {
+fn capture_one_session_folders_list_capture_selects_and_the_trash() {
     let e = ext(&[
         ("Capture/a.ARW", b"a"),
         ("Capture/CaptureOne/Cache/Proxies/a.ARW", b"p"),
@@ -1134,12 +1188,18 @@ fn capture_one_session_folders_list_only_capture_and_selects() {
         .collect();
     assert_eq!(
         names,
-        vec!["Capture/Capture/a.ARW", "Capture/Selects/c.ARW"]
+        vec![
+            "Capture/Capture/a.ARW",
+            "Capture/Selects/c.ARW",
+            "Trash/rej.ARW"
+        ],
+        "Capture One's Trash/ is the session Trash"
     );
-    // Without the C1 database, Trash/ and Output/ are ordinary folders.
+    // Without the C1 database, Output/ is an ordinary folder; Trash/ is still the Trash.
     fs::remove_file(e.folder.join("Shoot.cosessiondb")).unwrap();
     let (files, _) = e.s.external_files().unwrap();
-    assert!(files.iter().any(|(r, _)| r == "Capture/Trash/rej.ARW"));
+    assert!(files.iter().any(|(r, _)| r == "Trash/rej.ARW"));
+    assert!(files.iter().any(|(r, _)| r == "Capture/Output/a.jpg"));
 }
 
 /// Luxtable's `Developed/` folder (developed copies for a photo server) at the top

@@ -147,7 +147,10 @@ impl Session {
     ) -> Vec<Op> {
         let mut ops = Vec::new();
         if with_original {
-            ops.push((from.to_path(&self.root), to.to_path(&self.root)));
+            ops.push((
+                self.original_path(from.as_str()),
+                self.original_path(to.as_str()),
+            ));
         }
         for (_, ord, rel) in sidecars {
             let src = self.root.join(rel);
@@ -166,7 +169,7 @@ impl Session {
         to: &RelPath,
         sidecars: &[(i64, u32, String)],
     ) -> Result<bool> {
-        if ensure_no_symlinks(&self.root, to.as_str()).is_err() || self.rel_in_index(to)? {
+        if !self.original_free_of_symlinks(to) || self.rel_in_index(to)? {
             return Ok(false);
         }
         for (_, ord, _) in sidecars {
@@ -203,8 +206,10 @@ impl Session {
     /// `folder`, keeping sub-directories. Name clashes (original or any
     /// sidecar location) get a `-2`, `-3` suffix. Files are never overwritten
     /// or deleted; on any failure every rename done so far is rolled back.
+    /// In an external session only the session Trash (`<folder>/Trash/`) and
+    /// back are allowed ([`Self::refuse_external_folder`]).
     pub fn move_to(&mut self, vs: &[VariantId], folder: Folder) -> Result<Vec<Moved>> {
-        self.refuse_external("moving originals")?;
+        self.refuse_external_folder(folder)?;
         let mut targets: Vec<(ImageId, RelPath)> = Vec::new();
         for &v in vs {
             let image = self.locate(v)?.image;
@@ -222,15 +227,35 @@ impl Session {
     /// variants) back at its path, or at a free `-2`, `-3` name next to it
     /// when that was taken meanwhile. Same guarantees as [`Self::move_to`].
     pub fn move_back(&mut self, moves: &[(VariantId, RelPath)]) -> Result<Vec<Moved>> {
-        self.refuse_external("moving originals")?;
         let mut targets: Vec<(ImageId, RelPath)> = Vec::new();
         for (v, to) in moves {
+            self.refuse_external_folder(to.folder())?;
             let image = self.locate(*v)?.image;
             if self.image(image)?.rel_path != *to && !targets.iter().any(|(i, _)| *i == image) {
                 targets.push((image, to.clone()));
             }
         }
         self.relocate(targets)
+    }
+
+    /// An external session's originals only move between the folder and its
+    /// `Trash/` (the session Trash): never into Selects.
+    fn refuse_external_folder(&self, folder: Folder) -> Result<()> {
+        if folder == Folder::Selects {
+            self.refuse_external("moving originals to Selects")?;
+        }
+        Ok(())
+    }
+
+    /// No symlink on the way to where the original at `to` would live (under
+    /// the session root, or an external session's folder).
+    fn original_free_of_symlinks(&self, to: &RelPath) -> bool {
+        let root = self.external_root().unwrap_or(&self.root);
+        let path = self.original_path(to.as_str());
+        path.strip_prefix(root)
+            .ok()
+            .and_then(|p| p.to_str())
+            .is_some_and(|rel| ensure_no_symlinks(root, rel).is_ok())
     }
 
     /// Move each image (with its sidecars) to its base path, or the first free
@@ -245,7 +270,7 @@ impl Session {
             let mut to = base.clone();
             let mut n = 2;
             while taken.contains(&to)
-                || to.to_path(&self.root).symlink_metadata().is_ok()
+                || self.original_path(to.as_str()).symlink_metadata().is_ok()
                 || !self.destination_free(&to, &sidecars)?
             {
                 if n > 10_000 {
@@ -304,7 +329,6 @@ impl Session {
     /// ([`Self::delete_variant`]: sidecars set aside, back with
     /// [`Self::restore_variants`]).
     pub fn trash_rejected(&mut self) -> Result<TrashedRejects> {
-        self.refuse_external("moving originals")?;
         let mut whole = Vec::new();
         let mut hide = Vec::new();
         for img in self.images()? {
