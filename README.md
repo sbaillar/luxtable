@@ -7,7 +7,10 @@ Card import, culling, sessions, editing, export and archiving, with a Rust core 
 <a href="https://luxtable.app">luxtable.app</a></p>
 
 <p align="center">
+  <a href="https://github.com/sbaillar/luxtable/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/sbaillar/luxtable?label=release"></a>
+  <a href="https://github.com/sbaillar/luxtable/actions/workflows/ci.yml"><img alt="CI status" src="https://github.com/sbaillar/luxtable/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <a href="LICENSE"><img alt="Licence: Apache-2.0" src="https://img.shields.io/badge/licence-Apache--2.0-blue"></a>
+  <a href="#install-and-build-from-source"><img alt="Install with Homebrew" src="https://img.shields.io/badge/brew-sbaillar%2Fluxtable%2Fluxtable-orange"></a>
   <img alt="Platform: macOS on Apple silicon" src="https://img.shields.io/badge/macOS-Apple%20silicon-black">
   <a href="docs/Luxtable-User-Guide.pdf"><img alt="User guide (PDF)" src="https://img.shields.io/badge/user%20guide-PDF-orange"></a>
 </p>
@@ -354,7 +357,17 @@ rawler is licensed under the LGPL-2.1, so it isn't built into Luxtable. It lives
 
 ## Install and build from source
 
-Download the app from [Releases](https://github.com/sbaillar/luxtable/releases) (`Luxtable-X.Y.Z-macos-arm64.dmg`: open it and drag Luxtable to Applications; macOS 26, Apple silicon). It's self-signed (Luxtable's own certificate), not notarized: the first time, right-click Luxtable.app and choose **Open**. From then on Luxtable updates itself (Settings ▸ Updates).
+Luxtable needs macOS 26 on Apple silicon. Install it with [Homebrew](https://brew.sh):
+
+```sh
+brew install --cask sbaillar/luxtable/luxtable
+```
+
+The full name (`tap/cask`) makes Homebrew trust this one cask and nothing else in the tap, which is how Homebrew 6 and later install from a third-party tap ([Tap Trust](https://docs.brew.sh/Tap-Trust)). Homebrew checks the download against the SHA-256 in the cask. The cask lives in [sbaillar/homebrew-luxtable](https://github.com/sbaillar/homebrew-luxtable).
+
+Or download the disk image from [Releases](https://github.com/sbaillar/luxtable/releases) (`Luxtable-X.Y.Z-macos-arm64.dmg`), open it and drag Luxtable to Applications. To check a download, compare `shasum -a 256 Luxtable-X.Y.Z-macos-arm64.dmg` with the SHA-256 GitHub shows next to the file on the release page.
+
+Either way, the app is self-signed (Luxtable's own certificate) and not notarized by Apple, so macOS blocks the first launch: open Luxtable once, then go to System Settings ▸ Privacy & Security and choose **Open Anyway**. From then on Luxtable updates itself (Settings ▸ Updates); `brew upgrade --cask luxtable` works too.
 
 Or build it from source. You need:
 
@@ -414,7 +427,7 @@ The product plan and its decisions are in [PLAN.md](PLAN.md).
 
 ## Contributing
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for the toolchain, the gates every change must pass (formatting, zero clippy warnings, ≥ 90% test coverage, the app's self-test, licence checks) and the engineering rules in [CLAUDE.md](CLAUDE.md). Sign off every commit with the [Developer Certificate of Origin](https://developercertificate.org) (`git commit -s`); there is no CLA. Please read the [Code of Conduct](CODE_OF_CONDUCT.md), and report security issues as described in [SECURITY.md](SECURITY.md).
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for the toolchain, the gates every change must pass (formatting, zero clippy warnings, ≥ 90% test coverage, the app's self-test, licence checks) and the [engineering rules](CONTRIBUTING.md#engineering-rules). Sign off every commit with the [Developer Certificate of Origin](https://developercertificate.org) (`git commit -s`); there is no CLA. Please read the [Code of Conduct](CODE_OF_CONDUCT.md), and report security issues as described in [SECURITY.md](SECURITY.md).
 
 ## Licence
 

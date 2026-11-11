@@ -33,3 +33,6 @@ secrets/
 *.keychain*
 AuthKey_*.p8
 __pycache__/
+
+# Local assistant instructions: kept on the maintainer's machine, not in the repository.
+CLAUDE.md

@@ -10,6 +10,15 @@ Each item has its evidence and a concrete fix. There are two kinds of blocker:
 
 ## Status
 
+**Published (2026-11):** the repository is public at https://github.com/sbaillar/luxtable under Apache-2.0, with releases on GitHub and CI on GitHub Actions. Since the audit below was written:
+- Issue and pull request templates are in `.github/`, and GitHub's private vulnerability reporting is on (`SECURITY.md` and `CODE_OF_CONDUCT.md` point to it; add an email address there if you want one).
+- Releases are immutable and carry GitHub's release attestation (`docs/RELEASING.md`).
+- Homebrew: `brew install --cask sbaillar/luxtable/luxtable`, from the tap `sbaillar/homebrew-luxtable`.
+- The website lives in its own repository, not in `site/`.
+- Still open: Developer ID signing and notarisation (S3), a public CC0 sample set (S4), AI Upscale model hosting (B8).
+
+The rest of this file is the audit as written before publishing, kept for its reasoning.
+
 **Decided (owner, 2026-10-10):** Apache-2.0, with DCO sign-off for contributions. The cleanup below is done on `main` (branch `chore/oss-cleanup`); publishing is not.
 
 Done:

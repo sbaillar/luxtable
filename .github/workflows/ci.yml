@@ -1,5 +1,4 @@
-# Public CI for GitHub Actions (planned: the repository isn't on GitHub yet, and Gitea
-# doesn't run this file). No secrets, no sample photos, no models: the app builds with
+# Public CI on GitHub Actions. No secrets, no sample photos, no models: the app builds with
 # LT_SKIP_MODELS=1, real-sample tests skip without samples/, and GPU tests skip without
 # a usable Metal device. The 90 % coverage gates are enforced on a maintainer's Mac.
 name: ci

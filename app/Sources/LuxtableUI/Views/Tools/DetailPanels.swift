@@ -27,7 +27,7 @@ struct LensPanel: View {
             .controlSize(.small)
             .help("Pick the correction profile by hand when the automatic match is wrong or missing")
             if let help = LensReadout.noMatchHelp(info: info, chosen: lens.profile) {
-                PanelNote(text: help)
+                PanelNote(verbatim: help)
             }
             Toggle("Enable profile corrections", isOn: Binding(
                 get: { lens.enabled },
@@ -89,7 +89,7 @@ struct CropPanel: View {
                 .accessibilityValue(model.aiNote(AIFieldMap.cropFrame) == nil ? "" : AIHighlightStyle.accessibilityValue(""))
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: DS.Space.xs), count: 3), spacing: DS.Space.xs) {
                 ForEach(CropRatio.allCases) { r in
-                    Chip(title: r.title, selected: model.settings.cropRatio == r) { model.chooseCropRatio(r) }
+                    Chip(verbatim: r.title, selected: model.settings.cropRatio == r) { model.chooseCropRatio(r) }
                         .help(CropPanel.help(r))
                         .accessibilityLabel("Crop ratio \(r.title)")
                 }
@@ -99,7 +99,7 @@ struct CropPanel: View {
             if !custom.isEmpty {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: DS.Space.xs), count: 4), spacing: DS.Space.xs) {
                     ForEach(custom) { r in
-                        Chip(title: r.name, selected: false) { model.applyCropRatio(r) }
+                        Chip(verbatim: r.name, selected: false) { model.applyCropRatio(r) }
                             .help("Crop to \(r.name) (your ratio from Capture One; the crop stays free afterwards)")
                             .accessibilityLabel("Crop ratio \(r.name)")
                     }

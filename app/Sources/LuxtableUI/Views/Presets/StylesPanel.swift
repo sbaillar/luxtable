@@ -56,7 +56,7 @@ struct StylesPanel: View {
             if let err = store.lastError {
                 Label(err, systemImage: "exclamationmark.triangle").font(DS.Font.caption).foregroundStyle(DS.reject)
             }
-            PanelNote(text: ViewerNotes.stylesHover(capabilities: model.viewer.capabilities))
+            PanelNote(verbatim: ViewerNotes.stylesHover(capabilities: model.viewer.capabilities))
         }
         .task(id: model.focusedID) {
             refreshThumbnails()

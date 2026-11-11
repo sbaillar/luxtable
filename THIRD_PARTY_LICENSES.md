@@ -17,7 +17,7 @@ other credits are in `app/Resources/Acknowledgements.md`, and the summary is in 
 
 ## Licences used
 
-- Apache License 2.0 (159)
+- Apache License 2.0 (158)
 - MIT License (29)
 - ISC License (19)
 - Mozilla Public License 2.0 (6)
@@ -5118,7 +5118,6 @@ Used by:
 - quote 1.0.47 (https://github.com/dtolnay/quote)
 - raw-window-handle 0.6.2 (https://github.com/rust-windowing/raw-window-handle)
 - rcgen 0.14.10 (https://github.com/rustls/rcgen)
-- reflink-copy 0.1.30 (https://github.com/cargo-bins/reflink-copy)
 - semver 1.0.28 (https://github.com/dtolnay/semver)
 - serde 1.0.229 (https://github.com/serde-rs/serde)
 - serde_core 1.0.229 (https://github.com/serde-rs/serde)

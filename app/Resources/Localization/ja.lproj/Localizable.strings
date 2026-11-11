@@ -2654,7 +2654,7 @@
 "This folder is on a memory card: Luxtable never deletes from a card. Import it, or delete files in Finder." = "このフォルダはメモリーカード上にあります：Luxtable がカードから削除することはありません。読み込むか、Finder でファイルを削除してください。";
 "This folder is open without a session store: ratings and edits are kept in memory only. Quitting discards them." = "このフォルダはセッションストアなしで開かれています：レーティングと編集内容はメモリ上にのみ保持され、終了すると破棄されます。";
 "This folder is synced by a cloud service. Originals may be offloaded or synced while Luxtable writes; a local or external drive is safer." = "このフォルダはクラウドサービスで同期されています。Luxtable の書き込み中にオリジナルが削除（オフロード）または同期される可能性があります。ローカルドライブまたは外部ドライブの方が安全です。";
-"This folder was opened in place: Luxtable never moves your own files. Import it to organize it." = "このフォルダはその場で開かれています：Luxtable がユーザのファイルを移動することはありません。整理するには読み込んでください。";
+"This folder was opened in place: Luxtable only moves your own files to its Trash folder. Import it to organize it." = "このフォルダはその場で開かれています：Luxtable がユーザのファイルを移動するのは Trash フォルダへのみです。整理するには読み込んでください。";
 "This location has no supported photos. Choose another folder." = "この場所にはサポートされている写真がありません。別のフォルダを選択してください。";
 "This mode can’t create sessions" = "このモードではセッションを作成できません";
 "This photo" = "この写真";

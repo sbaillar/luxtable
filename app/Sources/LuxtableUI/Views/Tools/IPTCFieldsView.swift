@@ -40,7 +40,7 @@ struct IPTCFieldsView: View {
                     .controlSize(.small)
                 }
             }
-            if let e = store.lastError { PanelNote(text: e) }
+            if let e = store.lastError { PanelNote(verbatim: e) }
         }
     }
 

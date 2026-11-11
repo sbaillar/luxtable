@@ -97,7 +97,7 @@ struct MemoryCardPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.s) {
-            PanelNote(text: ImportWording.cardPanelNote(verifies: model.importer is any ImportVerifying, live: model.mode == .live))
+            PanelNote(verbatim: ImportWording.cardPanelNote(verifies: model.importer is any ImportVerifying, live: model.mode == .live))
             Button {
                 model.sheet = .importCard(nil)
             } label: {
@@ -239,7 +239,7 @@ struct KeywordsPanel: View {
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: DS.Space.xs)], alignment: .leading, spacing: DS.Space.xs) {
                     ForEach(keywords, id: \.self) { k in
-                        Chip(title: k + "  ✕", selected: true) { model.removeKeyword(k) }
+                        Chip(verbatim: k + "  ✕", selected: true) { model.removeKeyword(k) }
                             .help("Remove “\(k)”")
                             .accessibilityLabel("Keyword \(k)")
                             .accessibilityHint("Removes it")
@@ -250,14 +250,14 @@ struct KeywordsPanel: View {
             if count > 0, !library.isEmpty {
                 Text("Keyword library (click to add)").font(DS.Font.caption).foregroundStyle(DS.textSecondary)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: DS.Space.xs)], alignment: .leading, spacing: DS.Space.xs) {
-                    ForEach(library, id: \.self) { k in Chip(title: k, selected: false) { model.addKeywords(k) } }
+                    ForEach(library, id: \.self) { k in Chip(verbatim: k, selected: false) { model.addKeywords(k) } }
                 }
             }
             let reasons = model.focusedID.flatMap { model.cullSuggestions[$0]?.reasons } ?? []
             if !reasons.isEmpty {
                 Text("From AI Cull (click to add)").font(DS.Font.caption).foregroundStyle(DS.textSecondary)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: DS.Space.xs)], alignment: .leading, spacing: DS.Space.xs) {
-                    ForEach(reasons, id: \.self) { r in Chip(title: r, selected: false) { model.addKeywords(r) } }
+                    ForEach(reasons, id: \.self) { r in Chip(verbatim: r, selected: false) { model.addKeywords(r) } }
                 }
             }
         }

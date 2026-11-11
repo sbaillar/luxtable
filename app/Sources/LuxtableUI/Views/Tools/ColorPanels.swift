@@ -93,7 +93,7 @@ struct WhiteBalancePanel: View {
                        }, shownValue: wb.asShot ? asShot.map { ($0.tint * 10).rounded() / 10 } : nil)
                 .opacity(wb.asShot ? 0.6 : 1)
             if wb.asShot, let a = asShot {
-                PanelNote(text: WhiteBalanceReadout.asShot(a))
+                PanelNote(verbatim: WhiteBalanceReadout.asShot(a))
             }
         }
         .task(id: model.focusedID) { if let id = model.focusedID { await model.loadDevelopInfo(for: [id]) } }
@@ -152,7 +152,7 @@ struct ColorEditorPanel: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 78), spacing: DS.Space.xs)], spacing: DS.Space.xs) {
             ForEach(0..<8, id: \.self) { i in
                 let c = WheelMath.rgb(hue: ColorEditorEdit.bandHues[i], saturation: 0.8, value: 0.95)
-                Chip(title: ColorEditorEdit.bandNames[i], color: Color(red: c.r, green: c.g, blue: c.b),
+                Chip(verbatim: ColorEditorEdit.bandNames[i], color: Color(red: c.r, green: c.g, blue: c.b),
                      selected: band == i) { band = i }
                     .overlay(alignment: .topTrailing) {
                         if editor.bands[i] != ColorBandEdit() { Circle().fill(DS.accent).frame(width: 5, height: 5) }
@@ -205,7 +205,7 @@ struct ColorEditorPanel: View {
             HStack(spacing: DS.Space.xs) {
                 ForEach(editor.advanced.indices, id: \.self) { i in
                     let c = WheelMath.rgb(hue: editor.advanced[i].centerHue, saturation: 0.8, value: 0.95)
-                    Chip(title: String(i + 1), color: Color(red: c.r, green: c.g, blue: c.b),
+                    Chip(verbatim: String(i + 1), color: Color(red: c.r, green: c.g, blue: c.b),
                          selected: selected(editor) == i) { model.colorTools.selectedRange = i }
                 }
             }

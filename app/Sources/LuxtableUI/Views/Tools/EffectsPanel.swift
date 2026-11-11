@@ -79,12 +79,12 @@ struct EffectsPanel: View {
             }
         case .notDownloaded, .failed:
             HStack {
-                PanelNote(text: depth.status)
+                PanelNote(verbatim: depth.status)
                 Button("Download") { model.downloadDepthModel() }.controlSize(.small)
                     .help("Download the 50 MB depth model (Depth Anything V2 Small) for depth-accurate blur")
             }
         case .ready:
-            PanelNote(text: depth.status)
+            PanelNote(verbatim: depth.status)
         }
     }
 }
