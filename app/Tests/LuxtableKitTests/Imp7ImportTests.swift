@@ -374,11 +374,16 @@ final class Imp7Box<T>: @unchecked Sendable {
         let m = sheet(card, service: service, store: MockSessionStore(counts: [1]), registry: registry)
         await m.scan()
         m.sessionText = "Q"
+        // start() does nothing until the sheet is ready (the scan landed, the free-space
+        // check answered). A busy CI runner reached it too early and no import was running.
+        let ready = ContinuousClock.now + TestTiming.bound(.seconds(10))
+        while !m.canStart, ContinuousClock.now < ready { try await Task.sleep(for: .milliseconds(20)) }
         m.start()
+        #expect(m.phase == .importing, "the import started")
         let app = AppModel(sessions: MockSessionStore(counts: [1]), images: MockImageProvider(latency: .zero),
                            renderer: FakeRenderer(), importer: service, archive: UnavailableArchiveService(target: ""),
                            ai: MockAIService(), settings: makeSettings())
-        #expect(await app.quitDecision(imports: registry) == .importRunning(count: 1))
+        #expect(await app.quitDecision(timeout: TestTiming.bound(.seconds(5)), imports: registry) == .importRunning(count: 1))
         let alert = try #require(TerminationFlow.alert(for: .importRunning(count: 1)))
         #expect(alert.title == ImportWording.quitImportTitle && alert.choices == [.cancel, .stopImportAndQuit])
         #expect(TerminationFlow.reply(for: .stopImportAndQuit) == .terminate)

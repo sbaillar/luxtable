@@ -1524,7 +1524,7 @@ impl Session {
 pub(crate) fn snapshot(conn: &Connection, path: &Path) -> Result<()> {
     let tmp = PathBuf::from(format!("{}.partial", path.display()));
     let _ = fs::remove_file(&tmp);
-    conn.backup(MAIN_DB, &tmp, None)?;
+    conn.backup(MAIN_DB, &tmp, None::<fn(rusqlite::backup::Progress)>)?;
     fs::rename(&tmp, path).at(path)?;
     if let Some(dir) = path.parent().filter(|d| !d.as_os_str().is_empty()) {
         atomic::sync_dir(dir).at(dir)?;

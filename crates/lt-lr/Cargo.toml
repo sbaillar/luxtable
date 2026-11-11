@@ -15,7 +15,7 @@ serde_json.workspace = true
 thiserror.workspace = true
 tempfile.workspace = true
 blake3.workspace = true
-rusqlite = { version = "0.37", features = ["bundled", "hooks"] }
+rusqlite = { version = "0.41", features = ["bundled", "hooks"] }
 roxmltree = "0.21.1"
 # Counts XML nesting before roxmltree parses (see src/limits.rs).
 xmlparser = "0.13.6"

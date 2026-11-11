@@ -12,7 +12,7 @@ lt-core.workspace = true
 lt-lr = { path = "../lt-lr" }
 thiserror.workspace = true
 tempfile.workspace = true
-rusqlite = { version = "0.37", features = ["bundled", "hooks"] }
+rusqlite = { version = "0.41", features = ["bundled", "hooks"] }
 # The event reader (`stream`) checks nesting before a `Value` is built; it is behind
 # the "unstable" feature, so the version is pinned exactly (as in lt-c1).
 plist = { version = "=1.10.1", default-features = false, features = ["enable_unstable_features_that_may_break_with_minor_version_bumps"] }

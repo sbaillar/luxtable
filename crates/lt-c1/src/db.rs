@@ -164,14 +164,15 @@ fn read_db_with(db: &Path, folder: &Path, cancel: &Cancel, limits: Limits) -> Re
         let to = PathBuf::from(format!("{}{suffix}", copy.display()));
         copy_side_file(&side, &to, MAX_DB_BYTES)?;
     }
-    let conn = Connection::open_with_flags(&copy, OpenFlags::SQLITE_OPEN_READ_WRITE)
+    let mut conn = Connection::open_with_flags(&copy, OpenFlags::SQLITE_OPEN_READ_WRITE)
         .map_err(|e| db_err(e.to_string()))?;
     // A hostile file's views and triggers must not call SQL functions.
     conn.execute_batch("PRAGMA trusted_schema=OFF")
         .map_err(|e| db_err(e.to_string()))?;
     let deadline = Instant::now() + limits.time;
     let stop = cancel.clone();
-    conn.progress_handler(1000, Some(move || stop() || Instant::now() > deadline));
+    conn.progress_handler(1000, Some(move || stop() || Instant::now() > deadline))
+        .map_err(|e| db_err(e.to_string()))?;
     let reader = Reader {
         conn: &conn,
         limits,
@@ -313,7 +314,6 @@ impl Reader<'_> {
             .conn
             .prepare(&format!("SELECT * FROM {table} LIMIT 0"))?
             .column_names()
-            .into_iter()
             .map(str::to_owned)
             .collect();
         let key_idx = names.iter().position(|n| n == key).unwrap_or(0);
