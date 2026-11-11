@@ -75,13 +75,14 @@ fn read_catalog_within(
         cancel,
         deadline,
     };
-    let conn = Connection::open_with_flags(&copy, OpenFlags::SQLITE_OPEN_READ_WRITE)
+    let mut conn = Connection::open_with_flags(&copy, OpenFlags::SQLITE_OPEN_READ_WRITE)
         .map_err(|e| ctx.err(&e))?;
     // A hostile file's views and triggers must not call SQL functions.
     conn.execute_batch("PRAGMA trusted_schema=OFF")
         .map_err(|e| ctx.err(&e))?;
     // A hostile file can make one statement run forever.
-    conn.progress_handler(1000, Some(move || Instant::now() > deadline));
+    conn.progress_handler(1000, Some(move || Instant::now() > deadline))
+        .map_err(|e| ctx.err(&e))?;
     let mut reader = Reader {
         ctx,
         conn: &conn,

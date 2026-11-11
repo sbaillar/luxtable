@@ -17,13 +17,13 @@ other credits are in `app/Resources/Acknowledgements.md`, and the summary is in 
 
 ## Licences used
 
-- Apache License 2.0 (158)
+- Apache License 2.0 (157)
 - MIT License (29)
 - ISC License (19)
 - Mozilla Public License 2.0 (6)
 - BSD 2-Clause "Simplified" License (5)
 - BSD 3-Clause "New" or "Revised" License (5)
-- zlib License (5)
+- zlib License (4)
 - Independent JPEG Group License (2)
 - Unicode License v3 (1)
 
@@ -3107,7 +3107,6 @@ Used by:
 - errno 0.3.14 (https://github.com/lambda-fairy/rust-errno)
 - fastrand 2.5.0 (https://github.com/smol-rs/fastrand)
 - flate2 1.1.10 (https://github.com/rust-lang/flate2-rs)
-- hashbrown 0.15.5 (https://github.com/rust-lang/hashbrown)
 - hashbrown 0.17.1 (https://github.com/rust-lang/hashbrown)
 - heck 0.5.0 (https://github.com/withoutboats/heck)
 - indexmap 2.14.2 (https://github.com/indexmap-rs/indexmap)
@@ -3347,7 +3346,7 @@ limitations under the License.
 ## Apache License 2.0
 
 Used by:
-- hashlink 0.10.0 (https://github.com/kyren/hashlink)
+- hashlink 0.12.2 (https://github.com/djc/hashlink)
 
 ```text
                               Apache License
@@ -6618,8 +6617,8 @@ third-party/chromium/LICENSE.
 ## MIT License
 
 Used by:
-- libsqlite3-sys 0.35.0 (https://github.com/rusqlite/rusqlite)
-- rusqlite 0.37.0 (https://github.com/rusqlite/rusqlite)
+- libsqlite3-sys 0.39.1 (https://github.com/rusqlite/rusqlite)
+- rusqlite 0.41.1 (https://github.com/rusqlite/rusqlite)
 
 ```text
 Copyright (c) 2014 The rusqlite developers
@@ -7738,7 +7737,6 @@ Used by:
 ## zlib License
 
 Used by:
-- foldhash 0.1.5 (https://github.com/orlp/foldhash)
 - foldhash 0.2.0 (https://github.com/orlp/foldhash)
 
 ```text

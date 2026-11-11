@@ -90,7 +90,7 @@ fn from_db(path: &Path, cancel: &Cancel) -> Result<Vec<String>, String> {
         let to = PathBuf::from(format!("{}{suffix}", copy.display()));
         copy_side_file(&side, &to, MAX_SETTINGS_FILE_BYTES).map_err(|e| e.to_string())?;
     }
-    let conn = Connection::open_with_flags(&copy, OpenFlags::SQLITE_OPEN_READ_WRITE)
+    let mut conn = Connection::open_with_flags(&copy, OpenFlags::SQLITE_OPEN_READ_WRITE)
         .map_err(|e| e.to_string())?;
     conn.execute_batch("PRAGMA trusted_schema=OFF")
         .map_err(|e| e.to_string())?;
@@ -98,7 +98,8 @@ fn from_db(path: &Path, cancel: &Cancel) -> Result<Vec<String>, String> {
     // make one run forever).
     let deadline = Instant::now() + DB_TIME_LIMIT;
     let stop = cancel.clone();
-    conn.progress_handler(1000, Some(move || stop() || Instant::now() > deadline));
+    conn.progress_handler(1000, Some(move || stop() || Instant::now() > deadline))
+        .map_err(|e| e.to_string())?;
     let interrupted = |e: rusqlite::Error| {
         if cancel() {
             "Cancelled".to_owned()
