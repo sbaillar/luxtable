@@ -97,8 +97,8 @@ struct PanelEmptyState: View {
         self.text = Text(text)
     }
 
-    @_disfavoredOverload
-    init(symbol: String, text: String) {
+    /// Text shown as is (a name or a value), not looked up in the string tables.
+    init(symbol: String, verbatim text: String) {
         self.symbol = symbol
         self.text = Text(verbatim: text)
     }
@@ -119,8 +119,8 @@ struct PanelNote: View {
 
     init(text: LocalizedStringKey) { self.text = Text(text) }
 
-    @_disfavoredOverload
-    init(text: String) { self.text = Text(verbatim: text) }
+    /// Text shown as is, not looked up in the string tables.
+    init(verbatim text: String) { self.text = Text(verbatim: text) }
 
     var body: some View {
         text
@@ -141,8 +141,8 @@ struct InfoRow: View {
         self.value = value
     }
 
-    @_disfavoredOverload
-    init(label: String, value: String) {
+    /// A label shown as is, not looked up in the string tables.
+    init(verbatim label: String, value: String) {
         self.label = Text(verbatim: label)
         self.value = value
     }
@@ -170,8 +170,8 @@ struct Chip: View {
         self.action = action
     }
 
-    @_disfavoredOverload
-    init(title: String, color: Color? = nil, selected: Bool, action: @escaping () -> Void) {
+    /// A title shown as is (a name), not looked up in the string tables.
+    init(verbatim title: String, color: Color? = nil, selected: Bool, action: @escaping () -> Void) {
         self.title = Text(verbatim: title)
         self.color = color
         self.selected = selected

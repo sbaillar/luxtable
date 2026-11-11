@@ -7967,7 +7967,7 @@
 "This folder is synced by a cloud service. Originals may be offloaded or synced while Luxtable writes; a local or external drive is safer." = "This folder is synced by a cloud service. Originals may be offloaded or synced while Luxtable writes; a local or external drive is safer.";
 
 /* LuxtableCore/Browser/CullFinishing.swift */
-"This folder was opened in place: Luxtable never moves your own files. Import it to organize it." = "This folder was opened in place: Luxtable never moves your own files. Import it to organize it.";
+"This folder was opened in place: Luxtable only moves your own files to its Trash folder. Import it to organize it." = "This folder was opened in place: Luxtable only moves your own files to its Trash folder. Import it to organize it.";
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "This location has no supported photos. Choose another folder." = "This location has no supported photos. Choose another folder.";

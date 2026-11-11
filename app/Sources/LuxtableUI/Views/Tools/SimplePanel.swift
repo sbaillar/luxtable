@@ -15,7 +15,7 @@ struct SimplePanel: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DS.Space.m) {
                 if !canEdit {
-                    PanelNote(text: SimpleModeText.noPhoto)
+                    PanelNote(verbatim: SimpleModeText.noPhoto)
                 }
                 autoButton
                 section(SimpleModeText.looks) { looks }
@@ -38,7 +38,7 @@ struct SimplePanel: View {
                     Spacer()
                 }
                 .controlSize(.small)
-                PanelNote(text: SimpleModeText.moreTools)
+                PanelNote(verbatim: SimpleModeText.moreTools)
             }
             .padding(DS.Space.m)
             .disabled(!canEdit)

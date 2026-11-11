@@ -22,7 +22,7 @@ struct AIDenoiseSection: View {
                 .help("Remove noise with a neural network on this Mac (Neural Engine and GPU)")
                 .aiHighlight(model, AIFieldMap.aiDenoise, value: noise.aiDenoise ? "on" : "off")
             if let reason = service.model.unavailableReason {
-                PanelNote(text: reason)
+                PanelNote(verbatim: reason)
             } else if noise.aiDenoise {
                 EditSlider(model: model, spec: Specs.aiDenoiseStrength, keyPath: \.noise.aiStrength)
                 status(url)

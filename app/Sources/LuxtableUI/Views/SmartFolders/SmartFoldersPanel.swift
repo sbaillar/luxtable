@@ -31,7 +31,7 @@ struct SmartFoldersPanel: View {
             .padding(.top, DS.Space.xs)
             .disabled(model.currentSession == nil)
             .help("Make a folder from any rating, tag, flag, camera, lens, date, ISO or keyword rule")
-            if let e = sf.lastError { PanelNote(text: e) }
+            if let e = sf.lastError { PanelNote(verbatim: e) }
         }
         .sheet(item: $editing) { target in
             SmartFolderEditor(target: target) { draft in

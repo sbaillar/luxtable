@@ -46,11 +46,11 @@ struct RemoveToolSection: View {
                 }
             } else if case .failed = engine.model.state {
                 HStack {
-                    PanelNote(text: engine.status)
+                    PanelNote(verbatim: engine.status)
                     Button("Try Again") { engine.activate() }.controlSize(.small)
                 }
             } else if on || count > 0 {
-                PanelNote(text: on ? String(localized: "Paint over what to remove, then release. Esc to stop. ") + engine.status
+                PanelNote(verbatim: on ? String(localized: "Paint over what to remove, then release. Esc to stop. ") + engine.status
                           : count == 1 ? String(localized: "1 removal on this photo.")
                           : String(localized: "\(count) removals on this photo."))
             }

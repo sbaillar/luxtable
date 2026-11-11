@@ -28,6 +28,10 @@ Region (per-app overrides included); there is no in-app setting.
    - in models and services (LuxtableCore), and for AppKit (`NSAlert`, menu items, panels),
      write `String(localized: "Moved \(count) photos to \(name)")`;
    - a helper view that only ever gets literals can take a `LocalizedStringKey`.
+   - a helper view that also shows text as is (a name, a value) gets a second initialiser
+     with its own label, `PanelNote(verbatim: name)`, not a `String` overload of the same
+     one: compiler versions disagree on which overload a literal picks, and the string then
+     goes missing from the extraction.
 2. Interpolate only `String` and `Int` values (they become `%@` and `%lld`). Format a
    `Double` or a measurement to a `String` first: `String(localized:)` formats a `Double` as
    `%lf`, six decimals.

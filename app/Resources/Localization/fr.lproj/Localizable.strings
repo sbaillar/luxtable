@@ -2654,7 +2654,7 @@
 "This folder is on a memory card: Luxtable never deletes from a card. Import it, or delete files in Finder." = "Ce dossier est sur une carte mémoire : Luxtable ne supprime jamais rien d’une carte. Importez-le, ou supprimez des fichiers dans le Finder.";
 "This folder is open without a session store: ratings and edits are kept in memory only. Quitting discards them." = "Ce dossier est ouvert sans stockage de session : les notes et modifications ne sont conservées qu’en mémoire. Quitter les supprime.";
 "This folder is synced by a cloud service. Originals may be offloaded or synced while Luxtable writes; a local or external drive is safer." = "Ce dossier est synchronisé par un service cloud. Les originaux peuvent être déchargés ou synchronisés pendant que Luxtable écrit ; un disque local ou externe est plus sûr.";
-"This folder was opened in place: Luxtable never moves your own files. Import it to organize it." = "Ce dossier a été ouvert sur place : Luxtable ne déplace jamais vos propres fichiers. Importez-le pour l’organiser.";
+"This folder was opened in place: Luxtable only moves your own files to its Trash folder. Import it to organize it." = "Ce dossier a été ouvert sur place : Luxtable ne déplace vos propres fichiers que vers son dossier Trash. Importez-le pour l’organiser.";
 "This location has no supported photos. Choose another folder." = "Cet emplacement ne contient aucune photo prise en charge. Choisissez un autre dossier.";
 "This mode can’t create sessions" = "Ce mode ne peut pas créer de sessions";
 "This photo" = "Cette photo";

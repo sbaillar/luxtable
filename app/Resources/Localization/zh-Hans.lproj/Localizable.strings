@@ -2654,7 +2654,7 @@
 "This folder is on a memory card: Luxtable never deletes from a card. Import it, or delete files in Finder." = "此文件夹位于存储卡上：Luxtable 绝不会从存储卡中删除任何内容。请导入它，或在访达中删除文件。";
 "This folder is open without a session store: ratings and edits are kept in memory only. Quitting discards them." = "此文件夹在没有会话存储的情况下打开：星级和编辑仅保存在内存中。退出将丢弃它们。";
 "This folder is synced by a cloud service. Originals may be offloaded or synced while Luxtable writes; a local or external drive is safer." = "此文件夹由云服务同步。在 Luxtable 写入时，原片可能会被移出本地或被同步；使用本地或外置驱动器更安全。";
-"This folder was opened in place: Luxtable never moves your own files. Import it to organize it." = "此文件夹是原位打开的：Luxtable 绝不会移动你自己的文件。导入它即可进行整理。";
+"This folder was opened in place: Luxtable only moves your own files to its Trash folder. Import it to organize it." = "此文件夹是原位打开的：Luxtable 只会将你自己的文件移到它的 Trash 文件夹。导入它即可进行整理。";
 "This location has no supported photos. Choose another folder." = "此位置没有受支持的照片。请选取其他文件夹。";
 "This mode can’t create sessions" = "此模式无法创建会话";
 "This photo" = "此照片";
