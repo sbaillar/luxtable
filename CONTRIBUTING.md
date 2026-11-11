@@ -1,6 +1,16 @@
 # Contributing to Luxtable
 
-Thanks for helping. Luxtable is a macOS RAW photo app with a Rust core (`crates/`) and a SwiftUI app (`app/`). Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the crate contracts and [CLAUDE.md](CLAUDE.md) for the engineering rules (performance budgets, coverage, no `unsafe` outside `lt-ffi` and GPU buffer mapping, atomic writes, never losing a user's file).
+Thanks for helping. Luxtable is a macOS RAW photo app with a Rust core (`crates/`) and a SwiftUI app (`app/`). Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the crate contracts, and the engineering rules below.
+
+## Engineering rules
+
+- **Performance first for RAW.** Every hot path has a criterion bench and a budget ([docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#budgets-release-build-m4-pro-a9-arw-file-in-page-cache)). Never allocate per pixel, never block the UI thread, prefer SIMD-friendly loops over `f32` slices, and parallelize with rayon by rows or tiles. Measure before and after, and put the numbers in the pull request.
+- **Coverage ≥ 90 % of lines** across the Rust workspace (`scripts/coverage.sh`). Tests assert behaviour; they don't just execute code. Don't use `#[coverage(off)]` or trivial tests to reach the number.
+- **Zero warnings** from `cargo clippy --workspace --all-targets -- -D warnings` and `cargo fmt --check`.
+- **No `unsafe`** outside `lt-ffi` and the GPU buffer mapping in `lt-pipeline::gpu`. Each block needs a `// SAFETY:` comment.
+- **Never lose a user's file.** Writes are atomic (write a temporary file, fsync, rename). Imports verify BLAKE3 before they report success. Nothing ever deletes from a memory card or from the archive.
+- **Sidecars are the source of truth.** SQLite is an index that can be rebuilt from them.
+- **Conventions:** Rust 2024 with the workspace lints. Libraries use `thiserror` for errors; `anyhow` is for binaries and tests only. A dependency used by one crate goes in that crate's `Cargo.toml`; add it to the root `[workspace.dependencies]` only when two or more crates share it.
 
 ## Toolchain
 

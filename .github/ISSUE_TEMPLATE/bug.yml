@@ -1,0 +1,59 @@
+name: Bug report
+description: Something in Luxtable doesn't work as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please don't attach photos of people or files you wouldn't want public: issues are visible to everyone.
+        For a security problem, use the Security tab ▸ Report a vulnerability instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected and what Luxtable did instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a session with …
+        2. Press …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Luxtable version
+      description: Luxtable ▸ About Luxtable
+      placeholder: "0.5.4"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version and Mac model
+      placeholder: "macOS 26.1, MacBook Pro M4 Pro"
+    validations:
+      required: true
+  - type: input
+    id: camera
+    attributes:
+      label: Camera and file format, if a photo is involved
+      placeholder: "Sony A7 IV, compressed ARW"
+  - type: dropdown
+    id: helper
+    attributes:
+      label: Is the RAW helper installed? (Settings ▸ RAW)
+      options: ["Yes", "No", "Not sure"]
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: |
+        Optional. In Terminal, right after the problem:
+        `log show --last 10m --predicate 'subsystem == "app.luxtable.Luxtable"'`
+        Check it for folder and file names you'd rather not share before pasting.
+      render: text

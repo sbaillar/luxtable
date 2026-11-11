@@ -5,9 +5,23 @@
 - A Mac with Apple silicon, running macOS 26 or later.
 - To build it: the Xcode Command Line Tools (Swift 6.2) and Rust 1.90 or newer. Xcode itself isn't needed.
 
+## Install with Homebrew
+
+If you use [Homebrew](https://brew.sh), run this in Terminal:
+
+```sh
+brew install --cask sbaillar/luxtable/luxtable
+```
+
+Type the full name, `sbaillar/luxtable/luxtable`: it tells Homebrew to trust this one package from Luxtable's tap. Homebrew checks the download against its SHA-256 before installing it.
+
 ## Download
 
-Download `Luxtable-X.Y.Z-macos-arm64.dmg` from the project's GitHub releases, open it and drag Luxtable.app onto the Applications folder in its window. The app is self-signed (Luxtable's own certificate), not notarised: the first time, right-click Luxtable.app and choose **Open**. From then on Luxtable keeps itself up to date (see [Updates](#updates)).
+Or download `Luxtable-X.Y.Z-macos-arm64.dmg` from the project's GitHub releases, open it and drag Luxtable.app onto the Applications folder in its window.
+
+## The first launch
+
+The app is self-signed (Luxtable's own certificate) and not notarised by Apple, so macOS blocks it the first time, however you installed it. Open Luxtable once, then go to System Settings ▸ Privacy & Security and choose **Open Anyway**. From then on Luxtable keeps itself up to date (see [Updates](#updates)).
 
 ## Build from source
 

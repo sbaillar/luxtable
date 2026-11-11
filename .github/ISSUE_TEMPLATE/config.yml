@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem
+    url: https://github.com/sbaillar/luxtable/security/advisories/new
+    about: Private report, seen only by the maintainers.
+  - name: User guide
+    url: https://github.com/sbaillar/luxtable/blob/main/docs/user-guide/README.md
+    about: How Luxtable works, chapter by chapter.
+  - name: Supported cameras
+    url: https://github.com/sbaillar/luxtable/blob/main/docs/CAMERAS.md
+    about: Check here before reporting a file that doesn't develop.

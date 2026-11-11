@@ -1,0 +1,20 @@
+name: Feature request
+description: Suggest something Luxtable should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The task or the part of your workflow this is about, and what gets in the way today.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help
+      description: How you imagine it working. A sketch or a pointer to another app's behaviour is welcome.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you do instead for now

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Point the Homebrew tap's cask at a published release, so `brew install --cask luxtable`
-# (after `brew tap sbaillar/luxtable`) installs it.
+# Point the Homebrew tap's cask at a published release, so
+# `brew install --cask sbaillar/luxtable/luxtable` installs it.
 #
 #   scripts/update-cask.sh <version> <dmg>            write, commit and push the tap's cask
 #   scripts/update-cask.sh --print <version> <dmg>    print the cask only
@@ -45,6 +45,12 @@ cask "luxtable" do
     "~/Library/Caches/app.luxtable.Luxtable",
     "~/Library/Preferences/app.luxtable.Luxtable.plist",
   ]
+
+  caveats <<~EOS
+    Luxtable is signed with its own certificate and is not notarized by Apple,
+    so macOS blocks the first launch. Open Luxtable once, then choose
+    System Settings > Privacy & Security > Open Anyway.
+  EOS
 end
 EOF
 }

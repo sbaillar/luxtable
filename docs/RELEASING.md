@@ -18,7 +18,7 @@ Luxtable checks `GET https://api.github.com/repos/sbaillar/luxtable/releases` (a
 
 Each release also has `Luxtable-<version>-macos-arm64.dmg`, the installer people download by hand: a window with Luxtable.app and an arrow to the Applications folder. `scripts/make-dmg.sh` makes it from `dist/Luxtable.app` (Finder lays out the window, so it runs in a logged-in session and the first run asks to let the terminal control Finder). The updater ignores it. Link the disk image in the notes' `## Install` section.
 
-After publishing, `scripts/update-cask.sh` points the Homebrew tap (`sbaillar/homebrew-luxtable`, its `Casks/luxtable.rb`) at the new disk image and its SHA-256, so `brew tap sbaillar/luxtable && brew install --cask luxtable` installs it; betas are skipped. A failure there only warns: run it again by hand. The tap is a separate repository because the checksum exists only after the release commit is pushed.
+After publishing, `scripts/update-cask.sh` points the Homebrew tap (`sbaillar/homebrew-luxtable`, its `Casks/luxtable.rb`) at the new disk image and its SHA-256, so `brew install --cask sbaillar/luxtable/luxtable` installs it; betas are skipped. The full name is how Homebrew 6 and later install from a third-party tap: it trusts that one cask and nothing else in the tap ([Tap Trust](https://docs.brew.sh/Tap-Trust)). The tap's own CI runs `brew style` and `brew audit` on every change. A failure there only warns: run it again by hand. The tap is a separate repository because the checksum exists only after the release commit is pushed.
 
 `scripts/release.sh` does all of this. It builds with `scripts/build-app.sh` at the tag, checks that the app's version is the tag's and that `codesign --verify --deep --strict` passes, zips it and makes the disk image in `dist/`, and runs `gh release create --verify-tag` with both (`--prerelease` for a beta). By hand, it is:
 
@@ -30,6 +30,8 @@ scripts/make-dmg.sh
 gh release create "v$V" "dist/Luxtable-$V-macos-arm64.dmg" "dist/Luxtable-$V-macos-arm64.zip" \
   --title "Luxtable $V" --notes-file notes.md
 ```
+
+**Releases are immutable** (repository Settings ▸ General ▸ Releases ▸ Enable release immutability, turned on after 0.5.4): once a release is published, its files and its tag can't be changed or deleted, and GitHub signs an attestation for it. Anyone can check one with `gh release verify v$V -R sbaillar/luxtable` and a downloaded file with `gh release verify-asset v$V <file> -R sbaillar/luxtable`. So attach every file in the one `gh release create` call, as above (it uploads to a draft and then publishes): `gh release upload` to a published release fails. A release that went out wrong is fixed with a new version, never by editing it. 0.5.4 and earlier were published before this and have no attestation.
 
 **A beta** is the same with a `-beta.N` version and tag, published with `gh release create … --prerelease`. Only users who turned on Settings ▸ Updates ▸ Include beta versions are offered it. Versions compare by semver, so `0.1.19-beta.1` < `0.1.19-beta.2` < `0.1.19`: beta testers move on to the release once it is out, and users on the stable channel never see a beta. Never replace a published release's zip: publish a new version instead.
 

@@ -4,8 +4,7 @@
 
 Please report security problems privately, not in a public issue:
 
-- through GitHub's private vulnerability reporting (the repository's **Security** tab ▸ **Report a vulnerability**), or
-- by email to **[SECURITY CONTACT — maintainer to fill in before publishing]**.
+- through GitHub's private vulnerability reporting: the repository's **Security** tab ▸ **Report a vulnerability** ([direct link](https://github.com/sbaillar/luxtable/security/advisories/new)). Only the maintainers see the report.
 
 Include what you found, how to reproduce it (a minimal file or session helps), the Luxtable version (Luxtable ▸ About Luxtable) and your macOS version. You'll get an acknowledgement within a week. Please give us a reasonable time to ship a fix before disclosing it.
 
