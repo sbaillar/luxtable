@@ -60,7 +60,9 @@ if [ "$print" = 1 ]; then cask; exit 0; fi
 tap="${LT_TAP:-sbaillar/homebrew-luxtable}"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
-gh repo clone "$tap" "$work/tap" -- --quiet
+# Over HTTPS with gh's login, whatever protocol gh and git are set to use: an SSH key on
+# this Mac may belong to another account.
+git -c credential.helper='!gh auth git-credential' clone --quiet "https://github.com/$tap.git" "$work/tap"
 mkdir -p "$work/tap/Casks"
 cask > "$work/tap/Casks/luxtable.rb"
 cd "$work/tap"
