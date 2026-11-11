@@ -1504,7 +1504,7 @@ checksum = "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6"
 
 [[package]]
 name = "lt-ai"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "bytemuck",
  "criterion",
@@ -1522,7 +1522,7 @@ dependencies = [
 
 [[package]]
 name = "lt-apple"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "lt-core",
@@ -1536,7 +1536,7 @@ dependencies = [
 
 [[package]]
 name = "lt-archive"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "base64",
  "blake3",
@@ -1557,7 +1557,7 @@ dependencies = [
 
 [[package]]
 name = "lt-c1"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "lt-core",
@@ -1576,7 +1576,7 @@ dependencies = [
 
 [[package]]
 name = "lt-cache"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "criterion",
@@ -1589,7 +1589,7 @@ dependencies = [
 
 [[package]]
 name = "lt-core"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "half",
  "proptest",
@@ -1600,7 +1600,7 @@ dependencies = [
 
 [[package]]
 name = "lt-export"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "chrono",
  "criterion",
@@ -1625,7 +1625,7 @@ dependencies = [
 
 [[package]]
 name = "lt-ffi"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "bytemuck",
@@ -1670,7 +1670,7 @@ dependencies = [
 
 [[package]]
 name = "lt-fsutil"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "rustix",
  "tempfile",
@@ -1679,7 +1679,7 @@ dependencies = [
 
 [[package]]
 name = "lt-gphotos"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "percent-encoding",
  "serde",
@@ -1690,7 +1690,7 @@ dependencies = [
 
 [[package]]
 name = "lt-immich"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "lt-fsutil",
@@ -1703,7 +1703,7 @@ dependencies = [
 
 [[package]]
 name = "lt-import"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "chrono",
@@ -1724,7 +1724,7 @@ dependencies = [
 
 [[package]]
 name = "lt-lr"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "lt-core",
@@ -1741,7 +1741,7 @@ dependencies = [
 
 [[package]]
 name = "lt-merge"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "criterion",
  "lt-core",
@@ -1754,7 +1754,7 @@ dependencies = [
 
 [[package]]
 name = "lt-pipeline"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "bytemuck",
@@ -1774,7 +1774,7 @@ dependencies = [
 
 [[package]]
 name = "lt-plugin"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "bytemuck",
@@ -1795,7 +1795,7 @@ dependencies = [
 
 [[package]]
 name = "lt-raw"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "criterion",
  "jpeg-encoder",
@@ -1816,7 +1816,7 @@ dependencies = [
 
 [[package]]
 name = "lt-rawler"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "lt-core",
  "lt-raw",
@@ -1826,7 +1826,7 @@ dependencies = [
 
 [[package]]
 name = "lt-remote"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "lt-core",
@@ -1849,7 +1849,7 @@ dependencies = [
 
 [[package]]
 name = "lt-session"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "blake3",
  "criterion",
@@ -1866,7 +1866,7 @@ dependencies = [
 
 [[package]]
 name = "lt-template"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "chrono",
  "thiserror",
@@ -1875,7 +1875,7 @@ dependencies = [
 
 [[package]]
 name = "lt-testdata"
-version = "0.5.4"
+version = "0.5.5"
 
 [[package]]
 name = "md-5"
