@@ -667,7 +667,7 @@ Used by:
 ## Apache License 2.0
 
 Used by:
-- rustix 1.1.5 (https://github.com/bytecodealliance/rustix)
+- rustix 1.1.6 (https://github.com/bytecodealliance/rustix)
 - wasm-encoder 0.261.0 (https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wasm-encoder)
 - wast 261.0.0 (https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wast)
 - wat 1.261.0 (https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wat)
@@ -3125,7 +3125,7 @@ Used by:
 - ring 0.17.14 (https://github.com/briansmith/ring)
 - roxmltree 0.21.1 (https://github.com/RazrFalcon/roxmltree)
 - rustc-hash 1.1.0 (https://github.com/rust-lang-nursery/rustc-hash)
-- rustix 1.1.5 (https://github.com/bytecodealliance/rustix)
+- rustix 1.1.6 (https://github.com/bytecodealliance/rustix)
 - rustls 0.23.46 (https://github.com/rustls/rustls)
 - scopeguard 1.2.0 (https://github.com/bluss/scopeguard)
 - smallvec 1.16.2 (https://github.com/servo/rust-smallvec)
