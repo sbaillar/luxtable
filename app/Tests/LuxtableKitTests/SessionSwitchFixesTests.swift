@@ -113,6 +113,7 @@ private final class OverlappingScans: ImportService, @unchecked Sendable {
     @Test func aSupersededFolderOpenLeavesTheNewerOnesProgressAlone() async throws {
         let store = SlowFolderStore()
         let m = makeModel(store: store)
+        m.toastDuration = .seconds(60) // the cancel's toast is read after slow steps
         m.settings.sessionClosed = true
         await m.start()
         let one = URL(fileURLWithPath: "/tmp/lt-open-one"), two = URL(fileURLWithPath: "/tmp/lt-open-two")
