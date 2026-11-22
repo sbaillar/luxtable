@@ -13,6 +13,12 @@ Insert a card and choose **File ▸ Import from Card…** (`⇧⌘I`) or the **I
 - **Backup Copy:** a second destination that receives the same verified files.
 - **Re-read the card after copying:** reads every file from the card a second time and compares it. This catches a card reader that returned bad data once, and takes twice as long.
 
+## While it runs
+
+The sheet says what the import is doing and to which file: **Copying**, **Verifying** (reading the copy back from the disk), then making sure every copy is safely on disk and adding the photos to the session. Those last steps copy nothing, so the bar stays full while they run; on a large card they can take a few seconds.
+
+Only photos, videos and their sidecars are imported. Anything else on the card (the camera's own databases, a text file) is ignored.
+
 ## What makes it safe
 
 - Files are copied in parallel, and each copy's BLAKE3 checksum is verified before the import counts it as done.

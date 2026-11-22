@@ -17,8 +17,8 @@
 //! - A file counts as imported only when it is copied, verified **and**
 //!   registered. The result lists every media file on the card (from a fresh
 //!   scan after the run) that has no verified library copy (`card_only`);
-//!   `safe_to_remove` is true only when there is none and nothing else stays
-//!   only on the card.
+//!   `safe_to_remove` is true only when there is none and the whole card was
+//!   readable. Files that are not media are ignored.
 //! - [`pending_imports`] / [`discard_pending_import`] back the "resume import?"
 //!   prompt; a pending import names the card(s) that resume it.
 //! - [`recover_unregistered`] (on session open) registers originals an import
@@ -38,9 +38,9 @@ use std::time::{Duration, UNIX_EPOCH};
 use lt_core::{FileHash, IptcMeta};
 use lt_import::journal::{EntryState, Journal, SourceKey};
 use lt_import::{
-    DedupeLookup, FaultInjector, FileKind, ImportError, ImportPlan, ImportedFile, KnownCopy,
-    MetaProvider, NOT_REGISTERED, PartialHash, PlanOptions, RunHooks, ScanReport, SessionSink,
-    find_duplicate, full_hash, partial_hash,
+    DedupeLookup, FaultInjector, FileKind, ImportError, ImportPlan, ImportStage, ImportedFile,
+    KnownCopy, MetaProvider, NOT_REGISTERED, PartialHash, PlanOptions, RunHooks, ScanReport,
+    SessionSink, find_duplicate, full_hash, partial_hash,
 };
 use lt_session::{GlobalIndex, ImageMetaLite, NewOriginal, Session, SessionError};
 use lt_template::{Template, Vars};
@@ -218,8 +218,8 @@ pub struct ImportResult {
     /// Media files on the card with no verified copy in the library (not
     /// selected, failed, not registered, stopped before they were copied…).
     pub card_only: Vec<CardIssue>,
-    /// Every media file on the card has a verified library copy and nothing
-    /// else stays only on the card: the card may be called safe to remove.
+    /// Every media file on the card has a verified library copy and the whole
+    /// card was readable: the card may be called safe to remove.
     pub safe_to_remove: bool,
     /// Card files whose library copy was damaged, imported again (path → reason).
     pub damaged_library_copies: Vec<CardIssue>,
@@ -280,11 +280,6 @@ fn free_bytes_at(path: &Path) -> Option<u64> {
         }
         p = p.parent()?;
     }
-}
-
-/// Camera-database/index files (`MEDIAPRO.XML`, `AVIN0001.BNP`…) are not media.
-fn is_camera_database(i: &CardIssue) -> bool {
-    i.reason.contains("camera database")
 }
 
 // ------------------------------------------------------------------ dedupe ---
@@ -521,7 +516,8 @@ impl CardScan {
     }
 
     /// Copy the chosen candidates into the session (see the module docs).
-    /// Progress: `"import"` (bytes) and `"import.files"` (files).
+    /// Progress: `"import"` (bytes), `"import.files"` (files) and the current
+    /// step (see `emit_step`).
     pub async fn import(
         self: Arc<Self>,
         options: ImportOptions,
@@ -702,6 +698,24 @@ fn emit(ev: &Dispatcher, kind: &str, phase: TaskPhase, done: u64, total: u64) {
         phase,
         completed: done.min(total),
         total,
+        detail: None,
+    });
+}
+
+/// What the import is doing now, for display: kind `"import.checking"`,
+/// `"import.copying"`, `"import.verifying"`, `"import.saving"` or
+/// `"import.finishing"`, with the file's name in `detail` when the step is
+/// about one file.
+fn emit_step(ev: &Dispatcher, kind: &str, file: Option<&Path>) {
+    ev.emit(ProgressEvent {
+        task_id: 1,
+        kind: kind.into(),
+        phase: TaskPhase::Running,
+        completed: 0,
+        total: 0,
+        detail: file
+            .and_then(Path::file_name)
+            .map(|n| n.to_string_lossy().into_owned()),
     });
 }
 
@@ -915,6 +929,13 @@ fn run_import(
             p.files_done as u64,
             p.files_total as u64,
         );
+        let step = match p.stage {
+            ImportStage::Checking => "import.checking",
+            ImportStage::Copying => "import.copying",
+            ImportStage::Verifying => "import.verifying",
+            ImportStage::Saving => "import.saving",
+        };
+        emit_step(ev, step, p.current.as_deref());
     };
     let run = lt_import::run_with(&plan, hooks, &progress, &cancel);
     finished.store(true, Ordering::Release);
@@ -943,6 +964,8 @@ fn run_import(
         TaskPhase::Failed
     };
     emit(ev, "import", phase, report.bytes_copied, bytes_total);
+    // The index and a second look at the card still follow.
+    emit_step(ev, "import.finishing", None);
 
     let registered = sink.registered.load(Ordering::Relaxed);
     let session = session.into_inner().unwrap_or_else(PoisonError::into_inner);
@@ -962,15 +985,10 @@ fn run_import(
         .failed
         .iter()
         .partition(|f| f.reason.starts_with(NOT_REGISTERED));
-    let fresh_skipped: Vec<CardIssue> = fresh
-        .skipped_unknown
-        .iter()
-        .map(|s| issue(&s.path, &s.reason))
-        .collect();
+    // Files that are not media (`fresh.skipped_unknown`) are ignored.
     let safe_to_remove = card_only.is_empty()
         && fresh.errors.is_empty()
         && report.scan_errors.is_empty()
-        && fresh_skipped.iter().all(is_camera_database)
         && !report.cancelled
         && report.source_lost.is_none()
         && report.durability_error.is_none();

@@ -20,6 +20,13 @@ private func candidate(_ name: String, kind: ImportItemKind = .photo) -> ImportC
                     alreadyImported: false, kind: kind)
 }
 
+private final class SeenProgress: @unchecked Sendable {
+    private let lock = NSLock()
+    private var items: [ImportProgress] = []
+    func add(_ p: ImportProgress) { lock.withLock { items.append(p) } }
+    var all: [ImportProgress] { lock.withLock { items } }
+}
+
 /// Pure pieces: template translation, the eject rule, the report mapping, wording.
 @Suite struct Imp6LogicTests {
     @Test func appTemplatesTranslateToDsTemplate() {
@@ -80,11 +87,43 @@ private func candidate(_ name: String, kind: ImportItemKind = .photo) -> ImportC
         #expect(!RustImportService.report(cancelled, plan: plan).allVerified, "a cancelled run is never verified")
     }
 
+    /// The step and the file reach the sheet, whatever order the engine's events come in.
+    @Test func theRelayCarriesTheStepAndItsFile() {
+        let seen = SeenProgress()
+        let relay = ImportProgressRelay(files: 2, bytes: 100) { seen.add($0) }
+        func send(_ kind: String, _ done: UInt64 = 0, _ total: UInt64 = 0, detail: String? = nil) {
+            relay.onProgress(event: ProgressEvent(taskId: 1, kind: kind, phase: .running, completed: done, total: total,
+                                                  detail: detail))
+        }
+        send("import", 40, 100)
+        send("import.copying", detail: "A.ARW")
+        send("import.files", 1, 2)
+        send("import.verifying", detail: "A.ARW")
+        send("import.saving")
+        send("import.finishing")
+        send("import.something-new")
+        send("render", 1, 1)
+        let got = seen.all
+        #expect(got.map(\.stage) == [nil, .copying, .copying, .verifying, .saving, .finishing])
+        #expect(got.map(\.currentFile) == [nil, "A.ARW", "A.ARW", "A.ARW", nil, nil])
+        #expect(got.last?.bytesDone == 40 && got.last?.filesDone == 1 && got.last?.isWrappingUp == true)
+        #expect(got[1].isWrappingUp == false)
+    }
+
+    @Test func wordingForTheRunningStep() {
+        #expect(ImportWording.stageLine(nil, file: nil) == "Getting ready…")
+        #expect(ImportWording.stageLine(.checking, file: "A.ARW") == "Checking A.ARW")
+        #expect(ImportWording.stageLine(.checking, file: nil) == "Checking what is already here…")
+        #expect(ImportWording.stageLine(.copying, file: "A.ARW") == "Copying A.ARW")
+        #expect(ImportWording.stageLine(.verifying, file: "C.MP4") == "Verifying C.MP4")
+        #expect(ImportWording.stageLine(.copying, file: nil) == ImportWording.stageLine(.verifying, file: nil))
+        #expect(ImportWording.stageLine(.saving, file: "A.ARW").contains("safely on disk"))
+        #expect(ImportWording.stageLine(.finishing, file: nil).contains("session"))
+    }
+
     @Test func wordingForIssuesAndResume() {
-        #expect(ImportWording.issuesTitle(scanErrors: 0, skipped: 0).isEmpty)
-        #expect(ImportWording.issuesTitle(scanErrors: 0, skipped: 1) == "1 file on the card was not imported")
-        #expect(ImportWording.issuesTitle(scanErrors: 2, skipped: 0) == "2 parts of the card couldn’t be read")
-        #expect(ImportWording.issuesTitle(scanErrors: 1, skipped: 3) == "1 unreadable, 3 not imported")
+        #expect(ImportWording.issuesTitle(scanErrors: 1) == "1 part of the card couldn’t be read")
+        #expect(ImportWording.issuesTitle(scanErrors: 2) == "2 parts of the card couldn’t be read")
         #expect(ImportWording.keepCardNote(scanErrors: 1).contains("isn’t complete"))
         #expect(ImportWording.keepCardNote(scanErrors: 0).contains("only on the card"))
         #expect(ImportWording.stopped(done: 2, total: 5).contains("2 of 5"))
@@ -133,24 +172,41 @@ private func candidate(_ name: String, kind: ImportItemKind = .photo) -> ImportC
         return (m, { imported })
     }
 
-    static func service(skipped: [ImportIssue] = [], scanErrors: [ImportIssue] = [], complete: Bool = true,
-                        cancelled: Bool = false) -> ReportingImportService {
+    static func service(skipped: [ImportIssue] = [], scanErrors: [ImportIssue] = [], cardOnly: [ImportIssue] = [],
+                        complete: Bool = true, cancelled: Bool = false) -> ReportingImportService {
         let cands = [candidate("A.ARW"), candidate("C.MP4", kind: .video)]
         return ReportingImportService(scan: ImportScan(candidates: cands, scanErrors: scanErrors, skippedUnknown: skipped)) { plan in
             let n = plan.candidates.count
             return ImportReport(filesTotal: n, filesCopied: complete ? n : n - 1, filesVerified: complete ? n : n - 1,
                                 bytesCopied: 10, isComplete: complete && scanErrors.isEmpty,
-                                ejectNeedsConfirmation: !(complete && scanErrors.isEmpty) || !skipped.isEmpty,
-                                scanErrors: scanErrors, skippedUnknown: skipped, cancelled: cancelled)
+                                ejectNeedsConfirmation: !(complete && scanErrors.isEmpty),
+                                scanErrors: scanErrors, skippedUnknown: skipped, cancelled: cancelled, cardOnly: cardOnly)
         }
     }
 
-    @Test func filesOnlyOnTheCardNeedAConfirmedEjectAnyway() async {
+    /// A file that is not a photo or a video is ignored: no warning before the
+    /// import, nothing to acknowledge after it.
+    @Test func filesThatAreNotPhotosOrVideosAreIgnored() async {
         let ej = FakeEjector()
         let notes = ImportIssue(url: card.appendingPathComponent("DCIM/notes.txt"), reason: "unknown type")
         let (m, imported) = model(Self.service(skipped: [notes]), ejector: ej)
         await m.scan()
-        #expect(m.hasCardIssues && m.skippedUnknown == [notes] && m.videoCount == 1)
+        #expect(!m.hasCardIssues && m.skippedUnknown == [notes], "recorded, not shown")
+        m.start()
+        await m.wait()
+        guard case .finished(let s) = m.phase else { #expect(Bool(false), "\(m.phase)"); return }
+        #expect(s.verified && s.complete && s.safeToRemove && !s.needsAcknowledgement && s.stayOnCard.isEmpty)
+        #expect(imported().count == 1 && ej.ejected.isEmpty, "never ejected automatically")
+        #expect(m.ejectGate?.requiresConfirmation == false)
+        #expect(m.progress?.stage == .finishing && m.progress?.currentFile == nil, "the copy is over")
+    }
+
+    @Test func filesOnlyOnTheCardNeedAConfirmedEjectAnyway() async {
+        let ej = FakeEjector()
+        let notes = ImportIssue(url: card.appendingPathComponent("DCIM/B.ARW"), reason: "not selected for import")
+        let (m, imported) = model(Self.service(cardOnly: [notes]), ejector: ej)
+        await m.scan()
+        #expect(!m.hasCardIssues && m.videoCount == 1)
         m.start()
         await m.wait()
         guard case .finished(let s) = m.phase else { #expect(Bool(false), "\(m.phase)"); return }
@@ -160,7 +216,7 @@ private func candidate(_ name: String, kind: ImportItemKind = .photo) -> ImportC
         #expect(m.ejectGate?.buttonTitle == "Eject Anyway…" && m.ejectGate?.requiresConfirmation == true)
         await m.ejectNow()
         #expect(ej.ejected.isEmpty && m.confirmingEject, "the first press asks")
-        #expect(ImportWording.ejectAnywayMessage(s).contains("notes.txt"))
+        #expect(ImportWording.ejectAnywayMessage(s).contains("B.ARW"))
         await m.confirmEject()
         #expect(ej.ejected == [card] && !m.confirmingEject)
         guard case .finished(let after) = m.phase else { return }

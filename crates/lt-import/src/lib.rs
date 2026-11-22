@@ -43,8 +43,8 @@ pub use plan::{
 };
 pub use raw::{RawMeta, structurally_valid};
 pub use run::{
-    FailedFile, FaultInjector, ImportProgress, ImportReport, ImportedFile, NOT_REGISTERED,
-    RunHooks, SessionSink, SkippedDuplicate, run, run_with, verify_hash,
+    FailedFile, FaultInjector, ImportProgress, ImportReport, ImportStage, ImportedFile,
+    NOT_REGISTERED, RunHooks, SessionSink, SkippedDuplicate, run, run_with, verify_hash,
 };
 pub use scan::{Candidate, FileKind, ScanError, ScanReport, SkippedFile, SourceFile, scan_volume};
 

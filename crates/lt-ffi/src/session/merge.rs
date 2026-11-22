@@ -843,6 +843,7 @@ impl SessionHandle {
                     phase: TaskPhase::Running,
                     completed: p.min(PERMILLE),
                     total: PERMILLE,
+                    detail: None,
                 });
             };
             self.merge_now(&decode_file, &variant_ids, options, &t, &report)
@@ -874,6 +875,7 @@ impl SessionHandle {
                     phase: TaskPhase::Running,
                     completed: p.min(PERMILLE),
                     total: PERMILLE,
+                    detail: None,
                 });
             };
             self.merge_with(&decode_file, &variant_ids, BURST, &signals, &t, &report)

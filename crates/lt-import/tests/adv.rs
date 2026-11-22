@@ -292,7 +292,11 @@ fn a4_unreadable_folders_and_unknown_files_are_reported() {
         rustix::process::geteuid().is_root(),
         "unreadable folder => not complete"
     );
-    assert!(r.eject_needs_confirmation());
+    assert_eq!(
+        r.eject_needs_confirmation(),
+        !rustix::process::geteuid().is_root(),
+        "the ignored NOTES.BIN alone needs no confirmation"
+    );
 }
 
 /// a5: a torn journal must not brick the destination.

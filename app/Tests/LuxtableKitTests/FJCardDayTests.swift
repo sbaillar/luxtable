@@ -55,7 +55,7 @@ import Testing
                              inspector: StaticVolumeInspector([card.mount.standardizedFileURL.path: traits]))
         await im.scan()
         FJ.log("import: phase=\(im.phase) candidates=\(im.candidates.count) videos=\(im.videoCount) dup=\(im.duplicateCount) skippedUnknown=\(im.skippedUnknown.map { "\($0.url.lastPathComponent): \($0.reason)" }) scanErrors=\(im.scanErrors.count) free=\(im.freeBytes.map(Formatters.bytes) ?? "nil")")
-        FJ.log("import: issuesTitle='\(ImportWording.issuesTitle(scanErrors: im.scanErrors.count, skipped: im.skippedUnknown.count))' button='\(ImportWording.importButton(photos: im.selected.count - im.videoCount, videos: im.videoCount))' ready='\(ImportWording.readyLine(bytes: im.selectedBytes, destination: im.sessionText, verifies: im.verifies, free: im.freeBytes))'")
+        FJ.log("import: issuesTitle='\(ImportWording.issuesTitle(scanErrors: im.scanErrors.count))' button='\(ImportWording.importButton(photos: im.selected.count - im.videoCount, videos: im.videoCount))' ready='\(ImportWording.readyLine(bytes: im.selectedBytes, destination: im.sessionText, verifies: im.verifies, free: im.freeBytes))'")
         im.sessionText = "Card Day"
         let i0 = Date()
         im.start()

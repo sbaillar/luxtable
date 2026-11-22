@@ -332,6 +332,7 @@ fn upload_with(
             phase,
             completed,
             total,
+            detail: None,
         });
     };
     let path = |p: PathBuf| p.to_string_lossy().into_owned();

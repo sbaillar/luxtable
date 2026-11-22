@@ -15,8 +15,8 @@ use lt_import::journal::{EntryState, Journal};
 use lt_import::*;
 use support::*;
 
-/// N2: scan errors keep the import incomplete; skipped files require an
-/// acknowledgement before eject.
+/// N2: scan errors keep the import incomplete and need an acknowledgement
+/// before eject; files that are not media are recorded and otherwise ignored.
 #[test]
 fn scan_errors_and_skipped_files_reach_the_report() {
     use std::os::unix::fs::PermissionsExt;
@@ -30,8 +30,8 @@ fn scan_errors_and_skipped_files_reach_the_report() {
     assert!(r.is_complete());
     assert_eq!(r.skipped_unknown.len(), 1);
     assert!(
-        r.eject_needs_confirmation(),
-        "skipped files need an explicit OK"
+        !r.eject_needs_confirmation(),
+        "a file that is not media holds nothing up"
     );
 
     let bad = card.join("DCIM/101MSDCF");
@@ -46,7 +46,7 @@ fn scan_errors_and_skipped_files_reach_the_report() {
     let r = run(&plan, &no_progress, &AtomicBool::new(false)).unwrap();
     assert_eq!(r.scan_errors.len(), 1);
     assert!(!r.is_complete() && r.eject_needs_confirmation());
-    // A clean card with nothing skipped needs no confirmation.
+    // A clean card needs no confirmation either.
     let clean = t.path().join("clean");
     make_card(&clean, 1, 1000);
     let plan = ImportPlan::from_scan(

@@ -1303,6 +1303,7 @@ fn read_items(
             phase,
             completed: done,
             total,
+            detail: None,
         });
     };
     let mut items = Vec::with_capacity(sources.len());
@@ -1325,6 +1326,7 @@ fn cancelled_report(events: &Dispatcher, total: u64, done: u64) -> ExportReport 
         phase: TaskPhase::Cancelled,
         completed: done,
         total,
+        detail: None,
     });
     ExportReport {
         written: Vec::new(),
@@ -1454,6 +1456,7 @@ fn run_with_text(
             phase,
             completed: done,
             total,
+            detail: None,
         });
     };
     emit(TaskPhase::Started, 0);

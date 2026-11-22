@@ -200,7 +200,6 @@
 "%lld files in other formats not imported" = "その他の形式のファイル %lld 個は読み込まれません";
 "%lld files into %@" = "%lld 個のファイルを %@ に";
 "%lld files need attention" = "%lld 個のファイルに対応が必要です";
-"%lld files on the card were not imported" = "カード上の %lld 個のファイルは読み込まれませんでした";
 "%lld files waiting" = "%lld 個のファイルが待機中";
 "%lld files · %@" = "%lld 個のファイル · %@";
 "%lld frame not aligned" = "位置合わせできなかったコマ %lld 個";
@@ -273,7 +272,6 @@
 "%lld style packs" = "%lld 個のスタイルパック";
 "%lld to %lld" = "%lld〜%lld";
 "%lld tools" = "%lld 個のツール";
-"%lld unreadable, %lld not imported" = "%lld か所が読み取り不可、%lld 個が未読み込み";
 "%lld unsaved change. Saving failed: %@" = "未保存の変更が %lld 件あります。保存に失敗しました：%@";
 "%lld unsaved changes" = "%lld 件の未保存の変更";
 "%lld unsaved changes. Saving failed: %@" = "未保存の変更が %lld 件あります。保存に失敗しました：%@";
@@ -320,7 +318,6 @@
 "1 file into %@" = "1 個のファイルを %@ に";
 "1 file is only on the card" = "1 個のファイルはカードにのみ存在します";
 "1 file needs attention" = "1 個のファイルに対応が必要です";
-"1 file on the card was not imported" = "カード上の 1 個のファイルは読み込まれませんでした";
 "1 file · %@" = "1 個のファイル · %@";
 "1 imported variant removed" = "読み込んだ 1 個のバリアントを削除しました";
 "1 integration" = "1 個の連携機能";
@@ -718,11 +715,13 @@
 "Check for Updates…" = "アップデートを確認…";
 "Check for updates automatically" = "アップデートを自動的に確認";
 "Checked tools are in %@; choosing one removes it" = "チェックされたツールは %@ にあります。選択すると削除されます";
+"Checking %@" = "%@ を確認中";
 "Checking Luxtable %@…" = "Luxtable %@ を確認中…";
 "Checking for updates…" = "アップデートを確認中…";
 "Checking its fingerprint and signature." = "フィンガープリントと署名を確認しています。";
 "Checking the archive…" = "アーカイブを確認中…";
 "Checking the export folder…" = "書き出し先フォルダを確認中…";
+"Checking what is already here…" = "既存のファイルを確認中…";
 "Checking what would change (nothing is written)…" = "変更内容を確認中（何も書き込まれません）…";
 "Checking…" = "確認中…";
 "Choose" = "選択";
@@ -892,7 +891,9 @@
 "Copy this photo's adjustments as a look for a plug-in's looks.json (docs/PLUGINS.md)" = "この写真の補正を、プラグインの looks.json 用のルックとしてコピーします（docs/PLUGINS.md）";
 "Copy what was edited on this photo (⇧⌘C)" = "この写真で編集した内容をコピー（⇧⌘C）";
 "Copy will take these from %@." = "「コピー」は %@ からこれらを取得します。";
+"Copying %@" = "%@ をコピー中";
 "Copying %lld of %lld originals (%@)…" = "オリジナルをコピー中: %lld / %lld（%@）…";
+"Copying and verifying…" = "コピーして検証中…";
 "Copyright" = "著作権";
 "Copy…" = "コピー…";
 "Correct converging verticals: + widens the top." = "垂直方向のゆがみを補正します：+ で上側が広がります。";
@@ -1191,6 +1192,7 @@
 "Finding the sessions folder…" = "セッションフォルダを探しています…";
 "Find…" = "検索…";
 "Fine-detail contrast." = "細部のコントラスト。";
+"Finishing: adding the photos to the session…" = "仕上げ中: 写真をセッションに追加しています…";
 "First" = "最初";
 "First photo" = "最初の写真";
 "Fit" = "フィット";
@@ -1241,6 +1243,7 @@
 "General" = "一般";
 "Get RAW Helper" = "RAW ヘルパーを入手";
 "Getting Started" = "はじめに";
+"Getting ready…" = "準備中…";
 "GitHub answered HTTP %lld" = "GitHub が HTTP %lld を返しました";
 "Give the preset a name." = "プリセットに名前を付けてください。";
 "Give the smart folder a name." = "スマートフォルダに名前を付けてください。";
@@ -1585,6 +1588,7 @@
 "Make the whole photo brighter or darker (Exposure)." = "写真全体を明るくまたは暗くします（露光量）。";
 "Making a developed copy for Immich…" = "Immich 用の現像済みコピーを作成中…";
 "Making developed copies of %lld photos for Immich…" = "Immich 用に %lld 枚の写真の現像済みコピーを作成中…";
+"Making sure every copy is safely on disk…" = "すべてのコピーをディスクに確実に書き込んでいます…";
 "Map" = "マップ";
 "Map tiles come from Apple Maps. The areas you view are requested from Apple; your photos and their locations aren't uploaded." = "マップタイルは Apple マップから提供されます。表示したエリアは Apple にリクエストされますが、写真やその位置情報はアップロードされません。";
 "Map: %lld photo" = "マップ：%lld 枚の写真";
@@ -2780,6 +2784,7 @@
 "Verified import is coming soon. Until then Luxtable never copies from or deletes on a card." = "検証付きの読み込みは近日対応予定です。それまで Luxtable がカードからコピーしたりカード上で削除したりすることはありません。";
 "Verified import isn't available here. Luxtable doesn't copy from cards unless it can verify every file." = "ここでは検証付きの読み込みを使用できません。Luxtable は、すべてのファイルを検証できない限りカードからコピーしません。";
 "Verified import isn't available in this build. Luxtable never copies from cards without verifying, so it can't lose files. You can browse the card read-only." = "このビルドでは検証付きの読み込みを使用できません。Luxtable は検証なしでカードからコピーすることはないため、ファイルが失われることはありません。カードは読み出し専用でブラウズできます。";
+"Verifying %@" = "%@ を検証中";
 "Verifying files in the background… %lld%% (%@ of %@)" = "バックグラウンドでファイルを検証中… %lld%%（%@/%@）";
 "Version" = "バージョン";
 "Version %@ is installed: this is older and replaces it." = "バージョン %@ がインストールされています：これはより古いバージョンで、インストール済みのものを置き換えます。";

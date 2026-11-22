@@ -751,6 +751,7 @@ fn emit(d: &Dispatcher, id: u64, kind: &str, phase: TaskPhase, completed: u64, t
         phase,
         completed,
         total,
+        detail: None,
     });
 }
 
