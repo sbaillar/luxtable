@@ -324,8 +324,8 @@ public struct ImportIssue: Hashable, Sendable {
 }
 
 /// Everything a card scan found. `scanErrors` (unreadable parts of the card)
-/// mean an import can never be complete; `skippedUnknown` are card files that
-/// are deliberately not imported. Both must be shown before an eject.
+/// mean an import can never be complete and must be shown before an eject;
+/// `skippedUnknown` are card files that are not photos or videos: ignored.
 public struct ImportScan: Sendable, Equatable {
     public var candidates: [ImportCandidate]
     public var scanErrors: [ImportIssue]
@@ -381,22 +381,41 @@ public struct ImportPlan: Sendable, Equatable {
     }
 }
 
+/// What a running import is doing.
+public enum ImportStage: Sendable, Equatable {
+    /// Comparing a file with a copy that is already there.
+    case checking
+    case copying
+    /// Reading a copy back from the disk.
+    case verifying
+    /// Every file is copied: the final flush to disk.
+    case saving
+    /// The copy is over: the index, a last look at the card, opening the session.
+    case finishing
+}
+
 public struct ImportProgress: Sendable, Equatable {
     public var filesDone: Int
     public var filesTotal: Int
     public var bytesDone: Int64
     public var bytesTotal: Int64
+    /// The file the current step is about, when it is about one file.
     public var currentFile: String?
+    public var stage: ImportStage?
 
-    public init(filesDone: Int, filesTotal: Int, bytesDone: Int64, bytesTotal: Int64, currentFile: String? = nil) {
+    public init(filesDone: Int, filesTotal: Int, bytesDone: Int64, bytesTotal: Int64, currentFile: String? = nil,
+                stage: ImportStage? = nil) {
         self.filesDone = filesDone
         self.filesTotal = filesTotal
         self.bytesDone = bytesDone
         self.bytesTotal = bytesTotal
         self.currentFile = currentFile
+        self.stage = stage
     }
 
     public var fraction: Double { bytesTotal == 0 ? 1 : Double(bytesDone) / Double(bytesTotal) }
+    /// Nothing is being copied any more, so a speed or a time left would mean nothing.
+    public var isWrappingUp: Bool { stage == .saving || stage == .finishing }
 }
 
 /// Card scan and verified copy (→ `lt_import`).

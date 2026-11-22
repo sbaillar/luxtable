@@ -200,7 +200,6 @@
 "%lld files in other formats not imported" = "%lld 个其他格式的文件不会导入";
 "%lld files into %@" = "%1$lld 个文件存入“%2$@”";
 "%lld files need attention" = "%lld 个文件需要注意";
-"%lld files on the card were not imported" = "存储卡上有 %lld 个文件未导入";
 "%lld files waiting" = "%lld 个文件等待中";
 "%lld files · %@" = "%lld 个文件 · %@";
 "%lld frame not aligned" = "%lld 帧未对齐";
@@ -273,7 +272,6 @@
 "%lld style packs" = "%lld 个风格包";
 "%lld to %lld" = "%lld 至 %lld";
 "%lld tools" = "%lld 个工具";
-"%lld unreadable, %lld not imported" = "%lld 个不可读，%lld 个未导入";
 "%lld unsaved change. Saving failed: %@" = "%lld 项未存储的更改。存储失败：%@";
 "%lld unsaved changes" = "%lld 项未存储的更改";
 "%lld unsaved changes. Saving failed: %@" = "%lld 项未存储的更改。存储失败：%@";
@@ -320,7 +318,6 @@
 "1 file into %@" = "1 个文件存入“%@”";
 "1 file is only on the card" = "1 个文件仅存在于存储卡上";
 "1 file needs attention" = "1 个文件需要注意";
-"1 file on the card was not imported" = "存储卡上有 1 个文件未导入";
 "1 file · %@" = "1 个文件 · %@";
 "1 imported variant removed" = "已移除 1 个导入的变体";
 "1 integration" = "1 个集成";
@@ -718,11 +715,13 @@
 "Check for Updates…" = "检查更新…";
 "Check for updates automatically" = "自动检查更新";
 "Checked tools are in %@; choosing one removes it" = "勾选的工具位于%@中；选择一个即可将其移除";
+"Checking %@" = "正在检查 %@";
 "Checking Luxtable %@…" = "正在检查 Luxtable %@…";
 "Checking for updates…" = "正在检查更新…";
 "Checking its fingerprint and signature." = "正在检查其指纹和签名。";
 "Checking the archive…" = "正在检查归档…";
 "Checking the export folder…" = "正在检查导出文件夹…";
+"Checking what is already here…" = "正在检查已有的文件…";
 "Checking what would change (nothing is written)…" = "正在检查将会更改的内容（不写入任何内容）…";
 "Checking…" = "正在检查…";
 "Choose" = "选取";
@@ -892,7 +891,9 @@
 "Copy this photo's adjustments as a look for a plug-in's looks.json (docs/PLUGINS.md)" = "将此照片的调整拷贝为插件 looks.json 中的外观（docs/PLUGINS.md）";
 "Copy what was edited on this photo (⇧⌘C)" = "拷贝此照片上所做的编辑（⇧⌘C）";
 "Copy will take these from %@." = "“拷贝”将从“%@”获取这些内容。";
+"Copying %@" = "正在拷贝 %@";
 "Copying %lld of %lld originals (%@)…" = "正在拷贝原片：%lld / %lld（%@）…";
+"Copying and verifying…" = "正在拷贝并验证…";
 "Copyright" = "版权";
 "Copy…" = "拷贝…";
 "Correct converging verticals: + widens the top." = "校正汇聚的垂直线：+ 使顶部变宽。";
@@ -1191,6 +1192,7 @@
 "Finding the sessions folder…" = "正在查找会话文件夹…";
 "Find…" = "查找…";
 "Fine-detail contrast." = "细节对比度。";
+"Finishing: adding the photos to the session…" = "即将完成：正在将照片添加到会话…";
 "First" = "第一张";
 "First photo" = "第一张照片";
 "Fit" = "适合";
@@ -1241,6 +1243,7 @@
 "General" = "通用";
 "Get RAW Helper" = "获取 RAW 助手";
 "Getting Started" = "入门";
+"Getting ready…" = "正在准备…";
 "GitHub answered HTTP %lld" = "GitHub 返回了 HTTP %lld";
 "Give the preset a name." = "请为预设命名。";
 "Give the smart folder a name." = "请为智能文件夹命名。";
@@ -1585,6 +1588,7 @@
 "Make the whole photo brighter or darker (Exposure)." = "让整张照片变亮或变暗（曝光）。";
 "Making a developed copy for Immich…" = "正在为 Immich 生成冲印副本…";
 "Making developed copies of %lld photos for Immich…" = "正在为 Immich 生成 %lld 张照片的冲印副本…";
+"Making sure every copy is safely on disk…" = "正在确保每个副本都已安全写入磁盘…";
 "Map" = "地图";
 "Map tiles come from Apple Maps. The areas you view are requested from Apple; your photos and their locations aren't uploaded." = "地图图块来自 Apple 地图。你查看的区域会向 Apple 请求；你的照片及其位置不会被上传。";
 "Map: %lld photo" = "地图：%lld 张照片";
@@ -2780,6 +2784,7 @@
 "Verified import is coming soon. Until then Luxtable never copies from or deletes on a card." = "已验证导入功能即将推出。在此之前，Luxtable 绝不会从存储卡拷贝或在存储卡上删除内容。";
 "Verified import isn't available here. Luxtable doesn't copy from cards unless it can verify every file." = "此处不提供已验证导入。除非能验证每个文件，否则 Luxtable 不会从存储卡拷贝。";
 "Verified import isn't available in this build. Luxtable never copies from cards without verifying, so it can't lose files. You can browse the card read-only." = "此版本不提供已验证导入。Luxtable 绝不会在未验证的情况下从存储卡拷贝，因此不会丢失文件。你可以以只读方式浏览存储卡。";
+"Verifying %@" = "正在验证 %@";
 "Verifying files in the background… %lld%% (%@ of %@)" = "正在后台验证文件… %lld%%（第 %@ 个，共 %@ 个）";
 "Version" = "版本";
 "Version %@ is installed: this is older and replaces it." = "已安装版本 %@：此版本较旧，将替换已安装的版本。";

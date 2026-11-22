@@ -168,8 +168,8 @@ fn resume_checks_the_journal_partial_hash() {
 }
 
 /// H1: only a card whose every media file has a verified library copy is
-/// "safe to remove"; unticked files are listed as staying on the card; a
-/// camera database file doesn't count as media, `notes.txt` does stay.
+/// "safe to remove"; unticked files are listed as staying on the card; files
+/// that are not media (a camera database, `notes.txt`) are ignored.
 #[test]
 fn safe_to_remove_needs_every_media_file_in_the_library() {
     let t = tempfile::tempdir().unwrap();
@@ -208,14 +208,14 @@ fn safe_to_remove_needs_every_media_file_in_the_library() {
     let r = import(&s, o).unwrap();
     assert!(r.card_only.is_empty(), "{:?}", r.card_only);
     assert!(r.safe_to_remove, "only a camera database is left: {r:?}");
-    // A note on the card stays only there: not "safe".
+    // A note on the card is not media: still "safe".
     fs::write(root.join("DCIM/notes.txt"), b"x").unwrap();
     let s = scan(&root, Some(&index));
     let mut o = options(&lib, "Part", &index);
     o.create_session = false;
     o.include = Some(vec![]);
     let r = import(&s, o).unwrap();
-    assert!(r.card_only.is_empty() && !r.safe_to_remove, "{r:?}");
+    assert!(r.card_only.is_empty() && r.safe_to_remove, "{r:?}");
     drop(img);
 }
 

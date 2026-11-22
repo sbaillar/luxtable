@@ -293,9 +293,10 @@ public final class ImportModel {
         }
     }
 
-    /// The card has files this import won't take (or can't read): shown before
-    /// starting, and they decide the eject wording afterwards.
-    public var hasCardIssues: Bool { !scanErrors.isEmpty || !skippedUnknown.isEmpty }
+    /// Parts of the card can't be read: shown before starting, and they decide
+    /// the eject wording afterwards. Files that are not photos or videos
+    /// (`skippedUnknown`) are ignored.
+    public var hasCardIssues: Bool { !scanErrors.isEmpty }
     public var videoCount: Int { candidates.filter { $0.kind == .video }.count }
     /// Candidates whose damaged library copy will be replaced (L3).
     public var damagedCount: Int { candidates.filter { $0.damagedLibraryCopy != nil }.count }
@@ -499,6 +500,9 @@ public final class ImportModel {
                 return
             }
         }
+        // The copy is over; the report and opening the session still follow.
+        progress?.stage = .finishing
+        progress?.currentFile = nil
         // Verification comes only from the service's report; no report = not verified.
         if let verifying = importer as? any ImportVerifying {
             let report = await verifying.report(for: plan)
@@ -591,7 +595,6 @@ public final class ImportModel {
         summary.videos = min(copiedVideos, report.filesCopied)
         summary.damaged = report.damagedLibraryCopies
         summary.stayOnCard = report.cardOnly + report.scanErrors
-            + report.skippedUnknown.filter { !$0.reason.contains("camera database") }
         summary.needsAcknowledgement = !summary.safeToRemove
         acknowledged = false
         // Cancelled while opening the session: the copy is complete, but the

@@ -50,8 +50,9 @@ public struct MockImportService: ImportService {
             let task = Task {
                 let total = files.reduce(Int64(0)) { $0 + $1.size }
                 var done: Int64 = 0
-                cont.yield(ImportProgress(filesDone: 0, filesTotal: files.count, bytesDone: 0, bytesTotal: total))
                 for (i, f) in files.enumerated() {
+                    cont.yield(ImportProgress(filesDone: i, filesTotal: files.count, bytesDone: done, bytesTotal: total,
+                                              currentFile: f.filename, stage: .copying))
                     if let failAfter, i >= failAfter {
                         cont.finish(throwing: MockError.invalid(String(localized: "The card was removed during import")))
                         return
@@ -64,7 +65,7 @@ public struct MockImportService: ImportService {
                     }
                     done += f.size
                     cont.yield(ImportProgress(filesDone: i + 1, filesTotal: files.count, bytesDone: done,
-                                              bytesTotal: total, currentFile: f.filename))
+                                              bytesTotal: total, currentFile: f.filename, stage: .verifying))
                 }
                 cont.finish()
             }

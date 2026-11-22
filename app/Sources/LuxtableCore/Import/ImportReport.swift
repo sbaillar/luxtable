@@ -12,8 +12,8 @@ public struct ImportReport: Equatable, Sendable {
     public var bytesCopied: Int64
     /// lt-import's `is_complete` for this run's plan.
     public var isComplete: Bool
-    /// Something stays only on the card (`cardOnly`, unreadable parts, files
-    /// that aren't imported): "Eject Anyway…" needs a confirmation.
+    /// Something stays only on the card (`cardOnly`, unreadable parts):
+    /// "Eject Anyway…" needs a confirmation.
     public var ejectNeedsConfirmation: Bool
     public var scanErrors: [ImportIssue]
     public var skippedUnknown: [ImportIssue]
@@ -63,7 +63,7 @@ public struct ImportReport: Equatable, Sendable {
         self.sessionName = sessionName
         self.cardOnly = cardOnly
         self.safeToRemove = safeToRemove ?? (self.isComplete && !ejectNeedsConfirmation && !cancelled
-            && scanErrors.isEmpty && skippedUnknown.isEmpty && failed.isEmpty && registerErrors.isEmpty
+            && scanErrors.isEmpty && failed.isEmpty && registerErrors.isEmpty
             && cardOnly.isEmpty && sourceLost == nil)
         self.damagedLibraryCopies = damagedLibraryCopies
         self.volumeID = volumeID
@@ -265,15 +265,22 @@ public enum ImportWording {
             + (ejected ? String(localized: " The card was ejected.") : String(localized: " The card was not ejected."))
     }
 
-    /// Heading over the list of card files that were not imported.
-    public static func issuesTitle(scanErrors: Int, skipped: Int) -> String {
-        switch (scanErrors, skipped) {
-        case (0, 0): ""
-        case (0, let k):
-            k == 1 ? String(localized: "1 file on the card was not imported") : String(localized: "\(k) files on the card were not imported")
-        case (let e, 0):
-            e == 1 ? String(localized: "1 part of the card couldn’t be read") : String(localized: "\(e) parts of the card couldn’t be read")
-        case (let e, let k): String(localized: "\(e) unreadable, \(k) not imported")
+    /// Heading over the list of parts of the card that could not be read.
+    public static func issuesTitle(scanErrors e: Int) -> String {
+        e == 1 ? String(localized: "1 part of the card couldn’t be read") : String(localized: "\(e) parts of the card couldn’t be read")
+    }
+
+    /// What a running import is doing, for the line over the progress bar.
+    public static func stageLine(_ stage: ImportStage?, file: String?) -> String {
+        switch (stage, file) {
+        case (.checking, let f?): String(localized: "Checking \(f)")
+        case (.checking, nil): String(localized: "Checking what is already here…")
+        case (.copying, let f?): String(localized: "Copying \(f)")
+        case (.verifying, let f?): String(localized: "Verifying \(f)")
+        case (.copying, nil), (.verifying, nil): String(localized: "Copying and verifying…")
+        case (.saving, _): String(localized: "Making sure every copy is safely on disk…")
+        case (.finishing, _): String(localized: "Finishing: adding the photos to the session…")
+        case (nil, _): String(localized: "Getting ready…")
         }
     }
 

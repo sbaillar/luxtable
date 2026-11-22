@@ -171,15 +171,15 @@ fn imports_a_card_into_a_new_session_registers_and_dedupes() {
     .unwrap();
     assert!(r.is_complete, "{r:?}");
     assert!(
-        r.eject_needs_confirmation,
-        "notes.txt was skipped: the user must acknowledge it"
+        !r.eject_needs_confirmation,
+        "notes.txt is not media: it holds nothing up"
     );
     assert_eq!(r.copied.len(), 5, "4 primaries + the JPG sidecar");
     assert_eq!(r.registered, 4, "sidecars aren't photos");
     assert!(r.register_errors.is_empty(), "{:?}", r.register_errors);
-    // Every media file has a verified copy; notes.txt stays only on the card.
+    // Every media file has a verified copy; notes.txt is not media and is ignored.
     assert!(r.card_only.is_empty(), "{:?}", r.card_only);
-    assert!(!r.safe_to_remove, "notes.txt is only on the card");
+    assert!(r.safe_to_remove, "only notes.txt stays on the card");
     assert!(!r.volume_id.is_empty() && r.volume_id == sum.volume_id);
     assert!(
         r.skipped_unknown
@@ -204,6 +204,28 @@ fn imports_a_card_into_a_new_session_registers_and_dedupes() {
     assert!(
         ev.iter()
             .any(|e| e.kind == "import.files" && e.completed == e.total && e.total == 5)
+    );
+    // The steps are named, with the file each is about.
+    assert!(
+        ev.iter()
+            .any(|e| e.kind == "import.saving" && e.detail.is_none()),
+        "{ev:?}"
+    );
+    assert_eq!(
+        ev.iter()
+            .rev()
+            .find(|e| e.kind != "import")
+            .map(|e| e.kind.as_str()),
+        Some("import.finishing")
+    );
+    assert!(
+        ev.iter()
+            .filter(
+                |e| ["import.checking", "import.copying", "import.verifying"]
+                    .contains(&e.kind.as_str())
+            )
+            .all(|e| e.detail.as_deref().is_some_and(|d| !d.contains('/'))),
+        "{ev:?}"
     );
 
     // The session lists the imported photos (Internal originals under Capture/).

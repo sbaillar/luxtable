@@ -257,7 +257,7 @@ private struct ImportOptions: View {
                     .background(DS.accent.opacity(0.08), in: .rect(cornerRadius: DS.Radius.m))
                 }
                 if importer.hasCardIssues { // listed before anything is copied, never hidden
-                    CardIssuesList(scanErrors: importer.scanErrors, skipped: importer.skippedUnknown)
+                    CardIssuesList(scanErrors: importer.scanErrors)
                 }
                 if importer.damagedCount > 0 {
                     Label(ImportWording.damagedNote(importer.damagedCount), systemImage: "exclamationmark.triangle")
@@ -401,7 +401,7 @@ private struct ImportFooter: View {
             }
         }
         .padding(DS.Space.m)
-        .frame(height: 64)
+        .frame(minHeight: 64)
     }
 
     @ViewBuilder private var status: some View {
@@ -409,12 +409,17 @@ private struct ImportFooter: View {
         case .importing:
             let p = importer.progress
             VStack(alignment: .leading, spacing: DS.Space.xs) {
+                Text(ImportWording.stageLine(p?.stage, file: p?.currentFile))
+                    .font(DS.Font.label).lineLimit(1).truncationMode(.middle)
+                    .frame(width: 360, alignment: .leading)
                 ProgressView(value: p?.fraction ?? 0).frame(width: 360)
                 HStack(spacing: DS.Space.m) {
                     Text("\(p?.filesDone ?? 0) of \(p?.filesTotal ?? 0) files")
                     Text("\(Formatters.bytes(p?.bytesDone ?? 0)) of \(Formatters.bytes(p?.bytesTotal ?? 0))")
-                    Text(importer.throughput.map { Formatters.throughput(bytesPerSecond: $0) } ?? "–")
-                    Text(importer.eta.map { String(localized: "\(Formatters.duration($0)) left") } ?? String(localized: "Estimating…"))
+                    if p?.isWrappingUp != true {
+                        Text(importer.throughput.map { Formatters.throughput(bytesPerSecond: $0) } ?? "–")
+                        Text(importer.eta.map { String(localized: "\(Formatters.duration($0)) left") } ?? String(localized: "Estimating…"))
+                    }
                 }
                 .font(DS.Font.value).foregroundStyle(DS.textSecondary)
             }
@@ -528,24 +533,22 @@ struct StayOnCardList: View {
     }
 }
 
-/// Card files an import won't take or can't read (lt-import `scan_errors` /
-/// `skipped_unknown`): always listed, never hidden.
+/// Parts of the card an import can't read (lt-import `scan_errors`): always
+/// listed, never hidden.
 struct CardIssuesList: View {
     let scanErrors: [ImportIssue]
-    let skipped: [ImportIssue]
 
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.xs) {
-            Label(ImportWording.issuesTitle(scanErrors: scanErrors.count, skipped: skipped.count),
-                  systemImage: scanErrors.isEmpty ? "info.circle" : "exclamationmark.triangle.fill")
+            Label(ImportWording.issuesTitle(scanErrors: scanErrors.count), systemImage: "exclamationmark.triangle.fill")
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(scanErrors.isEmpty ? DS.textSecondary : DS.reject)
-            ForEach(Array((scanErrors + skipped).prefix(8).enumerated()), id: \.offset) { _, i in
+                .foregroundStyle(DS.reject)
+            ForEach(Array(scanErrors.prefix(8).enumerated()), id: \.offset) { _, i in
                 Text("\(i.url.lastPathComponent) — \(i.reason)")
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary).lineLimit(1).truncationMode(.middle)
                     .help(i.url.path)
             }
-            let more = scanErrors.count + skipped.count - 8
+            let more = scanErrors.count - 8
             if more > 0 {
                 Text("and \(more) more").font(DS.Font.caption).foregroundStyle(DS.textTertiary)
             }

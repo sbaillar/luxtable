@@ -1,12 +1,13 @@
 //! Walk a memory card (or any folder) and group files into import candidates.
 //!
-//! **Nothing but hidden entries is silently ignored.** Entries whose names
-//! start with `.` (OS metadata: `._*`, `.Trashes`, `.Spotlight-V100`,
-//! `.fseventsd`) are skipped without a report. Every other regular file is either
-//! imported (RAW, JPEG/HEIF, video, and their sidecars) or listed in
-//! [`ScanReport::skipped_unknown`] with a reason; every directory that could
-//! not be read is in [`ScanReport::errors`], and an import is only complete
-//! when that list is empty.
+//! Photos, clips and their sidecars (RAW, JPEG/HEIF, video, XMP) become import
+//! candidates. Everything else on a card is not media and is ignored: entries
+//! whose names start with `.` (OS metadata: `._*`, `.Trashes`,
+//! `.Spotlight-V100`, `.fseventsd`) leave no trace, other files (camera
+//! databases, unknown types, orphan sidecars, symlinks) are recorded in
+//! [`ScanReport::skipped_unknown`] for diagnostics only. Every directory that
+//! could not be read is in [`ScanReport::errors`], and an import is only
+//! complete when that list is empty.
 
 use std::collections::HashMap;
 use std::fs;
@@ -134,9 +135,9 @@ pub struct ScanReport {
     pub candidates: Vec<Candidate>,
     /// Unreadable directories/files. Non-empty ⇒ the import can never be complete.
     pub errors: Vec<ScanError>,
-    /// Files deliberately not imported (camera databases, unknown types,
-    /// orphan sidecars, symlinks). The UI must show these and ask for an
-    /// explicit acknowledgement before offering "eject".
+    /// Files that are not media (camera databases, unknown types, orphan
+    /// sidecars, symlinks). Ignored: they never hold up an import or the
+    /// card's eject.
     pub skipped_unknown: Vec<SkippedFile>,
 }
 

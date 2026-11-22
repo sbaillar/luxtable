@@ -244,7 +244,8 @@ public actor RustImportService: ImportService, ImportVerifying, ImportResuming, 
             if let v = plan.volume { scans[Self.key(v)] = nil }
             cont.yield(ImportProgress(filesDone: report.filesCopied, filesTotal: plan.candidates.count,
                                       bytesDone: Int64(clamping: result.bytesCopied),
-                                      bytesTotal: max(relay.bytesTotal, Int64(clamping: result.bytesCopied))))
+                                      bytesTotal: max(relay.bytesTotal, Int64(clamping: result.bytesCopied)),
+                                      stage: .finishing))
             cont.finish()
             return report
         } catch {
@@ -362,11 +363,13 @@ public actor RustImportService: ImportService, ImportVerifying, ImportResuming, 
     }
 }
 
-/// Maps lt-import progress (`"import"`: bytes, `"import.files"`: files) to `ImportProgress`.
+/// Maps lt-import progress (`"import"`: bytes, `"import.files"`: files, `"import.<step>"`: what
+/// it is doing, with the file's name) to `ImportProgress`.
 final class ImportProgressRelay: ProgressListener, @unchecked Sendable {
     private let lock = NSLock()
     private var files = (done: 0, total: 0)
     private var bytes = (done: Int64(0), total: Int64(0))
+    private var step: (stage: ImportStage, file: String?)?
     private let yield: @Sendable (ImportProgress) -> Void
 
     init(files total: Int, bytes totalBytes: Int64, _ yield: @escaping @Sendable (ImportProgress) -> Void) {
@@ -377,6 +380,11 @@ final class ImportProgressRelay: ProgressListener, @unchecked Sendable {
 
     var bytesTotal: Int64 { lock.withLock { bytes.total } }
 
+    static let stages: [String: ImportStage] = [
+        "import.checking": .checking, "import.copying": .copying, "import.verifying": .verifying,
+        "import.saving": .saving, "import.finishing": .finishing,
+    ]
+
     func onProgress(event: ProgressEvent) {
         let p: ImportProgress? = lock.withLock {
             switch event.kind {
@@ -385,9 +393,11 @@ final class ImportProgressRelay: ProgressListener, @unchecked Sendable {
             case "import.files":
                 files = (Int(clamping: event.completed), Int(clamping: event.total))
             default:
-                return nil
+                guard let stage = Self.stages[event.kind] else { return nil }
+                step = (stage, event.detail)
             }
-            return ImportProgress(filesDone: files.done, filesTotal: files.total, bytesDone: bytes.done, bytesTotal: bytes.total)
+            return ImportProgress(filesDone: files.done, filesTotal: files.total, bytesDone: bytes.done, bytesTotal: bytes.total,
+                                  currentFile: step?.file, stage: step?.stage)
         }
         if let p { yield(p) }
     }

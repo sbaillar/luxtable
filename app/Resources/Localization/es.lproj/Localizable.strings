@@ -200,7 +200,6 @@
 "%lld files in other formats not imported" = "%lld archivos en otros formatos no se importan";
 "%lld files into %@" = "%lld archivos en %@";
 "%lld files need attention" = "%lld archivos con problemas";
-"%lld files on the card were not imported" = "%lld archivos de la tarjeta no se importaron";
 "%lld files waiting" = "%lld archivos en espera";
 "%lld files · %@" = "%lld archivos · %@";
 "%lld frame not aligned" = "%lld toma no alineada";
@@ -273,7 +272,6 @@
 "%lld style packs" = "%lld paquetes de estilos";
 "%lld to %lld" = "%lld a %lld";
 "%lld tools" = "%lld herramientas";
-"%lld unreadable, %lld not imported" = "%lld ilegibles, %lld no importados";
 "%lld unsaved change. Saving failed: %@" = "%lld cambio sin guardar. Error al guardar: %@";
 "%lld unsaved changes" = "%lld cambios sin guardar";
 "%lld unsaved changes. Saving failed: %@" = "%lld cambios sin guardar. Error al guardar: %@";
@@ -320,7 +318,6 @@
 "1 file into %@" = "1 archivo en %@";
 "1 file is only on the card" = "1 archivo solo está en la tarjeta";
 "1 file needs attention" = "1 archivo con problemas";
-"1 file on the card was not imported" = "1 archivo de la tarjeta no se importó";
 "1 file · %@" = "1 archivo · %@";
 "1 imported variant removed" = "1 variante importada eliminada";
 "1 integration" = "1 integración";
@@ -718,11 +715,13 @@
 "Check for Updates…" = "Buscar actualizaciones…";
 "Check for updates automatically" = "Buscar actualizaciones automáticamente";
 "Checked tools are in %@; choosing one removes it" = "Las herramientas marcadas están en %@; si eliges una, se quita";
+"Checking %@" = "Comprobando %@";
 "Checking Luxtable %@…" = "Comprobando Luxtable %@…";
 "Checking for updates…" = "Buscando actualizaciones…";
 "Checking its fingerprint and signature." = "Comprobando su huella y su firma.";
 "Checking the archive…" = "Comprobando el archivo…";
 "Checking the export folder…" = "Comprobando la carpeta de exportación…";
+"Checking what is already here…" = "Comprobando lo que ya está aquí…";
 "Checking what would change (nothing is written)…" = "Comprobando qué cambiaría (no se escribe nada)…";
 "Checking…" = "Comprobando…";
 "Choose" = "Elegir";
@@ -892,7 +891,9 @@
 "Copy this photo's adjustments as a look for a plug-in's looks.json (docs/PLUGINS.md)" = "Copiar los ajustes de esta foto como un aspecto para el looks.json de un plugin (docs/PLUGINS.md)";
 "Copy what was edited on this photo (⇧⌘C)" = "Copiar lo que se editó en esta foto (⇧⌘C)";
 "Copy will take these from %@." = "Copiar tomará esto de %@.";
+"Copying %@" = "Copiando %@";
 "Copying %lld of %lld originals (%@)…" = "Copiando %lld de %lld originales (%@)…";
+"Copying and verifying…" = "Copiando y verificando…";
 "Copyright" = "Copyright";
 "Copy…" = "Copiar…";
 "Correct converging verticals: + widens the top." = "Corrige las verticales convergentes: + ensancha la parte superior.";
@@ -1191,6 +1192,7 @@
 "Finding the sessions folder…" = "Buscando la carpeta de sesiones…";
 "Find…" = "Buscar…";
 "Fine-detail contrast." = "Contraste del detalle fino.";
+"Finishing: adding the photos to the session…" = "Finalizando: añadiendo las fotos a la sesión…";
 "First" = "Primera";
 "First photo" = "Primera foto";
 "Fit" = "Ajustar";
@@ -1241,6 +1243,7 @@
 "General" = "General";
 "Get RAW Helper" = "Obtener asistente RAW";
 "Getting Started" = "Primeros pasos";
+"Getting ready…" = "Preparando…";
 "GitHub answered HTTP %lld" = "GitHub ha respondido HTTP %lld";
 "Give the preset a name." = "Ponle un nombre al ajuste preestablecido.";
 "Give the smart folder a name." = "Ponle un nombre a la carpeta inteligente.";
@@ -1585,6 +1588,7 @@
 "Make the whole photo brighter or darker (Exposure)." = "Aclara u oscurece toda la foto (Exposición).";
 "Making a developed copy for Immich…" = "Creando una copia revelada para Immich…";
 "Making developed copies of %lld photos for Immich…" = "Creando copias reveladas de %lld fotos para Immich…";
+"Making sure every copy is safely on disk…" = "Asegurando que cada copia esté a salvo en el disco…";
 "Map" = "Mapa";
 "Map tiles come from Apple Maps. The areas you view are requested from Apple; your photos and their locations aren't uploaded." = "Las teselas del mapa proceden de Apple Maps. Las zonas que ves se solicitan a Apple; tus fotos y sus ubicaciones no se suben.";
 "Map: %lld photo" = "Mapa: %lld foto";
@@ -2780,6 +2784,7 @@
 "Verified import is coming soon. Until then Luxtable never copies from or deletes on a card." = "La importación verificada llegará pronto. Hasta entonces, Luxtable nunca copia desde una tarjeta ni elimina nada en ella.";
 "Verified import isn't available here. Luxtable doesn't copy from cards unless it can verify every file." = "La importación verificada no está disponible aquí. Luxtable no copia desde tarjetas salvo que pueda verificar cada archivo.";
 "Verified import isn't available in this build. Luxtable never copies from cards without verifying, so it can't lose files. You can browse the card read-only." = "La importación verificada no está disponible en esta versión. Luxtable nunca copia desde tarjetas sin verificar, así que no puede perder archivos. Puedes explorar la tarjeta en modo de solo lectura.";
+"Verifying %@" = "Verificando %@";
 "Verifying files in the background… %lld%% (%@ of %@)" = "Verificando archivos en segundo plano… %lld%% (%@ de %@)";
 "Version" = "Versión";
 "Version %@ is installed: this is older and replaces it." = "La versión %@ está instalada: esta es más antigua y la sustituye.";

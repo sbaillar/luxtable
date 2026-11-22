@@ -604,9 +604,6 @@
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "%lld files need attention" = "%lld files need attention";
 
-/* LuxtableCore/Import/ImportReport.swift */
-"%lld files on the card were not imported" = "%lld files on the card were not imported";
-
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
 "%lld files waiting" = "%lld files waiting";
 
@@ -823,9 +820,6 @@
 /* LuxtableUI/Views/Tools/ToolCustomizeView.swift */
 "%lld tools" = "%lld tools";
 
-/* LuxtableCore/Import/ImportReport.swift */
-"%lld unreadable, %lld not imported" = "%lld unreadable, %lld not imported";
-
 /* LuxtableCore/Tools/Announcer.swift */
 "%lld unsaved change. Saving failed: %@" = "%lld unsaved change. Saving failed: %@";
 
@@ -963,9 +957,6 @@
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "1 file needs attention" = "1 file needs attention";
-
-/* LuxtableCore/Import/ImportReport.swift */
-"1 file on the card was not imported" = "1 file on the card was not imported";
 
 /* LuxtableCore/Export/ExportModel.swift */
 "1 file · %@" = "1 file · %@";
@@ -2158,6 +2149,9 @@
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Checked tools are in %@; choosing one removes it" = "Checked tools are in %@; choosing one removes it";
 
+/* LuxtableCore/Import/ImportReport.swift */
+"Checking %@" = "Checking %@";
+
 /* LuxtableMac/Updates/Updater.swift */
 "Checking Luxtable %@…" = "Checking Luxtable %@…";
 
@@ -2172,6 +2166,9 @@
 
 /* LuxtableCore/Export/ExportModel.swift */
 "Checking the export folder…" = "Checking the export folder…";
+
+/* LuxtableCore/Import/ImportReport.swift */
+"Checking what is already here…" = "Checking what is already here…";
 
 /* LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
 "Checking what would change (nothing is written)…" = "Checking what would change (nothing is written)…";
@@ -2680,8 +2677,14 @@
 /* LuxtableUI/Views/CopyApplyButtons.swift */
 "Copy will take these from %@." = "Copy will take these from %@.";
 
+/* LuxtableCore/Import/ImportReport.swift */
+"Copying %@" = "Copying %@";
+
 /* LuxtableMac/Views/Import/ExternalImportSheet.swift */
 "Copying %lld of %lld originals (%@)…" = "Copying %lld of %lld originals (%@)…";
+
+/* LuxtableCore/Import/ImportReport.swift */
+"Copying and verifying…" = "Copying and verifying…";
 
 /* LuxtableCore/Model/IPTCMetadata.swift, LuxtableMac/Views/OnboardingView.swift */
 "Copyright" = "Copyright";
@@ -3577,6 +3580,9 @@
 /* LuxtableCore/Tools/SliderSpec.swift */
 "Fine-detail contrast." = "Fine-detail contrast.";
 
+/* LuxtableCore/Import/ImportReport.swift */
+"Finishing: adding the photos to the session…" = "Finishing: adding the photos to the session…";
+
 /* LuxtableCore/Voice/VoiceCommandParser.swift */
 "First" = "First";
 
@@ -3726,6 +3732,9 @@
 
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Getting Started" = "Getting Started";
+
+/* LuxtableCore/Import/ImportReport.swift */
+"Getting ready…" = "Getting ready…";
 
 /* LuxtableMac/Updates/UpdateTools.swift */
 "GitHub answered HTTP %lld" = "GitHub answered HTTP %lld";
@@ -4758,6 +4767,9 @@
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "Making developed copies of %lld photos for Immich…" = "Making developed copies of %lld photos for Immich…";
+
+/* LuxtableCore/Import/ImportReport.swift */
+"Making sure every copy is safely on disk…" = "Making sure every copy is safely on disk…";
 
 /* LuxtableMac/Views/MainToolbar.swift */
 "Map" = "Map";
@@ -8343,6 +8355,9 @@
 
 /* LuxtableCore/Import/ImportReport.swift */
 "Verified import isn't available in this build. Luxtable never copies from cards without verifying, so it can't lose files. You can browse the card read-only." = "Verified import isn't available in this build. Luxtable never copies from cards without verifying, so it can't lose files. You can browse the card read-only.";
+
+/* LuxtableCore/Import/ImportReport.swift */
+"Verifying %@" = "Verifying %@";
 
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Verifying files in the background… %lld%% (%@ of %@)" = "Verifying files in the background… %lld%% (%@ of %@)";

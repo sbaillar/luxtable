@@ -190,6 +190,91 @@ impl FaultInjector for Faults {
     }
 }
 
+/// Holds every write and verification up for a moment, as a slow device would.
+struct SlowDevice;
+
+impl FaultInjector for SlowDevice {
+    fn before_write(&self, _: &Path, _: u64) -> io::Result<()> {
+        std::thread::sleep(Duration::from_millis(60));
+        Ok(())
+    }
+    fn before_verify(&self, _: &Path) {
+        std::thread::sleep(Duration::from_millis(350));
+    }
+}
+
+#[test]
+fn progress_names_the_step_and_the_file_even_while_nothing_is_copied() {
+    let t = tempfile::tempdir().unwrap();
+    let (card, dest) = (t.path().join("card"), t.path().join("dest"));
+    make_card(&card, 1, 200_000);
+    let mut plan = plan_for(&card, &dest);
+    plan.concurrency = 1;
+    plan.chunk_size = 64 * 1024;
+    let events = Mutex::new(Vec::new());
+    let hooks = RunHooks {
+        sink: None,
+        faults: Some(&SlowDevice),
+    };
+    let r = run_with(
+        &plan,
+        hooks,
+        &|p: &ImportProgress| events.lock().unwrap().push(p.clone()),
+        &AtomicBool::new(false),
+    )
+    .unwrap();
+    assert!(r.is_complete());
+    let events = events.into_inner().unwrap();
+    let named = |stage: ImportStage, name: &str| {
+        events
+            .iter()
+            .any(|e| e.stage == stage && e.current.as_deref().is_some_and(|p| p.ends_with(name)))
+    };
+    assert!(named(ImportStage::Copying, "DSC00000.ARW"), "{events:?}");
+    // Reading a copy back writes no bytes; the listener still hears of it.
+    assert!(named(ImportStage::Verifying, "DSC00000.ARW"), "{events:?}");
+    assert!(named(ImportStage::Verifying, "DSC00000.JPG"), "{events:?}");
+    let saving = events
+        .iter()
+        .position(|e| e.stage == ImportStage::Saving)
+        .expect("the final flush is announced");
+    assert!(
+        events[saving..]
+            .iter()
+            .all(|e| e.stage == ImportStage::Saving && e.current.is_none() && e.files_done == 2),
+        "{events:?}"
+    );
+}
+
+/// An earlier run's copy is compared, not copied again, and the listener is told.
+#[test]
+fn progress_says_when_an_existing_copy_is_being_checked() {
+    let t = tempfile::tempdir().unwrap();
+    let (card, dest) = (t.path().join("card"), t.path().join("dest"));
+    make_card(&card, 1, 50_000);
+    let plan = plan_for(&card, &dest);
+    run(&plan, &no_progress, &AtomicBool::new(false)).unwrap();
+    let events = Mutex::new(Vec::new());
+    let r = run(
+        &plan_for(&card, &dest),
+        &|p: &ImportProgress| events.lock().unwrap().push(p.clone()),
+        &AtomicBool::new(false),
+    )
+    .unwrap();
+    assert!(r.is_complete());
+    let events = events.into_inner().unwrap();
+    assert!(
+        events
+            .iter()
+            .any(|e| e.stage == ImportStage::Checking && e.current.is_some()),
+        "{events:?}"
+    );
+    assert!(
+        events.iter().all(|e| e.stage != ImportStage::Copying),
+        "{events:?}"
+    );
+}
+
 #[test]
 fn card_pulled_mid_copy_fails_cleanly_then_resumes() {
     let t = tempfile::tempdir().unwrap();

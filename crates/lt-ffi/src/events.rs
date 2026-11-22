@@ -38,6 +38,10 @@ pub struct ProgressEvent {
     pub phase: TaskPhase,
     pub completed: u64,
     pub total: u64,
+    /// What the task is working on right now, for display (a file name).
+    /// `None` when the kind says it all.
+    #[uniffi(default = None)]
+    pub detail: Option<String>,
 }
 
 impl ProgressEvent {
@@ -201,6 +205,7 @@ mod tests {
             phase,
             completed: done,
             total: 10,
+            detail: None,
         }
     }
 

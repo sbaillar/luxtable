@@ -209,6 +209,7 @@ impl TaskReporter {
             phase: phase_for(Some(e)),
             completed: 0,
             total: 0,
+            detail: None,
         });
     }
 
@@ -219,6 +220,7 @@ impl TaskReporter {
             phase,
             completed,
             total,
+            detail: None,
         });
     }
 }

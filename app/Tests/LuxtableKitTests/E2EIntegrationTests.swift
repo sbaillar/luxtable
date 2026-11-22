@@ -125,7 +125,7 @@ import Testing
         m.start()
         await m.wait()
         guard case .finished(let s) = m.phase else { Issue.record("import: \(m.phase)"); return }
-        #expect(s.verified && s.complete && s.needsAcknowledgement, "notes.txt stays on the card: \(s)")
+        #expect(s.verified && s.complete && s.safeToRemove && !s.needsAcknowledgement, "notes.txt is ignored: \(s)")
         #expect(ejector.ejected.isEmpty)
         let report = try #require(m.lastReport)
         let importSecs = Date().timeIntervalSince(t0)

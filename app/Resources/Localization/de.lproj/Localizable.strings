@@ -200,7 +200,6 @@
 "%lld files in other formats not imported" = "%lld Dateien in anderen Formaten werden nicht importiert";
 "%lld files into %@" = "%lld Dateien in %@";
 "%lld files need attention" = "%lld Dateien müssen geprüft werden";
-"%lld files on the card were not imported" = "%lld Dateien auf der Karte wurden nicht importiert";
 "%lld files waiting" = "%lld Dateien warten";
 "%lld files · %@" = "%lld Dateien · %@";
 "%lld frame not aligned" = "%lld Bild nicht ausgerichtet";
@@ -273,7 +272,6 @@
 "%lld style packs" = "%lld Stilpakete";
 "%lld to %lld" = "%lld bis %lld";
 "%lld tools" = "%lld Werkzeuge";
-"%lld unreadable, %lld not imported" = "%lld unlesbar, %lld nicht importiert";
 "%lld unsaved change. Saving failed: %@" = "%lld nicht gesicherte Änderung. Sichern fehlgeschlagen: %@";
 "%lld unsaved changes" = "%lld nicht gesicherte Änderungen";
 "%lld unsaved changes. Saving failed: %@" = "%lld nicht gesicherte Änderungen. Sichern fehlgeschlagen: %@";
@@ -320,7 +318,6 @@
 "1 file into %@" = "1 Datei in %@";
 "1 file is only on the card" = "1 Datei ist nur auf der Karte";
 "1 file needs attention" = "1 Datei muss geprüft werden";
-"1 file on the card was not imported" = "1 Datei auf der Karte wurde nicht importiert";
 "1 file · %@" = "1 Datei · %@";
 "1 imported variant removed" = "1 importierte Variante entfernt";
 "1 integration" = "1 Integration";
@@ -718,11 +715,13 @@
 "Check for Updates…" = "Nach Updates suchen…";
 "Check for updates automatically" = "Automatisch nach Updates suchen";
 "Checked tools are in %@; choosing one removes it" = "Markierte Werkzeuge sind in %@; Auswählen entfernt sie";
+"Checking %@" = "%@ wird geprüft";
 "Checking Luxtable %@…" = "Luxtable %@ wird geprüft…";
 "Checking for updates…" = "Nach Updates suchen…";
 "Checking its fingerprint and signature." = "Fingerabdruck und Signatur werden geprüft.";
 "Checking the archive…" = "Archiv wird geprüft…";
 "Checking the export folder…" = "Exportordner wird geprüft…";
+"Checking what is already here…" = "Vorhandenes wird geprüft…";
 "Checking what would change (nothing is written)…" = "Prüfen, was sich ändern würde (nichts wird geschrieben)…";
 "Checking…" = "Wird geprüft…";
 "Choose" = "Auswählen";
@@ -892,7 +891,9 @@
 "Copy this photo's adjustments as a look for a plug-in's looks.json (docs/PLUGINS.md)" = "Anpassungen dieses Fotos als Look für die looks.json eines Plug-ins kopieren (docs/PLUGINS.md)";
 "Copy what was edited on this photo (⇧⌘C)" = "Kopieren, was an diesem Foto bearbeitet wurde (⇧⌘C)";
 "Copy will take these from %@." = "„Kopieren“ übernimmt diese von %@.";
+"Copying %@" = "%@ wird kopiert";
 "Copying %lld of %lld originals (%@)…" = "%lld von %lld Originalen werden kopiert (%@)…";
+"Copying and verifying…" = "Kopieren und Verifizieren…";
 "Copyright" = "Copyright";
 "Copy…" = "Kopieren…";
 "Correct converging verticals: + widens the top." = "Stürzende Linien korrigieren: + verbreitert oben.";
@@ -1191,6 +1192,7 @@
 "Finding the sessions folder…" = "Sessions-Ordner wird gesucht…";
 "Find…" = "Suchen…";
 "Fine-detail contrast." = "Kontrast feiner Details.";
+"Finishing: adding the photos to the session…" = "Abschluss: Fotos werden zur Session hinzugefügt…";
 "First" = "Erstes";
 "First photo" = "Erstes Foto";
 "Fit" = "Einpassen";
@@ -1241,6 +1243,7 @@
 "General" = "Allgemein";
 "Get RAW Helper" = "RAW-Helfer laden";
 "Getting Started" = "Erste Schritte";
+"Getting ready…" = "Wird vorbereitet…";
 "GitHub answered HTTP %lld" = "GitHub antwortete mit HTTP %lld";
 "Give the preset a name." = "Gib der Vorgabe einen Namen.";
 "Give the smart folder a name." = "Gib dem intelligenten Ordner einen Namen.";
@@ -1585,6 +1588,7 @@
 "Make the whole photo brighter or darker (Exposure)." = "Macht das ganze Foto heller oder dunkler (Belichtung).";
 "Making a developed copy for Immich…" = "Entwickelte Kopie für Immich wird erstellt…";
 "Making developed copies of %lld photos for Immich…" = "Entwickelte Kopien von %lld Fotos für Immich werden erstellt…";
+"Making sure every copy is safely on disk…" = "Alle Kopien werden sicher auf das Laufwerk geschrieben…";
 "Map" = "Karte";
 "Map tiles come from Apple Maps. The areas you view are requested from Apple; your photos and their locations aren't uploaded." = "Kartenkacheln stammen von Apple Karten. Die angezeigten Gebiete werden bei Apple angefragt; deine Fotos und ihre Orte werden nicht hochgeladen.";
 "Map: %lld photo" = "Karte: %lld Foto";
@@ -2780,6 +2784,7 @@
 "Verified import is coming soon. Until then Luxtable never copies from or deletes on a card." = "Verifizierter Import folgt in Kürze. Bis dahin kopiert Luxtable nichts von einer Karte und löscht nichts darauf.";
 "Verified import isn't available here. Luxtable doesn't copy from cards unless it can verify every file." = "Verifizierter Import ist hier nicht verfügbar. Luxtable kopiert nur von Karten, wenn jede Datei verifiziert werden kann.";
 "Verified import isn't available in this build. Luxtable never copies from cards without verifying, so it can't lose files. You can browse the card read-only." = "Verifizierter Import ist in diesem Build nicht verfügbar. Luxtable kopiert nie ohne Verifizierung von Karten und kann daher keine Dateien verlieren. Du kannst die Karte schreibgeschützt durchsuchen.";
+"Verifying %@" = "%@ wird verifiziert";
 "Verifying files in the background… %lld%% (%@ of %@)" = "Dateien werden im Hintergrund verifiziert… %lld%% (%@ von %@)";
 "Version" = "Version";
 "Version %@ is installed: this is older and replaces it." = "Version %@ ist installiert: Diese ist älter und ersetzt sie.";

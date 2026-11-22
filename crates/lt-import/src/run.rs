@@ -48,6 +48,18 @@ const LOCK_GRACE: Duration = Duration::from_secs(1);
 /// Start of the reason for a file the [`SessionSink`] refused.
 pub const NOT_REGISTERED: &str = "copied and verified, but not added to the session";
 
+/// What a run is doing when it reports progress.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ImportStage {
+    /// Comparing a file with a copy the destination or the library already holds.
+    Checking,
+    Copying,
+    /// Flushing a copy and reading it back from the device.
+    Verifying,
+    /// After the last file: the final durability flush and the session sink.
+    Saving,
+}
+
 /// A snapshot of import progress.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ImportProgress {
@@ -55,7 +67,9 @@ pub struct ImportProgress {
     pub bytes_total: u64,
     pub files_done: usize,
     pub files_total: usize,
-    /// Source file that produced this event.
+    pub stage: ImportStage,
+    /// The source file most recently started on, if the stage is about one
+    /// file. With several workers this is the latest to start a step.
     pub current: Option<PathBuf>,
     pub bytes_per_sec: f64,
     pub eta: Option<Duration>,
@@ -105,7 +119,8 @@ pub struct ImportReport {
     pub durability_error: Option<String>,
     /// Parts of the card the scan could not read (from [`ImportPlan::scan_errors`]).
     pub scan_errors: Vec<crate::scan::ScanError>,
-    /// Card files deliberately not imported (from [`ImportPlan::skipped`]).
+    /// Card files that are not media (from [`ImportPlan::skipped`]): a record
+    /// for diagnostics, never a problem.
     pub skipped_unknown: Vec<crate::scan::SkippedFile>,
     pub bytes_copied: u64,
     pub elapsed: Duration,
@@ -123,10 +138,11 @@ impl ImportReport {
             && self.scan_errors.is_empty()
     }
 
-    /// The UI must show [`Self::scan_errors`] and [`Self::skipped_unknown`]
-    /// and get an explicit "I understand" before offering to eject the card.
+    /// The UI must show what is missing and get an explicit "I understand"
+    /// before offering to eject the card. Files that are not media
+    /// ([`Self::skipped_unknown`]) do not count: they are ignored.
     pub fn eject_needs_confirmation(&self) -> bool {
-        !self.is_complete() || !self.skipped_unknown.is_empty()
+        !self.is_complete()
     }
 }
 
@@ -290,19 +306,18 @@ pub fn run_with(
         bytes_total: plan.total_bytes(),
         files_total: plan.file_count(),
         last_progress_ms: AtomicU64::new(0),
+        doing: Mutex::new((ImportStage::Copying, None)),
         dest_full: AtomicBool::new(false),
         source_lost: Mutex::new(None),
         space: Mutex::new(Space::default()),
         space_freed: Condvar::new(),
     };
 
-    std::thread::scope(|s| {
-        for _ in 0..plan.concurrency.min(plan.items.len()).max(1) {
-            s.spawn(|| state.worker());
-        }
-    });
+    state.copy_all();
 
     // Final checkpoint: nothing is reported before the drive caches are flushed.
+    *lock(&state.doing) = (ImportStage::Saving, None);
+    state.emit();
     let final_flush = state.checkpoint(true);
     let RunState {
         report,
@@ -377,6 +392,8 @@ struct RunState<'a> {
     bytes_total: u64,
     files_total: usize,
     last_progress_ms: AtomicU64,
+    /// The step most recently started, and its source file.
+    doing: Mutex<(ImportStage, Option<PathBuf>)>,
     dest_full: AtomicBool,
     source_lost: Mutex<Option<String>>,
     roots: Vec<lt_fsutil::RootHandle>,
@@ -415,6 +432,30 @@ struct Target {
 }
 
 impl RunState<'_> {
+    /// Run the workers to the end of the plan (or a stop).
+    fn copy_all(&self) {
+        std::thread::scope(|s| {
+            let (working, workers_gone) = mpsc::channel::<()>();
+            for _ in 0..self.plan.concurrency.min(self.plan.items.len()).max(1) {
+                let working = working.clone();
+                s.spawn(move || {
+                    let _working = working;
+                    self.worker();
+                });
+            }
+            drop(working);
+            // Hashing, flushing and reading back report nothing themselves:
+            // keep the listener current until the last worker is gone.
+            s.spawn(move || {
+                while workers_gone.recv_timeout(PROGRESS_EVERY)
+                    == Err(mpsc::RecvTimeoutError::Timeout)
+                {
+                    self.maybe_progress();
+                }
+            });
+        });
+    }
+
     fn stopped(&self) -> bool {
         self.cancel.load(Ordering::Relaxed) || lock(&self.source_lost).is_some()
     }
@@ -644,7 +685,7 @@ impl RunState<'_> {
             file,
             copied_bytes,
         });
-        self.account(0, 1, &f.src.path);
+        self.account(0, 1);
         Ok(())
     }
 
@@ -665,6 +706,7 @@ impl RunState<'_> {
                 need.push(t.clone());
                 continue;
             };
+            self.begin(ImportStage::Checking, f);
             let src_hash = if let Some((h, _)) = *known {
                 h
             } else {
@@ -714,6 +756,7 @@ impl RunState<'_> {
                 .map_err(|e| source_err(f, "reading for duplicate check", &e))?;
         }
         let ignore: Vec<PathBuf> = targets.iter().map(|t| t.fin.clone()).collect();
+        self.begin(ImportStage::Checking, f);
         match find_duplicate(&f.src.path, f.src.size, lookup.as_ref(), &ignore) {
             Ok(Some(existing)) => {
                 lock(&self.ledger).set(
@@ -728,7 +771,7 @@ impl RunState<'_> {
                         src: f.src.path.clone(),
                         existing,
                     });
-                self.account(f.src.size, 1, &f.src.path);
+                self.account(f.src.size, 1);
                 Ok(true)
             }
             Ok(None) => Ok(false),
@@ -921,6 +964,7 @@ impl RunState<'_> {
         // already exists (not in our journal) is kept while fresh (another
         // import's?) and cleared once stale: see `fsio::remove_stale_partial`.
         let mut guard = PartialGuard { paths: Vec::new() };
+        self.begin(ImportStage::Copying, f);
         let mut errs: Vec<Option<String>> = vec![None; targets.len()];
         // Primary errors abort; backup errors disable that target.
         let settle =
@@ -988,7 +1032,7 @@ impl RunState<'_> {
                 }
                 self.bytes_done
                     .fetch_add(chunk.len() as u64, Ordering::Relaxed);
-                self.maybe_progress(&f.src.path);
+                self.maybe_progress();
                 Ok(())
             },
             |e| source_err(f, "reading", &e),
@@ -1022,6 +1066,7 @@ impl RunState<'_> {
         fin: &Path,
         hash: FileHash,
     ) -> Result<(), CopyFail> {
+        self.begin(ImportStage::Verifying, f);
         out.set_modified(f.src.mtime)
             .map_err(|e| io_fail("setting mtime on", partial, &e))?;
         lt_fsutil::sync_file(&out).map_err(|e| io_fail("syncing", partial, &e))?;
@@ -1055,17 +1100,23 @@ impl RunState<'_> {
             src: f.src.path.clone(),
             reason,
         });
-        self.account(0, 1, &f.src.path);
+        self.account(0, 1);
     }
 
     /// Count finished files (and bytes not streamed through the copy loop).
-    fn account(&self, bytes: u64, files: usize, current: &Path) {
+    fn account(&self, bytes: u64, files: usize) {
         self.bytes_done.fetch_add(bytes, Ordering::Relaxed);
         self.files_done.fetch_add(files, Ordering::Relaxed);
-        self.emit(current);
+        self.emit();
     }
 
-    fn maybe_progress(&self, current: &Path) {
+    /// A worker starts `stage` on `f`.
+    fn begin(&self, stage: ImportStage, f: &PlannedFile) {
+        *lock(&self.doing) = (stage, Some(f.src.path.clone()));
+        self.maybe_progress();
+    }
+
+    fn maybe_progress(&self) {
         let now_ms = self.start.elapsed().as_millis() as u64;
         let last = self.last_progress_ms.load(Ordering::Relaxed);
         if now_ms.saturating_sub(last) >= PROGRESS_EVERY.as_millis() as u64
@@ -1074,11 +1125,11 @@ impl RunState<'_> {
                 .compare_exchange(last, now_ms, Ordering::Relaxed, Ordering::Relaxed)
                 .is_ok()
         {
-            self.emit(current);
+            self.emit();
         }
     }
 
-    fn emit(&self, current: &Path) {
+    fn emit(&self) {
         let bytes_done = self.bytes_done.load(Ordering::Relaxed);
         let secs = self.start.elapsed().as_secs_f64();
         let rate = if secs > 0.0 {
@@ -1088,12 +1139,14 @@ impl RunState<'_> {
         };
         let remaining = self.bytes_total.saturating_sub(bytes_done);
         let eta = (rate > 0.0).then(|| Duration::from_secs_f64(remaining as f64 / rate));
+        let (stage, current) = lock(&self.doing).clone();
         let event = ImportProgress {
             bytes_done,
             bytes_total: self.bytes_total,
             files_done: self.files_done.load(Ordering::Relaxed),
             files_total: self.files_total,
-            current: Some(current.to_path_buf()),
+            stage,
+            current,
             bytes_per_sec: rate,
             eta,
         };

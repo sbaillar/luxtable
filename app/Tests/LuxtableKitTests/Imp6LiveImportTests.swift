@@ -93,8 +93,9 @@ import Testing
         let secs = Date().timeIntervalSince(started)
         guard case .finished(let s) = m.phase else { #expect(Bool(false), "\(m.phase)"); return }
         #expect(s.verified && s.complete, "\(s)")
-        #expect(s.needsAcknowledgement, "notes.txt stays on the card")
-        #expect(!s.ejected && ejector.ejected.isEmpty, "never auto-ejected before “I understand”")
+        #expect(s.safeToRemove && !s.needsAcknowledgement && s.stayOnCard.isEmpty, "notes.txt is not a photo: ignored")
+        #expect(!s.ejected && ejector.ejected.isEmpty, "never ejected on its own")
+        #expect(m.progress?.stage == .finishing, "the engine's steps reach the sheet: \(String(describing: m.progress))")
         let report = try #require(m.lastReport)
         print(String(format: "IMP6 import from exFAT image: %d items, %.1f MB in %.2f s = %.1f MB/s (with source re-read)",
                      report.filesCopied, Double(report.bytesCopied) / 1e6, secs,
@@ -113,8 +114,7 @@ import Testing
         let reopened = RustSessionStore(recents: env.recents, storeBase: env.root.appendingPathComponent("stores"))
         let again = try await reopened.photos(in: session)
         #expect(again.first { $0.id == first.id }?.rating == 4)
-        // Eject only after acknowledging.
-        m.acknowledged = true
+        // Eject only when asked.
         await m.ejectNow()
         #expect(ejector.ejected == [env.card.mount])
         #expect(await cardListing(env.card.mount) == before, "the card is byte-identical")
