@@ -248,8 +248,8 @@ AI Upscale runs RealESRGAN_x2plus:
 
 - **Paper:** Xintao Wang, Liangbin Xie, Chao Dong and Ying Shan, *Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data*, ICCV Workshops 2021.
 - **Code and weights:** https://github.com/xinntao/Real-ESRGAN (BSD 3-Clause License, below). The weights are the release file `RealESRGAN_x2plus.pth` (v0.2.1), SHA-256 49fafd45f8fd7aa8d31ab2a22d14d91b536c34494a5cfe31eb5d89c2fa266abb. The network is RRDBNet from BasicSR (Apache License 2.0, above).
-- **Training data:** DIV2K, Flickr2K and OutdoorSceneTraining, licensed for non-commercial research only. Luxtable's licence doesn't override those terms; complying with them is up to you. Public builds download this model on first use (Photo ▸ Enhance ▸ Download AI Upscale Model…).
-- **The model Luxtable uses:** the weights converted to Core ML float16 by `scripts/upscale-model/`; the weights and model spec are checked by SHA-256 when downloaded. Builds made with `LT_BUNDLE_UPSCALE=1` (personal builds) include it instead of downloading it.
+- **Training data:** DIV2K, Flickr2K and OutdoorSceneTraining, licensed for non-commercial research only. Luxtable's licence doesn't override those terms; complying with them is up to you. Public builds don't include this model: Photo ▸ Enhance ▸ Download AI Upscale Model… downloads the weights from the authors' GitHub release above and converts them on your Mac.
+- **The model Luxtable uses:** the weights converted to Core ML float16 (as `scripts/upscale-model/` does); the downloaded weights and the converted model are checked by SHA-256. Builds made with `LT_BUNDLE_UPSCALE=1` (personal builds) include it instead of downloading it.
 
 Licence of Real-ESRGAN and its weights:
 

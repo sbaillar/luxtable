@@ -1,6 +1,6 @@
 # AI Upscale model
 
-AI Upscale runs RealESRGAN_x2plus as a Core ML float16 package, `LuxtableUpscale.mlpackage`. Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research, so builds don't bundle it by default: the app downloads the converted package on first use (see Download). `LT_BUNDLE_UPSCALE=1 scripts/build-app.sh` builds it from source and bundles it in `Luxtable.app/Contents/Resources/Models/`, next to the AI Denoise model, for personal builds.
+AI Upscale runs RealESRGAN_x2plus as a Core ML float16 package, `LuxtableUpscale.mlpackage`. Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research, so builds don't bundle it by default and Luxtable doesn't distribute it: on the user's request the app downloads the authors' release checkpoint and converts it on their Mac (see Download). `LT_BUNDLE_UPSCALE=1 scripts/build-app.sh` builds it from source and bundles it in `Luxtable.app/Contents/Resources/Models/`, next to the AI Denoise model, for personal builds.
 
 | | |
 |---|---|
@@ -35,11 +35,19 @@ The x2 model packs each 2×2 block into 12 channels before its first convolution
 
 When the build doesn't bundle the model, Photo ▸ Enhance offers **Download AI Upscale Model…** instead of Upscale 2× (export recipes resample until then, and say why).
 
-1. **Ask.** An alert states the model's licence and training-data terms (`UpscaleModelDescriptor.downloadNotice`); nothing is fetched unless the user agrees.
-2. **Fetch.** The three files of the converted package (`Manifest.json`, `Data/com.apple.CoreML/model.mlmodel`, the weights) are downloaded from `<base>/<path>` into a staging folder `<support>/Models/.upscale-download-<uuid>/` (`UpscaleModelDescriptor.files`). The model spec and the weights must match their pinned SHA-256 (the weights' is `weightsSHA256`). The pinned conversion reproduces the weights bit for bit (`convert.py` checks it); the model spec's pin is of the owner's conversion, so if a fresh conversion's spec hashes differently, pin its new hash. The manifest isn't pinned, because each conversion writes new item UUIDs into it: it must parse as a package manifest (`itemInfoEntries`, `rootModelIdentifier`). Sizes are only used for progress. The menu item shows the progress and cancels the download.
-3. **Install.** The checked package is moved to `<support>/Models/LuxtableUpscale.mlpackage` in one rename (a damaged earlier copy is swapped out with `replaceItemAt`), so a cancel or a failed check leaves nothing installed and the staging folder is removed. A staging folder a crash leaves behind is removed at the next launch; other models' sweeps of `.download-*` never touch it. From then on the model is used like a bundled one: checked against `weightsSHA256` on first use and compiled once. A downloaded copy that fails that check is offered for download again.
+1. **Ask.** An alert states where the model comes from, its licence and its training-data terms (`UpscaleModelDescriptor.downloadNotice`); nothing is fetched unless the user agrees.
+2. **Fetch.** The release checkpoint `RealESRGAN_x2plus.pth` (67 MB, the Weights row above) is downloaded from its authors' GitHub release into a staging folder `<support>/Models/.upscale-download-<uuid>/` and must match its pinned SHA-256 (`UpscaleModelDescriptor.checkpointSHA256`, the same as `convert.py`'s). The menu item shows the progress and cancels the download.
+3. **Convert.** `UpscaleConversion` builds the Core ML package from the checkpoint in the staging folder, with the template the app ships (`Contents/Resources/UpscaleModel`, from `app/Resources/UpscaleModel`):
+   - `recipe.json` says where each tensor of `weight.bin` lies in the checkpoint. Each is written in float16 into Core ML's blob storage; the `conv5` tensors are multiplied by 0.2 first (the residual scale, which the conversion folds in), and the pixel unshuffle's fixed weights are a constant in the recipe.
+   - `model.mlmodel` is the converted package's model spec with the one trained tensor it holds inline (`conv_last.bias`, three values) zeroed; the conversion writes it back from the checkpoint.
+   - `Manifest.json` is the package's manifest.
 
-**Where from.** `<base>` is `UpscaleModelDescriptor.downloadBase`, a **placeholder (`nil`) until the hosting is decided**, or the `LT_UPSCALE_MODEL_URL` environment variable (an `https://` URL ending in `/`; other schemes and redirects off https are refused). With neither, the download isn't offered and Upscale 2× says the model isn't included. To publish it, upload a package `LT_BUNDLE_UPSCALE=1 scripts/build-app.sh` (or `scripts/upscale-model/build-model.sh`) produces, its three files at those paths, unchanged, then set `downloadBase`. Hosting it means distributing the model, so its terms apply to whoever hosts it (docs/OPEN_SOURCE.md). A conversion with other weights or tools needs new pins: `shasum -a 256` of the model spec and weights.
+   The result must be the pinned conversion bit for bit: the weights are checked against `weightsSHA256` and the model spec against `specSHA256`. The template holds none of the trained weights, so Luxtable distributes none.
+4. **Install.** The checked package is moved to `<support>/Models/LuxtableUpscale.mlpackage` in one rename (a damaged earlier copy is swapped out with `replaceItemAt`), so a cancel or a failed check leaves nothing installed. The staging folder, and the checkpoint in it, is removed. A staging folder a crash leaves behind is removed at the next launch; other models' sweeps of `.download-*` never touch it. From then on the model is used like a bundled one: checked against `weightsSHA256` on first use and compiled once. A downloaded copy that fails that check is offered for download again.
+
+**Where from.** `UpscaleModelDescriptor.checkpointURL`: `github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth`. The `LT_UPSCALE_MODEL_URL` environment variable names another `https://` URL of the same file (a mirror); other schemes and redirects off https are refused. A build without the template (`swift run`, tests) doesn't offer the download, and Upscale 2× says the model isn't included.
+
+**Regenerating the template.** After a change to the conversion (`convert.py`, `rrdbnet.py`, the requirements), run `scripts/upscale-model/template.py <package> <checkpoint> app/Resources/UpscaleModel` in the model venv, with the package `scripts/upscale-model/build-model.sh` prints. It stops unless the recipe rebuilds the package's `weight.bin` exactly, and prints the pins for `UpscaleModelDescriptor` (`specSHA256` changes with each conversion; the weights reproduce bit for bit).
 
 ## Speed (M4 Pro, 256² tiles in, 512² out)
 
@@ -68,5 +76,5 @@ A recipe with AI Upscale may enlarge. When its size is larger than the render, t
 ## Runtime
 
 - **Loading.** The app takes `Models/LuxtableUpscale.mlpackage` from its bundle, or else the downloaded `<support>/Models/LuxtableUpscale.mlpackage`, checks the weights against `UpscaleModelDescriptor.weightsSHA256` (a test keeps it equal to `convert.py`'s), and compiles it once into `<support>/Models/`.
-- **No model yet.** The menu offers the download (above); without a download location Upscale 2× is disabled with "AI Upscale model not included in this build."; export recipes resample either way.
+- **No model yet.** The menu offers the download (above); without the conversion template Upscale 2× is disabled with "AI Upscale model not included in this build."; export recipes resample either way.
 - **Checksum mismatch.** The model is refused and never compiled; Upscale 2× is disabled with the reason.

@@ -552,141 +552,177 @@ private struct StalledDownloader: ModelDownloader {
     }
 }
 
-/// [osscleanup] AI Upscale's model downloaded on first use: pinned files, checked, installed
-/// in one rename; the menu offers it, and Upscale 2× works once it's there.
+/// [osscleanup] AI Upscale's model on first use: the authors' release checkpoint is
+/// downloaded and checked, the package is built from it and checked against its pins, and
+/// installed in one rename; the menu offers it, and Upscale 2× works once it's there.
 @MainActor
 @Suite(.serialized) struct UpscaleDownloadTests {
-    let base = URL(string: "https://models.example.invalid/x/LuxtableUpscale.mlpackage/")!
+    static let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("../../..").standardizedFileURL
 
+    nonisolated static func le<T: FixedWidthInteger>(_ v: T) -> Data { withUnsafeBytes(of: v.littleEndian) { Data($0) } }
+    nonisolated static func floats(_ v: [Float]) -> Data { v.reduce(into: Data()) { $0 += le($1.bitPattern) } }
+
+    /// The package the small source below converts to, written out by hand: Core ML's blob
+    /// storage with a constant, a tensor in float16 and a tensor times 0.2.
+    static let weights: Data = {
+        func blob(_ data: [UInt8], at: Int) -> Data {
+            var d = le(UInt32(0xDEAD_BEEF)) + le(UInt32(1)) + le(UInt64(data.count)) + le(UInt64(at + 64)) + Data(count: 40) + Data(data)
+            d += Data(count: 64 - data.count)
+            return d
+        }
+        return le(UInt32(3)) + le(UInt32(2)) + Data(count: 56)
+            + blob([0x00, 0x3C], at: 64)                              // the constant: 1.0
+            + blob([0x00, 0x3C, 0x00, 0x38, 0x00, 0xC0], at: 192)     // 1, 0.5, -2
+            + blob([0x00, 0x40], at: 320)                             // 10 × 0.2 = 2
+    }()
+    static let spec = Data([0x53, 0x50, 0x00, 0x34, 0x45, 0x43]) // "SP", 0.25 in float16, "EC"
     static let manifest = Data(#"{"itemInfoEntries": {"A": {"path": "com.apple.CoreML/model.mlmodel"}}, "rootModelIdentifier": "A"}"#.utf8)
 
-    /// A published package (three files) and its file list: the model spec and weights
-    /// pinned, the manifest checked for its shape (like `UpscaleModelDescriptor.files`).
-    func published(_ dir: URL, damage: Bool = false, manifest: Data = manifest) throws -> (URL, [DownloadableModelDescriptor.File]) {
-        let pkg = dir.appendingPathComponent("published/LuxtableUpscale.mlpackage")
-        let contents = ["Manifest.json": manifest, "Data/com.apple.CoreML/model.mlmodel": Data(repeating: 1, count: 10),
-                        DenoiseModelDescriptor.weightsPath: Data(repeating: 7, count: 64)]
-        var files: [DownloadableModelDescriptor.File] = []
-        for (path, data) in contents.sorted(by: { $0.key < $1.key }) {
-            let f = pkg.appendingPathComponent(path)
-            try FileManager.default.createDirectory(at: f.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try data.write(to: f)
-            let sha = path == "Manifest.json" ? ""
-                : damage && path.hasSuffix("model.mlmodel") ? String(repeating: "0", count: 64)
-                : DenoiseGlobalStore.DenoiseServiceTests.sha(data)
-            files.append(.init(path: path, url: base.appendingPathComponent(path), sha256: sha, size: Int64(data.count)))
-        }
-        return (pkg, files)
+    /// A small checkpoint to download (16 bytes of something else, then five float32
+    /// values), its conversion template, and the pins of what they convert to. `damage`
+    /// pins another spec; `recipe` replaces the recipe.
+    func source(_ dir: URL, damage: Bool = false, recipe: String? = nil) throws -> (UpscaleModelDownload.Source, any ModelDownloader) {
+        let sha = DenoiseGlobalStore.DenoiseServiceTests.sha
+        let checkpoint = Data(repeating: 9, count: 16) + Self.floats([1, 0.5, -2, 10, 0.25])
+        let served = dir.appendingPathComponent("served")
+        let template = dir.appendingPathComponent("template")
+        for d in [served, template] { try FileManager.default.createDirectory(at: d, withIntermediateDirectories: true) }
+        try checkpoint.write(to: served.appendingPathComponent("RealESRGAN_x2plus.pth"))
+        try Self.manifest.write(to: template.appendingPathComponent("Manifest.json"))
+        try Data([0x53, 0x50, 0, 0, 0x45, 0x43]).write(to: template.appendingPathComponent("model.mlmodel"))
+        let standard = #"{"blobs":[{"d":"ADw="},{"o":16,"n":3},{"o":28,"n":1,"s":true}],"bias":{"o":32,"n":1,"at":2}}"#
+        try Data((recipe ?? standard).utf8).write(to: template.appendingPathComponent("recipe.json"))
+        let url = URL(string: "https://models.example.invalid/served.mlpackage/RealESRGAN_x2plus.pth")!
+        let file = DownloadableModelDescriptor.File(path: "RealESRGAN_x2plus.pth", url: url, sha256: sha(checkpoint), size: Int64(checkpoint.count))
+        return (.init(checkpoint: file, template: template,
+                      specSHA256: damage ? String(repeating: "0", count: 64) : sha(Self.spec), weightsSHA256: sha(Self.weights)),
+                LocalModelDownloader(package: served))
     }
 
     func visible(_ dir: URL) -> [String] {
         ((try? FileManager.default.contentsOfDirectory(atPath: dir.path)) ?? []).sorted()
     }
 
-    @Test func theDescriptorPinsThePublishedPackage() {
-        let files = UpscaleModelDescriptor.files(base: base)
-        #expect(files.map(\.path) == ["Manifest.json", "Data/com.apple.CoreML/model.mlmodel", DenoiseModelDescriptor.weightsPath])
-        #expect(files.last?.sha256 == UpscaleModelDescriptor.weightsSHA256 && files.last?.size == 33_451_648)
-        #expect(files[0].sha256.isEmpty && files[1].sha256.count == 64, "the manifest's UUIDs differ per conversion: not pinned")
-        #expect(files[0].url.absoluteString == base.absoluteString + "Manifest.json")
-        // No hosting yet: nothing to download unless the environment names it.
-        #expect(UpscaleModelDescriptor.downloadBase == nil)
-        #expect(UpscaleModelDescriptor.downloadURL(environment: [:]) == nil)
-        #expect(UpscaleModelDescriptor.downloadURL(environment: ["LT_UPSCALE_MODEL_URL": ""]) == nil)
-        #expect(UpscaleModelDescriptor.downloadURL(environment: ["LT_UPSCALE_MODEL_URL": base.absoluteString]) == base)
-        #expect(!UpscaleModelDownload.standard(environment: [:]).isConfigured)
-        #expect(UpscaleModelDownload.standard(environment: ["LT_UPSCALE_MODEL_URL": base.absoluteString]).isConfigured)
+    @Test func theDescriptorPinsTheAuthorsCheckpointAndTheShippedTemplate() throws {
+        // The same file and checksum the conversion script uses.
+        let script = try String(contentsOf: Self.repo.appendingPathComponent("scripts/upscale-model/convert.py"), encoding: .utf8)
+        #expect(script.contains("WEIGHTS_URL = \"\(UpscaleModelDescriptor.checkpointURL)\""))
+        #expect(script.contains("WEIGHTS_SHA256 = \"\(UpscaleModelDescriptor.checkpointSHA256)\""))
+        #expect(UpscaleModelDescriptor.downloadURL(environment: [:])?.absoluteString == UpscaleModelDescriptor.checkpointURL)
+        #expect(UpscaleModelDescriptor.downloadURL(environment: ["LT_UPSCALE_MODEL_URL": ""])?.absoluteString == UpscaleModelDescriptor.checkpointURL)
+        let mirror = "https://mirror.example.invalid/RealESRGAN_x2plus.pth"
+        #expect(UpscaleModelDescriptor.downloadURL(environment: ["LT_UPSCALE_MODEL_URL": mirror])?.absoluteString == mirror)
         #expect(UpscaleModelDescriptor.downloadNotice.contains("non-commercial research"))
+        // The template the app ships: every tensor lies inside the checkpoint, and the
+        // weights come to the pinned size.
+        let template = Self.repo.appendingPathComponent("app/Resources/UpscaleModel")
+        let recipe = try JSONDecoder().decode(UpscaleConversion.Recipe.self, from: Data(contentsOf: template.appendingPathComponent("recipe.json")))
+        var size = 64
+        for b in recipe.blobs {
+            let bytes = try b.d?.count ?? 2 * #require(b.n)
+            if b.d == nil { #expect(try #require(b.o) + 4 * #require(b.n) <= Int(UpscaleModelDescriptor.checkpointSize)) }
+            size += 64 + (bytes + 63) / 64 * 64
+        }
+        #expect(recipe.blobs.count == 702 && size == 33_451_648)
+        let shipped = try Data(contentsOf: template.appendingPathComponent("model.mlmodel"))
+        #expect(shipped[recipe.bias.at..<recipe.bias.at + 2 * recipe.bias.n].allSatisfy { $0 == 0 }, "the spec ships without its trained tensor")
+        #expect(FileManager.default.fileExists(atPath: template.appendingPathComponent("Manifest.json").path))
+        // A build with the template offers the download; one without doesn't.
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("lt-up-tpl-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: dir) }
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        #expect(!UpscaleModelDownload.standard(environment: [:], bundle: try #require(Bundle(url: dir))).isConfigured)
+        try FileManager.default.copyItem(at: template, to: dir.appendingPathComponent("UpscaleModel"))
+        #expect(UpscaleModelDownload.standard(environment: [:], bundle: try #require(Bundle(url: dir))).isConfigured)
     }
 
-    @Test func aDownloadIsCheckedAndInstalledInOneStep() async throws {
+    /// The real checkpoint, when a model build left it in the cache, converts to the
+    /// pinned package bit for bit.
+    @Test func theAuthorsCheckpointConvertsToThePinnedPackage() throws {
+        let cache = ProcessInfo.processInfo.environment["LT_MODEL_CACHE"].map { URL(fileURLWithPath: $0) }
+            ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".cache/luxtable/models")
+        let checkpoint = cache.appendingPathComponent("RealESRGAN_x2plus.pth")
+        guard (try? ModelFiles.sha256(of: checkpoint)) == UpscaleModelDescriptor.checkpointSHA256 else { return }
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("lt-up-real-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let pkg = dir.appendingPathComponent("LuxtableUpscale.mlpackage")
+        try UpscaleConversion.build(checkpoint: checkpoint, template: Self.repo.appendingPathComponent("app/Resources/UpscaleModel"), package: pkg)
+        #expect(try ModelFiles.sha256(of: pkg.appendingPathComponent(DenoiseModelDescriptor.weightsPath)) == UpscaleModelDescriptor.weightsSHA256)
+        #expect(try ModelFiles.sha256(of: pkg.appendingPathComponent(UpscaleConversion.specPath)) == UpscaleModelDescriptor.specSHA256)
+    }
+
+    @Test func aDownloadIsConvertedCheckedAndInstalledInOneStep() async throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent("lt-up-dl-\(UUID())")
         defer { try? FileManager.default.removeItem(at: dir) }
-        let (pkg, files) = try published(dir)
+        let (source, downloader) = try source(dir)
         let root = dir.appendingPathComponent("Models")
-        let d = UpscaleModelDownload(root: root, files: files, downloader: LocalModelDownloader(package: pkg))
+        let d = UpscaleModelDownload(root: root, source: source, downloader: downloader)
         #expect(d.state == .notDownloaded && d.installedPackage == nil && d.isConfigured)
         let url = try await d.download()
         #expect(url == d.packageURL && d.state == .installed && d.installedPackage == url)
-        #expect(visible(root) == ["LuxtableUpscale.mlpackage"], "no staging folder left")
-        #expect(FileManager.default.contentsEqual(atPath: url.appendingPathComponent(DenoiseModelDescriptor.weightsPath).path,
-                                                  andPath: pkg.appendingPathComponent(DenoiseModelDescriptor.weightsPath).path))
+        #expect(visible(root) == ["LuxtableUpscale.mlpackage"], "no staging folder left, the checkpoint isn't kept")
+        let weights = url.appendingPathComponent(DenoiseModelDescriptor.weightsPath)
+        #expect(try Data(contentsOf: weights) == Self.weights)
+        #expect(try Data(contentsOf: url.appendingPathComponent(UpscaleConversion.specPath)) == Self.spec)
+        #expect(try Data(contentsOf: url.appendingPathComponent("Manifest.json")) == Self.manifest)
         // Found at the next launch, which also sweeps a download a crash cut short (and
         // leaves other models' staging alone).
         let stale = root.appendingPathComponent(UpscaleModelDownload.stagingPrefix + "crashed")
         let other = root.appendingPathComponent(".download-lama")
         for d in [stale, other] { try FileManager.default.createDirectory(at: d, withIntermediateDirectories: true) }
-        let relaunched = UpscaleModelDownload(root: root, files: files, downloader: LocalModelDownloader(package: pkg))
+        let relaunched = UpscaleModelDownload(root: root, source: source, downloader: downloader)
         #expect(relaunched.state == .installed)
         _ = try await relaunched.download() // the first download sweeps its own leftovers only
         #expect(visible(root) == [".download-lama", "LuxtableUpscale.mlpackage"])
         // Downloading again (a damaged copy) swaps the package in place.
-        try Data("bad".utf8).write(to: url.appendingPathComponent(DenoiseModelDescriptor.weightsPath))
+        try Data("bad".utf8).write(to: weights)
         _ = try await d.download()
-        #expect(FileManager.default.contentsEqual(atPath: url.appendingPathComponent(DenoiseModelDescriptor.weightsPath).path,
-                                                  andPath: pkg.appendingPathComponent(DenoiseModelDescriptor.weightsPath).path))
+        #expect(try Data(contentsOf: weights) == Self.weights)
         #expect(visible(root) == [".download-lama", "LuxtableUpscale.mlpackage"])
-    }
-
-    @Test func theManifestMayNameOnlyThePinnedItems() throws {
-        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("lt-up-mf-\(UUID())")
-        defer { try? FileManager.default.removeItem(at: dir) }
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        func accepts(_ json: String) throws -> Bool {
-            let url = dir.appendingPathComponent("\(UUID()).json")
-            try Data(json.utf8).write(to: url)
-            return UpscaleModelDescriptor.isPackageManifest(url)
-        }
-        func manifest(_ paths: [String], root: String = "A") -> String {
-            let entries = paths.enumerated().map { #""\#(["A", "B", "C"][$0.offset])": {"path": "\#($0.element)"}"# }
-            return #"{"itemInfoEntries": {\#(entries.joined(separator: ", "))}, "rootModelIdentifier": "\#(root)"}"#
-        }
-        #expect(try accepts(manifest(["com.apple.CoreML/model.mlmodel", "com.apple.CoreML/weights"])))
-        #expect(try accepts(String(decoding: Self.manifest, as: UTF8.self)))
-        // The bundled stub's real manifest (Xcode-written UUIDs, author, description).
-        let stub = try #require(Bundle.module.url(forResource: "Fixtures/DenoiseStub", withExtension: "mlpackage"))
-        #expect(UpscaleModelDescriptor.isPackageManifest(stub.appendingPathComponent("Manifest.json")))
-        for bad in [manifest(["com.apple.CoreML/model.mlmodel", "../../../.ssh/authorized_keys"]),
-                    manifest(["/etc/passwd"]), manifest(["com.apple.CoreML/../model.mlmodel"]),
-                    manifest(["com.apple.CoreML/other.mlmodel"]),
-                    manifest(["com.apple.CoreML/model.mlmodel"], root: "Z"),
-                    #"{"itemInfoEntries": {}, "rootModelIdentifier": "A"}"#,
-                    #"{"itemInfoEntries": {"A": {"name": "no path"}}, "rootModelIdentifier": "A"}"#,
-                    #"{"itemInfoEntries": {"A": 1}, "rootModelIdentifier": "A"}"#, "{}", "not json"] {
-            #expect(try !accepts(bad), "\(bad)")
-        }
     }
 
     @Test func aDamagedOrCancelledDownloadInstallsNothing() async throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent("lt-up-dl-\(UUID())")
         defer { try? FileManager.default.removeItem(at: dir) }
-        let (pkg, files) = try published(dir, damage: true)
         let root = dir.appendingPathComponent("Models")
-        let bad = UpscaleModelDownload(root: root, files: files, downloader: LocalModelDownloader(package: pkg))
+        // The conversion doesn't come to the pinned spec.
+        let (damaged, downloader) = try source(dir, damage: true)
+        let bad = UpscaleModelDownload(root: root, source: damaged, downloader: downloader)
         let spec = "Data/com.apple.CoreML/model.mlmodel"
         await #expect(throws: ModelDownloadError.checksum("AI Upscale model", spec)) { _ = try await bad.download() }
         #expect(bad.state == .failed("The downloaded AI Upscale model is damaged (\(spec)). Try again."))
         #expect(visible(root).isEmpty, "nothing installed, no staging left")
-        // A manifest that isn't a package manifest.
-        let (odd, oddFiles) = try published(dir.appendingPathComponent("odd"), manifest: Data("{}".utf8))
-        let oddDownload = UpscaleModelDownload(root: root, files: oddFiles, downloader: LocalModelDownloader(package: odd))
-        await #expect(throws: ModelDownloadError.checksum("AI Upscale model", "Manifest.json")) { _ = try await oddDownload.download() }
+        // The checkpoint isn't the pinned one.
+        let (source, _) = try source(dir)
+        var other = source
+        other.checkpoint.sha256 = String(repeating: "0", count: 64)
+        let wrong = UpscaleModelDownload(root: root, source: other, downloader: downloader)
+        await #expect(throws: ModelDownloadError.checksum("AI Upscale model", "RealESRGAN_x2plus.pth")) { _ = try await wrong.download() }
+        // A recipe that reaches outside the checkpoint or the spec.
+        for (recipe, file) in [(#"{"blobs":[{"o":32,"n":2}],"bias":{"o":32,"n":1,"at":2}}"#, "RealESRGAN_x2plus.pth"),
+                               (#"{"blobs":[{"o":-4,"n":1}],"bias":{"o":32,"n":1,"at":2}}"#, "RealESRGAN_x2plus.pth"),
+                               (#"{"blobs":[{}],"bias":{"o":32,"n":1,"at":2}}"#, "RealESRGAN_x2plus.pth"),
+                               (#"{"blobs":[],"bias":{"o":32,"n":1,"at":5}}"#, spec)] {
+            let (odd, _) = try self.source(dir.appendingPathComponent("odd-\(UUID())"), recipe: recipe)
+            let d = UpscaleModelDownload(root: root, source: odd, downloader: LocalModelDownloader(package: dir.appendingPathComponent("served")))
+            await #expect(throws: ModelDownloadError.checksum("AI Upscale model", file), "\(recipe)") { _ = try await d.download() }
+        }
         #expect(visible(root).isEmpty)
         // A file the source doesn't have.
-        let gone = UpscaleModelDownload(root: root, files: files, downloader: LocalModelDownloader(package: dir))
+        let gone = UpscaleModelDownload(root: root, source: source, downloader: LocalModelDownloader(package: dir))
         await #expect(throws: ModelDownloadError.self) { _ = try await gone.download() }
         if case .failed(let m) = gone.state { #expect(m.hasPrefix("Couldn't download the AI Upscale model")) } else {
             Issue.record("\(gone.state)")
         }
         // Cancelled mid-download.
-        let slow = UpscaleModelDownload(root: root, files: files, downloader: StalledDownloader())
+        let slow = UpscaleModelDownload(root: root, source: source, downloader: StalledDownloader())
         let run = Task { try await slow.download() }
         #expect(await waitUntil { slow.isDownloading })
         slow.cancel()
         await #expect(throws: CancellationError.self) { _ = try await run.value }
         #expect(slow.state == .notDownloaded && visible(root).isEmpty)
         // Not configured.
-        let none = UpscaleModelDownload(root: root, files: nil)
+        let none = UpscaleModelDownload(root: root, source: nil)
         await #expect(throws: UpscaleError.unavailable(UpscaleModelDescriptor.reasons.missing)) { _ = try await none.download() }
     }
 
@@ -694,11 +730,10 @@ private struct StalledDownloader: ModelDownloader {
         let tests = UpscaleServiceTests()
         let dir = tests.root()
         defer { try? FileManager.default.removeItem(at: dir) }
-        let (pkg, files) = try published(dir)
-        let download = UpscaleModelDownload(root: dir.appendingPathComponent("Models"), files: files,
-                                            downloader: LocalModelDownloader(package: pkg))
+        let (source, downloader) = try source(dir)
+        let download = UpscaleModelDownload(root: dir.appendingPathComponent("Models"), source: source, downloader: downloader)
         let store = DenoiseModelStore(package: nil, compiledRoot: dir.appendingPathComponent("compiled"),
-                                      expectedWeights: DenoiseGlobalStore.DenoiseServiceTests.sha(Data(repeating: 7, count: 64)),
+                                      expectedWeights: source.weightsSHA256,
                                       name: UpscaleModelDescriptor.name, reasons: UpscaleModelDescriptor.reasons,
                                       compile: { p in
             let out = dir.appendingPathComponent("tmp-\(UUID()).mlmodelc")
@@ -733,8 +768,8 @@ private struct StalledDownloader: ModelDownloader {
         let tests = UpscaleServiceTests()
         let dir = tests.root()
         defer { try? FileManager.default.removeItem(at: dir) }
-        let (_, files) = try published(dir)
-        let slow = UpscaleModelDownload(root: dir.appendingPathComponent("Models"), files: files, downloader: StalledDownloader())
+        let (source, _) = try source(dir)
+        let slow = UpscaleModelDownload(root: dir.appendingPathComponent("Models"), source: source, downloader: StalledDownloader())
         let s = UpscaleService(model: tests.store(dir, bundled: false), backend: FakeUpscaleBackend(), download: slow)
         let m = await tests.app(s)
         CommandCatalog.perform(.upscale, model: m)
@@ -746,7 +781,7 @@ private struct StalledDownloader: ModelDownloader {
         await s.settle()
         #expect(slow.state == .notDownloaded && m.toast == nil && s.offersDownload)
         // A failure is shown, and the menu offers the download again.
-        let broken = UpscaleModelDownload(root: dir.appendingPathComponent("Models"), files: files,
+        let broken = UpscaleModelDownload(root: dir.appendingPathComponent("Models"), source: source,
                                           downloader: LocalModelDownloader(package: dir))
         let s2 = UpscaleService(model: tests.store(dir, bundled: false), backend: FakeUpscaleBackend(), download: broken)
         let m2 = await tests.app(s2)
@@ -760,13 +795,13 @@ private struct StalledDownloader: ModelDownloader {
         let tests = UpscaleServiceTests()
         let dir = tests.root()
         defer { try? FileManager.default.removeItem(at: dir) }
-        let (pkg, files) = try published(dir)
+        let (source, downloader) = try source(dir)
         let models = dir.appendingPathComponent("Models")
-        let download = UpscaleModelDownload(root: models, files: files, downloader: LocalModelDownloader(package: pkg))
+        let download = UpscaleModelDownload(root: models, source: source, downloader: downloader)
         _ = try await download.download()
         // The installed copy no longer matches the pinned weights.
         try Data("bad".utf8).write(to: download.packageURL.appendingPathComponent(DenoiseModelDescriptor.weightsPath))
-        let store = tests.store(dir, bundled: false)
+        let store = tests.store(dir, bundled: false, pinned: source.weightsSHA256)
         store.install(package: download.packageURL)
         let s = UpscaleService(model: store, backend: FakeUpscaleBackend(), download: download) { _, _ in NearestModel() }
         let m = await tests.app(s)
