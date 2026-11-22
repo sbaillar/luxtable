@@ -57,7 +57,7 @@ cat >"$tmp/cover.html" <<'HTML'
   <div class="title">User Guide</div>
   <div class="subtitle">Import, cull, develop, export and archive your RAW photos on a Mac</div>
   <img class="hero" src="../screenshots/grid.png" alt="">
-  <div class="foot">Luxtable is free software under the Apache License 2.0 · The Luxtable Authors</div>
+  <div class="foot">Luxtable is free software under the Apache License 2.0 · Sonny Baillargeon</div>
 </section>
 HTML
 
@@ -76,7 +76,7 @@ build="$SRC/.guide.build.html"
   --metadata pagetitle="Luxtable User Guide" \
   --metadata toc-title="Contents" \
   --metadata lang=en \
-  --metadata author-meta="The Luxtable Authors" \
+  --metadata author-meta="Sonny Baillargeon" \
   --metadata description-meta="How to import, cull, develop, export and archive photos with Luxtable for macOS.") |
   python3 -c '
 import re, sys
