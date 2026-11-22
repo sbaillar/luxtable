@@ -67,9 +67,11 @@ else
   fi
 fi
 # AI Upscale: not bundled unless LT_BUNDLE_UPSCALE=1 (its training data is licensed for
-# non-commercial research, so public builds download it on first use instead). Then it is
-# built the same way (scripts/upscale-model/build-model.sh); without it the app offers the
-# download.
+# non-commercial research, so public builds don't distribute it: on the user's request the
+# app downloads the authors' release checkpoint and converts it with the template in
+# app/Resources/UpscaleModel). Then it is built the same way
+# (scripts/upscale-model/build-model.sh); without it the app offers the download.
+UPSCALE_TEMPLATE="$ROOT/app/Resources/UpscaleModel"
 UPSCALE_PKG=""
 UPSCALE_ID="none"
 if [[ "${LT_BUNDLE_UPSCALE:-}" != 1 ]]; then
@@ -133,7 +135,7 @@ STAMP="$ROOT/dist/.Luxtable.inputs"
 # -v: only valid identities (an expired or untrusted one is listed without it and would make codesign fail).
 SIGNER="$(security find-identity -v -p codesigning 2>/dev/null | grep -c '"Luxtable Dev"' || true)"
 SIGN_ID="${LT_SIGN_IDENTITY:-}"
-INPUTS="$(shasum -a 256 "$BIN" "$ICON" "$PLIST" "$ENTITLEMENTS" "$ACK" "$LICENSES" app/.rust/lib/liblt_ffi.a | awk '{print $1}') signer=$SIGNER runtime=1 dist=$SIGN_ID notary=${LT_NOTARY_PROFILE:-} model=$MODEL_ID upscale=$UPSCALE_ID plugins=$PLUGINS_ID l10n=$LOC_ID"
+INPUTS="$(shasum -a 256 "$BIN" "$ICON" "$PLIST" "$ENTITLEMENTS" "$ACK" "$LICENSES" "$UPSCALE_TEMPLATE"/* app/.rust/lib/liblt_ffi.a | awk '{print $1}') signer=$SIGNER runtime=1 dist=$SIGN_ID notary=${LT_NOTARY_PROFILE:-} model=$MODEL_ID upscale=$UPSCALE_ID plugins=$PLUGINS_ID l10n=$LOC_ID"
 if [[ "$(cat "$STAMP" 2>/dev/null)" != "$INPUTS" ]] || ! codesign --verify "$APP" 2>/dev/null; then
   /bin/cp -f "$BIN" "$APP/Contents/MacOS/Luxtable"
   /bin/cp -f "$ICON" "$APP/Contents/Resources/AppIcon.icns"
@@ -154,6 +156,8 @@ if [[ "$(cat "$STAMP" 2>/dev/null)" != "$INPUTS" ]] || ! codesign --verify "$APP
     mkdir -p "$APP/Contents/Resources/Models"
     /bin/cp -R "$UPSCALE_PKG" "$APP/Contents/Resources/Models/LuxtableUpscale.mlpackage"
   fi
+  /bin/rm -rf "$APP/Contents/Resources/UpscaleModel"
+  /bin/cp -R "$UPSCALE_TEMPLATE" "$APP/Contents/Resources/UpscaleModel"
   # Strip debug info (the Rust archive carries DWARF and the linker's debug map, both with
   # build-machine paths), then refuse to ship a binary that still names the builder's home
   # directory. (Not a bare `/Users/`: the app legitimately references /Users/Shared.)

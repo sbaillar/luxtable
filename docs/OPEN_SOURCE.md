@@ -15,7 +15,7 @@ Each item has its evidence and a concrete fix. There are two kinds of blocker:
 - Releases are immutable and carry GitHub's release attestation (`docs/RELEASING.md`).
 - Homebrew: `brew install --cask sbaillar/luxtable/luxtable`, from the tap `sbaillar/homebrew-luxtable`.
 - The website lives in its own repository, not in `site/`.
-- Still open: Developer ID signing and notarisation (S3), a public CC0 sample set (S4), AI Upscale model hosting (B8).
+- Still open: Developer ID signing and notarisation (S3), a public CC0 sample set (S4).
 
 The rest of this file is the audit as written before publishing, kept for its reasoning.
 
@@ -36,20 +36,19 @@ Done:
 - [x] **S2 CI plan:** `.github/workflows/ci.yml` (macOS runners: fmt, clippy, `cargo test`, `test-app.sh`, `LT_SKIP_MODELS=1 build-app.sh --test`, `scripts/licenses.sh --check`, `cargo deny check advisories`, and a DCO check on pull requests). It won't run until the repository is on GitHub; Gitea ignores it.
 
 Decisions recorded:
-- **Bundle id:** `app.luxtable.Luxtable` (and the UTType, Keychain, logging and prefs ids derived from it) stays for now (S5). Changing it would orphan existing prefs and Keychain items. Revisit before the first public binary; at least let `BUNDLE_ID` be overridden for forks.
+- **Bundle id:** `app.luxtable.Luxtable` (and the UTType, Keychain, logging and prefs ids derived from it) stays (S5; the owner's decision). Changing it would orphan existing prefs and Keychain items.
 - **Sample-file names:** tests that read the real files in the git-ignored `samples/` folder still name them, because renaming them would make those tests skip silently. They go away with S4 (a public CC0 sample set). Synthetic names were changed to `DSC0…`.
 - **Not done here:** S3 (Developer ID, notarisation), S4 (CC0 samples, toolchain docs beyond CONTRIBUTING), S6 (the owner's NAS share as the suggested archive target), S7, S9 (a "Network use" README section), S10, N2–N6, issue templates.
 
 ### Before publishing (owner)
-- [ ] **Employer confirmation (B4, legal):** written confirmation that the employment or contractor agreement gives the employer no claim on Luxtable.
-- [ ] **Copyright holder:** `NOTICE` says "The Luxtable Authors"; change it if you prefer your own name.
+- [x] **Copyright holder:** the owner's own name, in `NOTICE`, the app's copyright line and the user guide.
 - [x] **Personal author email:** set `git config user.email` to a personal address in the public repository.
 - [x] **Fresh squashed repository (B3):** `git checkout --orphan public`, one commit "Initial public release of Luxtable", pushed as `main` to the new public remote; keep the private repository with its history as the archive.
 - [x] **Contacts:** fill in `CODE_OF_CONDUCT.md` and `SECURITY.md` (`[CONTACT EMAIL …]`, `[SECURITY CONTACT …]`), or enable GitHub private vulnerability reporting. Done: both point to GitHub's private vulnerability reporting; no placeholders remain.
 - [ ] **Trademark search (S10):** USPTO and EUIPO for live "LUXTABLE" marks in classes 9 and 42, and the Mac App Store; secure the GitHub name and a domain.
-- [ ] **Bundle id:** keep `app.luxtable.Luxtable`, or move to a neutral id before the first public binary (see above).
-- [ ] **Model hosting decision (legal, with B4):** hosting the converted Real-ESRGAN package yourself means you distribute it, training-data terms included; a third-party mirror (as LaMa and face parsing use) keeps Luxtable out of the chain. Decide which before setting the URL.
-- [ ] **Model hosting:** publish the converted `LuxtableUpscale.mlpackage` and set `UpscaleModelDescriptor.downloadBase` (now a placeholder, `nil`; `docs/UPSCALE_MODEL.md`, "Download"). Until then the public app can't download AI Upscale.
+- [x] **Bundle id:** `app.luxtable.Luxtable` stays (see above).
+- [x] **Model hosting decision:** Luxtable hosts nothing. The model comes from where the owner got it: its authors' GitHub release.
+- [x] **Model hosting:** on the user's request the app downloads the authors' release checkpoint (`RealESRGAN_x2plus.pth`, pinned by SHA-256) and converts it on their Mac to the pinned Core ML package, bit for bit (`docs/UPSCALE_MODEL.md`, "Download"). Luxtable distributes none of the trained weights.
 - [x] **NAFNet mirror:** compare the mirror's `NAFNet-SIDD-width32.pth` SHA-256 with megvii-research's release. Identical (2026-11-11).
 - [x] **Final grep** of the new repository, history and messages included, with the owner's pattern in `docs/OPEN_SOURCE.private.md` (git-ignored: host names, names, email domain, trip places, the camera file prefix). Expect only `casa.baillargeon.*` ids, the `samples/` file names above, and generic gazetteer entries (`crates/lt-ai/src/find/names.rs`). Run on the public history at v0.5.6: only those, the GitHub account in repository and Homebrew tap URLs, and placeholder paths in tests.
 - [ ] **This file:** its specific evidence (host names, names, the email address, trip names, file names, commit ids) was moved to the git-ignored `docs/OPEN_SOURCE.private.md`; what's here refers to it generically. Before publishing, trim it to the parts that matter to the public (licence rationale, model terms, notices) or keep it as is.
@@ -126,9 +125,9 @@ For contributions, use the **DCO** (a `Signed-off-by` line, checked in CI) rathe
 ### B4. Authorship and employer IP (B-repo, legal)
 - **Evidence:** every commit's author and committer uses the owner's company email address (`git log --all --format='%ae'`).
 - **Fix:**
-  - Confirm in writing that the employment or contractor agreement with 7 Layers gives the company no claim on Luxtable. Check any invention-assignment or moonlighting clause and the use of company equipment or time. If needed, get a written release.
+  - Employer claim: none. The owner wrote Luxtable at home, on their own time.
   - Set the public identity to a personal address (`git config user.email` in the new repo).
-  - Pick the copyright holder for `LICENSE` and `NOTICE` (an individual name, or "The Luxtable Authors").
+  - Copyright holder for `NOTICE`: the owner's own name.
 
 ### B5. No licence (B-repo)
 - **Evidence:** `Cargo.toml:8` `license = "UNLICENSED"`; `README.md:287-289` "All rights reserved"; there is no `LICENSE` file.
