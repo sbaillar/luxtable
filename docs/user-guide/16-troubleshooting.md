@@ -26,7 +26,7 @@ The archive drive or NAS isn't mounted, or the object storage service didn't ans
 
 ## The Archive, Immich or Google Photos settings are missing
 
-That integration is off. Turn it on in Settings ▸ Plugins ▸ Integrations; its settings were kept.
+That integration is off. Turn it on in Settings ▸ Plug-ins ▸ Integrations; its settings were kept.
 
 ## Immich doesn't show my albums or ratings
 
@@ -42,4 +42,6 @@ Settings ▸ Familiar may be set to Lightroom Classic or Capture One keys, or a 
 
 ## Reporting a problem
 
-Open an issue at [github.com/sbaillar/luxtable](https://github.com/sbaillar/luxtable). Report security issues privately, as described in `SECURITY.md`.
+**Help ▸ Report a Problem…** opens the issue page at [github.com/sbaillar/luxtable](https://github.com/sbaillar/luxtable). Report security issues privately, as described in `SECURITY.md`.
+
+**Help ▸ Save Diagnostic Report…** writes a text file to attach: the Luxtable version, your Mac, what is open (counts, the current photo's camera and file type) and what Luxtable logged since it was opened. It has no photos, and file names, folders and servers are masked. Save it right after the problem, before you quit, and read it before you share it: issues are public.

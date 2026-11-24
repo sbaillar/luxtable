@@ -22,7 +22,7 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         case .ai: String(localized: "AI")
         case .voice: String(localized: "Voice")
         case .devices: String(localized: "Devices")
-        case .plugins: String(localized: "Plugins")
+        case .plugins: String(localized: "Plug-ins")
         case .updates: String(localized: "Updates")
         }
     }
@@ -45,7 +45,7 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         }
     }
 
-    /// The panes shown: an integration that is off (Settings ▸ Plugins) or unavailable
+    /// The panes shown: an integration that is off (Settings ▸ Plug-ins) or unavailable
     /// has none; its settings are kept.
     static func visible(isOn: (NativeFeature) -> Bool, googlePhotos: Bool, immich: Bool) -> [SettingsPane] {
         allCases.filter {
@@ -65,7 +65,7 @@ enum SettingsPane: String, CaseIterable, Identifiable {
 /// greys out the tabs it moves into the overflow menu.
 struct PreferencesView: View {
     @Bindable var settings: AppSettings
-    /// Settings ▸ Plugins: an integration that is off has no pane (its settings are kept).
+    /// Settings ▸ Plug-ins: an integration that is off has no pane (its settings are kept).
     let features: FeatureGates
     let voice: VoiceController
     let remote: RemoteLinkModel
@@ -84,7 +84,7 @@ struct PreferencesView: View {
             .navigationSplitViewColumnWidth(170)
             .toolbar(removing: .sidebarToggle)
         } detail: {
-            // A pane turned off while shown (Settings ▸ Plugins) falls back to General.
+            // A pane turned off while shown (Settings ▸ Plug-ins) falls back to General.
             let pane = selection.flatMap { panes.contains($0) ? $0 : nil } ?? .general
             // Each pane brings its own Form or scroll view.
             detail(pane)

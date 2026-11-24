@@ -263,6 +263,28 @@ pub fn import_cancellable(
     opts: ImportOptions,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<ImportReport> {
+    import_observed(session, c1, wb, opts, cancelled, &|_| {})
+}
+
+/// What a running import is doing, for a progress display.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ImportStep {
+    /// `done` of `total` source photos have been compared with the session.
+    /// Nothing is written yet: this is where an import can be cancelled.
+    Comparing { done: usize, total: usize },
+    /// Writing what was planned (a dry run never reports it).
+    Writing,
+}
+
+/// [`import_cancellable`], telling `progress` what it is doing (from the calling thread).
+pub fn import_observed(
+    session: &mut Session,
+    c1: &C1Session,
+    wb: &dyn WbConverter,
+    opts: ImportOptions,
+    cancelled: &dyn Fn() -> bool,
+    progress: &dyn Fn(ImportStep),
+) -> Result<ImportReport> {
     let same = |a: &Path, b: &Path| {
         a.canonicalize()
             .ok()
@@ -307,8 +329,11 @@ pub fn import_cancellable(
         journal: Journal::new(state_before),
         creations: Vec::new(),
     };
-    run.plan(&lt_images, cancelled)?;
+    run.plan(&lt_images, cancelled, progress)?;
     // Nothing is written before this point.
+    if !opts.dry_run {
+        progress(ImportStep::Writing);
+    }
     let Run {
         session,
         mut state,
@@ -453,11 +478,14 @@ impl Run<'_> {
         &mut self,
         lt_images: &HashMap<String, ImageInfo>,
         cancelled: &dyn Fn() -> bool,
+        progress: &dyn Fn(ImportStep),
     ) -> Result<()> {
-        for image in &self.c1.images {
+        let total = self.c1.images.len();
+        for (done, image) in self.c1.images.iter().enumerate() {
             if cancelled() {
                 return Err(C1Error::Cancelled);
             }
+            progress(ImportStep::Comparing { done, total });
             let (Some(rel), Some(folder)) = (&image.rel, image.folder()) else {
                 self.report.outside_folder += 1;
                 continue;
@@ -482,6 +510,7 @@ impl Run<'_> {
                 }
             }
         }
+        progress(ImportStep::Comparing { done: total, total });
         Ok(())
     }
 

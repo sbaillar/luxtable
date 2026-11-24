@@ -1,6 +1,6 @@
 import Foundation
 
-/// A whole keyboard set, chosen in Settings › Familiar layout independently of the
+/// A whole keyboard set, chosen in Settings ▸ Familiar layout independently of the
 /// layout: people coming from another app keep the keys their hands know.
 ///
 /// Lightroom Classic follows Adobe's "Keyboard shortcuts for Lightroom Classic"

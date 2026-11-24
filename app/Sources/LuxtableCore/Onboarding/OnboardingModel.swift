@@ -4,7 +4,7 @@ import Observation
 /// First-run setup: where sessions live and where the archive goes. Nothing is
 /// written until `finish()`.
 ///
-/// With `features` (the app's Settings ▸ Plugins), the archive is offered but starts
+/// With `features` (the app's Settings ▸ Plug-ins), the archive is offered but starts
 /// off when its integration is off, and Finish turns on the integrations the user set
 /// up here.
 @MainActor @Observable

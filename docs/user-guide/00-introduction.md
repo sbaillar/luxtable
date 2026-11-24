@@ -18,4 +18,4 @@ The main window has a toolbar at the top, the browser in the middle and the tool
 - **Browser:** the viewer with a filmstrip, or a grid of thumbnails. The filmstrip can sit at the bottom or as a column on the left or right (**View ▸ Filmstrip**).
 - **Tools:** tabs of tool panels (Library, Import & Archive, Color, Exposure, Lens, Composition, Details, Layers, Metadata, Output, and your Favorites). **View ▸ Tools on Left** moves them to the other side.
 
-Press `?` at any time for a cheat sheet of the keys, and `F` or `Tab` to hide the panels and see only the photo.
+Press `?` at any time for a cheat sheet of the keys, and `F` or `Tab` to hide the panels and see only the photo. **Help ▸ Luxtable User Guide** opens this guide from inside the app, without a network connection.

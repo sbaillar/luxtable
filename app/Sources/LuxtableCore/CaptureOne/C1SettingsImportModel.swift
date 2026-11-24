@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// File ▸ Import Capture One Settings…: read the folder (nothing written), show what
+/// File ▸ Import from Another App ▸ Capture One Settings…: read the folder (nothing written), show what
 /// each category holds and what the import would do, then import the ticked
 /// categories. Revert takes back every settings import since the last revert.
 @MainActor @Observable
@@ -112,7 +112,7 @@ extension AppModel {
         return C1SettingsImporter(targets: targets, journalURL: AppPaths.support.appendingPathComponent(C1SettingsJournal.fileName))
     }
 
-    /// File ▸ Import Capture One Settings…: show the sheet and read the default folder.
+    /// File ▸ Import from Another App ▸ Capture One Settings…: show the sheet and read the default folder.
     public func showCaptureOneSettingsImport() {
         let loc = RustC1SettingsReader.defaultLocations()
         let m = C1SettingsImportModel(folder: loc.folder, preferences: loc.preferences, reader: c1SettingsReader,

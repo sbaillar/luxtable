@@ -2,7 +2,7 @@ import LuxtableFFI
 import Foundation
 import Observation
 
-/// Settings › Archive: the destination (a folder, or S3-compatible object storage),
+/// Settings ▸ Archive: the destination (a folder, or S3-compatible object storage),
 /// interval and on/off. Every look at a volume runs off the main thread with a
 /// timeout; the object storage keys live only in the Keychain.
 @MainActor @Observable

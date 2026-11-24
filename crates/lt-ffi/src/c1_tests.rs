@@ -332,7 +332,7 @@ fn only_in_place_sessions_import() {
         .unwrap()
     };
     let h = open();
-    let e = block_on(h.import_capture_one(true, false, CancelToken::new())).unwrap_err();
+    let e = block_on(h.import_capture_one(true, false, None, CancelToken::new())).unwrap_err();
     assert!(
         matches!(e, DsError::InvalidArgument { ref message } if message.contains("in place")),
         "{e:?}"
@@ -340,7 +340,7 @@ fn only_in_place_sessions_import() {
     let token = CancelToken::new();
     token.cancel();
     assert_eq!(
-        block_on(open().import_capture_one(true, false, token)),
+        block_on(open().import_capture_one(true, false, None, token)),
         Err(DsError::Cancelled)
     );
 }

@@ -203,7 +203,7 @@ extension PluginStoreSuites {
             #expect(model.features.enabled.isEmpty && model.features.store === s)
             await model.features.set(.immich, true) // through the registry, remembered
             #expect(s.features == [.immich] && model.features.enabled == [.immich])
-            await s.setEnabled(NativeFeature.googlePhotos.pluginID, true) // Settings ▸ Plugins
+            await s.setEnabled(NativeFeature.googlePhotos.pluginID, true) // Settings ▸ Plug-ins
             #expect(model.features.isOn(.googlePhotos))
             await s.setEnabled(NativeFeature.googlePhotos.pluginID, false)
             #expect(!model.features.isOn(.googlePhotos))
@@ -311,7 +311,7 @@ extension PluginStoreSuites {
             #expect(m.problem?.contains("turned off") == true, "never a silent skip")
             #expect(m.offersGooglePhotos(uploading), "a recipe that uploads can still turn it off")
             #expect(!m.offersGooglePhotos(plain))
-            #expect(ExportModel.moreDestinationsHint.contains("Settings ▸ Plugins"))
+            #expect(ExportModel.moreDestinationsHint.contains("Settings ▸ Plug-ins"))
             await m.loadGoogleAlbums()
             #expect(m.googleAlbums.isEmpty, "no request while off")
             #expect(recipes.load().first?.googlePhotos?.albumTitle == "Trip", "the recipe keeps its album")

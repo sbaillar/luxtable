@@ -98,7 +98,7 @@ A GPU pipeline with tool tabs you can rearrange, a CPU reference implementation 
 - **Google Photos** (optional): a recipe can also upload into an album in your Google Photos account ([setup](docs/GOOGLE_PHOTOS.md)).
 - **Archive** (optional): sessions copied in the background, on a schedule, to a folder (a NAS share, an external drive or a local folder) or to S3-compatible object storage (see [Archive](#archive) below). It never deletes from the archive.
 - **Immich** (optional): your edited photos, stars and tags in a self-hosted [Immich](https://immich.app) server that indexes the archive (see [Immich](#immich) below).
-- The optional ones are off until you turn them on in Settings ▸ Plugins (see [Optional integrations](#optional-integrations)).
+- The optional ones are off until you turn them on in Settings ▸ Plug-ins (see [Optional integrations](#optional-integrations)).
 - **Metadata in every export:** star rating (`xmp:Rating`), keywords as `dc:subject`, `lr:hierarchicalSubject` and `digiKam:TagsList`, and optionally the colour label and pick flag as `Luxtable/Label/Red`, `Luxtable/Pick`, `Luxtable/Reject` tags.
 
 ![The archive popover after a run](docs/screenshots/archive-popover.png)
@@ -114,7 +114,7 @@ Either way, the archive never deletes anything. A file that changed is archived 
 
 ### Immich
 
-Immich can index the archive folder as an **external library** (mounted read-only is fine): Luxtable never uploads to Immich, and Immich never writes to the share. Turn it on in Settings ▸ Plugins, then set it up in Settings ▸ Immich:
+Immich can index the archive folder as an **external library** (mounted read-only is fine): Luxtable never uploads to Immich, and Immich never writes to the share. Turn it on in Settings ▸ Plug-ins, then set it up in Settings ▸ Immich:
 
 1. Enter the server address and an API key (Immich ▸ Account Settings ▸ API Keys; it is kept in your Keychain). Test Connection.
 2. Tell Luxtable where Immich sees the archive, e.g. `/mnt/photos` on the server is `/Volumes/photos` on this Mac. Detect fills it in from an archived photo Immich already has, or from the library's import path.
@@ -126,7 +126,7 @@ Rate and tag in Luxtable: Immich shows what the sidecars and developed copies sa
 
 ### Optional integrations
 
-Three integrations are built in but off until you turn them on, so Luxtable stays out of services you don't use. Turn each on or off in **Settings ▸ Plugins ▸ Integrations**; its own Settings tab appears while it is on.
+Three integrations are built in but off until you turn them on, so Luxtable stays out of services you don't use. Turn each on or off in **Settings ▸ Plug-ins ▸ Integrations**; its own Settings tab appears while it is on.
 
 | Integration | What it does | Where to set it up |
 |---|---|---|
@@ -138,14 +138,14 @@ Turning one off hides its menus, badges and panels and stops its background work
 
 ### Plug-ins, iPad link and other apps
 
-- **Plug-ins** (Settings ▸ Plugins): add looks, styles, voice phrases, or an export step written in WebAssembly that runs sandboxed. Nothing is granted at install ([docs/PLUGINS.md](docs/PLUGINS.md)).
+- **Plug-ins** (Settings ▸ Plug-ins): add looks, styles, voice phrases, or an export step written in WebAssembly that runs sandboxed. Nothing is granted at install ([docs/PLUGINS.md](docs/PLUGINS.md)).
 - **Mac ↔ iPad link** (Settings ▸ Devices, off by default): a paired device can browse the open session and send photos and edits back over mutually authenticated TLS 1.3. The iPad app is planned; the `lt-remote` command-line client uses the link today ([docs/REMOTE.md](docs/REMOTE.md)).
 - **Coming from Capture One or Lightroom Classic?** Luxtable reads Capture One sessions and settings and Lightroom Classic catalogs, XMP sidecars and presets, with a dry run first and a revert. It never modifies their files ([C1 mapping](docs/C1_FORMAT.md), [Lightroom mapping](docs/LR_FORMAT.md)).
-- **Coming from Aperture or iPhoto?** File ▸ Import Aperture or iPhoto Library… reads an Aperture 3 library or an iPhoto library (iPhoto 6 and later). It brings over ratings, rejects and hidden photos, flags, colour labels, keywords, titles, captions, places, projects, events and albums. It also brings the edits that map: exposure, recovery, contrast, definition, saturation, vibrancy, highlights and shadows, white balance on RAW files, straighten, crop and black & white. Levels, curves, retouching, brushed-in adjustments, sharpening, noise reduction, vignettes, faces and smart albums don't carry over, and the dry run lists every one it finds. An older iPhoto library kept edits only as rendered copies, so its originals come in unedited. The library is only read. Its originals open in place as a session, with Luxtable's data kept outside the library. Originals on a disk that isn't connected are listed until you connect it. Photos libraries aren't supported ([Aperture and iPhoto mapping](docs/APPLE_FORMAT.md)).
+- **Coming from Aperture or iPhoto?** File ▸ Import from Another App ▸ Aperture or iPhoto Library… reads an Aperture 3 library or an iPhoto library (iPhoto 6 and later). It brings over ratings, rejects and hidden photos, flags, colour labels, keywords, titles, captions, places, projects, events and albums. It also brings the edits that map: exposure, recovery, contrast, definition, saturation, vibrancy, highlights and shadows, white balance on RAW files, straighten, crop and black & white. Levels, curves, retouching, brushed-in adjustments, sharpening, noise reduction, vignettes, faces and smart albums don't carry over, and the dry run lists every one it finds. An older iPhoto library kept edits only as rendered copies, so its originals come in unedited. The library is only read. Its originals open in place as a session, with Luxtable's data kept outside the library. Originals on a disk that isn't connected are listed until you connect it. Photos libraries aren't supported ([Aperture and iPhoto mapping](docs/APPLE_FORMAT.md)).
 
 | Plug-ins | Devices |
 |---|---|
-| ![Settings ▸ Plugins with the built-in looks plug-in](docs/screenshots/settings-plugins.png) | ![Settings ▸ Devices for the Mac ↔ iPad link](docs/screenshots/settings-devices.png) |
+| ![Settings ▸ Plug-ins with the built-in looks plug-in](docs/screenshots/settings-plugins.png) | ![Settings ▸ Devices for the Mac ↔ iPad link](docs/screenshots/settings-devices.png) |
 
 <details>
 <summary><b>How it compares with Capture One and Lightroom Classic</b></summary>

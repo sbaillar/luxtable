@@ -64,6 +64,9 @@
 /* LuxtableUI/Views/Viewer/PickerLoupeView.swift */
 "%@  Tint %@" = "%@  Tint %@";
 
+/* LuxtableMac/Views/Merge/MergeSheet.swift */
+"%@ %lld percent" = "%@ %lld percent";
+
 /* LuxtableCore/Merge/PhotoMerge.swift */
 "%@ (%lld Photos)" = "%@ (%lld Photos)";
 
@@ -1216,6 +1219,9 @@
 /* LuxtableUI/Views/Tools/LibraryPanels.swift */
 "AI Cull rejected it: %@" = "AI Cull rejected it: %@";
 
+/* LuxtableCore/App/AppModel+Commands.swift */
+"AI Cull stopped: nothing was changed" = "AI Cull stopped: nothing was changed";
+
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "AI Cull, %lld of %lld" = "AI Cull, %lld of %lld";
 
@@ -1468,6 +1474,15 @@
 /* LuxtableMac/Views/Immich/ImmichSettingsView.swift */
 "Albums in Immich (Settings ▸ Immich)" = "Albums in Immich (Settings ▸ Immich)";
 
+/* LuxtableCore/Merge/PhotoMerge.swift */
+"Aligning and merging the exposures…" = "Aligning and merging the exposures…";
+
+/* LuxtableCore/Merge/PhotoMerge.swift */
+"Aligning and stitching the panorama…" = "Aligning and stitching the panorama…";
+
+/* LuxtableCore/Merge/PhotoMerge.swift */
+"Aligning the frames and taking the best of each…" = "Aligning the frames and taking the best of each…";
+
 /* LuxtableUI/Views/Browser/FilterBar.swift, LuxtableUI/Views/CopyApplyButtons.swift */
 "All" = "All";
 
@@ -1563,6 +1578,9 @@
 
 /* LuxtableCore/AppleLibrary/AppleLibraryImportModel.swift */
 "Aperture and iPhoto import" = "Aperture and iPhoto import";
+
+/* LuxtableMac/App/LuxtableApp.swift */
+"Aperture or iPhoto Library…" = "Aperture or iPhoto Library…";
 
 /* LuxtableMac/Views/OnboardingView.swift */
 "Appearance" = "Appearance";
@@ -1810,7 +1828,7 @@
 /* LuxtableMac/App/LuxtableApp.swift */
 "Auto-Advance After Rating" = "Auto-Advance After Rating";
 
-/* LuxtableMac/Views/VoiceViews.swift */
+/* LuxtableMac/Views/OnboardingView.swift */
 "Auto-advance after a rating or flag (keys and voice)" = "Auto-advance after a rating or flag (keys and voice)";
 
 /* LuxtableCore/Import/ImportModel.swift */
@@ -2041,7 +2059,7 @@
 /* LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
 "Can't be imported: %@" = "Can't be imported: %@";
 
-/* LuxtableCore/Keyboard/TerminationFlow.swift, LuxtableMac/App/LuxtableApp.swift, LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift, LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift, LuxtableMac/Views/DevicesSettingsView.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Export/ShareViews.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableMac/Views/Library/LibraryBrowser.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift, LuxtableMac/Views/MainWindow.swift, LuxtableMac/Views/Merge/MergeSheet.swift, LuxtableMac/Views/NewSessionSheet.swift, LuxtableMac/Views/OpenSessionSheet.swift, LuxtableMac/Views/Plugins/PluginsSettingsView.swift, LuxtableMac/Views/RawSettingsView.swift, LuxtableMac/Views/UpdateViews.swift, LuxtableUI/Views/Browser/CullViews.swift, LuxtableUI/Views/Optimize/OptimizePanelView.swift, LuxtableUI/Views/Platform/PlatformPanels.swift, LuxtableUI/Views/Presets/StylesPanel.swift, LuxtableUI/Views/Search/SearchViews.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift, LuxtableUI/Views/Tools/AIDenoiseSection.swift, LuxtableUI/Views/Tools/EffectsPanel.swift, LuxtableUI/Views/Tools/IPTCFieldsView.swift, LuxtableUI/Views/Tools/LayersPanel.swift, LuxtableUI/Views/Tools/PeopleMaskMenu.swift, LuxtableUI/Views/Tools/RemoveToolSection.swift */
+/* LuxtableCore/Keyboard/TerminationFlow.swift, LuxtableMac/App/LuxtableApp.swift, LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift, LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift, LuxtableMac/Views/DevicesSettingsView.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Export/ShareViews.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift, LuxtableMac/Views/Import/ImportSheet.swift, LuxtableMac/Views/Import/OtherAppImportBusy.swift, LuxtableMac/Views/Library/LibraryBrowser.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift, LuxtableMac/Views/MainWindow.swift, LuxtableMac/Views/Merge/MergeSheet.swift, LuxtableMac/Views/NewSessionSheet.swift, LuxtableMac/Views/OpenSessionSheet.swift, LuxtableMac/Views/Plugins/PluginsSettingsView.swift, LuxtableMac/Views/RawSettingsView.swift, LuxtableMac/Views/UpdateViews.swift, LuxtableUI/Views/Browser/CullViews.swift, LuxtableUI/Views/Optimize/OptimizePanelView.swift, LuxtableUI/Views/Platform/PlatformPanels.swift, LuxtableUI/Views/Presets/StylesPanel.swift, LuxtableUI/Views/Search/SearchViews.swift, LuxtableUI/Views/SmartFolders/SmartFolderEditor.swift, LuxtableUI/Views/Tools/AIDenoiseSection.swift, LuxtableUI/Views/Tools/EffectsPanel.swift, LuxtableUI/Views/Tools/IPTCFieldsView.swift, LuxtableUI/Views/Tools/LayersPanel.swift, LuxtableUI/Views/Tools/PeopleMaskMenu.swift, LuxtableUI/Views/Tools/RemoveToolSection.swift */
 "Cancel" = "Cancel";
 
 /* LuxtableCore/AI/Upscale/UpscaleService.swift */
@@ -2088,6 +2106,12 @@
 
 /* LuxtableCore/Model/IPTCMetadata.swift */
 "Caption" = "Caption";
+
+/* LuxtableMac/App/LuxtableApp.swift */
+"Capture One Edits…" = "Capture One Edits…";
+
+/* LuxtableMac/App/LuxtableApp.swift */
+"Capture One Settings…" = "Capture One Settings…";
 
 /* LuxtableCore/CaptureOne/CaptureOneImport.swift */
 "Capture One import reverted: %@ restored" = "Capture One import reverted: %@ restored";
@@ -2547,6 +2571,12 @@
 
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift, LuxtableCore/Voice/VoiceCatalog.swift, LuxtableCore/Voice/VoiceCommandParser.swift, LuxtableUI/Views/Viewer/StageBar.swift */
 "Compare" = "Compare";
+
+/* LuxtableCore/Import/OtherAppImport.swift */
+"Comparing photo %@ of %@ with the session…" = "Comparing photo %@ of %@ with the session…";
+
+/* LuxtableCore/Import/OtherAppImport.swift */
+"Comparing the photos with the session…" = "Comparing the photos with the session…";
 
 /* LuxtableCore/Keyboard/KeyboardRouter.swift */
 "Compose" = "Compose";
@@ -3437,7 +3467,7 @@
 "Export recipes" = "Export recipes";
 
 /* LuxtableMac/Views/Export/ExportSheet.swift */
-"Export steps from plug-ins appear here (Settings ▸ Plugins)." = "Export steps from plug-ins appear here (Settings ▸ Plugins).";
+"Export steps from plug-ins appear here (Settings ▸ Plug-ins)." = "Export steps from plug-ins appear here (Settings ▸ Plug-ins).";
 
 /* LuxtableUI/Views/Tools/LibraryPanels.swift */
 "Export the selected photos (⌘E)" = "Export the selected photos (⌘E)";
@@ -3485,7 +3515,7 @@
 "Familiar" = "Familiar";
 
 /* LuxtableMac/Views/MainWindow.swift */
-"Familiar layout and keys: change them in Settings › Familiar" = "Familiar layout and keys: change them in Settings › Familiar";
+"Familiar layout and keys: change them in Settings ▸ Familiar" = "Familiar layout and keys: change them in Settings ▸ Familiar";
 
 /* LuxtableCore/Model/ToolTab.swift */
 "Favorites" = "Favorites";
@@ -4048,29 +4078,17 @@
 /* LuxtableCore/AppleLibrary/AppleLibraryImportModel.swift */
 "Import Aperture or iPhoto Library" = "Import Aperture or iPhoto Library";
 
-/* LuxtableMac/App/LuxtableApp.swift */
-"Import Aperture or iPhoto Library…" = "Import Aperture or iPhoto Library…";
-
 /* LuxtableUI/Views/Tools/CameraProfilePicker.swift */
 "Import Camera Profile…" = "Import Camera Profile…";
 
 /* LuxtableCore/CaptureOne/CaptureOneImport.swift */
 "Import Capture One Edits" = "Import Capture One Edits";
 
-/* LuxtableMac/App/LuxtableApp.swift */
-"Import Capture One Edits…" = "Import Capture One Edits…";
-
 /* LuxtableMac/Views/CaptureOne/C1SettingsSheet.swift */
 "Import Capture One Settings" = "Import Capture One Settings";
 
-/* LuxtableMac/App/LuxtableApp.swift */
-"Import Capture One Settings…" = "Import Capture One Settings…";
-
 /* LuxtableCore/Lightroom/LightroomImportModel.swift */
 "Import Lightroom" = "Import Lightroom";
-
-/* LuxtableMac/App/LuxtableApp.swift */
-"Import Lightroom…" = "Import Lightroom…";
 
 /* LuxtableMac/Views/AppleLibrary/AppleLibraryImportSheet.swift, LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift, LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
 "Import and Overwrite" = "Import and Overwrite";
@@ -4083,6 +4101,9 @@
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Import from %@…" = "Import from %@…";
+
+/* LuxtableMac/App/LuxtableApp.swift */
+"Import from Another App" = "Import from Another App";
 
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Import from Card (Coming Soon)…" = "Import from Card (Coming Soon)…";
@@ -4540,6 +4561,9 @@
 /* LuxtableMac/Views/Lightroom/LightroomImportSheet.swift */
 "Lightroom's files are only read, never changed. Edits go into “%@”." = "Lightroom's files are only read, never changed. Edits go into “%@”.";
 
+/* LuxtableMac/App/LuxtableApp.swift */
+"Lightroom…" = "Lightroom…";
+
 /* LuxtableCore/Tools/LayerOps.swift, LuxtableUI/Views/Tools/LayersPanel.swift */
 "Linear" = "Linear";
 
@@ -4572,6 +4596,12 @@
 
 /* LuxtableMac/Views/Library/LibraryBrowser.swift */
 "Loading" = "Loading";
+
+/* LuxtableCore/Browser/ThumbnailCache.swift */
+"Loading %lld thumbnails…" = "Loading %lld thumbnails…";
+
+/* LuxtableCore/Browser/ThumbnailCache.swift */
+"Loading 1 thumbnail…" = "Loading 1 thumbnail…";
 
 /* LuxtableCore/CopyApply/CopyOptions.swift */
 "Loading the as-shot white balance for the last Apply…" = "Loading the as-shot white balance for the last Apply…";
@@ -4693,6 +4723,9 @@
 /* LuxtableCore/Model/CameraProfile.swift */
 "Luxtable Standard" = "Luxtable Standard";
 
+/* LuxtableMac/App/LuxtableApp.swift */
+"Luxtable User Guide" = "Luxtable User Guide";
+
 /* LuxtableCore/Model/CameraProfile.swift */
 "Luxtable Vivid" = "Luxtable Vivid";
 
@@ -4703,7 +4736,7 @@
 "Luxtable asks GitHub for the list of its releases; the request carries only the app’s version. An update is checked against the SHA-256 GitHub publishes and its signature before it’s installed, and the version it replaces is kept in Luxtable’s Application Support folder (“Previous Version”)." = "Luxtable asks GitHub for the list of its releases; the request carries only the app’s version. An update is checked against the SHA-256 GitHub publishes and its signature before it’s installed, and the version it replaces is kept in Luxtable’s Application Support folder (“Previous Version”).";
 
 /* LuxtableMac/Views/OnboardingView.swift */
-"Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plugins." = "Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plugins.";
+"Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plug-ins." = "Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plug-ins.";
 
 /* LuxtableCore/Voice/VoiceController.swift */
 "Luxtable can't use the microphone" = "Luxtable can't use the microphone";
@@ -4733,7 +4766,7 @@
 "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again." = "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again.";
 
 /* LuxtableMac/Views/OnboardingView.swift */
-"Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar.";
+"Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings ▸ Familiar." = "Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings ▸ Familiar.";
 
 /* LuxtableCore/AI/Upscale/UpscaleModel.swift */
 "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, 67 MB) from its authors’ GitHub release, convert it and keep it on this Mac (about 34 MB). Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable." = "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, 67 MB) from its authors’ GitHub release, convert it and keep it on this Mac (about 34 MB). Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable.";
@@ -4890,12 +4923,6 @@
 
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Merge to Panorama…" = "Merge to Panorama…";
-
-/* LuxtableMac/Views/Merge/MergeSheet.swift */
-"Merging, %lld percent" = "Merging, %lld percent";
-
-/* LuxtableMac/Views/Merge/MergeSheet.swift */
-"Merging…" = "Merging…";
 
 /* LuxtableCore/Model/ToolTab.swift */
 "Metadata" = "Metadata";
@@ -5492,7 +5519,7 @@
 "Nothing is ever deleted from the card. Eject says whether every file on it has a verified copy in your library." = "Nothing is ever deleted from the card. Eject says whether every file on it has a verified copy in your library.";
 
 /* LuxtableMac/Views/Plugins/PluginsSettingsView.swift */
-"Nothing is granted until you approve it in Settings ▸ Plugins." = "Nothing is granted until you approve it in Settings ▸ Plugins.";
+"Nothing is granted until you approve it in Settings ▸ Plug-ins." = "Nothing is granted until you approve it in Settings ▸ Plug-ins.";
 
 /* LuxtableUI/Views/Find/FindViews.swift */
 "Nothing matches." = "Nothing matches.";
@@ -5947,11 +5974,8 @@
 /* LuxtableUI/Views/Controls/HistogramView.swift */
 "Pixels with a channel at pure white" = "Pixels with a channel at pure white";
 
-/* LuxtableMac/Views/Plugins/PluginsSettingsView.swift */
+/* LuxtableMac/Views/Plugins/PluginsSettingsView.swift, LuxtableMac/Views/PreferencesView.swift */
 "Plug-ins" = "Plug-ins";
-
-/* LuxtableMac/Views/PreferencesView.swift */
-"Plugins" = "Plugins";
 
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Point Luxtable at the moved file" = "Point Luxtable at the moved file";
@@ -6220,6 +6244,9 @@
 /* LuxtableCore/Export/ExportModel.swift */
 "Reading metadata %lld of %lld…" = "Reading metadata %lld of %lld…";
 
+/* LuxtableCore/Merge/PhotoMerge.swift */
+"Reading the %lld photos…" = "Reading the %lld photos…";
+
 /* LuxtableMac/Views/CaptureOne/CaptureOneImportSheet.swift */
 "Reading the Capture One session (nothing is changed)…" = "Reading the Capture One session (nothing is changed)…";
 
@@ -6296,7 +6323,7 @@
 "Rejected by AI Cull: %@" = "Rejected by AI Cull: %@";
 
 /* LuxtableCore/Browser/CullFinishing.swift */
-"Rejected photos aren't archived (Settings › Archive): the Trash holds the only copy." = "Rejected photos aren't archived (Settings › Archive): the Trash holds the only copy.";
+"Rejected photos aren't archived (Settings ▸ Archive): the Trash holds the only copy." = "Rejected photos aren't archived (Settings ▸ Archive): the Trash holds the only copy.";
 
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
 "Rejected photos excluded" = "Rejected photos excluded";
@@ -6484,6 +6511,9 @@
 /* LuxtableMac/Views/Merge/BestShotTourView.swift */
 "Replay the Best Shot tour" = "Replay the Best Shot tour";
 
+/* LuxtableMac/App/LuxtableApp.swift */
+"Report a Problem…" = "Report a Problem…";
+
 /* LuxtableCore/AI/AppModel+Instruction.swift, LuxtableUI/Views/Controls/ColorWheelView.swift, LuxtableUI/Views/Tools/ColorPanels.swift */
 "Reset" = "Reset";
 
@@ -6663,6 +6693,9 @@
 
 /* LuxtableUI/Views/Tools/IPTCFieldsView.swift */
 "Save Credits as Preset…" = "Save Credits as Preset…";
+
+/* LuxtableMac/App/LuxtableApp.swift */
+"Save Diagnostic Report…" = "Save Diagnostic Report…";
 
 /* LuxtableUI/Views/Presets/StylesPanel.swift */
 "Save Preset" = "Save Preset";
@@ -6875,7 +6908,7 @@
 "Set Location of %lld Photos" = "Set Location of %lld Photos";
 
 /* LuxtableCore/Tools/ArchiveDisplay.swift */
-"Set an archive target and switch archiving on in Settings › Archive. Nothing is copied until then." = "Set an archive target and switch archiving on in Settings › Archive. Nothing is copied until then.";
+"Set an archive target and switch archiving on in Settings ▸ Archive. Nothing is copied until then." = "Set an archive target and switch archiving on in Settings ▸ Archive. Nothing is copied until then.";
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "Set the archive folder (Settings ▸ Archive) and the server first." = "Set the archive folder (Settings ▸ Archive) and the server first.";
@@ -7348,7 +7381,7 @@
 /* LuxtableCore/App/AppModel.swift */
 "Still opening “%@”: that change wasn’t applied." = "Still opening “%@”: that change wasn’t applied.";
 
-/* LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift */
+/* LuxtableMac/Views/Archive/ArchivePopover.swift, LuxtableMac/Views/Export/ExportSheet.swift, LuxtableMac/Views/Import/ExternalImportSheet.swift */
 "Stop" = "Stop";
 
 /* LuxtableUI/Views/Tools/ColorPanels.swift */
@@ -7356,6 +7389,12 @@
 
 /* LuxtableUI/Views/Tools/PresenceSpotsPanels.swift */
 "Stop %@ tool" = "Stop %@ tool";
+
+/* LuxtableMac/Views/MainToolbar.swift */
+"Stop AI Cull" = "Stop AI Cull";
+
+/* LuxtableMac/Views/MainToolbar.swift */
+"Stop AI Cull; nothing is changed" = "Stop AI Cull; nothing is changed";
 
 /* LuxtableCore/Keyboard/TerminationFlow.swift */
 "Stop Export and Quit" = "Stop Export and Quit";
@@ -7368,6 +7407,9 @@
 
 /* LuxtableCore/Immich/ImmichModel.swift */
 "Stop Updating Developed Copy" = "Stop Updating Developed Copy";
+
+/* LuxtableMac/Views/Archive/ArchivePopover.swift */
+"Stop archiving" = "Stop archiving";
 
 /* LuxtableCore/Keyboard/AccessibilityCatalog.swift */
 "Stop comparing" = "Stop comparing";
@@ -7405,6 +7447,9 @@
 /* LuxtableCore/AI/Upscale/UpscaleService.swift */
 "Stop the download; nothing is kept" = "Stop the download; nothing is kept";
 
+/* LuxtableMac/Views/Archive/ArchivePopover.swift */
+"Stop this run. What it already copied stays in the archive; the rest is copied the next time." = "Stop this run. What it already copied stays in the archive; the rest is copied the next time.";
+
 /* LuxtableCore/Keyboard/CommandCatalog.swift */
 "Stop updating the selection's developed copies. The copies already made stay in Developed and in the archive" = "Stop updating the selection's developed copies. The copies already made stay in Developed and in the archive";
 
@@ -7428,6 +7473,9 @@
 
 /* LuxtableMac/Views/Import/ImportSheet.swift */
 "Stopping…" = "Stopping…";
+
+/* LuxtableMac/Views/Import/OtherAppImportBusy.swift */
+"Stops the import before anything is written. Once it is writing, it finishes." = "Stops the import before anything is written. Once it is writing, it finishes.";
 
 /* LuxtableCore/Viewer/CanvasInteraction.swift, LuxtableCore/Viewer/ViewerModel+Canvas.swift, LuxtableUI/Views/Tools/DetailPanels.swift */
 "Straighten" = "Straighten";
@@ -7843,6 +7891,9 @@
 /* LuxtableCore/Tools/SliderSpec.swift */
 "The red glow film shows around bright highlights." = "The red glow film shows around bright highlights.";
 
+/* LuxtableMac/Views/HelpMenu.swift */
+"The report lists your Mac, the Luxtable version, what is open (counts only) and this run’s log. It has no photos, file names or folders." = "The report lists your Mac, the Luxtable version, what is open (counts only) and this run’s log. It has no photos, file names or folders.";
+
 /* LuxtableMac/Views/Archive/ArchiveSettingsView.swift */
 "The service's S3 address. Leave empty for Amazon S3: the region picks it." = "The service's S3 address. Leave empty for Amazon S3: the region picks it.";
 
@@ -8054,7 +8105,7 @@
 "Toggle panels" = "Toggle panels";
 
 /* LuxtableMac/Views/Export/ExportSheet.swift */
-"Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings › General (else the photo's own metadata)." = "Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings › General (else the photo's own metadata).";
+"Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings ▸ General (else the photo's own metadata)." = "Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings ▸ General (else the photo's own metadata).";
 
 /* LuxtableMac/Views/OnboardingView.swift */
 "Tokens: {date} {text}" = "Tokens: {date} {text}";
@@ -8291,7 +8342,7 @@
 "Uploading %lld of %lld to Google Photos…" = "Uploading %lld of %lld to Google Photos…";
 
 /* LuxtableCore/Export/ExportModel.swift */
-"Uploads (Google Photos) can be turned on in Settings ▸ Plugins." = "Uploads (Google Photos) can be turned on in Settings ▸ Plugins.";
+"Uploads (Google Photos) can be turned on in Settings ▸ Plug-ins." = "Uploads (Google Photos) can be turned on in Settings ▸ Plug-ins.";
 
 /* LuxtableCore/AI/Upscale/UpscaleService.swift */
 "Upscale %lld Photos 2×" = "Upscale %lld Photos 2×";
@@ -8598,6 +8649,12 @@
 
 /* LuxtableMac/App/LuxtableApp.swift, LuxtableUI/Views/Tools/ToolCustomizeView.swift */
 "Workspaces" = "Workspaces";
+
+/* LuxtableCore/Import/OtherAppImport.swift */
+"Writing the changes…" = "Writing the changes…";
+
+/* LuxtableCore/Merge/PhotoMerge.swift */
+"Writing the new photo and adding it to the session…" = "Writing the new photo and adding it to the session…";
 
 /* LuxtableMac/Views/OnboardingView.swift */
 "Written into exported files (EXIF Artist)" = "Written into exported files (EXIF Artist)";
@@ -9341,7 +9398,7 @@
 "turned %@ on" = "turned %@ on";
 
 /* LuxtableCore/Export/ExportModel.swift */
-"turned off in Settings ▸ Plugins; nothing was uploaded" = "turned off in Settings ▸ Plugins; nothing was uploaded";
+"turned off in Settings ▸ Plug-ins; nothing was uploaded" = "turned off in Settings ▸ Plug-ins; nothing was uploaded";
 
 /* LuxtableCore/Tools/ArchiveSettingsModel.swift */
 "unavailable" = "unavailable";
@@ -9485,7 +9542,7 @@
 "“%@” not applied — say it again" = "“%@” not applied — say it again";
 
 /* LuxtableCore/Export/ExportModel.swift */
-"“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plugins, or turn the upload off." = "“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plugins, or turn the upload off.";
+"“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plug-ins, or turn the upload off." = "“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plug-ins, or turn the upload off.";
 
 /* LuxtableCore/Export/ExportModel.swift */
 "“%@” uploads to Google Photos: choose JPEG or HEIC." = "“%@” uploads to Google Photos: choose JPEG or HEIC.";

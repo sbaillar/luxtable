@@ -72,13 +72,13 @@ public final class ImmichModel {
         if watch, isOn { startWatching() }
     }
 
-    /// Set up, wired, and turned on in Settings ▸ Plugins.
+    /// Set up, wired, and turned on in Settings ▸ Plug-ins.
     public var isSetUp: Bool { isOn && service != nil && settings.isSetUp }
 
-    /// The Immich integration is on (Settings ▸ Plugins; always, without an app).
+    /// The Immich integration is on (Settings ▸ Plug-ins; always, without an app).
     public var isOn: Bool { app?.features.isOn(.immich) ?? true }
 
-    /// Settings ▸ Plugins turned Immich on or off. Off: the album watch, retries and
+    /// Settings ▸ Plug-ins turned Immich on or off. Off: the album watch, retries and
     /// developed-copy renders stop (a render or sync already going finishes), the archive
     /// stops writing sidecars and queueing album syncs, and the badges go. Nothing is
     /// deleted: the server, key, rules and copies stay. On: everything resumes.

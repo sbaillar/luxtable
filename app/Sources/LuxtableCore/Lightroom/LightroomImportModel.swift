@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// File ▸ Import Lightroom…: pick a catalog, a folder of XMP sidecars or presets; the
+/// File ▸ Import from Another App ▸ Lightroom…: pick a catalog, a folder of XMP sidecars or presets; the
 /// source is read once, a dry run shows what would change (re-run whenever a category
 /// is ticked or unticked, the last one wins), then the import runs. Presets need no
 /// session. The Lightroom files are only ever read.
@@ -51,6 +51,8 @@ public final class LightroomImportModel {
     public private(set) var categories = Set(LRCategory.allCases)
     /// "Overwrite my Luxtable edits on conflicts" (off: conflicts keep Luxtable's values).
     public var overwriteEdits = false
+    /// The dry run or the import while it runs: its step, and Cancel.
+    public let work = OtherAppImportWork()
     /// "Replace presets that are already there" (off: they are skipped).
     public var replacePresets = false
     /// Photos each category changes, as of the last dry run that included it.
@@ -201,8 +203,11 @@ public final class LightroomImportModel {
         await flush()
         let ticked = categories
         do {
-            let s = try await importer.importLightroom(session, source: info.id, categories: ticked, dryRun: true,
-                                                       overwriteEdits: false)
+            let importer = importer
+            let s = try await work.run { report in
+                try await importer.importLightroom(session, source: info.id, categories: ticked, dryRun: true,
+                                                   overwriteEdits: false, progress: report)
+            }
             guard g == generation else { return }
             for c in ticked { counts[c] = s.count(c) }
             phase = .preview(s)
@@ -219,15 +224,20 @@ public final class LightroomImportModel {
 
     /// Import. Conflicts (Luxtable edits since the last import) are kept unless `overwriteEdits`.
     public func run() async {
-        guard canImport, let info, let session else { return }
+        guard canImport, let info, let session, let before = preview else { return }
         cancelRefresh()
         phase = .importing
         await flush()
         do {
-            let s = try await importer.importLightroom(session, source: info.id, categories: categories, dryRun: false,
-                                                       overwriteEdits: overwriteEdits)
+            let importer = importer, categories = categories, overwrite = overwriteEdits
+            let s = try await work.run { report in
+                try await importer.importLightroom(session, source: info.id, categories: categories, dryRun: false,
+                                                   overwriteEdits: overwrite, progress: report)
+            }
             phase = .done(s)
             await onImported()
+        } catch is CancellationError {
+            phase = .preview(before) // cancelled before anything was written
         } catch {
             phase = .failed(error.localizedDescription)
             await onImported() // part of it may have been written
@@ -327,10 +337,10 @@ extension LightroomImportModel: Equatable {
 extension AppModel {
     var lightroomImporter: (any LightroomImporting)? { sessions as? any LightroomImporting }
 
-    /// File ▸ Import Lightroom… is available (presets need no session; the rest does).
+    /// File ▸ Import from Another App ▸ Lightroom… is available (presets need no session; the rest does).
     public var canImportLightroom: Bool { lightroomImporter != nil }
 
-    /// File ▸ Revert Lightroom Import is available.
+    /// File ▸ Import from Another App ▸ Revert Lightroom Import is available.
     public var canRevertLightroom: Bool { lightroomImporter != nil && lightroom.session == currentSession?.id && lightroom.canRevert }
 
     func refreshLightroom() async {
@@ -365,13 +375,13 @@ extension AppModel {
         return s
     }
 
-    /// File ▸ Import Lightroom…: show the sheet; the user chooses the source in it.
+    /// File ▸ Import from Another App ▸ Lightroom…: show the sheet; the user chooses the source in it.
     public func showLightroomImport() {
         guard let m = lightroomImportModel() else { return }
         sheet = .lightroomImport(m)
     }
 
-    /// File ▸ Revert Lightroom Import: ask first (the confirmation calls `revertLightroomImport()`).
+    /// File ▸ Import from Another App ▸ Revert Lightroom Import: ask first (the confirmation calls `revertLightroomImport()`).
     public func requestRevertLightroom() {
         confirmingLightroomRevert = canRevertLightroom
     }

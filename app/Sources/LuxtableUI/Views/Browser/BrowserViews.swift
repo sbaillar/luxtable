@@ -430,6 +430,7 @@ package struct Filmstrip: View {
             }
         }
         .background(DS.chrome)
+        .modifier(PhotoFileDragContainer(model: model))
         .onAppear { browser.refresh(photos: model.visiblePhotos) }
         .onChange(of: model.visibleIDs) { browser.refresh(photos: model.visiblePhotos) }
     }
@@ -462,6 +463,7 @@ package struct Filmstrip: View {
                     Menu("Filmstrip") { FilmstripPositionMenu(model: model) } // [multiview]
                 }
                 .modifier(MapDragSource(model: model, id: id)) // [map] geotag by dropping on the map
+                .modifier(PhotoFileDragSource(model: model, id: id)) // out to the Finder or another app
         }
     }
 }
@@ -664,6 +666,7 @@ package struct BrowserGrid: View {
                                                 model.focus(id, extend: false)
                                                 model.browserMode = .filmstrip
                                             })
+                                            .modifier(PhotoFileDragSource(model: model, id: id))
                                     }
                                 }
                             }
@@ -683,6 +686,7 @@ package struct BrowserGrid: View {
             }
         }
         .background(DS.viewerBackground)
+        .modifier(PhotoFileDragContainer(model: model))
         .onAppear { browser.refresh(photos: model.visiblePhotos) }
         .onChange(of: model.visibleIDs) { browser.refresh(photos: model.visiblePhotos) }
     }

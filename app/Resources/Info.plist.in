@@ -31,6 +31,16 @@
   <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
   <key>NSMicrophoneUsageDescription</key><string>Voice commands listen for culling commands like “next” and “five”. Audio stays on this Mac.</string>
   <key>NSSpeechRecognitionUsageDescription</key><string>Voice commands are recognized on this Mac by Apple’s on-device speech model. Nothing is sent to a server.</string>
+  <!-- A folder of photos can be dropped on the Dock icon or opened with Luxtable (never the default for folders). -->
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeName</key><string>Folder of photos</string>
+      <key>CFBundleTypeRole</key><string>Viewer</string>
+      <key>LSHandlerRank</key><string>Alternate</string>
+      <key>LSItemContentTypes</key><array><string>public.folder</string></array>
+    </dict>
+  </array>
   <key>UTExportedTypeDeclarations</key>
   <array>
     <dict>

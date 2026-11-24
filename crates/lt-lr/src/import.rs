@@ -298,6 +298,16 @@ fn merge<T: PartialEq + Clone>(
     }
 }
 
+/// What a running import is doing, for a progress display.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ImportStep {
+    /// `done` of `total` source photos have been compared with the session.
+    /// Nothing is written yet: this is where an import can be cancelled.
+    Comparing { done: usize, total: usize },
+    /// Writing what was planned (a dry run never reports it).
+    Writing,
+}
+
 /// Import `lib` into `session`. With `dry_run` nothing is written (not even
 /// the state). `cancelled` is checked while planning, before anything is written.
 pub fn import(
@@ -305,6 +315,17 @@ pub fn import(
     lib: &LrLibrary,
     opts: &ImportOptions,
     cancelled: &dyn Fn() -> bool,
+) -> Result<ImportReport> {
+    import_observed(session, lib, opts, cancelled, &|_| {})
+}
+
+/// [`import`], telling `progress` what it is doing (from the calling thread).
+pub fn import_observed(
+    session: &mut Session,
+    lib: &LrLibrary,
+    opts: &ImportOptions,
+    cancelled: &dyn Fn() -> bool,
+    progress: &dyn Fn(ImportStep),
 ) -> Result<ImportReport> {
     let mut report = ImportReport {
         dry_run: opts.dry_run,
@@ -337,8 +358,11 @@ pub fn import(
         journal: Journal::new(state_before),
         creations: Vec::new(),
     };
-    run.plan(&images, cancelled)?;
+    run.plan(&images, cancelled, progress)?;
     // Nothing is written before this point.
+    if !opts.dry_run {
+        progress(ImportStep::Writing);
+    }
     let Run {
         session,
         mut state,
@@ -508,7 +532,12 @@ impl Run<'_> {
     }
 
     /// Plan every source photo (nothing is written).
-    fn plan(&mut self, images: &[ImageInfo], cancelled: &dyn Fn() -> bool) -> Result<()> {
+    fn plan(
+        &mut self,
+        images: &[ImageInfo],
+        cancelled: &dyn Fn() -> bool,
+        progress: &dyn Fn(ImportStep),
+    ) -> Result<()> {
         let lib = self.lib;
         let m = match_photos(self.session, &lib.photos, images, cancelled)?;
         self.report.ambiguous = m.ambiguous;
@@ -538,10 +567,12 @@ impl Run<'_> {
         let mut folders: BTreeMap<String, usize> = BTreeMap::new();
         let ambiguous: HashSet<String> = self.report.ambiguous.iter().cloned().collect();
         let (mut failed, mut shown) = (0usize, 0usize);
-        for p in lib.photos.iter().filter(|p| p.master.is_none()) {
+        let total = lib.photos.iter().filter(|p| p.master.is_none()).count();
+        for (done, p) in lib.photos.iter().filter(|p| p.master.is_none()).enumerate() {
             if cancelled() {
                 return Err(LrError::Cancelled);
             }
+            progress(ImportStep::Comparing { done, total });
             let Some((id, by)) = m.found.get(&p.key).copied() else {
                 if !ambiguous.contains(p.path.to_string_lossy().as_ref()) {
                     let folder = p
@@ -578,6 +609,7 @@ impl Run<'_> {
                 }
             }
         }
+        progress(ImportStep::Comparing { done: total, total });
         if failed > shown {
             self.report
                 .warnings

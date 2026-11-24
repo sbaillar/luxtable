@@ -5,7 +5,7 @@ import Foundation
 // source is only ever read (a catalog is copied and the copy read, once); a dry
 // run comes first, per-category checkboxes choose what is brought over, and
 // Luxtable edits made since the last import are only replaced when the user
-// says so. File ▸ Revert Lightroom Import takes the imports back.
+// says so. File ▸ Import from Another App ▸ Revert Lightroom Import takes the imports back.
 
 /// What the picked path is.
 public enum LRSourceKind: String, Sendable, Equatable {
@@ -454,10 +454,22 @@ public protocol LightroomImporting: Sendable {
     func releaseLightroomSource(_ id: UUID) async
     func importLightroom(_ session: SessionInfo, source: UUID, categories: Set<LRCategory>, dryRun: Bool,
                          overwriteEdits: Bool) async throws -> LRImportSummary
+    /// The same, hearing how far it is. Cancelling the calling task stops it before it writes.
+    func importLightroom(_ session: SessionInfo, source: UUID, categories: Set<LRCategory>, dryRun: Bool,
+                         overwriteEdits: Bool,
+                         progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> LRImportSummary
     func canRevertLightroomImport(_ session: SessionInfo) async -> Bool
     /// Take back the imports since the last revert; `nil`: nothing to revert.
     func revertLightroomImport(_ session: SessionInfo) async throws -> LRRevertSummary?
     func readLightroomPresets(_ url: URL) async throws -> [LRPresetItem]
+}
+
+extension LightroomImporting {
+    public func importLightroom(_ session: SessionInfo, source: UUID, categories: Set<LRCategory>, dryRun: Bool,
+                                overwriteEdits: Bool,
+                                progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> LRImportSummary {
+        try await importLightroom(session, source: source, categories: categories, dryRun: dryRun, overwriteEdits: overwriteEdits)
+    }
 }
 
 /// The open session's Lightroom state: whether there is an import to revert.

@@ -11,6 +11,7 @@ public final class MockArchiveService: ArchiveService, @unchecked Sendable {
     private var continuations: [UUID: AsyncStream<ArchiveStatus>.Continuation] = [:]
     private var current: ArchiveStatus
     private var loop: Task<Void, Never>?
+    private var stopped = false
 
     public init(target: String, interval: Duration = .seconds(600), step: Duration = .milliseconds(120),
                 pending: Int = 14, isReachable: @escaping @Sendable (String) -> Bool = MockArchiveService.volumeMounted) {
@@ -58,8 +59,13 @@ public final class MockArchiveService: ArchiveService, @unchecked Sendable {
             publish { $0.state = .offline }
             return
         }
+        lock.withLock { stopped = false }
         for i in 1...10 {
             if Task.isCancelled { return }
+            if lock.withLock({ stopped }) { // Stop: nothing more is copied, nothing was archived
+                publish { $0.state = .behind(files: 1) }
+                return
+            }
             publish { $0.state = .syncing(fraction: Double(i) / 10) }
             try? await Task.sleep(for: step)
         }
@@ -67,6 +73,10 @@ public final class MockArchiveService: ArchiveService, @unchecked Sendable {
             $0.state = .idle
             $0.lastSuccess = Date()
         }
+    }
+
+    public func stopSync() async {
+        lock.withLock { stopped = true }
     }
 
     private func publish(_ change: (inout ArchiveStatus) -> Void) {

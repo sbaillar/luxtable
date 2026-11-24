@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import Observation
 
 /// Byte-bounded in-memory thumbnail cache in front of an `ImageProvider`.
 ///
@@ -44,6 +45,9 @@ public final class ThumbnailCache {
     /// A developed thumbnail's load was cancelled (its cell left the screen): the photo's
     /// background work for it (a depth map) can stop.
     public var leftScreen: @MainActor (PhotoID) -> Void = { _ in }
+
+    /// Thumbnails being made right now (the status bar says so).
+    public let activity = ThumbnailActivity()
 
     /// `costLimit` in bytes of decoded RGBA (default 192 MB ≈ 1,100 thumbnails at 256 px).
     public init(provider: any ImageProvider, costLimit: Int = 192 << 20) {
@@ -123,6 +127,8 @@ public final class ThumbnailCache {
             return hit
         }
         loads += 1
+        activity.began()
+        defer { activity.ended() }
         let loaded: CGImage?
         if edit != 0, let tools, let e = developedEdit(for: photo) {
             developedLoads += 1
@@ -147,4 +153,39 @@ public final class ThumbnailCache {
     }
 
     public func removeAll() { cache.removeAllObjects() }
+}
+
+/// How many thumbnails are being made, for the status bar. Every grid and filmstrip cell
+/// loads through the cache, so this is all of them. `isBusy` turns on only once loads have
+/// been running for `delay`: scrolling through thumbnails that take a few milliseconds
+/// each never flashes a label.
+@MainActor @Observable
+public final class ThumbnailActivity {
+    public private(set) var pending = 0
+    public private(set) var isBusy = false
+    @ObservationIgnored var delay: Duration = .milliseconds(600)
+    @ObservationIgnored private var timer: Task<Void, Never>?
+
+    func began() {
+        pending += 1
+        guard pending == 1 else { return }
+        timer = Task { [weak self, delay] in
+            try? await Task.sleep(for: delay)
+            guard !Task.isCancelled, let self else { return }
+            self.isBusy = self.pending > 0
+        }
+    }
+
+    func ended() {
+        pending = max(0, pending - 1)
+        guard pending == 0 else { return }
+        timer?.cancel()
+        timer = nil
+        isBusy = false
+    }
+
+    /// "Loading 34 thumbnails…"
+    public var label: String {
+        pending == 1 ? String(localized: "Loading 1 thumbnail…") : String(localized: "Loading \(pending) thumbnails…")
+    }
 }

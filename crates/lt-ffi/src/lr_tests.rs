@@ -167,6 +167,47 @@ fn imports_sidecars_into_an_in_place_session_and_reverts() {
     );
 }
 
+#[derive(Default)]
+struct Kinds(Mutex<Vec<String>>);
+
+impl ProgressListener for Kinds {
+    fn on_progress(&self, event: crate::events::ProgressEvent) -> Result<(), DsError> {
+        lock(&self.0).push(event.kind);
+        Ok(())
+    }
+}
+
+#[test]
+fn the_listener_hears_the_comparing_and_then_the_writing() {
+    let t = tempfile::tempdir().unwrap();
+    let dir = t.path().join("Shoot");
+    folder(&dir);
+    let h = open(t.path(), &dir);
+    let source = LightroomSource::load(dir.to_str().unwrap(), &|| false).unwrap();
+    let heard = Arc::new(Kinds::default());
+    let run = |dry_run| {
+        block_on(h.clone().import_lightroom(
+            source.clone(),
+            vec!["rating".into()],
+            dry_run,
+            false,
+            Some(heard.clone()),
+            CancelToken::new(),
+        ))
+        .unwrap()
+    };
+    run(true);
+    let dry = std::mem::take(&mut *lock(&heard.0));
+    assert!(
+        !dry.is_empty() && dry.iter().all(|k| k == "import.compare"),
+        "{dry:?}"
+    );
+    run(false);
+    let real = std::mem::take(&mut *lock(&heard.0));
+    assert_eq!(real.first().map(String::as_str), Some("import.compare"));
+    assert_eq!(real.last().map(String::as_str), Some("import.write"));
+}
+
 #[test]
 fn async_import_checks_categories_and_cancel() {
     let t = tempfile::tempdir().unwrap();
@@ -179,6 +220,7 @@ fn async_import_checks_categories_and_cancel() {
         vec!["rating".into()],
         true,
         false,
+        None,
         CancelToken::new(),
     ))
     .unwrap();
@@ -189,6 +231,7 @@ fn async_import_checks_categories_and_cancel() {
         vec!["nope".into()],
         true,
         false,
+        None,
         CancelToken::new(),
     ));
     assert!(matches!(bad, Err(DsError::InvalidArgument { .. })));
@@ -196,7 +239,7 @@ fn async_import_checks_categories_and_cancel() {
     token.cancel();
     let cancelled = block_on(
         h.clone()
-            .import_lightroom(source, vec![], true, false, token),
+            .import_lightroom(source, vec![], true, false, None, token),
     );
     assert!(matches!(cancelled, Err(DsError::Cancelled)));
 }

@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// File ▸ Import Aperture or iPhoto Library…: pick a library; it is read once, a dry run
+/// File ▸ Import from Another App ▸ Aperture or iPhoto Library…: pick a library; it is read once, a dry run
 /// shows what would change (re-run whenever a category is ticked or unticked, the last
 /// one wins), then the import runs. Photos are matched to the open session's; the
 /// library's own originals folder (`Masters`, or `Originals` in an older iPhoto library)
@@ -40,6 +40,8 @@ public final class AppleLibraryImportModel {
     public private(set) var categories = AppleImportCategories.all
     /// "Overwrite my Luxtable edits on conflicts" (off: conflicts keep Luxtable's values).
     public var overwriteEdits = false
+    /// The dry run or the import while it runs: its step, and Cancel.
+    public let work = OtherAppImportWork()
     /// Photos each category changes, as of the last dry run that included it.
     public private(set) var counts: [LRCategory: Int] = [:]
     @ObservationIgnored let importer: any AppleLibraryImporting
@@ -178,8 +180,11 @@ public final class AppleLibraryImportModel {
         await flush()
         let ticked = categories
         do {
-            var s = try await importer.importAppleLibrary(session, library: info.id, categories: ticked, dryRun: true,
-                                                          overwriteEdits: false)
+            let importer = importer
+            var s = try await work.run { report in
+                try await importer.importAppleLibrary(session, library: info.id, categories: ticked, dryRun: true,
+                                                      overwriteEdits: false, progress: report)
+            }
             guard g == generation else { return }
             s.source = String(localized: "the library")
             for c in ticked { counts[c] = s.count(c) }
@@ -197,16 +202,21 @@ public final class AppleLibraryImportModel {
 
     /// Import. Conflicts (Luxtable edits since the last import) are kept unless `overwriteEdits`.
     public func run() async {
-        guard canImport, let info, let session else { return }
+        guard canImport, let info, let session, let before = preview else { return }
         cancelRefresh()
         phase = .importing
         await flush()
         do {
-            var s = try await importer.importAppleLibrary(session, library: info.id, categories: categories, dryRun: false,
-                                                          overwriteEdits: overwriteEdits)
+            let importer = importer, categories = categories, overwrite = overwriteEdits
+            var s = try await work.run { report in
+                try await importer.importAppleLibrary(session, library: info.id, categories: categories, dryRun: false,
+                                                      overwriteEdits: overwrite, progress: report)
+            }
             s.source = String(localized: "the library")
             phase = .done(s)
             await onImported()
+        } catch is CancellationError {
+            phase = .preview(before) // cancelled before anything was written
         } catch {
             phase = .failed(error.localizedDescription)
             await onImported() // part of it may have been written
@@ -262,10 +272,10 @@ extension AppleLibraryImportModel: Equatable {
 extension AppModel {
     var appleImporter: (any AppleLibraryImporting)? { sessions as? any AppleLibraryImporting }
 
-    /// File ▸ Import Aperture or iPhoto Library… is available (live mode).
+    /// File ▸ Import from Another App ▸ Aperture or iPhoto Library… is available (live mode).
     public var canImportAppleLibrary: Bool { appleImporter != nil }
 
-    /// File ▸ Revert Aperture or iPhoto Import is available.
+    /// File ▸ Import from Another App ▸ Revert Aperture or iPhoto Import is available.
     public var canRevertAppleLibrary: Bool {
         appleImporter != nil && appleLibrary.session == currentSession?.id && appleLibrary.canRevert
     }
@@ -300,13 +310,13 @@ extension AppModel {
         return s
     }
 
-    /// File ▸ Import Aperture or iPhoto Library…: show the sheet; the user chooses the library in it.
+    /// File ▸ Import from Another App ▸ Aperture or iPhoto Library…: show the sheet; the user chooses the library in it.
     public func showAppleLibraryImport() {
         guard let m = appleLibraryImportModel() else { return }
         sheet = .appleLibraryImport(m)
     }
 
-    /// File ▸ Revert Aperture or iPhoto Import: ask first (the confirmation calls `revertAppleLibraryImport()`).
+    /// File ▸ Import from Another App ▸ Revert Aperture or iPhoto Import: ask first (the confirmation calls `revertAppleLibraryImport()`).
     public func requestRevertAppleLibrary() {
         confirmingAppleRevert = canRevertAppleLibrary
     }

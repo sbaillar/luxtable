@@ -431,6 +431,48 @@ impl CommandRunner for Endless {
     }
 }
 
+/// The popover's Stop: the run ends as "cancelled", and although the changes
+/// are still pending (and the debounce is over) nothing starts until Sync Now.
+#[test]
+fn stopping_cancels_the_run_and_waits_to_be_asked_again() {
+    let t = tempfile::tempdir().unwrap();
+    let files = originals(t.path());
+    let h = internal_session(t.path(), "S", &files[..1]);
+    let target = t.path().join("archive");
+    fs::create_dir(&target).unwrap();
+    let fake = t.path().join("rsync");
+    fs::write(&fake, b"").unwrap();
+    let runner = Arc::new(Endless {
+        started: AtomicBool::new(false),
+    });
+    let m = manager(
+        config(&target, t.path()),
+        Arc::new(real_check),
+        runner.clone(),
+        fake,
+    );
+    m.after_import(h, 2).unwrap();
+    wait("rsync start", 10, || runner.started.load(Ordering::SeqCst));
+    m.stop_sync().unwrap();
+    wait("the run to end", 10, || {
+        runs(&m).first().is_some_and(|r| r.outcome == "cancelled")
+    });
+    let s = m.status().unwrap().sessions[0].clone();
+    assert!(!s.running && s.pending_changes == 2, "{s:?}");
+    runner.started.store(false, Ordering::SeqCst);
+    std::thread::sleep(Duration::from_millis(300));
+    assert!(
+        !runner.started.load(Ordering::SeqCst),
+        "nothing starts on its own after Stop"
+    );
+    assert_eq!(runs(&m).len(), 1);
+    m.sync_now().unwrap();
+    wait("Sync Now to start a run", 10, || {
+        runner.started.load(Ordering::SeqCst)
+    });
+    assert!(m.shutdown(3000).unwrap());
+}
+
 #[test]
 fn quitting_cancels_a_running_archive() {
     let t = tempfile::tempdir().unwrap();

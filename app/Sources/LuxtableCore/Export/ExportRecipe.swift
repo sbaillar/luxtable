@@ -226,7 +226,7 @@ public final class ExportRecipeStore {
         if let data = try? JSONEncoder().encode(recipes) { defaults.set(data, forKey: Self.key) }
     }
 
-    /// Settings › General's artist and copyright (nil when empty), for the exported EXIF.
+    /// Settings ▸ General's artist and copyright (nil when empty), for the exported EXIF.
     public var credit: (artist: String?, copyright: String?) {
         func value(_ key: String) -> String? {
             defaults.string(forKey: key).map { $0.trimmingCharacters(in: .whitespaces) }.flatMap { $0.isEmpty ? nil : $0 }

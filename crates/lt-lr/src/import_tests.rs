@@ -556,6 +556,40 @@ fn cancelling_while_planning_writes_nothing() {
 }
 
 #[test]
+fn the_import_says_how_far_it_is_and_when_it_starts_writing() {
+    use crate::ImportStep::{Comparing, Writing};
+    let e = env();
+    let source = organized(&e);
+    let masters = source.photos.iter().filter(|p| p.master.is_none()).count();
+    let steps = std::cell::RefCell::new(Vec::new());
+    let note = |s| steps.borrow_mut().push(s);
+    crate::import_observed(&mut e.session(), &source, &DRY(), &|| false, &note).unwrap();
+    let dry = steps.take();
+    assert_eq!(dry.len(), masters + 1, "one per photo, then the full count");
+    assert_eq!(
+        (dry[0], dry[masters]),
+        (
+            Comparing {
+                done: 0,
+                total: masters
+            },
+            Comparing {
+                done: masters,
+                total: masters
+            }
+        )
+    );
+    assert!(!dry.contains(&Writing), "a dry run writes nothing");
+    let real = ImportOptions::default();
+    crate::import_observed(&mut e.session(), &source, &real, &|| false, &note).unwrap();
+    assert_eq!(
+        steps.take().last(),
+        Some(&Writing),
+        "writing comes after every photo was compared"
+    );
+}
+
+#[test]
 fn collections_become_albums_that_update_and_revert() {
     let e = env();
     let mut a = e.photo("A", "a.ARW");

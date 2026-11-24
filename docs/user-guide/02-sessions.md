@@ -10,6 +10,8 @@ Everything in Luxtable happens in a session: a folder of photos and their sideca
 - **Open** (`⌘O`): choose a recent session, or **Choose Folder…** to open any folder. **File ▸ Open Recent** lists recent sessions; one on a drive that isn't connected is shown greyed out with the reason. **Browse All Sessions in Library** in the same sheet opens the [Library](05-library.md#library-mode) instead.
 - **Close Session** (`⌥⌘W`): closes it. Nothing is deleted, and it stays in the Sessions list.
 
+You can also open a folder from the Finder: drag it onto the Luxtable icon in the Dock, or Control-click it and choose **Open With ▸ Luxtable**.
+
 ## Folders opened in place
 
 When you open a folder that isn't a Luxtable session, Luxtable works on it in place: it never moves, renames or changes your files, and writes only its own sidecars and index. Renamed or edited files are recognised again when you reopen the folder. Commands that would move files, such as moving rejects to the session Trash, are turned off for such folders and say why. The one way a file leaves such a folder is **Move to Trash…**, which asks first and sends it to the macOS Trash (never from a memory card, the archive or a photo library); see [Culling](04-culling.md#finishing-a-cull).

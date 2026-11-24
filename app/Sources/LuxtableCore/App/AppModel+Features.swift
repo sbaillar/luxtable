@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Optional integrations (Settings ▸ Plugins)
+// MARK: - Optional integrations (Settings ▸ Plug-ins)
 
 extension AppModel {
     /// The first launch with the integrations as plug-ins decides each once
@@ -15,7 +15,7 @@ extension AppModel {
         return store.migrateFeatures { $0.wasSetUp(settings: settings, immich: immich, google: google) }
     }
 
-    /// The live app: the integrations follow Settings ▸ Plugins from now on.
+    /// The live app: the integrations follow Settings ▸ Plug-ins from now on.
     public func followPlugins(_ store: PluginStore) {
         features.follow(store)
     }

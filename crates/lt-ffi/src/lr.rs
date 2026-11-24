@@ -14,6 +14,7 @@ use lt_session::ImageMetaLite;
 
 use crate::clipboard::AdjustGroup;
 use crate::error::DsError;
+use crate::events::{ImportSteps, ProgressListener};
 use crate::jobs::{CancelToken, guard, run_job_on_thread};
 use crate::session::SessionHandle;
 
@@ -479,17 +480,45 @@ pub(crate) fn parse_categories(
 
 impl SessionHandle {
     /// The import, on a source already loaded (tests call this directly).
+    #[cfg(test)]
     pub(crate) fn import_lightroom_with(
         &self,
         source: &LightroomSource,
         opts: &ImportOptions,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<LrImportReportRecord, DsError> {
+        self.import_lightroom_reporting(source, opts, cancelled, &ImportSteps::new(None))
+    }
+
+    /// The import, its steps sent to `steps`.
+    pub(crate) fn import_lightroom_reporting(
+        &self,
+        source: &LightroomSource,
+        opts: &ImportOptions,
+        cancelled: &dyn Fn() -> bool,
+        steps: &ImportSteps,
+    ) -> Result<LrImportReportRecord, DsError> {
         self.check_folder()?;
         let mut session = lock(&self.session);
-        let report = lt_lr::import(&mut session, &source.lib, opts, cancelled)?;
-        Ok(report.into())
+        let report = import_reporting(&mut session, &source.lib, opts, cancelled, steps);
+        Ok(report?.into())
     }
+}
+
+/// `lt_lr::import`, its steps sent to `steps` (also the Aperture / iPhoto import's).
+pub(crate) fn import_reporting(
+    session: &mut lt_session::Session,
+    lib: &lt_lr::LrLibrary,
+    opts: &ImportOptions,
+    cancelled: &dyn Fn() -> bool,
+    steps: &ImportSteps,
+) -> lt_lr::Result<lt_lr::ImportReport> {
+    let report = lt_lr::import_observed(session, lib, opts, cancelled, &|step| match step {
+        lt_lr::ImportStep::Comparing { done, total } => steps.compared(done, total),
+        lt_lr::ImportStep::Writing => steps.writing(),
+    });
+    steps.finish();
+    report
 }
 
 #[uniffi::export]
@@ -499,12 +528,15 @@ impl SessionHandle {
     /// by [`Category::key`]) into this session. Re-running updates instead of
     /// duplicating; a field changed in Luxtable since the last import is a
     /// conflict, kept unless `overwrite_edits`. `dry_run` writes nothing.
+    /// `listener` hears how far it is ([`ImportSteps`]); cancelling stops it
+    /// only while it compares, before anything is written.
     pub async fn import_lightroom(
         self: Arc<Self>,
         source: Arc<LightroomSource>,
         categories: Vec<String>,
         dry_run: bool,
         overwrite_edits: bool,
+        listener: Option<Arc<dyn ProgressListener>>,
         token: Arc<CancelToken>,
     ) -> Result<LrImportReportRecord, DsError> {
         let opts = ImportOptions {
@@ -517,7 +549,7 @@ impl SessionHandle {
             if cancelled() {
                 return Err(DsError::Cancelled);
             }
-            self.import_lightroom_with(&source, &opts, cancelled)
+            self.import_lightroom_reporting(&source, &opts, cancelled, &ImportSteps::new(listener))
         })
         .await
     }

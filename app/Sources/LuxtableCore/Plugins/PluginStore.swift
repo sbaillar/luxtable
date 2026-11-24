@@ -28,7 +28,7 @@ struct PluginSnapshot: Sendable {
     }
 }
 
-/// Settings ▸ Plugins: the plug-ins found, what they wait for, and the user's decisions
+/// Settings ▸ Plug-ins: the plug-ins found, what they wait for, and the user's decisions
 /// (lt-ffi `PluginHost`, which keeps them in `<support>/Plugins/state.json`). Every
 /// change runs off the main actor (a reload re-reads and re-checks every package), then
 /// the app's `PluginContent` is replaced and `onContentChanged` runs.
@@ -193,7 +193,7 @@ public final class PluginStore {
     public func revoke(_ id: String, _ permission: String) async { await perform { try $0.revoke(id: id, permission: permission) } }
     public func trustSigner(key: String, name: String) async { await perform { try $0.trustSigner(key: key, name: name) } }
     public func untrustSigner(key: String) async { await perform { try $0.untrustSigner(key: key) } }
-    /// Settings ▸ Plugins ▸ "Allow unsigned code plug-ins" (for authors: every unsigned plug-in).
+    /// Settings ▸ Plug-ins ▸ "Allow unsigned code plug-ins" (for authors: every unsigned plug-in).
     public func setAllowUnsignedCode(_ on: Bool) async { await perform { try $0.setAllowUnsignedCode(allow: on) } }
 
     /// Move an installed plug-in to the Trash (built-ins can only be disabled); its

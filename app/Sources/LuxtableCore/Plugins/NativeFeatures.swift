@@ -2,7 +2,7 @@ import Foundation
 import Observation
 
 /// The app's own optional integrations. Each is a bundled plug-in (`luxtable.<id>`,
-/// `plugins/builtin/`) that Settings ▸ Plugins turns on or off; the code stays native
+/// `plugins/builtin/`) that Settings ▸ Plug-ins turns on or off; the code stays native
 /// (docs/PLUGINS.md, "Native features"). Off, a feature's settings tab, menus, badges,
 /// panels and background work go away; its settings and credentials are kept.
 public enum NativeFeature: String, CaseIterable, Sendable, Identifiable {
@@ -45,12 +45,12 @@ public enum NativeFeature: String, CaseIterable, Sendable, Identifiable {
 }
 
 /// Which integrations are on, for the views and models that hide or quiet them. In
-/// the app it follows Settings ▸ Plugins (`follow(_:)`); unbound (tests, the demo)
+/// the app it follows Settings ▸ Plug-ins (`follow(_:)`); unbound (tests, the demo)
 /// every feature is on unless `set` says otherwise.
 @MainActor @Observable
 public final class FeatureGates {
     public private(set) var enabled: Set<NativeFeature>
-    /// Settings ▸ Plugins, when bound: switching goes through the registry.
+    /// Settings ▸ Plug-ins, when bound: switching goes through the registry.
     @ObservationIgnored public private(set) weak var store: PluginStore?
     /// Called for each feature that turned on or off (the app starts or stops its work).
     @ObservationIgnored public var onChange: ((NativeFeature, Bool) -> Void)?
@@ -71,7 +71,7 @@ public final class FeatureGates {
         }
     }
 
-    /// Follow Settings ▸ Plugins from now on (the live app).
+    /// Follow Settings ▸ Plug-ins from now on (the live app).
     public func follow(_ store: PluginStore) {
         self.store = store
         store.onFeaturesChanged = { [weak self, weak store] in
@@ -81,7 +81,7 @@ public final class FeatureGates {
         update(store.features)
     }
 
-    /// Turn a feature on or off (onboarding, a hint's button): through Settings ▸ Plugins
+    /// Turn a feature on or off (onboarding, a hint's button): through Settings ▸ Plug-ins
     /// when bound, so it is remembered; directly otherwise.
     public func set(_ feature: NativeFeature, _ on: Bool) async {
         if let store {

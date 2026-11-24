@@ -11,6 +11,7 @@ use lt_apple::{AppleError, AppleLibrary};
 use lt_lr::ImportOptions;
 
 use crate::error::DsError;
+use crate::events::{ImportSteps, ProgressListener};
 use crate::jobs::{CancelToken, guard, run_job_on_thread};
 use crate::lr::{LrImportReportRecord, LrRevertRecord, parse_categories};
 use crate::session::SessionHandle;
@@ -124,16 +125,29 @@ pub async fn load_apple_library(
 
 impl SessionHandle {
     /// The import, on a library already loaded (tests call this directly).
+    #[cfg(test)]
     pub(crate) fn import_apple_with(
         &self,
         source: &AppleLibrarySource,
         opts: &ImportOptions,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<LrImportReportRecord, DsError> {
+        self.import_apple_reporting(source, opts, cancelled, &ImportSteps::new(None))
+    }
+
+    /// The import, its steps sent to `steps`.
+    pub(crate) fn import_apple_reporting(
+        &self,
+        source: &AppleLibrarySource,
+        opts: &ImportOptions,
+        cancelled: &dyn Fn() -> bool,
+        steps: &ImportSteps,
+    ) -> Result<LrImportReportRecord, DsError> {
         self.check_folder()?;
         let mut session = lock(&self.session);
-        let report = lt_lr::import(&mut session, &source.lib.lib, opts, cancelled)?;
-        Ok(report.into())
+        let report =
+            crate::lr::import_reporting(&mut session, &source.lib.lib, opts, cancelled, steps);
+        Ok(report?.into())
     }
 }
 
@@ -151,6 +165,7 @@ impl SessionHandle {
         categories: Vec<String>,
         dry_run: bool,
         overwrite_edits: bool,
+        listener: Option<Arc<dyn ProgressListener>>,
         token: Arc<CancelToken>,
     ) -> Result<LrImportReportRecord, DsError> {
         let opts = ImportOptions {
@@ -163,7 +178,7 @@ impl SessionHandle {
             if cancelled() {
                 return Err(DsError::Cancelled);
             }
-            self.import_apple_with(&source, &opts, cancelled)
+            self.import_apple_reporting(&source, &opts, cancelled, &ImportSteps::new(listener))
         })
         .await
     }

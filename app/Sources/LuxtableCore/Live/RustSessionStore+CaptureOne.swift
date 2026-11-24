@@ -26,10 +26,16 @@ extension RustSessionStore: CaptureOneImporting {
     /// sidecars changed underneath, and a stale adjustments JSON would
     /// otherwise be the base of the next save.
     public func importCaptureOne(_ session: SessionInfo, dryRun: Bool, overwriteEdits: Bool) async throws -> C1ImportSummary {
+        try await importCaptureOne(session, dryRun: dryRun, overwriteEdits: overwriteEdits, progress: { _ in })
+    }
+
+    public func importCaptureOne(_ session: SessionInfo, dryRun: Bool, overwriteEdits: Bool,
+                                 progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> C1ImportSummary {
         guard let h = archiveHandle(for: session) else { throw MockError.notFound("session \(session.name)") }
         defer { if !dryRun { forgetAll(in: session.id) } }
+        let relay = OtherAppImportRelay(progress)
         let record = try await Self.call { token in
-            try await h.importCaptureOne(dryRun: dryRun, overwriteEdits: overwriteEdits, token: token)
+            try await h.importCaptureOne(dryRun: dryRun, overwriteEdits: overwriteEdits, listener: relay, token: token)
         }
         return C1ImportSummary(record)
     }

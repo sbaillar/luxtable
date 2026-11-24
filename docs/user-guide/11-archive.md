@@ -1,6 +1,6 @@
 # Archive and Immich
 
-Archive and Immich are [optional integrations](12-plugins.md#optional-integrations). Each is off until you turn it on in Settings ▸ Plugins ▸ Integrations, and its Settings pane appears while it is on.
+Archive and Immich are [optional integrations](12-plugins.md#optional-integrations). Each is off until you turn it on in Settings ▸ Plug-ins ▸ Integrations, and its Settings pane appears while it is on.
 
 ## Archive
 
@@ -10,6 +10,7 @@ Luxtable can copy your sessions to an archive in the background: a folder (for e
 - Choose whether rejected photos are archived too (**Archive rejected photos**). With it off, rejects and the session's Trash stay out of the archive.
 - Each session gets its own folder in the archive. Switching destinations never moves or deletes what is already archived.
 - The archive button in the toolbar shows the status: up to date, behind, offline or a problem, with the recent runs.
+- **Sync Now** in that popover archives at once. While a run is going the button is **Stop**: the run ends, what it already copied stays in the archive, and nothing more is copied until the next scheduled check or **Sync Now**.
 
 ![The archive popover after a run.](../screenshots/archive-popover.png)
 
@@ -39,7 +40,7 @@ The archive never deletes anything. A file that changed is archived again only a
 
 ## Immich
 
-[Immich](https://immich.app) is a self-hosted photo server. Luxtable works with an Immich server that indexes your archive folder as an **external library** (mounted read-only is fine): Luxtable never uploads to Immich, and Immich never writes to the archive. Turn Immich on in Settings ▸ Plugins, then set it up in Settings ▸ Immich.
+[Immich](https://immich.app) is a self-hosted photo server. Luxtable works with an Immich server that indexes your archive folder as an **external library** (mounted read-only is fine): Luxtable never uploads to Immich, and Immich never writes to the archive. Turn Immich on in Settings ▸ Plug-ins, then set it up in Settings ▸ Immich.
 
 1. **Server:** enter the server address and an API key (create it in Immich under Account Settings ▸ API Keys; it is kept in your Keychain). **Save**, then **Test Connection**.
 2. **Where Immich sees the archive:** the archive folder as the server sees it and as this Mac sees it, for example `/mnt/photos` on the server is `/Volumes/photos` on this Mac. **Detect** fills it in from an archived photo Immich already has, or from the library's import path.

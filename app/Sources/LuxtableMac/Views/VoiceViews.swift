@@ -227,7 +227,6 @@ struct VoiceSettingsView: View {
                 ForEach(PushToTalkKey.allCases) { Text($0.title).tag($0) }
             }
             .disabled(!settings.voicePushToTalk)
-            Toggle("Auto-advance after a rating or flag (keys and voice)", isOn: $settings.autoAdvance)
             Text(VoiceText.languageNote)
                 .font(DS.Font.label).foregroundStyle(DS.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)

@@ -198,6 +198,7 @@ fn async_entry_points_check_categories_and_cancel() {
         vec!["rating".into()],
         true,
         false,
+        None,
         CancelToken::new(),
     ))
     .unwrap();
@@ -207,15 +208,17 @@ fn async_entry_points_check_categories_and_cancel() {
         vec!["nope".into()],
         true,
         false,
+        None,
         CancelToken::new(),
     ));
     assert!(matches!(bad, Err(DsError::InvalidArgument { .. })));
     let token = CancelToken::new();
     token.cancel();
-    let cancelled = block_on(
-        h.clone()
-            .import_apple_library(source, vec![], true, false, token),
-    );
+    let cancelled =
+        block_on(
+            h.clone()
+                .import_apple_library(source, vec![], true, false, None, token),
+        );
     assert!(matches!(cancelled, Err(DsError::Cancelled)));
     let token = CancelToken::new();
     token.cancel();

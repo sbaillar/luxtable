@@ -51,9 +51,9 @@ body:
   - type: textarea
     id: log
     attributes:
-      label: Log
+      label: Diagnostic report or log
       description: |
-        Optional. In Terminal, right after the problem:
-        `log show --last 10m --predicate 'subsystem == "app.luxtable.Luxtable"'`
-        Check it for folder and file names you'd rather not share before pasting.
+        Optional. Right after the problem, before quitting: Help ▸ Save Diagnostic Report…, then paste the file here.
+        File names, folders and servers are masked in it; read it before you share it.
+        Or, in Terminal: `log show --last 10m --predicate 'subsystem == "app.luxtable.Luxtable"'`
       render: text
