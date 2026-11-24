@@ -193,6 +193,62 @@ impl Dispatcher {
     }
 }
 
+/// The longest an import from another app goes without a progress event.
+const STEP_EVERY: Duration = Duration::from_millis(50);
+
+/// Progress of an import from another app (Capture One, Lightroom, Aperture or
+/// iPhoto) for its sheet, with a dispatcher of its own like an open's:
+/// `kind` "import.compare" with `completed` of `total` source photos compared
+/// (at most one event per [`STEP_EVERY`], and always the last one), then
+/// "import.write" once the import starts writing.
+pub(crate) struct ImportSteps {
+    events: Dispatcher,
+    last: std::cell::Cell<Option<std::time::Instant>>,
+}
+
+impl ImportSteps {
+    pub(crate) fn new(listener: Option<Arc<dyn ProgressListener>>) -> Self {
+        let events = Dispatcher::new();
+        events.set_listener(listener);
+        Self {
+            events,
+            last: std::cell::Cell::new(None),
+        }
+    }
+
+    fn send(&self, kind: &str, completed: usize, total: usize) {
+        self.events.emit(ProgressEvent {
+            task_id: 1,
+            kind: kind.into(),
+            phase: TaskPhase::Running,
+            completed: completed as u64,
+            total: total as u64,
+            detail: None,
+        });
+    }
+
+    pub(crate) fn compared(&self, done: usize, total: usize) {
+        let now = std::time::Instant::now();
+        let due = self
+            .last
+            .get()
+            .is_none_or(|t| now.duration_since(t) >= STEP_EVERY);
+        if due || done == total {
+            self.last.set(Some(now));
+            self.send("import.compare", done.min(total), total);
+        }
+    }
+
+    pub(crate) fn writing(&self) {
+        self.send("import.write", 0, 0);
+    }
+
+    /// Wait (briefly) until the listener has had everything sent so far.
+    pub(crate) fn finish(&self) {
+        self.events.flush(Duration::from_secs(5));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -216,6 +272,40 @@ mod tests {
             self.0.lock().unwrap().push(event);
             Ok(())
         }
+    }
+
+    #[test]
+    fn import_steps_are_paced_but_the_last_count_and_writing_always_arrive() {
+        let rec = Arc::new(Recorder::default());
+        let steps = ImportSteps::new(Some(rec.clone()));
+        steps.compared(0, 1000);
+        for done in 1..1000 {
+            steps.compared(done, 1000); // far inside one pacing interval
+        }
+        steps.compared(1000, 1000);
+        steps.writing();
+        steps.finish();
+        let seen: Vec<(String, u64, u64)> = rec
+            .0
+            .lock()
+            .unwrap()
+            .iter()
+            .map(|e| (e.kind.clone(), e.completed, e.total))
+            .collect();
+        assert_eq!(seen.first(), Some(&("import.compare".to_owned(), 0, 1000)));
+        assert!(seen.len() < 100, "paced: {} events", seen.len());
+        assert_eq!(
+            &seen[seen.len() - 2..],
+            [
+                ("import.compare".to_owned(), 1000, 1000),
+                ("import.write".to_owned(), 0, 0)
+            ]
+        );
+        // No listener: nothing to deliver, nothing to wait for.
+        let silent = ImportSteps::new(None);
+        silent.compared(1, 2);
+        silent.writing();
+        silent.finish();
     }
 
     #[test]

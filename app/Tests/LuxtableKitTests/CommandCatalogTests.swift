@@ -203,7 +203,7 @@ import Testing
         }
         #expect(ArchiveDisplay.short(.unavailable("x")) == "Archive off")
         #expect(ArchiveDisplay.long(.behind(files: 1)) == "1 file waiting")
-        #expect(ArchiveDisplay.explanation(.unavailable("x")).contains("Settings › Archive"))
+        #expect(ArchiveDisplay.explanation(.unavailable("x")).contains("Settings ▸ Archive"))
         #expect(ArchiveDisplay.explanation(.idle).contains("never deletes"))
         #expect(!ArchiveDisplay.canSyncNow(.unavailable("x")) && !ArchiveDisplay.canSyncNow(.syncing(fraction: 0.1)))
         #expect(ArchiveDisplay.canSyncNow(.offline))

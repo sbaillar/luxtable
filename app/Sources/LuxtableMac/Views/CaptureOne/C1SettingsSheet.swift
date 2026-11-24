@@ -3,7 +3,7 @@ import LuxtableUI
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// File ▸ Import Capture One Settings…: what the folder holds per category (with
+/// File ▸ Import from Another App ▸ Capture One Settings…: what the folder holds per category (with
 /// checkboxes) and what the import would do with each item, then the import.
 struct C1SettingsSheet: View {
     let app: AppModel

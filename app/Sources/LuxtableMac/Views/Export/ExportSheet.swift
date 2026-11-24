@@ -350,7 +350,7 @@ private struct GooglePhotosAlbumPicker: View {
     }
 }
 
-/// A recipe's plug-in export steps (Settings ▸ Plugins adds them): a switch per step,
+/// A recipe's plug-in export steps (Settings ▸ Plug-ins adds them): a switch per step,
 /// and its parameters when on. They run after the watermark, in this order.
 private struct PostProcessSection: View {
     @Binding var recipe: ExportRecipe
@@ -359,7 +359,7 @@ private struct PostProcessSection: View {
     var body: some View {
         Section("Post-processing") {
             if available.isEmpty && recipe.postProcess.isEmpty {
-                Text("Export steps from plug-ins appear here (Settings ▸ Plugins).")
+                Text("Export steps from plug-ins appear here (Settings ▸ Plug-ins).")
                     .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
             }
             ForEach(available, id: \.stepID) { info in
@@ -442,7 +442,7 @@ private struct WatermarkEditor: View {
         switch watermark.kind {
         case .text:
             TextField("Text", text: $watermark.text)
-                .help("Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings › General (else the photo's own metadata).")
+                .help("Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings ▸ General (else the photo's own metadata).")
             Picker("Font", selection: $watermark.fontFamily) {
                 Text("System").tag("")
                 ForEach(Self.families, id: \.self) { Text($0).tag($0) }

@@ -1,10 +1,10 @@
 # Settings
 
-Open Settings with `⌘,`. Its panes are listed in a sidebar on the left; an integration that is off has no pane until you turn it on in **Plugins**.
+Open Settings with `⌘,`. Its panes are listed in a sidebar on the left; an integration that is off has no pane until you turn it on in **Plug-ins**.
 
 | Pane | What it sets |
 |---|---|
-| **General** | Appearance, the sessions folder, **Open in** (the last session or the Library), opening the import sheet when a card is inserted, your name and copyright for exports, the new-session name, map tiles, and Show Welcome Again |
+| **General** | Appearance, the sessions folder, **Open in** (the last session or the Library), opening the import sheet when a card is inserted, your name and copyright for exports, the new-session name, auto-advance after a rating, map tiles, and Show Welcome Again |
 | **Familiar** | Layout, keyboard shortcuts and names like Luxtable, Lightroom Classic or Capture One |
 | **Shortcuts** | Rebind every single-key command; a key already in use moves to the new command |
 | **RAW** | Download or remove the RAW helper |
@@ -14,7 +14,7 @@ Open Settings with `⌘,`. Its panes are listed in a sidebar on the left; an int
 | **AI** | How typed edits are interpreted, including the optional Jev service |
 | **Voice** | Voice commands and your own phrases |
 | **Devices** | The Mac ↔ iPad link and paired devices |
-| **Plugins** | The optional integrations (on or off), installed plug-ins, their permissions, and development folders |
+| **Plug-ins** | The optional integrations (on or off), installed plug-ins, their permissions, and development folders |
 | **Updates** | Automatic update checks, beta versions and Check Now |
 
 Luxtable has no language setting of its own: it uses the language you choose for it in macOS (see [Language](01-install.md#language)).

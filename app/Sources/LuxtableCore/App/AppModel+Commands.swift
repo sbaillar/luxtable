@@ -72,6 +72,16 @@ extension AppModel {
         }
     }
 
+    /// The Stop button next to AI Cull's progress: the run ends and nothing is changed
+    /// (picks and rejects are only applied once every photo is scored).
+    public func cancelAICull() {
+        guard cullProgress != nil else { return }
+        cullTask?.cancel()
+        cullTask = nil
+        cullProgress = nil
+        show(Toast(String(localized: "AI Cull stopped: nothing was changed"), symbol: "sparkles"))
+    }
+
     // MARK: - Keyboard
 
     public func setKeyRepeat(_ active: Bool) {

@@ -224,6 +224,11 @@ struct StatusBar: View {
                     .foregroundStyle(DS.textSecondary)
                     .accessibilityLabel(OpenProgressText.phase(p))
             }
+            let thumbnails = model.thumbnails.activity
+            if thumbnails.isBusy { // a slow disk or a big scroll: the grey cells are being filled
+                Label(thumbnails.label, systemImage: "photo.stack").foregroundStyle(DS.textSecondary)
+                    .accessibilityLabel(thumbnails.label)
+            }
             if model.editAllSelected {
                 Label("Editing all selected", systemImage: "square.stack.3d.up.fill").foregroundStyle(DS.accent)
             }
@@ -237,12 +242,12 @@ struct StatusBar: View {
             Text(model.viewer.zoomLabel)
                 .foregroundStyle(DS.textSecondary)
                 .frame(minWidth: 32, alignment: .trailing)
-            SettingsLink { // one click from "where did Paste go?" to Settings › Familiar
+            SettingsLink { // one click from "where did Paste go?" to Settings ▸ Familiar
                 Text(FamiliarText.statusLine(model.settings.layoutPreset, model.settings.keyPreset))
                     .foregroundStyle(DS.textSecondary)
             }
             .buttonStyle(.plain)
-            .help("Familiar layout and keys: change them in Settings › Familiar")
+            .help("Familiar layout and keys: change them in Settings ▸ Familiar")
         }
         .font(DS.Font.label)
         .lineLimit(1)

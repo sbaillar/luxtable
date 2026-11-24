@@ -236,6 +236,33 @@ public final class MergeModel {
     public var kind: PhotoMergeKind { options.kind }
     public var title: String { String(localized: "\(kind.title) (\(sources.count) Photos)") }
     public var isMerging: Bool { progress != nil }
+
+    /// What a merge does in turn. The engine reports one fraction; its stages have fixed
+    /// shares of it (lt-ffi `merge_with`: the photos are read by 30 %, merged by 90 %, then
+    /// the new file is written and added).
+    public enum Stage: Equatable, Sendable {
+        case reading, merging, writing
+
+        public init(fraction: Double) {
+            self = fraction < 0.3 ? .reading : fraction < 0.9 ? .merging : .writing
+        }
+    }
+
+    /// What the running merge is doing, for the line over its progress bar.
+    public var stageLine: String? {
+        guard let progress else { return nil }
+        return Self.stageLine(Stage(fraction: progress), kind: kind, photos: sources.count)
+    }
+
+    static func stageLine(_ stage: Stage, kind: PhotoMergeKind, photos: Int) -> String {
+        switch (stage, kind) {
+        case (.reading, _): String(localized: "Reading the \(photos) photos…")
+        case (.merging, .hdr): String(localized: "Aligning and merging the exposures…")
+        case (.merging, .panorama): String(localized: "Aligning and stitching the panorama…")
+        case (.merging, .burst): String(localized: "Aligning the frames and taking the best of each…")
+        case (.writing, _): String(localized: "Writing the new photo and adding it to the session…")
+        }
+    }
     /// The message shown in the sheet.
     public var error: String? { mergeError ?? previewError }
     /// A Best Shot waits for Vision: merging without it would miss the faces.

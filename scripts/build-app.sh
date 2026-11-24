@@ -87,6 +87,8 @@ else
   fi
 fi
 ACK="$ROOT/app/Resources/Acknowledgements.md"
+# Help ▸ Luxtable User Guide opens this copy (scripts/user-guide.sh builds it from docs/user-guide).
+GUIDE="$ROOT/docs/Luxtable-User-Guide.pdf"
 LICENSES="$ROOT/THIRD_PARTY_LICENSES.md" # scripts/licenses.sh
 # Bundled plug-ins (plugins/builtin/*.ltplugin): Luxtable's own looks and styles…
 PLUGINS_SRC="$ROOT/plugins/builtin"
@@ -141,6 +143,7 @@ if [[ "$(cat "$STAMP" 2>/dev/null)" != "$INPUTS" ]] || ! codesign --verify "$APP
   /bin/cp -f "$ICON" "$APP/Contents/Resources/AppIcon.icns"
   /bin/cp -f "$PLIST" "$APP/Contents/Info.plist"
   /bin/cp -f "$ACK" "$APP/Contents/Resources/Acknowledgements.md"
+  /bin/cp -f "$GUIDE" "$APP/Contents/Resources/Luxtable-User-Guide.pdf"
   /bin/cp -f "$LICENSES" "$APP/Contents/Resources/THIRD_PARTY_LICENSES.md"
   /bin/rm -rf "$APP/Contents/Resources/Plugins"
   mkdir -p "$APP/Contents/Resources/Plugins"

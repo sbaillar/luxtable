@@ -58,7 +58,7 @@ public final class ExportModel {
     @ObservationIgnored let store: ExportRecipeStore
     /// Uploads for recipes with a Google Photos destination (nil: not available).
     @ObservationIgnored let googlePhotos: (any GooglePhotosService)?
-    /// Whether the Google Photos integration is on (Settings ▸ Plugins), asked before
+    /// Whether the Google Photos integration is on (Settings ▸ Plug-ins), asked before
     /// each check and each upload: turned off mid-run, the next recipe isn't uploaded.
     @ObservationIgnored let googlePhotosOn: @MainActor () -> Bool
     /// The Google Photos uploads of the last run, one per recipe that has one.
@@ -372,10 +372,10 @@ extension ExportModel {
     }
 
     /// Shown in place of the upload while Google Photos is off: once, quietly.
-    public static let moreDestinationsHint = String(localized: "Uploads (Google Photos) can be turned on in Settings ▸ Plugins.")
+    public static let moreDestinationsHint = String(localized: "Uploads (Google Photos) can be turned on in Settings ▸ Plug-ins.")
 
     static func googlePhotosOffProblem(_ recipe: String) -> String {
-        String(localized: "“\(recipe)” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plugins, or turn the upload off.")
+        String(localized: "“\(recipe)” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plug-ins, or turn the upload off.")
     }
 
     /// Whether the Export sheet offers the Google Photos upload for `recipe`: when the
@@ -428,7 +428,7 @@ extension ExportModel {
             // Turned off since the export started: the files stay exported, nothing is sent.
             guard googlePhotosOn() else {
                 googleUploads.append(GooglePhotosUpload(recipeName: recipe.name, albumTitle: target.albumTitle,
-                                                        error: String(localized: "turned off in Settings ▸ Plugins; nothing was uploaded")))
+                                                        error: String(localized: "turned off in Settings ▸ Plug-ins; nothing was uploaded")))
                 continue
             }
             uploading = GooglePhotosProgress(done: 0, total: files.count)

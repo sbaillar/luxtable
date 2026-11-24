@@ -62,7 +62,7 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
         }
         current = ArchiveStatus(state: .unavailable(initial.isActive ? String(localized: "Checking the archive…") : ArchiveDisplay.offText(initial)),
                                 target: initial.target, lastSuccess: nil)
-        // Settings ▸ Plugins: no run or Immich step while its feature is off.
+        // Settings ▸ Plug-ins: no run or Immich step while its feature is off.
         // (Set before any session is registered, so nothing is due before it.)
         if let plugins, let manager { Self.attempt("plug-in gate") { try manager.setPluginHost(host: plugins) } }
         applyKeys(objectStorage: initial.objectStore != nil)
@@ -216,6 +216,11 @@ public final class RustArchiveService: ArchiveService, @unchecked Sendable {
 
     public func syncNow() async {
         Self.attempt("sync now") { _ = try manager?.syncNow() }
+        publish(snapshot())
+    }
+
+    public func stopSync() async {
+        Self.attempt("stop sync") { _ = try manager?.stopSync() }
         publish(snapshot())
     }
 

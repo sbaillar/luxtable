@@ -13,11 +13,11 @@ public enum ActiveSheet: Identifiable, Equatable, Sendable {
     case openSession
     /// Capture One session import (preview, then import).
     case captureOneImport(CaptureOneImportModel)
-    /// File ▸ Import Capture One Settings… (recipes, workspaces, styles…).
+    /// File ▸ Import from Another App ▸ Capture One Settings… (recipes, workspaces, styles…).
     case captureOneSettings(C1SettingsImportModel)
-    /// File ▸ Import Lightroom… (catalog, XMP sidecars or presets).
+    /// File ▸ Import from Another App ▸ Lightroom… (catalog, XMP sidecars or presets).
     case lightroomImport(LightroomImportModel)
-    /// File ▸ Import Aperture or iPhoto Library…
+    /// File ▸ Import from Another App ▸ Aperture or iPhoto Library…
     case appleLibraryImport(AppleLibraryImportModel)
     /// File ▸ Import from Photos Library…, or an iPhone or iPad from the import sheet.
     case externalImport(ExternalImportModel)
@@ -92,7 +92,7 @@ public final class AppModel {
     @ObservationIgnored public var googlePhotos: (any GooglePhotosService)?
     /// Immich: developed copies, sidecars and album sync (live: lt-immich, set by `AppModel.make`).
     public let immich: ImmichModel
-    /// The optional integrations that are on (Settings ▸ Plugins in the app; every one
+    /// The optional integrations that are on (Settings ▸ Plug-ins in the app; every one
     /// in the demo and in tests unless they say otherwise).
     public let features = FeatureGates()
     /// The open Export sheet's model.
@@ -157,7 +157,7 @@ public final class AppModel {
     @ObservationIgnored var serveTask: Task<Void, Never>?
     /// Whether the open session is a Capture One folder (see `refreshCaptureOne()`).
     public internal(set) var captureOne = CaptureOneStatus()
-    /// File ▸ Revert Capture One Import is asking for confirmation.
+    /// File ▸ Import from Another App ▸ Revert Capture One Import is asking for confirmation.
     public var confirmingCaptureOneRevert = false
     /// Whether the open session has a Lightroom import to revert (see `refreshLightroom()`).
     public internal(set) var lightroom = LightroomStatus()
@@ -447,7 +447,8 @@ public final class AppModel {
             // the recents instead (greyed out with why), and never an older session in
             // its place.
             // Nor one the user closed: the next launch opens none.
-            if currentSession == nil, !settings.sessionClosed, let last = sessionToReopen() {
+            // Nor when the launch is "open this folder" (`openPendingFolder()` opens that one).
+            if currentSession == nil, !settings.sessionClosed, pendingFolder == nil, let last = sessionToReopen() {
                 if let why = last.unavailable {
                     AppLog.session.notice("not reopening \(last.url.path, privacy: .private(mask: .hash)): \(why.label, privacy: .public)")
                 } else if inLibrary {
@@ -524,6 +525,31 @@ public final class AppModel {
     public private(set) var openProgress: OpenProgress?
     public private(set) var openingFolder: URL?
     @ObservationIgnored var openTask: Task<Void, Never>?
+
+    /// A folder the Finder asked Luxtable to open before `start()` finished (the launch
+    /// itself was "open this folder"): opened by `openPendingFolder()` instead of the last session.
+    public private(set) var pendingFolder: URL?
+    @ObservationIgnored private var hasStarted = false
+
+    /// A folder from the Finder: dropped on the Dock icon, Open With ▸ Luxtable, or
+    /// `open -a Luxtable <folder>`. A file means its folder.
+    public func openFromFinder(_ url: URL) {
+        guard url.isFileURL else { return }
+        let folder = url.hasDirectoryPath ? url : url.deletingLastPathComponent()
+        if hasStarted {
+            Task { await openFolder(folder) }
+        } else {
+            pendingFolder = folder
+        }
+    }
+
+    /// After `start()`: from here on a folder from the Finder opens at once.
+    public func openPendingFolder() async {
+        hasStarted = true
+        guard let folder = pendingFolder else { return }
+        pendingFolder = nil
+        await openFolder(folder)
+    }
 
     /// Open a folder of RAW files as a session in place (live mode). Shows progress
     /// and can be cancelled with `cancelOpen()`.

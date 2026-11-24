@@ -4,7 +4,7 @@ import Testing
 @testable import LuxtableMac
 @testable import LuxtableUI
 
-/// Keyboard sets that match Lightroom Classic and Capture One (Settings › Familiar layout).
+/// Keyboard sets that match Lightroom Classic and Capture One (Settings ▸ Familiar layout).
 @Suite struct KeyPresetTests {
     @Test func luxtableIsTheDefaultsAndGainsLightroomLettersForNewCommands() {
         #expect(KeyPreset.luxtable.bindings == .defaults)

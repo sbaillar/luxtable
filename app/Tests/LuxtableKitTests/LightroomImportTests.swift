@@ -19,6 +19,8 @@ private actor FakeLR: LightroomImporting {
     var reverted: Result<LRRevertSummary?, Error> = .success(LRRevertSummary(restored: 5))
     /// Sleep before the n-th dry run answers (to make an old answer arrive late).
     var delays: [Int: Duration] = [:]
+    /// A real run reports this step and then waits to be cancelled (the sheet's Cancel).
+    var held: OtherAppImportStep?
     private(set) var calls: [(categories: Set<LRCategory>, dryRun: Bool, overwrite: Bool)] = []
     private(set) var loads = 0
     private(set) var released: [UUID] = []
@@ -57,6 +59,18 @@ private actor FakeLR: LightroomImporting {
         }
         revertible = result.changeCount > 0
         return result
+    }
+
+    func hold(at step: OtherAppImportStep) { held = step }
+
+    func importLightroom(_ session: SessionInfo, source: UUID, categories: Set<LRCategory>, dryRun: Bool,
+                         overwriteEdits: Bool,
+                         progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> LRImportSummary {
+        if !dryRun, let held {
+            progress(held)
+            while true { try await Task.sleep(for: .milliseconds(2)) } // until cancelled
+        }
+        return try await importLightroom(session, source: source, categories: categories, dryRun: dryRun, overwriteEdits: overwriteEdits)
     }
 
     func canRevertLightroomImport(_ session: SessionInfo) async -> Bool { revertible }
@@ -203,6 +217,23 @@ private func warm(_ name: String = "LR Warm", groups: Set<AdjustGroup> = [.expos
 }
 
 @Suite @MainActor struct LightroomModelTests {
+    @Test func aRunningImportSaysHowFarItIsAndCancelGoesBackToThePreview() async {
+        let fake = FakeLR()
+        await fake.hold(at: .comparing(done: 40, total: 120))
+        var reloaded = 0
+        let m = model(fake, imported: { reloaded += 1 })
+        await m.choose(catalog)
+        let before = m.preview
+        #expect(before != nil && !m.work.isRunning && !m.work.canCancel)
+        let run = Task { await m.run() }
+        #expect(await waitUntil { m.work.step == .comparing(done: 40, total: 120) })
+        #expect(m.phase == .importing && m.work.canCancel)
+        m.work.cancel()
+        await run.value
+        #expect(m.preview == before, "nothing was written: the dry run's result is shown again")
+        #expect(m.work.step == nil && !m.work.isRunning && reloaded == 0)
+    }
+
     @Test func chooseLoadsOnceThenRunsTheDryRunWithEveryCategory() async {
         let fake = FakeLR()
         let m = model(fake)

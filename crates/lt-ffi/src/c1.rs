@@ -12,6 +12,7 @@ use lt_pipeline::color::{CameraColor, multipliers_to_wb, normalize_mults};
 use lt_session::Session;
 
 use crate::error::DsError;
+use crate::events::{ImportSteps, ProgressListener};
 use crate::jobs::{CancelToken, guard, run_job_on_thread};
 use crate::session::SessionHandle;
 
@@ -250,11 +251,23 @@ fn lock<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
 
 impl SessionHandle {
     /// The import, with the white-balance conversion injected (tests).
+    #[cfg(test)]
     pub(crate) fn import_capture_one_with(
         &self,
         wb: &dyn WbConverter,
         opts: ImportOptions,
         cancel: &Cancel,
+    ) -> Result<C1ImportReportRecord, DsError> {
+        self.import_capture_one_reporting(wb, opts, cancel, &ImportSteps::new(None))
+    }
+
+    /// The import, its steps sent to `steps`.
+    pub(crate) fn import_capture_one_reporting(
+        &self,
+        wb: &dyn WbConverter,
+        opts: ImportOptions,
+        cancel: &Cancel,
+        steps: &ImportSteps,
     ) -> Result<C1ImportReportRecord, DsError> {
         let folder = self.in_place.clone().ok_or_else(|| {
             DsError::invalid("only a folder opened in place can import its Capture One session")
@@ -263,8 +276,20 @@ impl SessionHandle {
         // Read (and copy the database) before taking the session lock.
         let c1 = lt_c1::read_session_cancellable(&folder, cancel)?;
         let mut session: MutexGuard<'_, Session> = lock(&self.session);
-        let report = lt_c1::import_cancellable(&mut session, &c1, wb, opts, &|| cancel())?;
-        Ok(C1ImportReportRecord::from(report, c1.written_by))
+        let report =
+            lt_c1::import_observed(
+                &mut session,
+                &c1,
+                wb,
+                opts,
+                &|| cancel(),
+                &|step| match step {
+                    lt_c1::ImportStep::Comparing { done, total } => steps.compared(done, total),
+                    lt_c1::ImportStep::Writing => steps.writing(),
+                },
+            );
+        steps.finish();
+        Ok(C1ImportReportRecord::from(report?, c1.written_by))
     }
 }
 
@@ -275,10 +300,13 @@ impl SessionHandle {
     /// in-place session. Re-running updates instead of duplicating; a field
     /// changed in Luxtable since the last import is reported as a conflict
     /// and kept unless `overwrite_edits`. `dry_run` writes nothing.
+    /// `listener` hears how far it is ([`crate::events::ImportSteps`]);
+    /// cancelling stops it only while it compares, before anything is written.
     pub async fn import_capture_one(
         self: Arc<Self>,
         dry_run: bool,
         overwrite_edits: bool,
+        listener: Option<Arc<dyn ProgressListener>>,
         token: Arc<CancelToken>,
     ) -> Result<C1ImportReportRecord, DsError> {
         // The database read polls this from inside its queries.
@@ -289,13 +317,14 @@ impl SessionHandle {
             if cancelled() {
                 return Err(DsError::Cancelled);
             }
-            self.import_capture_one_with(
+            self.import_capture_one_reporting(
                 &RawWb,
                 ImportOptions {
                     dry_run,
                     overwrite_edits,
                 },
                 &cancel,
+                &ImportSteps::new(listener),
             )
         })
         .await

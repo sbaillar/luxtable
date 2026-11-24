@@ -1,6 +1,6 @@
 import Foundation
 
-/// Where things sit in the main window, chosen in Settings › Familiar layout. The look
+/// Where things sit in the main window, chosen in Settings ▸ Familiar layout. The look
 /// stays Luxtable's; only placement follows the app someone is coming from.
 public enum LayoutPreset: String, CaseIterable, Codable, Sendable, Identifiable {
     case luxtable, lightroomClassic, captureOne

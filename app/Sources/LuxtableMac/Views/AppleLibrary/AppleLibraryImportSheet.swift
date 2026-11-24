@@ -98,12 +98,7 @@ struct AppleLibraryImportSheet: View {
     }
 
     private func busy(_ text: LocalizedStringKey) -> some View {
-        HStack(spacing: DS.Space.s) {
-            ProgressView().controlSize(.small)
-            Text(text).font(DS.Font.label).foregroundStyle(DS.text)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(text)
+        OtherAppImportBusy(text: text, work: model.work)
     }
 
     private var categories: some View {
@@ -137,8 +132,10 @@ struct AppleLibraryImportSheet: View {
                 Button(model.overwriteEdits ? "Import and Overwrite" : "Import") { Task { await model.run() } }
                     .keyboardShortcut(.defaultAction)
                     .disabled(!model.canImport)
-            case .loading, .previewing, .importing, .reverting:
-                Button("Cancel", role: .cancel) { close() }.disabled(model.phase == .importing || model.phase == .reverting)
+            case .loading, .previewing, .reverting:
+                Button("Cancel", role: .cancel) { close() }.disabled(model.phase == .reverting)
+            case .importing:
+                OtherAppImportCancel(work: model.work)
             case .done:
                 if model.canRevert {
                     Button("Revert Import") { Task { await model.revert() } }
@@ -170,7 +167,7 @@ struct AppleLibraryImportSheet: View {
     }
 }
 
-/// File ▸ Revert Aperture or iPhoto Import asks first.
+/// File ▸ Import from Another App ▸ Revert Aperture or iPhoto Import asks first.
 struct AppleLibraryRevertDialog: ViewModifier {
     @Bindable var model: AppModel
 

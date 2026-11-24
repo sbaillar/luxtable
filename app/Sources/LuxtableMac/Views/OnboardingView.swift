@@ -73,7 +73,7 @@ struct OnboardingView: View {
             }
         case .familiar:
             VStack(alignment: .leading, spacing: DS.Space.m) {
-                Text("Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar.")
+                Text("Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings ▸ Familiar.")
                     .foregroundStyle(DS.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                 FamiliarChoiceList(selection: Binding(get: { onboarding.familiar }, set: { onboarding.choose($0) }),
@@ -90,7 +90,7 @@ struct OnboardingView: View {
             }
         case .archive:
             VStack(alignment: .leading, spacing: DS.Space.m) {
-                Text("Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plugins.")
+                Text("Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plug-ins.")
                     .foregroundStyle(DS.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                 Toggle("Archive sessions automatically", isOn: $onboarding.archiveEnabled)
@@ -198,7 +198,7 @@ struct SettingsView: View {
             }
             .help("At launch: the last session, or the Library of every session's photos (no session is opened until you need one)")
             LabeledContent("Sessions folder", value: settings.sessionsFolder.path)
-            LabeledContent("Archive, Immich, Google Photos", value: "Plugins tab")
+            LabeledContent("Archive, Immich, Google Photos", value: "Plug-ins tab")
             Toggle("Open the import sheet when a card is inserted", isOn: $settings.autoOpenImport)
             TextField("Artist", text: $settings.artist, prompt: Text("Your name"))
                 .help("Written into exported files (EXIF Artist)")
@@ -212,6 +212,8 @@ struct SettingsView: View {
                 }
             }
             .help("Photo ▸ Move Picked and Rated to Selects…")
+            // Also Photo ▸ Auto-Advance After Rating.
+            Toggle("Auto-advance after a rating or flag (keys and voice)", isOn: $settings.autoAdvance)
             Toggle("Load map tiles from Apple Maps (Map mode)",
                    isOn: Binding(get: { settings.mapTiles == true }, set: { settings.mapTiles = $0 }))
                 .help(MapModel.tilesNotice)

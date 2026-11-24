@@ -98,7 +98,7 @@ struct MainToolbar: ToolbarContent {
             RemoteBadge(remote: model.remote) // [remote]
         }
         .sharedBackgroundVisibility(.hidden)
-        if model.features.isOn(.archive) { // Settings ▸ Plugins
+        if model.features.isOn(.archive) { // Settings ▸ Plug-ins
             ToolbarItem {
                 ArchiveBadge(model: model, showsTitle: wide)
             }
@@ -225,14 +225,20 @@ struct AICullButton: View {
     var body: some View {
         if let p = model.cullProgress {
             HStack(spacing: DS.Space.s) {
-                ProgressView(value: Double(p.done), total: Double(max(p.total, 1)))
-                    .progressViewStyle(.circular)
-                    .controlSize(.small)
-                Text("\(p.done)/\(p.total)").font(DS.Font.value).foregroundStyle(DS.textSecondary)
+                HStack(spacing: DS.Space.s) {
+                    ProgressView(value: Double(p.done), total: Double(max(p.total, 1)))
+                        .progressViewStyle(.circular)
+                        .controlSize(.small)
+                    Text("\(p.done)/\(p.total)").font(DS.Font.value).foregroundStyle(DS.textSecondary)
+                }
+                .help("AI Cull is scoring focus, eyes, and composition on this Mac")
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(ToolbarControl.aiCull.control(model).label)
+                Button { model.cancelAICull() } label: { Image(systemName: "xmark.circle.fill") }
+                    .buttonStyle(.plain)
+                    .help("Stop AI Cull; nothing is changed")
+                    .accessibilityLabel("Stop AI Cull")
             }
-            .help("AI Cull is scoring focus, eyes, and composition on this Mac")
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(ToolbarControl.aiCull.control(model).label)
         } else {
             Button {
                 Task { await model.runAICull() }

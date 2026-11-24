@@ -95,12 +95,7 @@ struct LightroomImportSheet: View {
     }
 
     private func busy(_ text: LocalizedStringKey) -> some View {
-        HStack(spacing: DS.Space.s) {
-            ProgressView().controlSize(.small)
-            Text(text).font(DS.Font.label).foregroundStyle(DS.text)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(text)
+        OtherAppImportBusy(text: text, work: model.work)
     }
 
     private var categories: some View {
@@ -167,8 +162,10 @@ struct LightroomImportSheet: View {
                 Button(n == 1 ? String(localized: "Import 1 Preset") : String(localized: "Import \(n) Presets")) { model.importPresets() }
                     .keyboardShortcut(.defaultAction)
                     .disabled(n == 0)
-            case .loading, .previewing, .importing, .reverting:
-                Button("Cancel", role: .cancel) { close() }.disabled(model.phase == .importing || model.phase == .reverting)
+            case .loading, .previewing, .reverting:
+                Button("Cancel", role: .cancel) { close() }.disabled(model.phase == .reverting)
+            case .importing:
+                OtherAppImportCancel(work: model.work)
             case .done:
                 if model.canRevert {
                     Button("Revert Import") { Task { await model.revert() } }
@@ -194,7 +191,7 @@ struct LightroomImportSheet: View {
     }
 }
 
-/// File ▸ Revert Lightroom Import asks first.
+/// File ▸ Import from Another App ▸ Revert Lightroom Import asks first.
 struct LightroomRevertDialog: ViewModifier {
     @Bindable var model: AppModel
 

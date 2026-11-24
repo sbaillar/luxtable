@@ -20,6 +20,7 @@
 "%@\n\nYour photos are safe on this Mac, but the archive doesn't have all of them. Luxtable tries again the next time it opens." = "%@\n\nVos photos sont en sécurité sur ce Mac, mais l’archive ne les contient pas toutes. Luxtable réessaiera à sa prochaine ouverture.";
 "%@  %@  ISO %lld  %@" = "%@  %@  ISO %lld  %@";
 "%@  Tint %@" = "%@  Teinte %@";
+"%@ %lld percent" = "%@ %lld pour cent";
 "%@ (%lld Photos)" = "%@ (%lld photos)";
 "%@ (%lld keywords)" = "%@ (%lld mots-clés)";
 "%@ (Person %lld)" = "%@ (Personne %lld)";
@@ -404,6 +405,7 @@
 "AI Cull flags closed eyes and soft focus on this Mac. Nothing is uploaded." = "Le tri IA signale les yeux fermés et les flous de mise au point sur ce Mac. Rien n’est envoyé en ligne.";
 "AI Cull is scoring focus, eyes, and composition on this Mac" = "Le tri IA évalue la netteté, les yeux et la composition sur ce Mac";
 "AI Cull rejected it: %@" = "Rejetée par le tri IA : %@";
+"AI Cull stopped: nothing was changed" = "Tri IA arrêté : rien n’a été modifié";
 "AI Cull, %lld of %lld" = "Tri IA, %lld sur %lld";
 "AI Cull: %@, %@" = "Tri IA : %@, %@";
 "AI Cull: no changes" = "Tri IA : aucune modification";
@@ -488,6 +490,9 @@
 "Albums" = "Albums";
 "Albums follow every archived session and are synced after each archive run. Luxtable adds the developed copy when there is one, else the original, and only removes photos it added itself." = "Les albums suivent chaque session archivée et sont synchronisés après chaque archivage. Luxtable ajoute la copie développée lorsqu’elle existe, sinon l’original, et ne retire que les photos qu’il a lui-même ajoutées.";
 "Albums in Immich (Settings ▸ Immich)" = "Albums dans Immich (Réglages ▸ Immich)";
+"Aligning and merging the exposures…" = "Alignement et fusion des expositions…";
+"Aligning and stitching the panorama…" = "Alignement et assemblage du panorama…";
+"Aligning the frames and taking the best of each…" = "Alignement des images et choix du meilleur de chacune…";
 "All" = "Toutes";
 "All People" = "Toutes les personnes";
 "All Photographs" = "Toutes les photos";
@@ -520,6 +525,7 @@
 "Any shape" = "Toute forme";
 "Anything you changed in Luxtable afterwards is kept." = "Tout ce que vous avez modifié ensuite dans Luxtable est conservé.";
 "Aperture and iPhoto import" = "Importation Aperture et iPhoto";
+"Aperture or iPhoto Library…" = "Bibliothèque Aperture ou iPhoto…";
 "Appearance" = "Apparence";
 "Apple Intelligence on this Mac" = "Apple Intelligence sur ce Mac";
 "Applied adjustments to %lld photo" = "Réglages appliqués à %lld photo";
@@ -695,6 +701,8 @@
 "Can’t read %@" = "Impossible de lire %@";
 "Can’t read Photos" = "Impossible de lire Photos";
 "Caption" = "Légende";
+"Capture One Edits…" = "Modifications Capture One…";
+"Capture One Settings…" = "Réglages Capture One…";
 "Capture One import reverted: %@ restored" = "Importation Capture One annulée : %@ restaurées";
 "Capture One settings import reverted: %lld items removed" = "Importation des réglages Capture One annulée : %lld éléments supprimés";
 "Capture One settings import reverted: 1 item removed" = "Importation des réglages Capture One annulée : 1 élément supprimé";
@@ -848,6 +856,8 @@
 "Colour label and pick as keywords" = "Étiquette de couleur et retenue comme mots-clés";
 "Colour label and pick as tags" = "Étiquette de couleur et retenue comme tags";
 "Compare" = "Comparer";
+"Comparing photo %@ of %@ with the session…" = "Comparaison de la photo %@ sur %@ avec la session…";
+"Comparing the photos with the session…" = "Comparaison des photos avec la session…";
 "Compose" = "Composition";
 "Composition" = "Composition";
 "Conflicts: changed in Luxtable since the last import" = "Conflits : modifié dans Luxtable depuis la dernière importation";
@@ -1144,7 +1154,7 @@
 "Export and share" = "Exporter et partager";
 "Export failed" = "Échec de l’exportation";
 "Export recipes" = "Recettes d’exportation";
-"Export steps from plug-ins appear here (Settings ▸ Plugins)." = "Les étapes d’exportation des modules apparaissent ici (Réglages ▸ Modules).";
+"Export steps from plug-ins appear here (Settings ▸ Plug-ins)." = "Les étapes d’exportation des modules apparaissent ici (Réglages ▸ Modules).";
 "Export the selected photos (⌘E)" = "Exporter les photos sélectionnées (⌘E)";
 "Export with %@" = "Exporter avec %@";
 "Export works in live mode (run without --demo)." = "L’exportation fonctionne en mode réel (lancez sans --demo).";
@@ -1160,7 +1170,7 @@
 "Failed: %@" = "Échec : %@";
 "Falloff" = "Atténuation";
 "Familiar" = "Familier";
-"Familiar layout and keys: change them in Settings › Familiar" = "Disposition et touches familières : modifiez-les dans Réglages › Familier";
+"Familiar layout and keys: change them in Settings ▸ Familiar" = "Disposition et touches familières : modifiez-les dans Réglages ▸ Familier";
 "Favorites" = "Favoris";
 "Favorites: right-click any panel header to add it here" = "Favoris : cliquez avec le bouton droit sur l’en-tête d’un panneau pour l’ajouter ici";
 "Feather" = "Contour progressif";
@@ -1348,18 +1358,15 @@
 "Import 1 Preset" = "Importer 1 préréglage";
 "Import 1 Video" = "Importer 1 vidéo";
 "Import Aperture or iPhoto Library" = "Importer une bibliothèque Aperture ou iPhoto";
-"Import Aperture or iPhoto Library…" = "Importer une bibliothèque Aperture ou iPhoto…";
 "Import Camera Profile…" = "Importer un profil d’appareil photo…";
 "Import Capture One Edits" = "Importer les modifications Capture One";
-"Import Capture One Edits…" = "Importer les modifications Capture One…";
 "Import Capture One Settings" = "Importer les réglages Capture One";
-"Import Capture One Settings…" = "Importer les réglages Capture One…";
 "Import Lightroom" = "Importer depuis Lightroom";
-"Import Lightroom…" = "Importer depuis Lightroom…";
 "Import and Overwrite" = "Importer et écraser";
 "Import file names: %@" = "Noms des fichiers importés : %@";
 "Import from %@" = "Importer depuis %@";
 "Import from %@…" = "Importer depuis %@…";
+"Import from Another App" = "Importer depuis une autre app";
 "Import from Card (Coming Soon)…" = "Importer depuis la carte (bientôt disponible)…";
 "Import from Card…" = "Importer depuis la carte…";
 "Import from Photos Library" = "Importer depuis la photothèque Photos";
@@ -1512,6 +1519,7 @@
 "Lightness of this color range." = "Luminosité de cette plage de couleurs.";
 "Lightroom import" = "Importation Lightroom";
 "Lightroom's files are only read, never changed. Edits go into “%@”." = "Les fichiers de Lightroom sont uniquement lus, jamais modifiés. Les modifications vont dans « %@ ».";
+"Lightroom…" = "Lightroom…";
 "Linear" = "Linéaire";
 "Linear / radial gradient mask" = "Masque dégradé linéaire / radial";
 "Linear Gradient" = "Dégradé linéaire";
@@ -1523,6 +1531,8 @@
 "Load a plug-in you are writing from its folder; it reloads without re-approval" = "Charger un module en cours d’écriture depuis son dossier ; il se recharge sans nouvelle approbation";
 "Load map tiles from Apple Maps (Map mode)" = "Charger les tuiles de carte depuis Apple Plans (mode Carte)";
 "Loading" = "Chargement";
+"Loading %lld thumbnails…" = "Chargement de %lld vignettes…";
+"Loading 1 thumbnail…" = "Chargement de 1 vignette…";
 "Loading the as-shot white balance for the last Apply…" = "Chargement de la balance des blancs de prise de vue pour la dernière application…";
 "Loading the as-shot white balance of %@…" = "Chargement de la balance des blancs de prise de vue de %@…";
 "Local adjustments" = "Réglages locaux";
@@ -1563,10 +1573,11 @@
 "Luxtable %@ is waiting to be installed by hand." = "Luxtable %@ attend d’être installé manuellement.";
 "Luxtable Neutral" = "Luxtable Neutral";
 "Luxtable Standard" = "Luxtable Standard";
+"Luxtable User Guide" = "Guide de l’utilisateur de Luxtable";
 "Luxtable Vivid" = "Luxtable Vivid";
 "Luxtable adds to its own album with this name, or creates it" = "Luxtable ajoute à son propre album portant ce nom, ou le crée";
 "Luxtable asks GitHub for the list of its releases; the request carries only the app’s version. An update is checked against the SHA-256 GitHub publishes and its signature before it’s installed, and the version it replaces is kept in Luxtable’s Application Support folder (“Previous Version”)." = "Luxtable demande à GitHub la liste de ses versions ; la requête ne transmet que la version de l’app. Avant l’installation, une mise à jour est vérifiée par rapport au SHA-256 publié par GitHub et à sa signature, et la version remplacée est conservée dans le dossier Application Support de Luxtable (« Previous Version »).";
-"Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plugins." = "Luxtable peut copier les sessions vers un autre disque ou un NAS en arrière-plan avec rsync. Il ne supprime jamais rien dans l’archive. Facultatif : activez-le ou désactivez-le à tout moment dans Réglages ▸ Modules.";
+"Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plug-ins." = "Luxtable peut copier les sessions vers un autre disque ou un NAS en arrière-plan avec rsync. Il ne supprime jamais rien dans l’archive. Facultatif : activez-le ou désactivez-le à tout moment dans Réglages ▸ Modules.";
 "Luxtable can't use the microphone" = "Luxtable ne peut pas utiliser le micro";
 "Luxtable can’t develop this file yet (%@). You’re seeing its embedded preview: you can still rate, tag and compare it." = "Luxtable ne peut pas encore développer ce fichier (%@). Vous voyez son aperçu intégré : vous pouvez toujours le noter, l’étiqueter et le comparer.";
 "Luxtable can’t replace itself in “%@” (no permission there). " = "Luxtable ne peut pas se remplacer dans « %@ » (autorisation refusée). ";
@@ -1576,7 +1587,7 @@
 "Luxtable has no correction profile for this lens, so distortion and corner shading aren't corrected. Pick a matching profile below if one fits, or use Vignette and Perspective by hand." = "Luxtable n’a pas de profil de correction pour cet objectif : la distorsion et l’assombrissement des coins ne sont donc pas corrigés. Choisissez ci-dessous un profil correspondant s’il convient, ou utilisez Vignetage et Perspective à la main.";
 "Luxtable is already running or still closing" = "Luxtable est déjà ouvert ou encore en cours de fermeture";
 "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again." = "Luxtable n’est pas autorisé à lire votre photothèque Photos. Activez l’accès dans Réglages Système ▸ Confidentialité et sécurité ▸ Photos, puis réessayez.";
-"Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable conserve son propre style. Ceci ne fait que placer les panneaux, les touches et quelques noms là où vos mains les attendent. Modifiable à tout moment dans Réglages › Familier.";
+"Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings ▸ Familiar." = "Luxtable conserve son propre style. Ceci ne fait que placer les panneaux, les touches et quelques noms là où vos mains les attendent. Modifiable à tout moment dans Réglages ▸ Familier.";
 "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, 67 MB) from its authors’ GitHub release, convert it and keep it on this Mac (about 34 MB). Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable." = "Luxtable va télécharger RealESRGAN_x2plus (licence BSD 3-Clause, 67 MB) depuis la publication GitHub de ses auteurs, le convertir et le conserver sur ce Mac (environ 34 MB). Ses données d’entraînement (DIV2K, Flickr2K, OST) sont sous licence pour la recherche non commerciale uniquement. La licence Apache-2.0 de Luxtable ne prévaut pas sur ces conditions ; il vous appartient de les respecter. Les détails figurent dans Luxtable ▸ À propos de Luxtable.";
 "Luxtable's own phrase rules" = "Règles de phrases propres à Luxtable";
 "Luxtable, or nothing yet" = "Luxtable, ou rien pour l’instant";
@@ -1629,8 +1640,6 @@
 "Merge to Panorama" = "Fusionner en panorama";
 "Merge to Panorama (2+ photos)" = "Fusionner en panorama (2 photos ou plus)";
 "Merge to Panorama…" = "Fusionner en panorama…";
-"Merging, %lld percent" = "Fusion, %lld pour cent";
-"Merging…" = "Fusion…";
 "Metadata" = "Métadonnées";
 "Midpoint" = "Point médian";
 "Midtone brightness, keeps black and white points." = "Luminosité des tons moyens, conserve les points noir et blanc.";
@@ -1829,7 +1838,7 @@
 "Nothing is called “%@”." = "Rien ne s’appelle « %@ ».";
 "Nothing is ever deleted from the bucket: before a changed file is replaced, its previous version is copied to .lt-archive-trash/ under the path. The keys are kept in your Keychain." = "Rien n’est jamais supprimé du compartiment : avant qu’un fichier modifié soit remplacé, sa version précédente est copiée dans .lt-archive-trash/ sous le chemin. Les clés sont conservées dans votre trousseau.";
 "Nothing is ever deleted from the card. Eject says whether every file on it has a verified copy in your library." = "Rien n’est jamais supprimé de la carte. Éjecter indique si chacun de ses fichiers a une copie vérifiée dans votre bibliothèque.";
-"Nothing is granted until you approve it in Settings ▸ Plugins." = "Rien n’est accordé tant que vous ne l’approuvez pas dans Réglages ▸ Modules.";
+"Nothing is granted until you approve it in Settings ▸ Plug-ins." = "Rien n’est accordé tant que vous ne l’approuvez pas dans Réglages ▸ Modules.";
 "Nothing matches." = "Aucun résultat.";
 "Nothing new apart from the conflicts below." = "Rien de nouveau en dehors des conflits ci-dessous.";
 "Nothing new was copied into “%@”." = "Rien de nouveau n’a été copié dans « %@ ».";
@@ -1982,7 +1991,6 @@
 "Pixels with a channel at pure black" = "Pixels avec un canal noir pur";
 "Pixels with a channel at pure white" = "Pixels avec un canal blanc pur";
 "Plug-ins" = "Modules";
-"Plugins" = "Modules";
 "Point Luxtable at the moved file" = "Indiquer à Luxtable le fichier déplacé";
 "Point at the image for RGB" = "Pointez sur l’image pour les valeurs RVB";
 "Position" = "Position";
@@ -2072,6 +2080,7 @@
 "Reading Capture One's settings (nothing is changed)…" = "Lecture des réglages de Capture One (rien n’est modifié)…";
 "Reading card…" = "Lecture de la carte…";
 "Reading metadata %lld of %lld…" = "Lecture des métadonnées %lld sur %lld…";
+"Reading the %lld photos…" = "Lecture des %lld photos…";
 "Reading the Capture One session (nothing is changed)…" = "Lecture de la session Capture One (rien n’est modifié)…";
 "Reading the library… Its database is copied first (the library isn't touched)." = "Lecture de la bibliothèque… Sa base de données est d’abord copiée (la bibliothèque n’est pas touchée).";
 "Reading your Photos library…" = "Lecture de votre photothèque Photos…";
@@ -2097,7 +2106,7 @@
 "Rejected" = "Rejetée";
 "Rejected %@" = "%@ rejetée";
 "Rejected by AI Cull: %@" = "Rejetée par le tri IA : %@";
-"Rejected photos aren't archived (Settings › Archive): the Trash holds the only copy." = "Les photos rejetées ne sont pas archivées (Réglages › Archive) : la corbeille contient la seule copie.";
+"Rejected photos aren't archived (Settings ▸ Archive): the Trash holds the only copy." = "Les photos rejetées ne sont pas archivées (Réglages ▸ Archive) : la corbeille contient la seule copie.";
 "Rejected photos excluded" = "Photos rejetées exclues";
 "Relative" = "Relatif";
 "Relative adds the change (+0.3 EV stays +0.3 EV). Crops adapt to portrait and landscape." = "Relatif ajoute la modification (+0,3 EV reste +0,3 EV). Les recadrages s’adaptent au portrait et au paysage.";
@@ -2160,6 +2169,7 @@
 "Replaces version %@." = "Remplace la version %@.";
 "Replay" = "Rejouer";
 "Replay the Best Shot tour" = "Rejouer la visite de la meilleure prise";
+"Report a Problem…" = "Signaler un problème…";
 "Reset" = "Réinitialiser";
 "Reset %@" = "Réinitialiser %@";
 "Reset %lld photos to the original. ⌘Z to undo" = "%lld photos réinitialisées à l’original. ⌘Z pour annuler";
@@ -2220,6 +2230,7 @@
 "Saturation of this color range." = "Saturation de cette plage de couleurs.";
 "Save" = "Enregistrer";
 "Save Credits as Preset…" = "Enregistrer les crédits comme préréglage…";
+"Save Diagnostic Report…" = "Enregistrer le rapport de diagnostic…";
 "Save Preset" = "Enregistrer le préréglage";
 "Save Preset…" = "Enregistrer le préréglage…";
 "Save Workspace" = "Enregistrer l’espace de travail";
@@ -2290,7 +2301,7 @@
 "Sessions sync to your NAS while you work." = "Les sessions se synchronisent avec votre NAS pendant que vous travaillez.";
 "Set Location" = "Définir le lieu";
 "Set Location of %lld Photos" = "Définir le lieu de %lld photos";
-"Set an archive target and switch archiving on in Settings › Archive. Nothing is copied until then." = "Définissez une destination d’archive et activez l’archivage dans Réglages › Archive. Rien n’est copié d’ici là.";
+"Set an archive target and switch archiving on in Settings ▸ Archive. Nothing is copied until then." = "Définissez une destination d’archive et activez l’archivage dans Réglages ▸ Archive. Rien n’est copié d’ici là.";
 "Set the archive folder (Settings ▸ Archive) and the server first." = "Configurez d’abord le dossier d’archive (Réglages ▸ Archive) et le serveur.";
 "Set the archive folder in Settings ▸ Archive first." = "Définissez d’abord le dossier d’archive dans Réglages ▸ Archive.";
 "Set the black point." = "Définit le point noir.";
@@ -2451,10 +2462,13 @@
 "Stop" = "Arrêter";
 "Stop %@" = "Arrêter %@";
 "Stop %@ tool" = "Arrêter l’outil %@";
+"Stop AI Cull" = "Arrêter le tri IA";
+"Stop AI Cull; nothing is changed" = "Arrêter le tri IA ; rien n’est modifié";
 "Stop Export and Quit" = "Arrêter l’exportation et quitter";
 "Stop Import" = "Arrêter l’importation";
 "Stop Import and Quit" = "Arrêter l’importation et quitter";
 "Stop Updating Developed Copy" = "Arrêter la mise à jour de la copie développée";
+"Stop archiving" = "Arrêter l’archivage";
 "Stop comparing" = "Arrêter la comparaison";
 "Stop denoising this photo" = "Arrêter le débruitage de cette photo";
 "Stop downloading the sky model" = "Arrêter le téléchargement du modèle de ciel";
@@ -2467,6 +2481,7 @@
 "Stop remove tool" = "Arrêter l’outil Supprimer";
 "Stop syncing this album (it stays in Immich)" = "Arrêter la synchronisation de cet album (il reste dans Immich)";
 "Stop the download; nothing is kept" = "Arrêter le téléchargement ; rien n’est conservé";
+"Stop this run. What it already copied stays in the archive; the rest is copied the next time." = "Arrêter cette exécution. Ce qui a déjà été copié reste dans l’archive ; le reste sera copié la prochaine fois.";
 "Stop updating the selection's developed copies. The copies already made stay in Developed and in the archive" = "Arrêter la mise à jour des copies développées de la sélection. Les copies déjà créées restent dans Developed et dans l’archive";
 "Stop upscaling; photos already done stay" = "Arrêter l’agrandissement ; les photos déjà traitées sont conservées";
 "Stop; nothing is written to the folder" = "Arrêter ; rien n’est écrit dans le dossier";
@@ -2475,6 +2490,7 @@
 "Stopped. The %lld developed copies stay in Developed and " = "Arrêté. Les %lld copies développées restent dans Developed et ";
 "Stopped. The developed copy stays in Developed and " = "Arrêté. La copie développée reste dans Developed et ";
 "Stopping…" = "Arrêt…";
+"Stops the import before anything is written. Once it is writing, it finishes." = "Arrête l’importation avant toute écriture. Une fois l’écriture commencée, elle va jusqu’au bout.";
 "Straighten" = "Redresser";
 "Straighten the horizon." = "Redresse l’horizon.";
 "Straighten tool" = "Outil Redresser";
@@ -2613,6 +2629,7 @@
 "The previous session" = "La session précédente";
 "The rating, tag, pick or search filters hide every photo in this session." = "Les filtres de note, d’étiquette, de sélection ou de recherche masquent toutes les photos de cette session.";
 "The red glow film shows around bright highlights." = "La lueur rouge qui apparaît sur le film autour des hautes lumières vives.";
+"The report lists your Mac, the Luxtable version, what is open (counts only) and this run’s log. It has no photos, file names or folders." = "Le rapport indique votre Mac, la version de Luxtable, ce qui est ouvert (nombres uniquement) et le journal de cette exécution. Il ne contient ni photos, ni noms de fichiers, ni dossiers.";
 "The service's S3 address. Leave empty for Amazon S3: the region picks it." = "L’adresse S3 du service. Laissez vide pour Amazon S3 : la région la détermine.";
 "The session Trash is empty" = "La corbeille de la session est vide";
 "The session's folder didn't answer in time, so exports go to %@. Choose another folder if you like." = "Le dossier de la session n’a pas répondu à temps, les exportations vont donc dans %@. Choisissez un autre dossier si vous le souhaitez.";
@@ -2683,7 +2700,7 @@
 "Toggle one column" = "Basculer sur une colonne";
 "Toggle one row" = "Basculer sur une rangée";
 "Toggle panels" = "Afficher/masquer les panneaux";
-"Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings › General (else the photo's own metadata)." = "Jetons : {copyright} {artist} {year} {filename}. Le copyright et l’artiste proviennent de Réglages › Général (sinon des métadonnées de la photo).";
+"Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings ▸ General (else the photo's own metadata)." = "Jetons : {copyright} {artist} {year} {filename}. Le copyright et l’artiste proviennent de Réglages ▸ Général (sinon des métadonnées de la photo).";
 "Tokens: {date} {text}" = "Jetons : {date} {text}";
 "Tokens: {date} {time} {text}" = "Jetons : {date} {time} {text}";
 "Tokens: {name} {seq} {seq:3} {date} {date:%Y-%m-%d} {time} {camera}" = "Jetons : {name} {seq} {seq:3} {date} {date:%Y-%m-%d} {time} {camera}";
@@ -2762,7 +2779,7 @@
 "Updating the preview" = "Mise à jour de l’aperçu";
 "Upload this recipe's JPEG or HEIC files into an album in your Google Photos" = "Envoyer les fichiers JPEG ou HEIC de cette recette dans un album de votre Google Photos";
 "Uploading %lld of %lld to Google Photos…" = "Téléversement de %lld sur %lld vers Google Photos…";
-"Uploads (Google Photos) can be turned on in Settings ▸ Plugins." = "Les téléversements (Google Photos) peuvent être activés dans Réglages ▸ Modules.";
+"Uploads (Google Photos) can be turned on in Settings ▸ Plug-ins." = "Les téléversements (Google Photos) peuvent être activés dans Réglages ▸ Modules.";
 "Upscale %lld Photos 2×" = "Agrandir %lld photos 2×";
 "Upscale 2×" = "Agrandir 2×";
 "Upscaled 2×: %@" = "Agrandie 2× : %@";
@@ -2865,6 +2882,8 @@
 "Workspace name" = "Nom de l’espace de travail";
 "Workspace “%@”" = "Espace de travail « %@ »";
 "Workspaces" = "Espaces de travail";
+"Writing the changes…" = "Écriture des modifications…";
+"Writing the new photo and adding it to the session…" = "Écriture de la nouvelle photo et ajout à la session…";
 "Written into exported files (EXIF Artist)" = "Inscrit dans les fichiers exportés (EXIF Artist)";
 "Written into exported files (EXIF Copyright)" = "Inscrit dans les fichiers exportés (EXIF Copyright)";
 "X" = "X";
@@ -3112,7 +3131,7 @@
 "to upgrade it, then choose it again." = "pour la mettre à niveau, puis choisissez-la à nouveau.";
 "turned %@ off" = "a désactivé %@";
 "turned %@ on" = "a activé %@";
-"turned off in Settings ▸ Plugins; nothing was uploaded" = "désactivé dans Réglages ▸ Modules ; rien n’a été téléversé";
+"turned off in Settings ▸ Plug-ins; nothing was uploaded" = "désactivé dans Réglages ▸ Modules ; rien n’a été téléversé";
 "unavailable" = "indisponible";
 "unchecked" = "non coché";
 "unflagged" = "sans marqueur";
@@ -3160,7 +3179,7 @@
 "“%@” linked to %@; %lld photos still missing" = "« %@ » lié à %@ ; %lld photos toujours manquantes";
 "“%@” moved from %@." = "« %@ » déplacé depuis %@.";
 "“%@” not applied — say it again" = "« %@ » non appliqué — répétez";
-"“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plugins, or turn the upload off." = "« %@ » téléverse vers Google Photos, qui est désactivé : activez-le dans Réglages ▸ Modules ou désactivez le téléversement.";
+"“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plug-ins, or turn the upload off." = "« %@ » téléverse vers Google Photos, qui est désactivé : activez-le dans Réglages ▸ Modules ou désactivez le téléversement.";
 "“%@” uploads to Google Photos: choose JPEG or HEIC." = "« %@ » téléverse vers Google Photos : choisissez JPEG ou HEIC.";
 "“%@” version %@" = "« %@ » version %@";
 "“%@” was renamed to “%@” — following it" = "« %@ » a été renommé en « %@ » — suivi";

@@ -34,7 +34,8 @@ pub use criteria::{Condition, Criteria, parse_criteria};
 pub use db::{DbImage, DbLocation, DbSession, DbVariant, read_db, read_db_cancellable};
 pub use error::{C1Error, Result};
 pub use import::{
-    Conflict, Field, ImportOptions, ImportReport, Skipped, import, import_cancellable,
+    Conflict, Field, ImportOptions, ImportReport, ImportStep, Skipped, import, import_cancellable,
+    import_observed,
 };
 pub use journal::{JOURNAL_FILE, RevertReport, can_revert, revert};
 pub use map::{KeyClass, Mapped, WbConverter, classify, map_variant, split_keywords};

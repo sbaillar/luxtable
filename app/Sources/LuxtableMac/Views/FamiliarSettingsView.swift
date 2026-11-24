@@ -2,7 +2,7 @@ import LuxtableCore
 import LuxtableUI
 import SwiftUI
 
-/// Settings › Familiar: the layout, the keyboard set and the names, each chosen on its own
+/// Settings ▸ Familiar: the layout, the keyboard set and the names, each chosen on its own
 /// (Capture One panels with Lightroom keys is fine). The look never changes.
 struct FamiliarSettingsView: View {
     @Bindable var settings: AppSettings

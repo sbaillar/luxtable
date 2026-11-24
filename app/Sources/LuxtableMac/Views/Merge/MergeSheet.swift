@@ -22,8 +22,9 @@ struct MergeSheet: View {
                 .accessibilityLabel("Failed: \(error)")
             }
             if let p = model.progress {
-                ProgressView(value: p) { Text("Merging\u{2026}").font(DS.Font.label) }
-                    .accessibilityLabel("Merging, \(Int(p * 100)) percent")
+                let line = model.stageLine ?? ""
+                ProgressView(value: p) { Text(line).font(DS.Font.label) }
+                    .accessibilityLabel("\(line) \(Int(p * 100)) percent")
             }
             buttons
         }

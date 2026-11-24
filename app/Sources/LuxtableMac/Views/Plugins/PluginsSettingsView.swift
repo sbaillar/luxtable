@@ -5,7 +5,7 @@ import LuxtableUI
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Settings ▸ Plugins: the app's optional integrations (Archive, Immich, Google Photos:
+/// Settings ▸ Plug-ins: the app's optional integrations (Archive, Immich, Google Photos:
 /// built in, turned on or off here), then what is installed, what each one waits for,
 /// Install…, Remove.
 struct PluginsSettingsView: View {
@@ -208,7 +208,7 @@ private struct InstallSheet: View {
             if let note = PluginInstallText.replaces(preview) {
                 Text(note).font(DS.Font.caption).foregroundStyle(preview.downgrade ? DS.warningText : DS.textSecondary)
             }
-            Text("Nothing is granted until you approve it in Settings ▸ Plugins.")
+            Text("Nothing is granted until you approve it in Settings ▸ Plug-ins.")
                 .font(DS.Font.caption).foregroundStyle(DS.textSecondary)
             HStack {
                 Spacer()

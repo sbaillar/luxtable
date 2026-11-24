@@ -56,12 +56,21 @@ extension RustSessionStore: LightroomImporting {
     /// Like any import, a real one rewrites sidecars underneath: every cached record is dropped.
     public func importLightroom(_ session: SessionInfo, source: UUID, categories: Set<LRCategory>, dryRun: Bool,
                                 overwriteEdits: Bool) async throws -> LRImportSummary {
+        try await importLightroom(session, source: source, categories: categories, dryRun: dryRun,
+                                  overwriteEdits: overwriteEdits, progress: { _ in })
+    }
+
+    public func importLightroom(_ session: SessionInfo, source: UUID, categories: Set<LRCategory>, dryRun: Bool,
+                                overwriteEdits: Bool,
+                                progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> LRImportSummary {
         guard let h = archiveHandle(for: session) else { throw MockError.notFound("session \(session.name)") }
         guard let src = LightroomSources.shared.get(source) else { throw MockError.notFound("the Lightroom source") }
         defer { if !dryRun { forgetAll(in: session.id) } }
         let keys = categories.map(\.rawValue).sorted()
+        let relay = OtherAppImportRelay(progress)
         let record = try await Self.call { token in
-            try await h.importLightroom(source: src, categories: keys, dryRun: dryRun, overwriteEdits: overwriteEdits, token: token)
+            try await h.importLightroom(source: src, categories: keys, dryRun: dryRun, overwriteEdits: overwriteEdits,
+                                        listener: relay, token: token)
         }
         return LRImportSummary(record)
     }

@@ -936,6 +936,8 @@ impl SessionHandle {
             report,
             last: AtomicU64::new(0),
         };
+        // The app names the stage from these shares (`MergeModel.Stage`): reading to 0.3,
+        // merging to 0.9, then writing the file and registering it.
         let step = |a: f32, b: f32| lt_merge_stage(&monitor, a, b);
         // One decode at a time: each runs in parallel inside, and only one demosaic
         // buffer exists at once.

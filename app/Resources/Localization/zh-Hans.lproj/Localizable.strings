@@ -20,6 +20,7 @@
 "%@\n\nYour photos are safe on this Mac, but the archive doesn't have all of them. Luxtable tries again the next time it opens." = "%@\n\n你的照片在此 Mac 上是安全的，但归档中并未包含全部照片。Luxtable 将在下次打开时重试。";
 "%@  %@  ISO %lld  %@" = "%@  %@  ISO %lld  %@";
 "%@  Tint %@" = "%@  色调 %@";
+"%@ %lld percent" = "%@ 百分之 %lld";
 "%@ (%lld Photos)" = "%@（%lld 张照片）";
 "%@ (%lld keywords)" = "%@（%lld 个关键词）";
 "%@ (Person %lld)" = "%@（人物 %lld）";
@@ -404,6 +405,7 @@
 "AI Cull flags closed eyes and soft focus on this Mac. Nothing is uploaded." = "AI 筛选会在此 Mac 上标记闭眼和对焦不实的照片。不会上传任何内容。";
 "AI Cull is scoring focus, eyes, and composition on this Mac" = "AI 筛选正在此 Mac 上为对焦、眼睛和构图评分";
 "AI Cull rejected it: %@" = "AI 筛选已将其排除：%@";
+"AI Cull stopped: nothing was changed" = "AI 筛选已停止：未更改任何内容";
 "AI Cull, %lld of %lld" = "AI 筛选，第 %lld 张，共 %lld 张";
 "AI Cull: %@, %@" = "AI 筛选：%@，%@";
 "AI Cull: no changes" = "AI 筛选：无更改";
@@ -488,6 +490,9 @@
 "Albums" = "相簿";
 "Albums follow every archived session and are synced after each archive run. Luxtable adds the developed copy when there is one, else the original, and only removes photos it added itself." = "相簿会跟随每个已归档的会话，并在每次归档运行后同步。Luxtable 会在有冲印拷贝时添加冲印拷贝，否则添加原片，并且只会移除它自己添加的照片。";
 "Albums in Immich (Settings ▸ Immich)" = "Immich 中的相簿（“设置”▸“Immich”）";
+"Aligning and merging the exposures…" = "正在对齐并合并各曝光…";
+"Aligning and stitching the panorama…" = "正在对齐并拼接全景…";
+"Aligning the frames and taking the best of each…" = "正在对齐各帧并取每帧的最佳部分…";
 "All" = "全部";
 "All People" = "所有人物";
 "All Photographs" = "所有照片";
@@ -520,6 +525,7 @@
 "Any shape" = "任意形状";
 "Anything you changed in Luxtable afterwards is kept." = "之后在 Luxtable 中所做的任何更改都会保留。";
 "Aperture and iPhoto import" = "Aperture 和 iPhoto 导入";
+"Aperture or iPhoto Library…" = "Aperture 或 iPhoto 图库…";
 "Appearance" = "外观";
 "Apple Intelligence on this Mac" = "此 Mac 上的 Apple 智能";
 "Applied adjustments to %lld photo" = "已将调整应用到 %lld 张照片";
@@ -695,6 +701,8 @@
 "Can’t read %@" = "无法读取 %@";
 "Can’t read Photos" = "无法读取“照片”";
 "Caption" = "说明";
+"Capture One Edits…" = "Capture One 编辑…";
+"Capture One Settings…" = "Capture One 设置…";
 "Capture One import reverted: %@ restored" = "Capture One 导入已还原：已恢复%@";
 "Capture One settings import reverted: %lld items removed" = "Capture One 设置导入已还原：已移除 %lld 项";
 "Capture One settings import reverted: 1 item removed" = "Capture One 设置导入已还原：已移除 1 项";
@@ -848,6 +856,8 @@
 "Colour label and pick as keywords" = "将颜色标签和留用作为关键词";
 "Colour label and pick as tags" = "将颜色标签和留用作为标签";
 "Compare" = "比较";
+"Comparing photo %@ of %@ with the session…" = "正在将第 %@ 张（共 %@ 张）照片与会话比较…";
+"Comparing the photos with the session…" = "正在将照片与会话比较…";
 "Compose" = "构图";
 "Composition" = "构图";
 "Conflicts: changed in Luxtable since the last import" = "冲突：自上次导入后在 Luxtable 中更改过";
@@ -1144,7 +1154,7 @@
 "Export and share" = "导出和共享";
 "Export failed" = "导出失败";
 "Export recipes" = "导出方案";
-"Export steps from plug-ins appear here (Settings ▸ Plugins)." = "来自插件的导出步骤会显示在这里（“设置”▸“插件”）。";
+"Export steps from plug-ins appear here (Settings ▸ Plug-ins)." = "来自插件的导出步骤会显示在这里（“设置”▸“插件”）。";
 "Export the selected photos (⌘E)" = "导出所选照片（⌘E）";
 "Export with %@" = "使用%@导出";
 "Export works in live mode (run without --demo)." = "导出需在实时模式下进行（不带 --demo 运行）。";
@@ -1160,7 +1170,7 @@
 "Failed: %@" = "失败：%@";
 "Falloff" = "衰减";
 "Familiar" = "熟悉";
-"Familiar layout and keys: change them in Settings › Familiar" = "熟悉的布局和按键：可在“设置”›“熟悉”中更改";
+"Familiar layout and keys: change them in Settings ▸ Familiar" = "熟悉的布局和按键：可在“设置”▸“熟悉”中更改";
 "Favorites" = "个人收藏";
 "Favorites: right-click any panel header to add it here" = "个人收藏：右键点按任意面板标题即可将其添加到这里";
 "Feather" = "羽化";
@@ -1348,18 +1358,15 @@
 "Import 1 Preset" = "导入 1 个预设";
 "Import 1 Video" = "导入 1 个视频";
 "Import Aperture or iPhoto Library" = "导入 Aperture 或 iPhoto 图库";
-"Import Aperture or iPhoto Library…" = "导入 Aperture 或 iPhoto 图库…";
 "Import Camera Profile…" = "导入相机配置文件…";
 "Import Capture One Edits" = "导入 Capture One 编辑";
-"Import Capture One Edits…" = "导入 Capture One 编辑…";
 "Import Capture One Settings" = "导入 Capture One 设置";
-"Import Capture One Settings…" = "导入 Capture One 设置…";
 "Import Lightroom" = "导入 Lightroom";
-"Import Lightroom…" = "导入 Lightroom…";
 "Import and Overwrite" = "导入并覆盖";
 "Import file names: %@" = "导入文件名：%@";
 "Import from %@" = "从“%@”导入";
 "Import from %@…" = "从 %@ 导入…";
+"Import from Another App" = "从其他 App 导入";
 "Import from Card (Coming Soon)…" = "从存储卡导入（即将推出）…";
 "Import from Card…" = "从存储卡导入…";
 "Import from Photos Library" = "从照片图库导入";
@@ -1512,6 +1519,7 @@
 "Lightness of this color range." = "此颜色范围的明亮度。";
 "Lightroom import" = "Lightroom 导入";
 "Lightroom's files are only read, never changed. Edits go into “%@”." = "Lightroom 的文件只会被读取，绝不会被更改。编辑会存入“%@”。";
+"Lightroom…" = "Lightroom…";
 "Linear" = "线性";
 "Linear / radial gradient mask" = "线性 / 径向渐变蒙版";
 "Linear Gradient" = "线性渐变";
@@ -1523,6 +1531,8 @@
 "Load a plug-in you are writing from its folder; it reloads without re-approval" = "从文件夹载入你正在编写的插件；重新载入时无需再次批准";
 "Load map tiles from Apple Maps (Map mode)" = "从 Apple 地图载入地图图块（地图模式）";
 "Loading" = "正在载入";
+"Loading %lld thumbnails…" = "正在载入 %lld 个缩略图…";
+"Loading 1 thumbnail…" = "正在载入 1 个缩略图…";
 "Loading the as-shot white balance for the last Apply…" = "正在载入上次“应用”所需的原照白平衡…";
 "Loading the as-shot white balance of %@…" = "正在载入%@的原照白平衡…";
 "Local adjustments" = "局部调整";
@@ -1563,10 +1573,11 @@
 "Luxtable %@ is waiting to be installed by hand." = "Luxtable %@ 正在等待手动安装。";
 "Luxtable Neutral" = "Luxtable 中性";
 "Luxtable Standard" = "Luxtable 标准";
+"Luxtable User Guide" = "Luxtable 使用手册";
 "Luxtable Vivid" = "Luxtable 鲜艳";
 "Luxtable adds to its own album with this name, or creates it" = "Luxtable 会添加到其自己的同名相簿，或创建该相簿";
 "Luxtable asks GitHub for the list of its releases; the request carries only the app’s version. An update is checked against the SHA-256 GitHub publishes and its signature before it’s installed, and the version it replaces is kept in Luxtable’s Application Support folder (“Previous Version”)." = "Luxtable 会向 GitHub 请求其发布版本列表；请求中只包含 App 的版本。更新在安装前会对照 GitHub 发布的 SHA-256 及其签名进行检查，被替换的版本会保留在 Luxtable 的 Application Support 文件夹中（“Previous Version”）。";
-"Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plugins." = "Luxtable 可以使用 rsync 在后台将会话拷贝到另一个磁盘或 NAS。它绝不会删除归档中的任何内容。可选：随时在“设置”▸“插件”中打开或关闭。";
+"Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plug-ins." = "Luxtable 可以使用 rsync 在后台将会话拷贝到另一个磁盘或 NAS。它绝不会删除归档中的任何内容。可选：随时在“设置”▸“插件”中打开或关闭。";
 "Luxtable can't use the microphone" = "Luxtable 无法使用麦克风";
 "Luxtable can’t develop this file yet (%@). You’re seeing its embedded preview: you can still rate, tag and compare it." = "Luxtable 尚无法冲印此文件（%@）。你看到的是其内嵌预览：仍可以为它评星级、添加标签和比较。";
 "Luxtable can’t replace itself in “%@” (no permission there). " = "Luxtable 无法在“%@”中替换自身（没有权限）。 ";
@@ -1576,7 +1587,7 @@
 "Luxtable has no correction profile for this lens, so distortion and corner shading aren't corrected. Pick a matching profile below if one fits, or use Vignette and Perspective by hand." = "Luxtable 没有此镜头的校正配置文件，因此不会校正畸变和边角暗影。如有合适的配置文件，请在下方选择，或手动使用“暗角”和“透视”。";
 "Luxtable is already running or still closing" = "Luxtable 已在运行或仍在关闭";
 "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again." = "Luxtable 无权读取你的照片图库。请在“系统设置”▸“隐私与安全性”▸“照片”中开启，然后重试。";
-"Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable 保持自己的外观。这只会将面板、按键和一些名称移到你习惯的位置。随时可在“设置”›“熟悉”中更改。";
+"Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings ▸ Familiar." = "Luxtable 保持自己的外观。这只会将面板、按键和一些名称移到你习惯的位置。随时可在“设置”▸“熟悉”中更改。";
 "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, 67 MB) from its authors’ GitHub release, convert it and keep it on this Mac (about 34 MB). Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable." = "Luxtable 将从其作者的 GitHub 发布页下载 RealESRGAN_x2plus（BSD 3-Clause 许可证，67 MB），转换后保存在此 Mac 上（约 34 MB）。其训练数据（DIV2K、Flickr2K、OST）仅授权用于非商业研究。Luxtable 的 Apache-2.0 许可证不会覆盖这些条款；是否遵守这些条款由你自行负责。详细信息请参阅“Luxtable ▸ 关于 Luxtable”。";
 "Luxtable's own phrase rules" = "Luxtable 自有的短语规则";
 "Luxtable, or nothing yet" = "Luxtable，或暂无";
@@ -1629,8 +1640,6 @@
 "Merge to Panorama" = "合并为全景";
 "Merge to Panorama (2+ photos)" = "合并为全景（2 张以上照片）";
 "Merge to Panorama…" = "合并为全景…";
-"Merging, %lld percent" = "正在合并，百分之 %lld";
-"Merging…" = "正在合并…";
 "Metadata" = "元数据";
 "Midpoint" = "中点";
 "Midtone brightness, keeps black and white points." = "中间调亮度，保持黑点和白点不变。";
@@ -1829,7 +1838,7 @@
 "Nothing is called “%@”." = "没有名为“%@”的项目。";
 "Nothing is ever deleted from the bucket: before a changed file is replaced, its previous version is copied to .lt-archive-trash/ under the path. The keys are kept in your Keychain." = "绝不会从存储桶中删除任何内容：在替换已更改的文件之前，其上一个版本会拷贝到该路径下的 .lt-archive-trash/ 中。密钥保存在你的钥匙串中。";
 "Nothing is ever deleted from the card. Eject says whether every file on it has a verified copy in your library." = "绝不会从存储卡中删除任何内容。“推出”会告知其上的每个文件在你的图库中是否都有已验证的副本。";
-"Nothing is granted until you approve it in Settings ▸ Plugins." = "在你于“设置”▸“插件”中批准之前，不会授予任何权限。";
+"Nothing is granted until you approve it in Settings ▸ Plug-ins." = "在你于“设置”▸“插件”中批准之前，不会授予任何权限。";
 "Nothing matches." = "没有匹配项。";
 "Nothing new apart from the conflicts below." = "除下方的冲突外，没有新内容。";
 "Nothing new was copied into “%@”." = "没有新内容拷贝到“%@”。";
@@ -1982,7 +1991,6 @@
 "Pixels with a channel at pure black" = "某个通道为纯黑的像素";
 "Pixels with a channel at pure white" = "某个通道为纯白的像素";
 "Plug-ins" = "插件";
-"Plugins" = "插件";
 "Point Luxtable at the moved file" = "为 Luxtable 指定已移动的文件";
 "Point at the image for RGB" = "指向图像以查看 RGB";
 "Position" = "位置";
@@ -2072,6 +2080,7 @@
 "Reading Capture One's settings (nothing is changed)…" = "正在读取 Capture One 的设置（不会更改任何内容）…";
 "Reading card…" = "正在读取存储卡…";
 "Reading metadata %lld of %lld…" = "正在读取元数据，第 %lld 个，共 %lld 个…";
+"Reading the %lld photos…" = "正在读取 %lld 张照片…";
 "Reading the Capture One session (nothing is changed)…" = "正在读取 Capture One 会话（不会更改任何内容）…";
 "Reading the library… Its database is copied first (the library isn't touched)." = "正在读取图库… 会先拷贝其数据库（不会改动图库）。";
 "Reading your Photos library…" = "正在读取你的照片图库…";
@@ -2097,7 +2106,7 @@
 "Rejected" = "已排除";
 "Rejected %@" = "已排除“%@”";
 "Rejected by AI Cull: %@" = "被 AI 筛选排除：%@";
-"Rejected photos aren't archived (Settings › Archive): the Trash holds the only copy." = "已排除的照片不会归档（设置 › 归档）：废纸篓中保存的是唯一副本。";
+"Rejected photos aren't archived (Settings ▸ Archive): the Trash holds the only copy." = "已排除的照片不会归档（设置 ▸ 归档）：废纸篓中保存的是唯一副本。";
 "Rejected photos excluded" = "不含被排除的照片";
 "Relative" = "相对";
 "Relative adds the change (+0.3 EV stays +0.3 EV). Crops adapt to portrait and landscape." = "“相对”会叠加更改（+0.3 EV 仍为 +0.3 EV）。裁剪会适应竖排和横排。";
@@ -2160,6 +2169,7 @@
 "Replaces version %@." = "替换版本 %@。";
 "Replay" = "重播";
 "Replay the Best Shot tour" = "重播最佳照片的演示";
+"Report a Problem…" = "报告问题…";
 "Reset" = "复位";
 "Reset %@" = "复位%@";
 "Reset %lld photos to the original. ⌘Z to undo" = "已将 %lld 张照片复位为原片。按 ⌘Z 撤销";
@@ -2220,6 +2230,7 @@
 "Saturation of this color range." = "此颜色范围的饱和度。";
 "Save" = "存储";
 "Save Credits as Preset…" = "将署名存储为预设…";
+"Save Diagnostic Report…" = "存储诊断报告…";
 "Save Preset" = "存储预设";
 "Save Preset…" = "存储预设…";
 "Save Workspace" = "存储工作区";
@@ -2290,7 +2301,7 @@
 "Sessions sync to your NAS while you work." = "会话会在你工作时同步到你的 NAS。";
 "Set Location" = "设置位置";
 "Set Location of %lld Photos" = "设置 %lld 张照片的位置";
-"Set an archive target and switch archiving on in Settings › Archive. Nothing is copied until then." = "请在“设置 › 归档”中设置归档目标并开启归档。在此之前不会拷贝任何内容。";
+"Set an archive target and switch archiving on in Settings ▸ Archive. Nothing is copied until then." = "请在“设置 ▸ 归档”中设置归档目标并开启归档。在此之前不会拷贝任何内容。";
 "Set the archive folder (Settings ▸ Archive) and the server first." = "请先设置归档文件夹（设置 ▸ 归档）和服务器。";
 "Set the archive folder in Settings ▸ Archive first." = "请先在“设置”▸“归档”中设置归档文件夹。";
 "Set the black point." = "设置黑点。";
@@ -2451,10 +2462,13 @@
 "Stop" = "停止";
 "Stop %@" = "停止%@";
 "Stop %@ tool" = "停止%@工具";
+"Stop AI Cull" = "停止 AI 筛选";
+"Stop AI Cull; nothing is changed" = "停止 AI 筛选；不更改任何内容";
 "Stop Export and Quit" = "停止导出并退出";
 "Stop Import" = "停止导入";
 "Stop Import and Quit" = "停止导入并退出";
 "Stop Updating Developed Copy" = "停止更新冲印副本";
+"Stop archiving" = "停止归档";
 "Stop comparing" = "停止比较";
 "Stop denoising this photo" = "停止为此照片去噪";
 "Stop downloading the sky model" = "停止下载天空模型";
@@ -2467,6 +2481,7 @@
 "Stop remove tool" = "停止移除工具";
 "Stop syncing this album (it stays in Immich)" = "停止同步此相簿（它会保留在 Immich 中）";
 "Stop the download; nothing is kept" = "停止下载；不会保留任何内容";
+"Stop this run. What it already copied stays in the archive; the rest is copied the next time." = "停止本次运行。已拷贝的内容保留在归档中；其余内容将在下次拷贝。";
 "Stop updating the selection's developed copies. The copies already made stay in Developed and in the archive" = "停止更新所选内容的冲印副本。已生成的副本会保留在“Developed”和归档中";
 "Stop upscaling; photos already done stay" = "停止放大；已完成的照片会保留";
 "Stop; nothing is written to the folder" = "停止；不会向文件夹写入任何内容";
@@ -2475,6 +2490,7 @@
 "Stopped. The %lld developed copies stay in Developed and " = "已停止。这 %lld 个冲印副本保留在“Developed”中，";
 "Stopped. The developed copy stays in Developed and " = "已停止。该冲印副本保留在“Developed”中，";
 "Stopping…" = "正在停止…";
+"Stops the import before anything is written. Once it is writing, it finishes." = "在写入任何内容之前停止导入。一旦开始写入，就会执行到完成。";
 "Straighten" = "拉直";
 "Straighten the horizon." = "拉直地平线。";
 "Straighten tool" = "拉直工具";
@@ -2613,6 +2629,7 @@
 "The previous session" = "上一个会话";
 "The rating, tag, pick or search filters hide every photo in this session." = "星级、标签、留用或搜索过滤条件隐藏了此会话中的所有照片。";
 "The red glow film shows around bright highlights." = "胶片在明亮高光周围呈现的红色光晕。";
+"The report lists your Mac, the Luxtable version, what is open (counts only) and this run’s log. It has no photos, file names or folders." = "报告列出你的 Mac、Luxtable 版本、已打开的内容（仅数量）以及本次运行的日志。不包含照片、文件名或文件夹。";
 "The service's S3 address. Leave empty for Amazon S3: the region picks it." = "该服务的 S3 地址。对于 Amazon S3 请留空：由区域决定。";
 "The session Trash is empty" = "会话废纸篓为空";
 "The session's folder didn't answer in time, so exports go to %@. Choose another folder if you like." = "会话的文件夹未及时响应，因此导出将存储到%@。如有需要，可以选择其他文件夹。";
@@ -2683,7 +2700,7 @@
 "Toggle one column" = "切换单列";
 "Toggle one row" = "切换单行";
 "Toggle panels" = "切换面板";
-"Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings › General (else the photo's own metadata)." = "标记：{copyright} {artist} {year} {filename}。版权和作者来自“设置”›“通用”（若无则使用照片自身的元数据）。";
+"Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings ▸ General (else the photo's own metadata)." = "标记：{copyright} {artist} {year} {filename}。版权和作者来自“设置”▸“通用”（若无则使用照片自身的元数据）。";
 "Tokens: {date} {text}" = "标记：{date} {text}";
 "Tokens: {date} {time} {text}" = "标记：{date} {time} {text}";
 "Tokens: {name} {seq} {seq:3} {date} {date:%Y-%m-%d} {time} {camera}" = "标记：{name} {seq} {seq:3} {date} {date:%Y-%m-%d} {time} {camera}";
@@ -2762,7 +2779,7 @@
 "Updating the preview" = "正在更新预览";
 "Upload this recipe's JPEG or HEIC files into an album in your Google Photos" = "将此配方的 JPEG 或 HEIC 文件上传到你 Google Photos 中的相簿";
 "Uploading %lld of %lld to Google Photos…" = "正在上传到 Google Photos，第 %lld 个，共 %lld 个…";
-"Uploads (Google Photos) can be turned on in Settings ▸ Plugins." = "可以在“设置 ▸ 插件”中开启上传（Google Photos）。";
+"Uploads (Google Photos) can be turned on in Settings ▸ Plug-ins." = "可以在“设置 ▸ 插件”中开启上传（Google Photos）。";
 "Upscale %lld Photos 2×" = "将 %lld 张照片放大 2×";
 "Upscale 2×" = "放大 2×";
 "Upscaled 2×: %@" = "已放大 2×：%@";
@@ -2865,6 +2882,8 @@
 "Workspace name" = "工作区名称";
 "Workspace “%@”" = "工作区“%@”";
 "Workspaces" = "工作区";
+"Writing the changes…" = "正在写入更改…";
+"Writing the new photo and adding it to the session…" = "正在写入新照片并将其添加到会话…";
 "Written into exported files (EXIF Artist)" = "写入导出的文件（EXIF Artist）";
 "Written into exported files (EXIF Copyright)" = "写入导出的文件（EXIF Copyright）";
 "X" = "X";
@@ -3112,7 +3131,7 @@
 "to upgrade it, then choose it again." = "以进行升级，然后再次选择它。";
 "turned %@ off" = "关闭了%@";
 "turned %@ on" = "开启了%@";
-"turned off in Settings ▸ Plugins; nothing was uploaded" = "已在“设置 ▸ 插件”中关闭；未上传任何内容";
+"turned off in Settings ▸ Plug-ins; nothing was uploaded" = "已在“设置 ▸ 插件”中关闭；未上传任何内容";
 "unavailable" = "不可用";
 "unchecked" = "未勾选";
 "unflagged" = "未标记";
@@ -3160,7 +3179,7 @@
 "“%@” linked to %@; %lld photos still missing" = "“%@”已链接到 %@；仍有 %lld 张照片缺失";
 "“%@” moved from %@." = "“%@”已从%@移来。";
 "“%@” not applied — say it again" = "未应用“%@”——请再说一遍";
-"“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plugins, or turn the upload off." = "“%@”会上传到 Google Photos，但该功能已关闭：请在“设置 ▸ 插件”中开启它，或关闭上传。";
+"“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plug-ins, or turn the upload off." = "“%@”会上传到 Google Photos，但该功能已关闭：请在“设置 ▸ 插件”中开启它，或关闭上传。";
 "“%@” uploads to Google Photos: choose JPEG or HEIC." = "“%@”会上传到 Google Photos：请选择 JPEG 或 HEIC。";
 "“%@” version %@" = "“%1$@”版本 %2$@";
 "“%@” was renamed to “%@” — following it" = "“%@”已重命名为“%@” — 正在跟随";

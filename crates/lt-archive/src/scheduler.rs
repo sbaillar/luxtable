@@ -291,6 +291,17 @@ impl Scheduler {
         self.lock().forced = Some(Trigger::SessionClosed);
     }
 
+    /// The user stopped the archive: nothing starts on its own for one
+    /// [`SchedulerConfig::interval`] (the owner cancels a run that is going).
+    /// A request that was waiting is dropped; pending changes stay pending,
+    /// and "Sync now" or closing the session still starts a run.
+    pub fn stand_down(&self) {
+        let until = self.clock.monotonic() + self.cfg().interval;
+        let mut s = self.lock();
+        s.forced = None;
+        s.retry_at = Some(s.retry_at.map_or(until, |r| r.max(until)));
+    }
+
     /// The trigger that would start a run now, if any.
     pub fn due(&self) -> Option<Trigger> {
         due(&self.cfg(), &self.lock(), self.clock.monotonic())
@@ -800,6 +811,26 @@ mod tests {
         std::fs::write(&file, b"x").unwrap();
         assert!(TargetLock::try_acquire(root, Some(&file)).is_some());
         assert!(default_lock_dir().is_none_or(|d| d.ends_with("Luxtable/locks")));
+    }
+
+    #[test]
+    fn standing_down_holds_everything_but_an_explicit_request() {
+        let (c, s) = setup("stand-down");
+        s.note_changes(2);
+        s.request_now();
+        s.stand_down();
+        assert_eq!(s.due(), None, "the waiting request is dropped");
+        c.advance(Duration::from_secs(120));
+        assert_eq!(s.due(), None, "past the debounce, still held");
+        assert_eq!(s.status().pending_changes, 2);
+        assert!(s.status().retry_in.is_some());
+        s.request_now();
+        assert_eq!(s.due(), Some(Trigger::OnDemand), "Sync now still runs");
+        let (c, s) = setup("stand-down-ends");
+        s.note_changes(1);
+        s.stand_down();
+        c.advance(SchedulerConfig::default().interval + Duration::from_secs(1));
+        assert!(s.due().is_some(), "on its own again after one interval");
     }
 
     #[test]

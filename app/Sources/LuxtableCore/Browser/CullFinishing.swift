@@ -289,7 +289,7 @@ public final class CullFinisher {
     public static func archiveNote(settings: ArchiveSettingsSnapshot, state: ArchiveStatus.State) -> String? {
         if !settings.isActive { return archiveOffNote }
         if !settings.archiveRejected {
-            return String(localized: "Rejected photos aren't archived (Settings › Archive): the Trash holds the only copy.")
+            return String(localized: "Rejected photos aren't archived (Settings ▸ Archive): the Trash holds the only copy.")
         }
         if state != .idle { return String(localized: "The archive isn't up to date: some of them may exist only here.") }
         return nil

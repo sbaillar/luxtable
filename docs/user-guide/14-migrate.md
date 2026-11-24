@@ -4,26 +4,30 @@ Luxtable reads other apps' files and never modifies them. Each import starts wit
 
 ## Capture One
 
-- **File ▸ Import Capture One Edits…**: the ratings, colour tags, keywords, picks and supported adjustments of a Capture One session.
-- **File ▸ Import Capture One Settings…**: export recipes, the tool workspace, crop ratios, styles and presets, keyword libraries, import naming and the soft-proof profile.
+- **File ▸ Import from Another App ▸ Capture One Edits…**: the ratings, colour tags, keywords, picks and supported adjustments of a Capture One session.
+- **File ▸ Import from Another App ▸ Capture One Settings…**: export recipes, the tool workspace, crop ratios, styles and presets, keyword libraries, import naming and the soft-proof profile.
 - **Revert Capture One Import…** takes an import back.
 
 ## Lightroom Classic
 
-- **File ▸ Import Lightroom…**: a Lightroom Classic catalog (`.lrcat`, read from a copy), a folder of XMP sidecars, or Lightroom and Camera Raw presets. Ratings, labels, flags, keywords, titles, captions, collections, virtual copies (as variants), crop, and the develop settings Luxtable has an equivalent for.
+- **File ▸ Import from Another App ▸ Lightroom…**: a Lightroom Classic catalog (`.lrcat`, read from a copy), a folder of XMP sidecars, or Lightroom and Camera Raw presets. Ratings, labels, flags, keywords, titles, captions, collections, virtual copies (as variants), crop, and the develop settings Luxtable has an equivalent for.
 - **Revert Lightroom Import…** takes an import back.
 
 ## Aperture and iPhoto
 
-**File ▸ Import Aperture or iPhoto Library…** reads an Aperture 3 library or an iPhoto library (iPhoto 6 and later). Choose the library in the sheet; the dry run then lists what will come in.
+**File ▸ Import from Another App ▸ Aperture or iPhoto Library…** reads an Aperture 3 library or an iPhoto library (iPhoto 6 and later). Choose the library in the sheet; the dry run then lists what will come in.
 
 - **What comes over:** ratings, rejects and hidden photos, flags, colour labels, keywords, titles, captions, places, and projects, events and albums.
 - **Edits that map:** exposure, recovery, contrast, definition, saturation, vibrancy, highlights and shadows, white balance on RAW files, straighten, crop and black & white.
 - **What doesn't:** levels, curves, retouching, brushed-in adjustments, sharpening, noise reduction, vignettes, faces and smart albums. The dry run lists every one it finds.
 - An older iPhoto library kept edits only as rendered copies, so its originals come in unedited.
 - The library is only read. Its originals open in place as a session, with Luxtable's data kept outside the library. Originals on a disk that isn't connected are listed until you connect it.
-- **File ▸ Revert Aperture or iPhoto Import…** takes the import back. It never touches a Lightroom import, and changes you made in Luxtable afterwards are kept.
+- **File ▸ Import from Another App ▸ Revert Aperture or iPhoto Import…** takes the import back. It never touches a Lightroom import, and changes you made in Luxtable afterwards are kept.
 - Photos libraries aren't supported. `docs/APPLE_FORMAT.md` has the details of the mapping.
+
+## While an import runs
+
+These imports first compare every photo the other app knows with the session, and only then write. The sheet shows how many photos have been compared. **Cancel** stops the import during the comparison, before anything is written, and returns to the dry run's list. Once the import is writing it runs to the end; **Revert Import** takes it back.
 
 ## Familiar keys and layout
 

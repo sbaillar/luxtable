@@ -2,6 +2,8 @@
 
 Select photos and choose **File ▸ Export…** (`⌘E`). The export sheet lists your **recipes**; tick one or several and every selected photo is exported through each, in the background.
 
+To hand originals to another app instead, drag photos from the grid or the filmstrip to the Finder, Mail or any app that takes files. A drag that starts on a selected photo carries the whole selection. The other app receives copies; the files in the session are never moved or changed.
+
 ## Recipes
 
 - **Format:** JPEG, HEIC, 16-bit TIFF, or 8- or 16-bit PNG, with quality.
@@ -13,7 +15,7 @@ Select photos and choose **File ▸ Export…** (`⌘E`). The export sheet lists
 
 ## Google Photos
 
-A JPEG or HEIC recipe can also upload its files to Google Photos: tick **Also upload to Google Photos** and name an album. Luxtable adds to its own album with that name or creates it, uses each photo's caption as its description, and shows progress per photo and a list of any that failed. Sign in once in Settings ▸ Google Photos; the sign-in is kept in your Keychain. Google Photos is an [optional integration](12-plugins.md#optional-integrations): turn it on in Settings ▸ Plugins first. A build without a built-in Google client can use your own (see `docs/GOOGLE_PHOTOS.md`).
+A JPEG or HEIC recipe can also upload its files to Google Photos: tick **Also upload to Google Photos** and name an album. Luxtable adds to its own album with that name or creates it, uses each photo's caption as its description, and shows progress per photo and a list of any that failed. Sign in once in Settings ▸ Google Photos; the sign-in is kept in your Keychain. Google Photos is an [optional integration](12-plugins.md#optional-integrations): turn it on in Settings ▸ Plug-ins first. A build without a built-in Google client can use your own (see `docs/GOOGLE_PHOTOS.md`).
 
 ## Sharing
 

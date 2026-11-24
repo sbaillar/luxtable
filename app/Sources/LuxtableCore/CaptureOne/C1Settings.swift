@@ -1,6 +1,6 @@
 import Foundation
 
-// Capture One application settings import (File ▸ Import Capture One Settings…):
+// Capture One application settings import (File ▸ Import from Another App ▸ Capture One Settings…):
 // lt-c1 reads the settings folder and maps each item (FFI
 // `read_capture_one_settings`); this file plans and applies them to the app's own
 // stores, journaled so a revert takes them back. Re-importing is idempotent: an item

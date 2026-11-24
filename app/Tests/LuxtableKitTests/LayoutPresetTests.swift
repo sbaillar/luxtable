@@ -4,7 +4,7 @@ import Testing
 @testable import LuxtableMac
 @testable import LuxtableUI
 
-/// Familiar layouts and names (Settings › Familiar layout): placement and words only.
+/// Familiar layouts and names (Settings ▸ Familiar layout): placement and words only.
 @Suite struct LayoutPresetTests {
     @Test func placementPerLayout() {
         #expect(LayoutPreset.luxtable.toolSide == .right && LayoutPreset.luxtable.copyApply == .toolbar)

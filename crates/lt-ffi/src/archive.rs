@@ -1986,6 +1986,24 @@ impl ArchiveManager {
         })
     }
 
+    /// "Stop": cancel the run that is going (rsync is killed; what it already
+    /// copied stays in the archive) and start nothing on its own for one
+    /// interval. Pending changes stay pending; "Sync now" starts again at once.
+    pub fn stop_sync(&self) -> Result<(), DsError> {
+        guard(|| {
+            for e in lock(&self.inner.entries).iter() {
+                if e.source.is_ok() {
+                    e.scheduler.stand_down();
+                }
+            }
+            if let Some(a) = lock(&self.inner.active).as_ref() {
+                a.cancel.store(true, Ordering::Relaxed);
+            }
+            self.inner.poke();
+            Ok(())
+        })
+    }
+
     /// What the badge and popover show. Never touches the file system.
     pub fn status(&self) -> Result<ArchiveOverview, DsError> {
         guard(|| Ok(self.inner.overview()))

@@ -20,6 +20,7 @@
 "%@\n\nYour photos are safe on this Mac, but the archive doesn't have all of them. Luxtable tries again the next time it opens." = "%@\n\n写真はこの Mac に安全に保存されていますが、アーカイブにはすべての写真がありません。Luxtable は次回起動時に再試行します。";
 "%@  %@  ISO %lld  %@" = "%@  %@  ISO %lld  %@";
 "%@  Tint %@" = "%@  色かぶり補正 %@";
+"%@ %lld percent" = "%@ %lld パーセント";
 "%@ (%lld Photos)" = "%@（%lld 枚の写真）";
 "%@ (%lld keywords)" = "%@（%lld 個のキーワード）";
 "%@ (Person %lld)" = "%@（人物 %lld）";
@@ -404,6 +405,7 @@
 "AI Cull flags closed eyes and soft focus on this Mac. Nothing is uploaded." = "AI 選別はこの Mac 上で目つぶりやピンぼけにフラグを付けます。何もアップロードされません。";
 "AI Cull is scoring focus, eyes, and composition on this Mac" = "AI 選別がこの Mac 上でピント、目、構図を採点しています";
 "AI Cull rejected it: %@" = "AI 選別で除外されました：%@";
+"AI Cull stopped: nothing was changed" = "AI 選別を停止しました: 何も変更されていません";
 "AI Cull, %lld of %lld" = "AI 選別、%lld/%lld";
 "AI Cull: %@, %@" = "AI 選別：%@、%@";
 "AI Cull: no changes" = "AI 選別：変更なし";
@@ -488,6 +490,9 @@
 "Albums" = "アルバム";
 "Albums follow every archived session and are synced after each archive run. Luxtable adds the developed copy when there is one, else the original, and only removes photos it added itself." = "アルバムはアーカイブされたすべてのセッションに追従し、アーカイブの実行ごとに同期されます。Luxtable は現像済みのコピーがあればそれを、なければオリジナルを追加し、自身が追加した写真だけを削除します。";
 "Albums in Immich (Settings ▸ Immich)" = "Immich のアルバム（「設定」▸「Immich」）";
+"Aligning and merging the exposures…" = "露出を位置合わせして結合中…";
+"Aligning and stitching the panorama…" = "パノラマを位置合わせしてつなぎ合わせ中…";
+"Aligning the frames and taking the best of each…" = "フレームを位置合わせし、それぞれの最良の部分を採用中…";
 "All" = "すべて";
 "All People" = "すべての人物";
 "All Photographs" = "すべての写真";
@@ -520,6 +525,7 @@
 "Any shape" = "任意の形";
 "Anything you changed in Luxtable afterwards is kept." = "その後 Luxtable で変更した内容は保持されます。";
 "Aperture and iPhoto import" = "Aperture と iPhoto の読み込み";
+"Aperture or iPhoto Library…" = "Aperture または iPhoto ライブラリ…";
 "Appearance" = "外観";
 "Apple Intelligence on this Mac" = "この Mac の Apple Intelligence";
 "Applied adjustments to %lld photo" = "%lld 枚の写真に補正を適用しました";
@@ -695,6 +701,8 @@
 "Can’t read %@" = "%@ を読み取れません";
 "Can’t read Photos" = "写真を読み取れません";
 "Caption" = "キャプション";
+"Capture One Edits…" = "Capture One の編集…";
+"Capture One Settings…" = "Capture One の設定…";
 "Capture One import reverted: %@ restored" = "Capture One の読み込みを元に戻しました：%@ を復元しました";
 "Capture One settings import reverted: %lld items removed" = "Capture One の設定の読み込みを元に戻しました：%lld 項目を削除しました";
 "Capture One settings import reverted: 1 item removed" = "Capture One の設定の読み込みを元に戻しました：1 項目を削除しました";
@@ -848,6 +856,8 @@
 "Colour label and pick as keywords" = "カラーラベルと採用をキーワードとして";
 "Colour label and pick as tags" = "カラーラベルと採用をタグとして";
 "Compare" = "比較";
+"Comparing photo %@ of %@ with the session…" = "写真 %@ / %@ をセッションと比較中…";
+"Comparing the photos with the session…" = "写真をセッションと比較中…";
 "Compose" = "構図";
 "Composition" = "構図";
 "Conflicts: changed in Luxtable since the last import" = "競合：前回の読み込み後に Luxtable で変更されたもの";
@@ -1144,7 +1154,7 @@
 "Export and share" = "書き出しと共有";
 "Export failed" = "書き出しに失敗しました";
 "Export recipes" = "書き出しレシピ";
-"Export steps from plug-ins appear here (Settings ▸ Plugins)." = "プラグインの書き出しステップがここに表示されます（「設定」▸「プラグイン」）。";
+"Export steps from plug-ins appear here (Settings ▸ Plug-ins)." = "プラグインの書き出しステップがここに表示されます（「設定」▸「プラグイン」）。";
 "Export the selected photos (⌘E)" = "選択した写真を書き出す（⌘E）";
 "Export with %@" = "%@ で書き出す";
 "Export works in live mode (run without --demo)." = "書き出しはライブモードで使用できます（--demo なしで実行してください）。";
@@ -1160,7 +1170,7 @@
 "Failed: %@" = "失敗：%@";
 "Falloff" = "減衰";
 "Familiar" = "使い慣れた操作";
-"Familiar layout and keys: change them in Settings › Familiar" = "使い慣れたレイアウトとキー：「設定」›「使い慣れた操作」で変更できます";
+"Familiar layout and keys: change them in Settings ▸ Familiar" = "使い慣れたレイアウトとキー：「設定」▸「使い慣れた操作」で変更できます";
 "Favorites" = "よく使う項目";
 "Favorites: right-click any panel header to add it here" = "お気に入り：パネルのヘッダを右クリックするとここに追加できます";
 "Feather" = "ぼかし";
@@ -1348,18 +1358,15 @@
 "Import 1 Preset" = "1 個のプリセットを読み込む";
 "Import 1 Video" = "1 本のビデオを読み込む";
 "Import Aperture or iPhoto Library" = "Aperture または iPhoto ライブラリを読み込む";
-"Import Aperture or iPhoto Library…" = "Aperture または iPhoto ライブラリを読み込む…";
 "Import Camera Profile…" = "カメラプロファイルを読み込む…";
 "Import Capture One Edits" = "Capture One の編集を読み込む";
-"Import Capture One Edits…" = "Capture One の編集を読み込む…";
 "Import Capture One Settings" = "Capture One の設定を読み込む";
-"Import Capture One Settings…" = "Capture One の設定を読み込む…";
 "Import Lightroom" = "Lightroom を読み込む";
-"Import Lightroom…" = "Lightroom を読み込む…";
 "Import and Overwrite" = "読み込んで上書き";
 "Import file names: %@" = "読み込みファイル名：%@";
 "Import from %@" = "%@ から読み込む";
 "Import from %@…" = "%@ から読み込む…";
+"Import from Another App" = "ほかのアプリから読み込む";
 "Import from Card (Coming Soon)…" = "カードから読み込む（近日対応予定）…";
 "Import from Card…" = "カードから読み込む…";
 "Import from Photos Library" = "写真ライブラリから読み込む";
@@ -1512,6 +1519,7 @@
 "Lightness of this color range." = "この色範囲の輝度。";
 "Lightroom import" = "Lightroom の読み込み";
 "Lightroom's files are only read, never changed. Edits go into “%@”." = "Lightroom のファイルは読み取られるだけで、変更されることはありません。編集は「%@」に入ります。";
+"Lightroom…" = "Lightroom…";
 "Linear" = "線形";
 "Linear / radial gradient mask" = "線形／円形グラデーションマスク";
 "Linear Gradient" = "線形グラデーション";
@@ -1523,6 +1531,8 @@
 "Load a plug-in you are writing from its folder; it reloads without re-approval" = "作成中のプラグインをそのフォルダから読み込みます。再承認なしで再読み込みされます";
 "Load map tiles from Apple Maps (Map mode)" = "Apple マップから地図タイルを読み込む（マップモード）";
 "Loading" = "読み込み中";
+"Loading %lld thumbnails…" = "%lld 個のサムネールを読み込み中…";
+"Loading 1 thumbnail…" = "1 個のサムネールを読み込み中…";
 "Loading the as-shot white balance for the last Apply…" = "前回の適用のため、撮影時のホワイトバランスを読み込み中…";
 "Loading the as-shot white balance of %@…" = "%@ の撮影時のホワイトバランスを読み込み中…";
 "Local adjustments" = "部分補正";
@@ -1563,10 +1573,11 @@
 "Luxtable %@ is waiting to be installed by hand." = "Luxtable %@ は手動でのインストールを待っています。";
 "Luxtable Neutral" = "Luxtable ニュートラル";
 "Luxtable Standard" = "Luxtable 標準";
+"Luxtable User Guide" = "Luxtable ユーザガイド";
 "Luxtable Vivid" = "Luxtable ビビッド";
 "Luxtable adds to its own album with this name, or creates it" = "Luxtable はこの名前の自身のアルバムに追加するか、アルバムを作成します";
 "Luxtable asks GitHub for the list of its releases; the request carries only the app’s version. An update is checked against the SHA-256 GitHub publishes and its signature before it’s installed, and the version it replaces is kept in Luxtable’s Application Support folder (“Previous Version”)." = "Luxtable は GitHub にリリースの一覧を問い合わせます。リクエストに含まれるのはアプリのバージョンだけです。アップデートはインストール前に GitHub が公開する SHA-256 と署名で確認され、置き換えられるバージョンは Luxtable の Application Support フォルダ（“Previous Version”）に保持されます。";
-"Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plugins." = "Luxtable は rsync を使ってバックグラウンドでセッションを別のディスクや NAS にコピーできます。アーカイブ内のものを削除することはありません。オプション：「設定」▸「プラグイン」でいつでもオン/オフを切り替えられます。";
+"Luxtable can copy sessions to another disk or a NAS in the background with rsync. It never deletes anything in the archive. Optional: turn it on or off any time in Settings ▸ Plug-ins." = "Luxtable は rsync を使ってバックグラウンドでセッションを別のディスクや NAS にコピーできます。アーカイブ内のものを削除することはありません。オプション：「設定」▸「プラグイン」でいつでもオン/オフを切り替えられます。";
 "Luxtable can't use the microphone" = "Luxtable はマイクを使用できません";
 "Luxtable can’t develop this file yet (%@). You’re seeing its embedded preview: you can still rate, tag and compare it." = "Luxtable はこのファイルをまだ現像できません（%@）。表示されているのは埋め込みプレビューです。レーティング、タグ付け、比較は引き続き行えます。";
 "Luxtable can’t replace itself in “%@” (no permission there). " = "Luxtable は「%@」で自身を置き換えられません（アクセス権がありません）。 ";
@@ -1576,7 +1587,7 @@
 "Luxtable has no correction profile for this lens, so distortion and corner shading aren't corrected. Pick a matching profile below if one fits, or use Vignette and Perspective by hand." = "Luxtable にはこのレンズの補正プロファイルがないため、ゆがみと周辺減光は補正されません。合うものがあれば下で一致するプロファイルを選ぶか、周辺光量補正と遠近補正を手動で使用してください。";
 "Luxtable is already running or still closing" = "Luxtable はすでに起動中か、まだ終了処理中です";
 "Luxtable isn’t allowed to read your Photos library. Turn it on in System Settings ▸ Privacy & Security ▸ Photos, then try again." = "Luxtable には写真ライブラリを読み取る許可がありません。「システム設定」▸「プライバシーとセキュリティ」▸「写真」でオンにしてから、もう一度お試しください。";
-"Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings › Familiar." = "Luxtable の外観はそのままです。パネル、キー、いくつかの名前を手が慣れている場所に移動するだけです。「設定」›「使い慣れた操作」でいつでも変更できます。";
+"Luxtable keeps its own look. This only moves panels, keys and a few names to where your hands expect them. Change it any time in Settings ▸ Familiar." = "Luxtable の外観はそのままです。パネル、キー、いくつかの名前を手が慣れている場所に移動するだけです。「設定」▸「使い慣れた操作」でいつでも変更できます。";
 "Luxtable will download RealESRGAN_x2plus (BSD 3-Clause License, 67 MB) from its authors’ GitHub release, convert it and keep it on this Mac (about 34 MB). Its training data (DIV2K, Flickr2K, OST) is licensed for non-commercial research only. Luxtable's Apache-2.0 licence doesn't override those terms; complying with them is up to you. Details are in Luxtable ▸ About Luxtable." = "Luxtable は RealESRGAN_x2plus（BSD 3-Clause License、67 MB）を作者の GitHub リリースからダウンロードして変換し、この Mac に保存します（約 34 MB）。その学習データ（DIV2K、Flickr2K、OST）は非営利の研究目的でのみ利用が許諾されています。Luxtable の Apache-2.0 ライセンスはこれらの条件に優先しません。条件の遵守はユーザの責任となります。詳しくは“Luxtable” ▸ “Luxtable について”を参照してください。";
 "Luxtable's own phrase rules" = "Luxtable 独自のフレーズルール";
 "Luxtable, or nothing yet" = "Luxtable、またはまだなし";
@@ -1629,8 +1640,6 @@
 "Merge to Panorama" = "パノラマに結合";
 "Merge to Panorama (2+ photos)" = "パノラマに結合（2 枚以上の写真）";
 "Merge to Panorama…" = "パノラマに結合…";
-"Merging, %lld percent" = "結合中、%lld パーセント";
-"Merging…" = "結合中…";
 "Metadata" = "メタデータ";
 "Midpoint" = "中心点";
 "Midtone brightness, keeps black and white points." = "中間調の明るさ。黒点と白点は保たれます。";
@@ -1829,7 +1838,7 @@
 "Nothing is called “%@”." = "「%@」という名前の項目はありません。";
 "Nothing is ever deleted from the bucket: before a changed file is replaced, its previous version is copied to .lt-archive-trash/ under the path. The keys are kept in your Keychain." = "バケットから何かが削除されることはありません：変更されたファイルを置き換える前に、以前のバージョンがパスの下の .lt-archive-trash/ にコピーされます。キーはキーチェーンに保管されます。";
 "Nothing is ever deleted from the card. Eject says whether every file on it has a verified copy in your library." = "カードから何かが削除されることはありません。取り出し時に、カード上のすべてのファイルにライブラリ内の検証済みコピーがあるかどうかが表示されます。";
-"Nothing is granted until you approve it in Settings ▸ Plugins." = "「設定」▸「プラグイン」で承認するまで、何も許可されません。";
+"Nothing is granted until you approve it in Settings ▸ Plug-ins." = "「設定」▸「プラグイン」で承認するまで、何も許可されません。";
 "Nothing matches." = "一致するものはありません。";
 "Nothing new apart from the conflicts below." = "下記の競合以外に新しい項目はありません。";
 "Nothing new was copied into “%@”." = "「%@」に新しくコピーされたものはありません。";
@@ -1982,7 +1991,6 @@
 "Pixels with a channel at pure black" = "いずれかのチャンネルが純黒のピクセル";
 "Pixels with a channel at pure white" = "いずれかのチャンネルが純白のピクセル";
 "Plug-ins" = "プラグイン";
-"Plugins" = "プラグイン";
 "Point Luxtable at the moved file" = "移動したファイルの場所を Luxtable に指定";
 "Point at the image for RGB" = "画像をポイントすると RGB を表示";
 "Position" = "位置";
@@ -2072,6 +2080,7 @@
 "Reading Capture One's settings (nothing is changed)…" = "Capture One の設定を読み取り中（何も変更されません）…";
 "Reading card…" = "カードを読み取り中…";
 "Reading metadata %lld of %lld…" = "メタデータを読み込み中（%lld/%lld）…";
+"Reading the %lld photos…" = "%lld 枚の写真を読み込み中…";
 "Reading the Capture One session (nothing is changed)…" = "Capture One のセッションを読み取り中（何も変更されません）…";
 "Reading the library… Its database is copied first (the library isn't touched)." = "ライブラリを読み取り中… 最初にデータベースがコピーされます（ライブラリには手を加えません）。";
 "Reading your Photos library…" = "写真ライブラリを読み取り中…";
@@ -2097,7 +2106,7 @@
 "Rejected" = "除外";
 "Rejected %@" = "%@を除外しました";
 "Rejected by AI Cull: %@" = "AI 選別で除外：%@";
-"Rejected photos aren't archived (Settings › Archive): the Trash holds the only copy." = "除外した写真はアーカイブされません（“設定” › “アーカイブ”）：ゴミ箱に唯一のコピーがあります。";
+"Rejected photos aren't archived (Settings ▸ Archive): the Trash holds the only copy." = "除外した写真はアーカイブされません（“設定” ▸ “アーカイブ”）：ゴミ箱に唯一のコピーがあります。";
 "Rejected photos excluded" = "除外した写真は対象外";
 "Relative" = "相対";
 "Relative adds the change (+0.3 EV stays +0.3 EV). Crops adapt to portrait and landscape." = "「相対」は変化量を加算します（+0.3 EV は +0.3 EV のまま）。切り抜きは縦向きと横向きに合わせて調整されます。";
@@ -2160,6 +2169,7 @@
 "Replaces version %@." = "バージョン %@ を置き換えます。";
 "Replay" = "もう一度再生";
 "Replay the Best Shot tour" = "ベストショットの解説をもう一度再生";
+"Report a Problem…" = "問題を報告…";
 "Reset" = "リセット";
 "Reset %@" = "%@ をリセット";
 "Reset %lld photos to the original. ⌘Z to undo" = "%lld 枚の写真をオリジナルに戻しました。⌘Z で取り消せます";
@@ -2220,6 +2230,7 @@
 "Saturation of this color range." = "この色範囲の彩度。";
 "Save" = "保存";
 "Save Credits as Preset…" = "クレジットをプリセットとして保存…";
+"Save Diagnostic Report…" = "診断レポートを保存…";
 "Save Preset" = "プリセットを保存";
 "Save Preset…" = "プリセットを保存…";
 "Save Workspace" = "ワークスペースを保存";
@@ -2290,7 +2301,7 @@
 "Sessions sync to your NAS while you work." = "作業中にセッションが NAS に同期されます。";
 "Set Location" = "場所を設定";
 "Set Location of %lld Photos" = "%lld 枚の写真の場所を設定";
-"Set an archive target and switch archiving on in Settings › Archive. Nothing is copied until then." = "“設定” › “アーカイブ”でアーカイブ先を設定し、アーカイブをオンにしてください。それまでは何もコピーされません。";
+"Set an archive target and switch archiving on in Settings ▸ Archive. Nothing is copied until then." = "“設定” ▸ “アーカイブ”でアーカイブ先を設定し、アーカイブをオンにしてください。それまでは何もコピーされません。";
 "Set the archive folder (Settings ▸ Archive) and the server first." = "先にアーカイブフォルダ（“設定” ▸ “アーカイブ”）とサーバを設定してください。";
 "Set the archive folder in Settings ▸ Archive first." = "先に「設定」▸「アーカイブ」でアーカイブフォルダを設定してください。";
 "Set the black point." = "黒点を設定します。";
@@ -2451,10 +2462,13 @@
 "Stop" = "停止";
 "Stop %@" = "%@を停止";
 "Stop %@ tool" = "%@ツールを停止";
+"Stop AI Cull" = "AI 選別を停止";
+"Stop AI Cull; nothing is changed" = "AI 選別を停止します。何も変更されません";
 "Stop Export and Quit" = "書き出しを停止して終了";
 "Stop Import" = "読み込みを停止";
 "Stop Import and Quit" = "読み込みを停止して終了";
 "Stop Updating Developed Copy" = "現像済みコピーの更新を停止";
+"Stop archiving" = "アーカイブを停止";
 "Stop comparing" = "比較を終了";
 "Stop denoising this photo" = "この写真のノイズ除去を停止";
 "Stop downloading the sky model" = "空のモデルのダウンロードを停止";
@@ -2467,6 +2481,7 @@
 "Stop remove tool" = "除去ツールを停止";
 "Stop syncing this album (it stays in Immich)" = "このアルバムの同期を停止（Immich には残ります）";
 "Stop the download; nothing is kept" = "ダウンロードを停止します。何も保持されません";
+"Stop this run. What it already copied stays in the archive; the rest is copied the next time." = "この実行を停止します。コピー済みのものはアーカイブに残り、残りは次回コピーされます。";
 "Stop updating the selection's developed copies. The copies already made stay in Developed and in the archive" = "選択範囲の現像済みコピーの更新を停止します。作成済みのコピーは Developed とアーカイブに残ります";
 "Stop upscaling; photos already done stay" = "アップスケールを停止します。完了済みの写真は残ります";
 "Stop; nothing is written to the folder" = "停止します。フォルダには何も書き込まれません";
@@ -2475,6 +2490,7 @@
 "Stopped. The %lld developed copies stay in Developed and " = "停止しました。%lld 個の現像済みコピーは Developed と ";
 "Stopped. The developed copy stays in Developed and " = "停止しました。現像済みコピーは Developed と ";
 "Stopping…" = "停止中…";
+"Stops the import before anything is written. Once it is writing, it finishes." = "何も書き込まれる前に読み込みを停止します。書き込みが始まると最後まで実行されます。";
 "Straighten" = "角度補正";
 "Straighten the horizon." = "水平線をまっすぐにします。";
 "Straighten tool" = "角度補正ツール";
@@ -2613,6 +2629,7 @@
 "The previous session" = "前のセッション";
 "The rating, tag, pick or search filters hide every photo in this session." = "レーティング、ラベル、採用、または検索のフィルタにより、このセッションのすべての写真が非表示になっています。";
 "The red glow film shows around bright highlights." = "フィルムで明るいハイライトの周りに現れる赤いにじみ。";
+"The report lists your Mac, the Luxtable version, what is open (counts only) and this run’s log. It has no photos, file names or folders." = "レポートには、お使いの Mac、Luxtable のバージョン、開いているもの（数のみ）、今回の起動中のログが記載されます。写真、ファイル名、フォルダは含まれません。";
 "The service's S3 address. Leave empty for Amazon S3: the region picks it." = "サービスの S3 アドレス。Amazon S3 の場合は空のままにしてください。リージョンから決まります。";
 "The session Trash is empty" = "セッションのゴミ箱は空です";
 "The session's folder didn't answer in time, so exports go to %@. Choose another folder if you like." = "セッションのフォルダが時間内に応答しなかったため、%@ に書き出します。必要に応じてほかのフォルダを選択してください。";
@@ -2683,7 +2700,7 @@
 "Toggle one column" = "1 列表示を切り替える";
 "Toggle one row" = "1 行表示を切り替える";
 "Toggle panels" = "パネルの表示を切り替える";
-"Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings › General (else the photo's own metadata)." = "トークン：{copyright} {artist} {year} {filename}。著作権と作成者は「設定」›「一般」から取得されます（ない場合は写真自体のメタデータ）。";
+"Tokens: {copyright} {artist} {year} {filename}. Copyright and artist come from Settings ▸ General (else the photo's own metadata)." = "トークン：{copyright} {artist} {year} {filename}。著作権と作成者は「設定」▸「一般」から取得されます（ない場合は写真自体のメタデータ）。";
 "Tokens: {date} {text}" = "トークン：{date} {text}";
 "Tokens: {date} {time} {text}" = "トークン：{date} {time} {text}";
 "Tokens: {name} {seq} {seq:3} {date} {date:%Y-%m-%d} {time} {camera}" = "トークン：{name} {seq} {seq:3} {date} {date:%Y-%m-%d} {time} {camera}";
@@ -2762,7 +2779,7 @@
 "Updating the preview" = "プレビューを更新中";
 "Upload this recipe's JPEG or HEIC files into an album in your Google Photos" = "このレシピの JPEG または HEIC ファイルを Google Photos のアルバムにアップロードします";
 "Uploading %lld of %lld to Google Photos…" = "Google Photos にアップロード中（%lld/%lld）…";
-"Uploads (Google Photos) can be turned on in Settings ▸ Plugins." = "アップロード（Google Photos）は“設定” ▸ “プラグイン”でオンにできます。";
+"Uploads (Google Photos) can be turned on in Settings ▸ Plug-ins." = "アップロード（Google Photos）は“設定” ▸ “プラグイン”でオンにできます。";
 "Upscale %lld Photos 2×" = "%lld 枚の写真を 2× アップスケール";
 "Upscale 2×" = "2× アップスケール";
 "Upscaled 2×: %@" = "2× アップスケール済み：%@";
@@ -2865,6 +2882,8 @@
 "Workspace name" = "ワークスペース名";
 "Workspace “%@”" = "ワークスペース「%@」";
 "Workspaces" = "ワークスペース";
+"Writing the changes…" = "変更を書き込み中…";
+"Writing the new photo and adding it to the session…" = "新しい写真を書き込み、セッションに追加中…";
 "Written into exported files (EXIF Artist)" = "書き出したファイルに書き込まれます（EXIF Artist）";
 "Written into exported files (EXIF Copyright)" = "書き出したファイルに書き込まれます（EXIF Copyright）";
 "X" = "X";
@@ -3112,7 +3131,7 @@
 "to upgrade it, then choose it again." = "アップグレードしてから、もう一度選択してください。";
 "turned %@ off" = "%@ をオフにしました";
 "turned %@ on" = "%@ をオンにしました";
-"turned off in Settings ▸ Plugins; nothing was uploaded" = "“設定” ▸ “プラグイン”でオフになっています。何もアップロードされませんでした";
+"turned off in Settings ▸ Plug-ins; nothing was uploaded" = "“設定” ▸ “プラグイン”でオフになっています。何もアップロードされませんでした";
 "unavailable" = "使用不可";
 "unchecked" = "チェックなし";
 "unflagged" = "フラグなし";
@@ -3160,7 +3179,7 @@
 "“%@” linked to %@; %lld photos still missing" = "「%1$@」を %2$@ にリンクしました。%3$lld 枚の写真がまだ見つかりません";
 "“%@” moved from %@." = "「%1$@」を %2$@ から移動しました。";
 "“%@” not applied — say it again" = "「%@」は適用されませんでした — もう一度言ってください";
-"“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plugins, or turn the upload off." = "「%@」は Google Photos にアップロードしますが、Google Photos はオフになっています：“設定” ▸ “プラグイン”でオンにするか、アップロードをオフにしてください。";
+"“%@” uploads to Google Photos, which is turned off: turn it on in Settings ▸ Plug-ins, or turn the upload off." = "「%@」は Google Photos にアップロードしますが、Google Photos はオフになっています：“設定” ▸ “プラグイン”でオンにするか、アップロードをオフにしてください。";
 "“%@” uploads to Google Photos: choose JPEG or HEIC." = "「%@」は Google Photos にアップロードします：JPEG または HEIC を選択してください。";
 "“%@” version %@" = "「%1$@」バージョン %2$@";
 "“%@” was renamed to “%@” — following it" = "「%1$@」の名前が「%2$@」に変更されました — 追従します";

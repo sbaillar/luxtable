@@ -1013,6 +1013,28 @@ fn l2_a_replaced_c1_database_does_not_reuse_album_keys() {
 }
 
 #[test]
+fn the_import_says_how_far_it_is_and_when_it_starts_writing() {
+    use crate::ImportStep::{Comparing, Writing};
+    let e = env();
+    let c1 = read_session(&e.folder).unwrap();
+    let total = c1.images.len();
+    let steps = std::cell::RefCell::new(Vec::new());
+    let note = |s| steps.borrow_mut().push(s);
+    let dry = ImportOptions {
+        dry_run: true,
+        ..REAL
+    };
+    crate::import_observed(&mut e.session(), &c1, &FakeWb(true), dry, &|| false, &note).unwrap();
+    let seen = steps.take();
+    assert_eq!(seen.len(), total + 1, "one per image, then the full count");
+    assert_eq!(seen[0], Comparing { done: 0, total });
+    assert_eq!(seen[total], Comparing { done: total, total });
+    assert!(!seen.contains(&Writing), "a dry run writes nothing");
+    crate::import_observed(&mut e.session(), &c1, &FakeWb(true), REAL, &|| false, &note).unwrap();
+    assert_eq!(steps.take().last(), Some(&Writing));
+}
+
+#[test]
 fn l3_a_cancelled_import_writes_nothing() {
     let e = env();
     let before = store_files(&e.store);

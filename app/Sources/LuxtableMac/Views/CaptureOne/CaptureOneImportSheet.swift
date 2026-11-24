@@ -59,12 +59,7 @@ struct CaptureOneImportSheet: View {
     }
 
     private func busy(_ text: LocalizedStringKey) -> some View {
-        HStack(spacing: DS.Space.s) {
-            ProgressView().controlSize(.small)
-            Text(text).font(DS.Font.label).foregroundStyle(DS.text)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(text)
+        OtherAppImportBusy(text: text, work: model.work)
     }
 
     private func summary(_ s: C1ImportSummary) -> some View {
@@ -106,8 +101,15 @@ struct CaptureOneImportSheet: View {
                 Button(model.overwriteEdits ? "Import and Overwrite" : "Import") { Task { await model.run() } }
                     .keyboardShortcut(.defaultAction)
                     .disabled(!model.canImport)
-            case .previewing, .importing, .reverting:
-                Button("Cancel", role: .cancel) { close() }.disabled(model.phase != .previewing)
+            case .previewing:
+                Button("Cancel", role: .cancel) {
+                    model.work.cancel()
+                    close()
+                }
+            case .importing:
+                OtherAppImportCancel(work: model.work)
+            case .reverting:
+                Button("Cancel", role: .cancel) {}.disabled(true)
             case .done:
                 if model.canRevert {
                     Button("Revert Import") { Task { await model.revert() } }
@@ -125,7 +127,7 @@ struct CaptureOneImportSheet: View {
     }
 }
 
-/// File ▸ Revert Capture One Import asks first.
+/// File ▸ Import from Another App ▸ Revert Capture One Import asks first.
 struct CaptureOneRevertDialog: ViewModifier {
     @Bindable var model: AppModel
 

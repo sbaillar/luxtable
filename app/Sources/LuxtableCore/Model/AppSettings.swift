@@ -66,7 +66,7 @@ public final class AppSettings {
         }
     }
     public var appearance: AppearancePreference { didSet { defaults.set(appearance.rawValue, forKey: Keys.appearance) } }
-    /// [library] Settings › General › Open in: the last session or the Library.
+    /// [library] Settings ▸ General ▸ Open in: the last session or the Library.
     public var startView: StartView { didSet { defaults.set(startView.rawValue, forKey: Keys.startView) } }
     public var autoOpenImport: Bool { didSet { defaults.set(autoOpenImport, forKey: Keys.autoImport) } }
     /// How Copy picks its groups: the source's edited ones (Capture One's auto-select,
@@ -94,7 +94,7 @@ public final class AppSettings {
     /// the keys `keyBindings` starts from. Change it with `useKeyPreset(_:)`.
     public private(set) var keyPreset: KeyPreset { didSet { defaults.set(keyPreset.rawValue, forKey: Keys.keyPreset) } }
 
-    /// Where the tool panels and Copy / Apply sit (Settings › Familiar layout).
+    /// Where the tool panels and Copy / Apply sit (Settings ▸ Familiar layout).
     public var layoutPreset: LayoutPreset { didSet { defaults.set(layoutPreset.rawValue, forKey: Keys.layoutPreset) } }
     /// The names chosen on their own; `nil` follows `layoutPreset`.
     public var namePreset: NameSet? { didSet { defaults.set(namePreset?.rawValue, forKey: Keys.namePreset) } }

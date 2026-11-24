@@ -94,9 +94,21 @@ public protocol AppleLibraryImporting: Sendable {
     func releaseAppleLibrary(_ id: UUID) async
     func importAppleLibrary(_ session: SessionInfo, library: UUID, categories: Set<LRCategory>, dryRun: Bool,
                             overwriteEdits: Bool) async throws -> LRImportSummary
+    /// The same, hearing how far it is. Cancelling the calling task stops it before it writes.
+    func importAppleLibrary(_ session: SessionInfo, library: UUID, categories: Set<LRCategory>, dryRun: Bool,
+                            overwriteEdits: Bool,
+                            progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> LRImportSummary
     func canRevertAppleImport(_ session: SessionInfo) async -> Bool
     /// Take back the imports since the last revert; `nil`: nothing to revert.
     func revertAppleImport(_ session: SessionInfo) async throws -> LRRevertSummary?
+}
+
+extension AppleLibraryImporting {
+    public func importAppleLibrary(_ session: SessionInfo, library: UUID, categories: Set<LRCategory>, dryRun: Bool,
+                                   overwriteEdits: Bool,
+                                   progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> LRImportSummary {
+        try await importAppleLibrary(session, library: library, categories: categories, dryRun: dryRun, overwriteEdits: overwriteEdits)
+    }
 }
 
 /// The open session's Aperture / iPhoto state: whether there is an import to revert.

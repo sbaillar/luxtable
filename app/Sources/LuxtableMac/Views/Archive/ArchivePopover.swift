@@ -19,9 +19,15 @@ struct ArchivePopover: View {
                     }
                 }
                 Spacer()
-                Button("Sync Now") { Task { await model.archive.syncNow() } }
-                    .disabled(!ArchiveDisplay.canSyncNow(state))
-                    .accessibilityHint("Archive every open session now")
+                if case .syncing = state {
+                    Button("Stop") { Task { await model.archive.stopSync() } }
+                        .help("Stop this run. What it already copied stays in the archive; the rest is copied the next time.")
+                        .accessibilityLabel("Stop archiving")
+                } else {
+                    Button("Sync Now") { Task { await model.archive.syncNow() } }
+                        .disabled(!ArchiveDisplay.canSyncNow(state))
+                        .accessibilityHint("Archive every open session now")
+                }
             }
             LabeledContent("Target") {
                 Text(status.target.isEmpty ? String(localized: "Not set") : status.target).lineLimit(1).truncationMode(.middle)

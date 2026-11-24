@@ -284,7 +284,7 @@ package struct ToolSidebar: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        // An integration that is off (Settings ▸ Plugins) shows no panel; its place is kept.
+                        // An integration that is off (Settings ▸ Plug-ins) shows no panel; its place is kept.
                         let panels = layout.panels(for: tab).filter(model.features.shows)
                         if panels.isEmpty {
                             let add = ToolStripControl.addTool(tabTitle: layout.workspace.title(of: tab, names: model.settings.names))

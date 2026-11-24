@@ -1,10 +1,10 @@
 import Foundation
 
 // Capture One session import (lt-c1 through the FFI `import_capture_one`):
-// File ▸ Import Capture One Edits…, and an offer after opening a folder that
+// File ▸ Import from Another App ▸ Capture One Edits…, and an offer after opening a folder that
 // is a Capture One session. The C1 folder is only ever read; a dry run comes
 // first, and Luxtable edits made since the last import are only replaced
-// when the user says so. File ▸ Revert Capture One Import takes the imports
+// when the user says so. File ▸ Import from Another App ▸ Revert Capture One Import takes the imports
 // back (lt-c1's journal); ⌘Z doesn't, because the import reloads the session.
 
 /// What a Capture One import did, or would do (a dry run). Mirrors lt-c1's report.
@@ -232,10 +232,20 @@ public protocol CaptureOneImporting: Sendable {
     /// The folder is a Capture One session folder (a `*.cosessiondb` at its top).
     func isCaptureOneFolder(_ folder: URL) async -> Bool
     func importCaptureOne(_ session: SessionInfo, dryRun: Bool, overwriteEdits: Bool) async throws -> C1ImportSummary
+    /// The same, hearing how far it is. Cancelling the calling task stops it before it writes.
+    func importCaptureOne(_ session: SessionInfo, dryRun: Bool, overwriteEdits: Bool,
+                          progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> C1ImportSummary
     /// An import wrote something since the last revert.
     func canRevertCaptureOneImport(_ session: SessionInfo) async -> Bool
     /// Take back the imports since the last revert; `nil`: nothing to revert.
     func revertCaptureOneImport(_ session: SessionInfo) async throws -> C1RevertSummary?
+}
+
+extension CaptureOneImporting {
+    public func importCaptureOne(_ session: SessionInfo, dryRun: Bool, overwriteEdits: Bool,
+                                 progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> C1ImportSummary {
+        try await importCaptureOne(session, dryRun: dryRun, overwriteEdits: overwriteEdits)
+    }
 }
 
 /// The open session's Capture One status, detected off the main actor when it opens.
@@ -265,6 +275,8 @@ public final class CaptureOneImportModel {
     public private(set) var phase: Phase = .previewing
     /// "Overwrite my Luxtable edits on conflicts" (off: conflicts keep Luxtable's values).
     public var overwriteEdits = false
+    /// The dry run or the import while it runs: its step, and Cancel.
+    public let work = OtherAppImportWork()
     @ObservationIgnored let importer: any CaptureOneImporting
     /// Saves pending Luxtable edits, so the import compares against them.
     @ObservationIgnored let flush: @MainActor () async -> Void
@@ -280,7 +292,7 @@ public final class CaptureOneImportModel {
         self.onImported = onImported
     }
 
-    /// Under the result: what Revert Import (and File ▸ Revert Capture One Import) takes back.
+    /// Under the result: what Revert Import (and File ▸ Import from Another App ▸ Revert Capture One Import) takes back.
     public static let revertHint = String(localized: "Revert Import takes back every Capture One import since the last revert, ")
         + String(localized: "here or with File \u{25B8} Revert Capture One Import. Changes you make in Luxtable afterwards are kept.")
 
@@ -311,7 +323,10 @@ public final class CaptureOneImportModel {
         phase = .previewing
         await flush()
         do {
-            phase = .preview(try await importer.importCaptureOne(session, dryRun: true, overwriteEdits: false))
+            let importer = importer, session = session
+            phase = .preview(try await work.run { report in
+                try await importer.importCaptureOne(session, dryRun: true, overwriteEdits: false, progress: report)
+            })
         } catch is CancellationError {
             phase = .failed(String(localized: "Cancelled"))
         } catch {
@@ -321,13 +336,18 @@ public final class CaptureOneImportModel {
 
     /// Import. Conflicts (Luxtable edits since the last import) are kept unless `overwriteEdits`.
     public func run() async {
-        guard canImport else { return }
+        guard canImport, let before = preview else { return }
         phase = .importing
         await flush()
         do {
-            let s = try await importer.importCaptureOne(session, dryRun: false, overwriteEdits: overwriteEdits)
+            let importer = importer, session = session, overwrite = overwriteEdits
+            let s = try await work.run { report in
+                try await importer.importCaptureOne(session, dryRun: false, overwriteEdits: overwrite, progress: report)
+            }
             phase = .done(s)
             await onImported()
+        } catch is CancellationError {
+            phase = .preview(before) // cancelled before anything was written
         } catch {
             phase = .failed(error.localizedDescription)
             await onImported() // part of it may have been written
@@ -350,12 +370,12 @@ public final class CaptureOneImportModel {
 extension AppModel {
     var captureOneImporter: (any CaptureOneImporting)? { sessions as? any CaptureOneImporting }
 
-    /// File ▸ Import Capture One Edits… is available: the open folder is a C1 session.
+    /// File ▸ Import from Another App ▸ Capture One Edits… is available: the open folder is a C1 session.
     public var canImportCaptureOne: Bool {
         captureOneImporter != nil && captureOne.isSession && captureOne.session == currentSession?.id
     }
 
-    /// File ▸ Revert Capture One Import is available.
+    /// File ▸ Import from Another App ▸ Revert Capture One Import is available.
     public var canRevertCaptureOne: Bool { canImportCaptureOne && captureOne.canRevert }
 
     /// Detect whether the open session is a Capture One folder and has an import to revert
@@ -381,14 +401,14 @@ extension AppModel {
         }
     }
 
-    /// File ▸ Import Capture One Edits…: show the sheet and run the dry run.
+    /// File ▸ Import from Another App ▸ Capture One Edits…: show the sheet and run the dry run.
     public func showCaptureOneImport() {
         guard let m = captureOneImportModel(offered: false) else { return }
         sheet = .captureOneImport(m)
         Task { await m.loadPreview() }
     }
 
-    /// File ▸ Revert Capture One Import: ask first (the confirmation calls `revertCaptureOneImport()`).
+    /// File ▸ Import from Another App ▸ Revert Capture One Import: ask first (the confirmation calls `revertCaptureOneImport()`).
     public func requestRevertCaptureOne() {
         confirmingCaptureOneRevert = canRevertCaptureOne
     }

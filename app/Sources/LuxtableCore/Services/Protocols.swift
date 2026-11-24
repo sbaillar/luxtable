@@ -569,6 +569,9 @@ public protocol ArchiveService: Sendable {
     func statusUpdates() -> AsyncStream<ArchiveStatus>
     /// "Sync now": archive every open session, ignoring debounce and backoff.
     func syncNow() async
+    /// "Stop": end the run that is going (what it copied stays in the archive). Nothing
+    /// starts on its own for a while; `syncNow()` starts again at once.
+    func stopSync() async
     /// `session` became the current session (it is scheduled from now on).
     func sessionOpened(_ session: SessionInfo) async
     /// `session` is closing: archive it now, then stop scheduling it.
@@ -585,6 +588,7 @@ public protocol ArchiveService: Sendable {
 }
 
 extension ArchiveService {
+    public func stopSync() async {}
     public func sessionOpened(_ session: SessionInfo) async {}
     public func sessionClosed(_ session: SessionInfo) async {}
     public func noteChanges(_ n: Int, in session: SessionInfo) async {}

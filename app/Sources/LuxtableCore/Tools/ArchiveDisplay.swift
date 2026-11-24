@@ -78,7 +78,7 @@ public enum ArchiveDisplay {
     /// Popover explanation.
     public static func explanation(_ s: ArchiveStatus.State) -> String {
         if case .unavailable = s {
-            return String(localized: "Set an archive target and switch archiving on in Settings › Archive. Nothing is copied until then.")
+            return String(localized: "Set an archive target and switch archiving on in Settings ▸ Archive. Nothing is copied until then.")
         }
         return String(localized: "rsync copies sessions to the archive in the background. It never deletes from the archive; replaced files are kept in .lt-archive-trash.")
     }

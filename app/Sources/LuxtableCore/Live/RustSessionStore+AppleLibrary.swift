@@ -56,13 +56,21 @@ extension RustSessionStore: AppleLibraryImporting {
     /// Like any import, a real one rewrites sidecars underneath: every cached record is dropped.
     public func importAppleLibrary(_ session: SessionInfo, library: UUID, categories: Set<LRCategory>, dryRun: Bool,
                                    overwriteEdits: Bool) async throws -> LRImportSummary {
+        try await importAppleLibrary(session, library: library, categories: categories, dryRun: dryRun,
+                                     overwriteEdits: overwriteEdits, progress: { _ in })
+    }
+
+    public func importAppleLibrary(_ session: SessionInfo, library: UUID, categories: Set<LRCategory>, dryRun: Bool,
+                                   overwriteEdits: Bool,
+                                   progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> LRImportSummary {
         guard let h = archiveHandle(for: session) else { throw MockError.notFound("session \(session.name)") }
         guard let src = AppleLibraries.shared.get(library) else { throw MockError.notFound("the library") }
         defer { if !dryRun { forgetAll(in: session.id) } }
         let keys = categories.map(\.rawValue).sorted()
+        let relay = OtherAppImportRelay(progress)
         let record = try await Self.call { token in
             try await h.importAppleLibrary(source: src, categories: keys, dryRun: dryRun, overwriteEdits: overwriteEdits,
-                                           token: token)
+                                           listener: relay, token: token)
         }
         return LRImportSummary(record)
     }

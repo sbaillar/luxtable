@@ -43,6 +43,8 @@ public struct LuxtableApp: App {
                 .modifier(UpdatePresentation(updater: updater))
                 .frame(minWidth: 1100, minHeight: 700)
                 .preferredColorScheme(model.settings.appearance.colorScheme)
+                // A folder from the Finder (Info.plist declares folders): the Dock icon, Open With.
+                .onOpenURL { model.openFromFinder($0) }
                 .task {
                     appDelegate.model = model
                     appDelegate.updater = updater
@@ -66,6 +68,7 @@ public struct LuxtableApp: App {
                         model.sheet = nil
                     }
                     await model.start()
+                    await model.openPendingFolder() // a folder dropped on the Dock icon launched the app
                     SampleLauncher.startTour(model, arguments: args)
                     if !AppModel.usesPrivateDefaults { updater.startAutomaticChecks() } // never in dev/snapshot runs
                     if let i = args.firstIndex(of: "--open"), i + 1 < args.count {
@@ -278,10 +281,6 @@ struct AppCommands: Commands {
             Button("Check for Updates\u{2026}") { updater.checkNow() }
                 .disabled(!updater.isAvailable)
         }
-        CommandGroup(after: .help) {
-            Button("What’s New\u{2026}") { updater.showWhatsNew() }
-                .disabled(!updater.isAvailable)
-        }
         CommandGroup(replacing: .undoRedo) {
             Button(model.history.undoLabel.map { String(localized: "Undo \($0)") } ?? String(localized: "Undo")) { shared(.undo) }
                 .keyboardShortcut("z")
@@ -302,23 +301,28 @@ struct AppCommands: Commands {
             item(.openFolder)
             openRecentMenu
             item(.showLibrary).help(CommandCatalog.help(.showLibrary, model: model) ?? "") // [library]
+            item(.closeSession).help(CommandCatalog.help(.closeSession, model: model) ?? "")
+            Divider()
             item(.importCard)
             Button("Import from Photos Library\u{2026}") { model.showPhotosLibraryImport() }
                 .disabled(!model.canImportExternal)
-            item(.closeSession).help(CommandCatalog.help(.closeSession, model: model) ?? "")
-            Button("Import Capture One Edits\u{2026}") { model.showCaptureOneImport() }
-                .disabled(!model.canImportCaptureOne)
-            Button("Revert Capture One Import\u{2026}") { model.requestRevertCaptureOne() }
-                .disabled(!model.canRevertCaptureOne)
-            Button("Import Capture One Settings\u{2026}") { model.showCaptureOneSettingsImport() }
-            Button("Import Lightroom\u{2026}") { model.showLightroomImport() }
-                .disabled(!model.canImportLightroom)
-            Button("Revert Lightroom Import\u{2026}") { model.requestRevertLightroom() }
-                .disabled(!model.canRevertLightroom)
-            Button("Import Aperture or iPhoto Library\u{2026}") { model.showAppleLibraryImport() }
-                .disabled(!model.canImportAppleLibrary)
-            Button("Revert Aperture or iPhoto Import\u{2026}") { model.requestRevertAppleLibrary() }
-                .disabled(!model.canRevertAppleLibrary)
+            // What another app knows about the photos (never the photos themselves), and taking it back.
+            Menu("Import from Another App") {
+                Button("Capture One Edits\u{2026}") { model.showCaptureOneImport() }
+                    .disabled(!model.canImportCaptureOne)
+                Button("Capture One Settings\u{2026}") { model.showCaptureOneSettingsImport() }
+                Button("Lightroom\u{2026}") { model.showLightroomImport() }
+                    .disabled(!model.canImportLightroom)
+                Button("Aperture or iPhoto Library\u{2026}") { model.showAppleLibraryImport() }
+                    .disabled(!model.canImportAppleLibrary)
+                Divider()
+                Button("Revert Capture One Import\u{2026}") { model.requestRevertCaptureOne() }
+                    .disabled(!model.canRevertCaptureOne)
+                Button("Revert Lightroom Import\u{2026}") { model.requestRevertLightroom() }
+                    .disabled(!model.canRevertLightroom)
+                Button("Revert Aperture or iPhoto Import\u{2026}") { model.requestRevertAppleLibrary() }
+                    .disabled(!model.canRevertAppleLibrary)
+            }
             Divider()
             item(.exportSelected) // [exp6]
             item(.share).help(CommandCatalog.help(.share, model: model) ?? "")
@@ -338,7 +342,7 @@ struct AppCommands: Commands {
             }
             ForEach(CommandCatalog.mergeMenu) { item($0) } // HDR and panorama merges
             Divider()
-            if model.features.isOn(.immich) { // [immich] Settings ▸ Plugins
+            if model.features.isOn(.immich) { // [immich] Settings ▸ Plug-ins
                 ForEach(CommandCatalog.immichMenu) { item($0).help(CommandCatalog.help($0, model: model) ?? "") }
                 Divider()
             }
@@ -404,8 +408,15 @@ struct AppCommands: Commands {
             item(.voiceHelp)
             item(.cheatSheet)
         }
-        CommandGroup(after: .help) {
+        // Replaces "Luxtable Help" (there is no Help Book): the guide is in the app.
+        CommandGroup(replacing: .help) {
+            Button("Luxtable User Guide") { HelpMenu.openGuide() }
             item(.gettingStarted)
+            Button("What’s New\u{2026}") { updater.showWhatsNew() }
+                .disabled(!updater.isAvailable)
+            Divider()
+            Button("Report a Problem\u{2026}") { HelpMenu.reportProblem() }
+            Button("Save Diagnostic Report\u{2026}") { HelpMenu.saveReport(model: model) }
         }
     }
 

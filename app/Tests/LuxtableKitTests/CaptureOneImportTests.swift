@@ -36,6 +36,19 @@ private actor FakeImporter: CaptureOneImporting {
         return r
     }
 
+    /// A real run reports this step and then waits to be cancelled (the sheet's Cancel).
+    var held: OtherAppImportStep?
+    func hold(at step: OtherAppImportStep) { held = step }
+
+    func importCaptureOne(_ session: SessionInfo, dryRun: Bool, overwriteEdits: Bool,
+                          progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> C1ImportSummary {
+        if !dryRun, let held {
+            progress(held)
+            while true { try await Task.sleep(for: .milliseconds(2)) } // until cancelled
+        }
+        return try await importCaptureOne(session, dryRun: dryRun, overwriteEdits: overwriteEdits)
+    }
+
     func canRevertCaptureOneImport(_ session: SessionInfo) async -> Bool { revertible }
 
     func revertCaptureOneImport(_ session: SessionInfo) async throws -> C1RevertSummary? {
@@ -159,6 +172,23 @@ private let session = SessionInfo(name: "Shoot", url: URL(fileURLWithPath: "/tmp
 }
 
 @MainActor @Suite struct CaptureOneImportModelTests {
+    @Test func aRunningImportSaysHowFarItIsAndCancelGoesBackToThePreview() async {
+        let fake = FakeImporter(preview: .success(C1ImportSummary(rated: 3)))
+        await fake.hold(at: .comparing(done: 2, total: 9))
+        var reloaded = 0
+        let m = CaptureOneImportModel(session: session, importer: fake, offered: false) { reloaded += 1 }
+        await m.loadPreview()
+        let before = m.preview
+        #expect(before != nil && m.canImport)
+        let run = Task { await m.run() }
+        #expect(await waitUntil { m.work.step == .comparing(done: 2, total: 9) })
+        #expect(m.phase == .importing && m.work.canCancel)
+        m.work.cancel()
+        await run.value
+        #expect(m.preview == before, "nothing was written: the dry run's result is shown again")
+        #expect(m.work.step == nil && !m.work.isRunning && reloaded == 0)
+    }
+
     @Test func previewThenImportKeepingEdits() async {
         let fake = FakeImporter(preview: .success(C1ImportSummary(rated: 3)), result: .success(C1ImportSummary(dryRun: false, rated: 3)))
         var reloaded = 0
@@ -446,7 +476,7 @@ private func digest(_ dir: URL) -> [String: String] {
         await again.loadPreview()
         #expect(await again.preview?.hasWork == false)
 
-        // File ▸ Revert Capture One Import puts everything back; importing again redoes it.
+        // File ▸ Import from Another App ▸ Revert Capture One Import puts everything back; importing again redoes it.
         #expect(await m.canRevertCaptureOne)
         await m.revertCaptureOneImport()
         let toast = await m.toast?.message

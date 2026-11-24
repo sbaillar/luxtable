@@ -25,7 +25,8 @@ pub use catalog::read_catalog;
 pub use error::{LrError, Result};
 pub use flavor::Flavor;
 pub use import::{
-    Conflict, FolderCount, ImportOptions, ImportReport, NotFound, PhotoNote, Skipped, import,
+    Conflict, FolderCount, ImportOptions, ImportReport, ImportStep, NotFound, PhotoNote, Skipped,
+    import, import_observed,
 };
 pub use journal::{JOURNAL_FILE, RevertReport, can_revert, can_revert_as, revert, revert_as};
 pub use limits::check_depth;

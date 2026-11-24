@@ -219,7 +219,7 @@ How much worse ΔE gets with only that tool reset (higher = the tool helps):
   - removes the members the import added to albums that already existed;
   - restores the import record from before, so a later import treats the photos as never imported;
   - deletes the journal.
-- The app: File ▸ Revert Capture One Import (asks first), or Revert Import on the result sheet. Both take back every import since the last revert. ⌘Z doesn't undo an import, because the import reloads the session and starts a fresh undo history.
+- The app: File ▸ Import from Another App ▸ Revert Capture One Import (asks first), or Revert Import on the result sheet. Both take back every import since the last revert. ⌘Z doesn't undo an import, because the import reloads the session and starts a fresh undo history.
 
 ## Reading safely
 

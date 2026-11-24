@@ -21,7 +21,7 @@ Culling is choosing the keepers. Luxtable is built so you can do it with one han
 | `6` `7` `8` `9` `-` | Red, yellow, green, blue or purple label (orange and pink exist but have no key until you assign one) |
 | `P` / `X` / `U` | Pick, reject, unflag |
 
-**Photo ▸ Auto-Advance After Rating** moves to the next photo after each rating. Ratings and labels apply to every selected photo.
+**Photo ▸ Auto-Advance After Rating** (also in Settings ▸ General) moves to the next photo after each rating or flag; turn it off to stay on the photo. Ratings and labels apply to every selected photo.
 
 ## Comparing
 
@@ -52,6 +52,8 @@ A burst is a run of frames shot in quick succession. Luxtable can show each burs
 ## AI Cull
 
 **Adjustments ▸ AI Cull** (`⇧⌘K`) scores every photo for sharpness, exposure and closed eyes, and groups near-duplicates, all on this Mac. Use the scores to filter, then make the final call yourself.
+
+While it runs, the toolbar shows how many photos are scored, with a stop button beside the count. Picks and rejects are only applied once every photo is scored, so stopping changes nothing.
 
 When AI Cull rejects a photo, it says why in a short note, such as "Eyes closed" or "Duplicate of DSC00001.ARW: that frame is sharper". The note shows as **AI reject** in the info panel, in the viewer and in the reject badge's tooltip. Changing the flag yourself clears it.
 

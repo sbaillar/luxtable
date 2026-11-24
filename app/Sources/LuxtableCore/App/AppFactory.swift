@@ -19,7 +19,7 @@ extension AppModel {
                             defaults: UserDefaults = .standard) -> AppModel {
         switch mode {
         case .live:
-            // Settings ▸ Plugins: the integrations (archive, Immich, Google Photos) are
+            // Settings ▸ Plug-ins: the integrations (archive, Immich, Google Photos) are
             // decided before anything asks whether they are on.
             let plugins = PluginStore.shared
             migrateFeatures(plugins, settings: settings)

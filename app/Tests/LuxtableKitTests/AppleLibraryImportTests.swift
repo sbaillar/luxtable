@@ -19,6 +19,8 @@ private actor FakeApple: AppleLibraryImporting {
     var revertible = false
     var reverted: Result<LRRevertSummary?, Error> = .success(LRRevertSummary(restored: 5))
     var failRealRun = false
+    /// A real run reports this step and then waits to be cancelled (the sheet's Cancel).
+    var held: OtherAppImportStep?
     private(set) var calls: [(categories: Set<LRCategory>, dryRun: Bool, overwrite: Bool)] = []
     private(set) var loads = 0
     private(set) var released: [UUID] = []
@@ -53,6 +55,18 @@ private actor FakeApple: AppleLibraryImporting {
         }
         revertible = result.changeCount > 0
         return result
+    }
+
+    func hold(at step: OtherAppImportStep) { held = step }
+
+    func importAppleLibrary(_ session: SessionInfo, library: UUID, categories: Set<LRCategory>, dryRun: Bool,
+                            overwriteEdits: Bool,
+                            progress: @escaping @Sendable (OtherAppImportStep) -> Void) async throws -> LRImportSummary {
+        if !dryRun, let held {
+            progress(held)
+            while true { try await Task.sleep(for: .milliseconds(2)) } // until cancelled
+        }
+        return try await importAppleLibrary(session, library: library, categories: categories, dryRun: dryRun, overwriteEdits: overwriteEdits)
     }
 
     func canRevertAppleImport(_ session: SessionInfo) async -> Bool { revertible }
@@ -135,6 +149,22 @@ private func model(_ fake: FakeApple, session: SessionInfo? = session,
 }
 
 @Suite @MainActor struct AppleLibraryModelTests {
+    @Test func aRunningImportSaysHowFarItIsAndCancelGoesBackToThePreview() async {
+        let fake = FakeApple()
+        await fake.hold(at: .comparing(done: 7, total: 120))
+        let m = model(fake)
+        await m.choose(aperture)
+        let before = m.preview
+        #expect(before != nil)
+        let run = Task { await m.run() }
+        #expect(await waitUntil { m.work.step == .comparing(done: 7, total: 120) })
+        #expect(m.phase == .importing && m.work.canCancel)
+        m.work.cancel()
+        await run.value
+        #expect(m.preview == before, "nothing was written: the dry run's result is shown again")
+        #expect(m.work.step == nil && !m.work.isRunning)
+    }
+
     @Test func chooseLoadsOnceThenRunsTheDryRunWithTheLibrarysCategories() async {
         let fake = FakeApple()
         let m = model(fake)
